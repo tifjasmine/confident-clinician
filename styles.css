@@ -152,8 +152,8 @@ a {
 
 .lede.small {
   max-width: 760px;
-  margin-top: 34px;
-  margin-bottom: 34px;
+  margin-top: 28px;
+  margin-bottom: 30px;
   font-size: 17px;
 }
 
@@ -294,7 +294,7 @@ h1 {
 .splitTwo {
   display: grid;
   grid-template-columns: 0.55fr 1.45fr;
-  gap: 60px;
+  gap: 48px;
 }
 
 .splitTwo.aligned {
@@ -310,7 +310,7 @@ h1 {
 
 .sectionMark {
   color: var(--accent) !important;
-  font-size: 36px !important;
+  font-size: 30px !important;
   line-height: 1;
 }
 
@@ -911,13 +911,21 @@ details p {
 
   .aboutWrap {
     flex-direction: column;
-    gap: 42px;
+    gap: 34px;
   }
 
   .headshotCard {
     width: 100%;
     max-width: 320px;
     height: 400px;
+  }
+
+  .splitTwo {
+    gap: 26px;
+  }
+
+  .splitStatement .eyebrow {
+    margin-bottom: 14px;
   }
 }
 
@@ -952,13 +960,13 @@ details p {
 
   .hero {
     min-height: auto;
-    padding-top: 64px;
-    padding-bottom: 64px;
+    padding-top: 56px;
+    padding-bottom: 56px;
   }
 
   .subHero {
-    padding-top: 56px;
-    padding-bottom: 56px;
+    padding-top: 48px;
+    padding-bottom: 48px;
   }
 
   .introSection,
@@ -970,18 +978,23 @@ details p {
   .faqSection,
   .finalCta,
   .contrastLists {
-    padding-top: 58px;
-    padding-bottom: 58px;
-  }
-
-  .splitStatement,
-  .listSection {
     padding-top: 50px;
     padding-bottom: 50px;
   }
 
+  .splitStatement,
+  .listSection {
+    padding-top: 40px;
+    padding-bottom: 42px;
+  }
+
   h1 {
     font-size: clamp(32px, 10vw, 40px);
+    margin-bottom: 22px;
+  }
+
+  .eyebrow {
+    margin-bottom: 18px;
   }
 
   .lede,
@@ -994,13 +1007,66 @@ details p {
     line-height: 1.68;
   }
 
+  .lede {
+    margin-bottom: 30px;
+  }
+
+  .lede.small {
+    margin-top: 22px;
+    margin-bottom: 26px;
+  }
+
   .thoughtBox {
-    margin-top: 32px;
-    padding: 26px 24px;
+    margin-top: 28px;
+    padding: 24px 22px;
+  }
+
+  .thoughtBox li {
+    font-size: 16px;
+    line-height: 1.58;
+  }
+
+  .splitTwo {
+    gap: 10px;
+  }
+
+  .sectionMark {
+    font-size: 18px !important;
+    line-height: 1 !important;
+  }
+
+  .splitStatement .eyebrow {
+    margin-bottom: 10px;
+  }
+
+  .splitStatement h2,
+  .creamPanel h2,
+  .darkBand h2,
+  .detailsSection h2,
+  .faqSection h2,
+  .finalCta h2 {
+    margin-bottom: 18px;
+    font-size: clamp(25px, 8vw, 32px);
+    line-height: 1.18;
+  }
+
+  .listSection p {
+    margin-top: 26px;
   }
 
   .sectionHeading {
-    margin-bottom: 32px;
+    margin-bottom: 28px;
+  }
+
+  .bulletGrid,
+  .takeawayGrid {
+    margin-top: 26px;
+    gap: 12px;
+  }
+
+  .pullQuote,
+  .centerNote {
+    margin-top: 32px;
   }
 
   .heroActions,
@@ -1016,7 +1082,7 @@ details p {
   }
 
   .offerCard {
-    padding: 30px 24px;
+    padding: 28px 22px;
   }
 
   .offerCard h3 {
@@ -1033,7 +1099,7 @@ details p {
   .programGrid article,
   .takeawayGrid p,
   .detailsGrid p {
-    padding: 20px;
+    padding: 18px;
   }
 
   .letterRow {
@@ -1046,7 +1112,7 @@ details p {
 
   .headshotCard {
     max-width: none;
-    height: 420px;
+    height: 400px;
   }
 
   .credentialGrid {
