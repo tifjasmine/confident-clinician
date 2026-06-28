@@ -130,13 +130,13 @@ a {
 .hero {
   display: flex;
   align-items: center;
-  min-height: 82vh;
-  padding: 120px 40px 108px;
+  min-height: 72vh;
+  padding: 92px 40px 84px;
   background: var(--cream);
 }
 
 .subHero {
-  padding: 112px 40px 96px;
+  padding: 86px 40px 76px;
   background: var(--cream);
 }
 
@@ -179,19 +179,19 @@ h3 {
 
 h1 {
   max-width: 880px;
-  margin-bottom: 36px;
-  font-size: clamp(42px, 6.5vw, 82px);
+  margin-bottom: 28px;
+  font-size: clamp(34px, 4.6vw, 58px);
   font-weight: 400;
-  line-height: 1.04;
+  line-height: 1.08;
   animation: fadeUp 0.8s ease both;
 }
 
 .lede {
   max-width: 600px;
-  margin-bottom: 52px;
+  margin-bottom: 40px;
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1.8;
+  font-size: 17px;
+  line-height: 1.76;
   animation: fadeUp 0.9s 0.1s ease both;
 }
 
@@ -234,14 +234,14 @@ h1 {
 
 .introSection {
   background: var(--cream-2);
-  padding: 96px 40px;
+  padding: 76px 40px;
 }
 
 .introSection h2 {
-  margin-bottom: 32px;
-  font-size: clamp(28px, 4vw, 48px);
+  margin-bottom: 24px;
+  font-size: clamp(25px, 2.8vw, 34px);
   font-weight: 500;
-  line-height: 1.18;
+  line-height: 1.22;
 }
 
 .introSection h2 em {
@@ -286,7 +286,7 @@ h1 {
 }
 
 .splitStatement {
-  padding: 80px 40px;
+  padding: 68px 40px;
   background: var(--cream-2);
 }
 
@@ -314,17 +314,18 @@ h1 {
 
 .splitStatement h2,
 .creamPanel h2,
+.darkBand h2,
 .detailsSection h2,
 .faqSection h2,
 .finalCta h2 {
-  margin-bottom: 26px;
-  font-size: clamp(32px, 4.2vw, 54px);
+  margin-bottom: 22px;
+  font-size: clamp(26px, 2.8vw, 36px);
   font-weight: 500;
-  line-height: 1.08;
+  line-height: 1.14;
 }
 
 .listSection {
-  padding: 78px 40px;
+  padding: 64px 40px;
   background: var(--cream);
 }
 
@@ -352,7 +353,7 @@ h1 {
 }
 
 .creamPanel {
-  padding: 96px 40px;
+  padding: 76px 40px;
   background: var(--cream-2);
 }
 
@@ -380,21 +381,21 @@ h1 {
 
 .pullQuote {
   max-width: 760px;
-  margin: 54px auto 0;
+  margin: 42px auto 0;
   color: var(--dark);
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(28px, 3.6vw, 44px);
-  line-height: 1.12;
+  font-size: clamp(25px, 3vw, 36px);
+  line-height: 1.18;
   text-align: center;
 }
 
 .offersSection {
   background: var(--cream);
-  padding: 96px 40px;
+  padding: 76px 40px;
 }
 
 .sectionHeading {
-  margin-bottom: 56px;
+  margin-bottom: 42px;
   text-align: center;
 }
 
@@ -403,7 +404,7 @@ h1 {
 }
 
 .sectionHeading h2 {
-  font-size: clamp(28px, 3.5vw, 44px);
+  font-size: clamp(25px, 2.6vw, 34px);
   font-weight: 500;
   line-height: 1.2;
 }
@@ -418,7 +419,7 @@ h1 {
   display: flex;
   flex-direction: column;
   border-radius: 2px;
-  padding: 52px 44px;
+  padding: 44px 38px;
 }
 
 .offerCard.light {
@@ -444,7 +445,7 @@ h1 {
 
 .offerCard h3 {
   margin-bottom: 20px;
-  font-size: 33px;
+  font-size: 26px;
   font-weight: 500;
   line-height: 1.18;
 }
@@ -498,7 +499,7 @@ h1 {
 .takeawayGrid p {
   border: 1px solid var(--border);
   background: rgba(251, 247, 240, 0.52);
-  padding: 26px;
+  padding: 24px;
   color: var(--muted);
   font-size: 16px;
   line-height: 1.65;
@@ -514,7 +515,7 @@ h1 {
 
 .programGrid h3 {
   margin-bottom: 12px;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 500;
 }
 
@@ -534,7 +535,7 @@ h1 {
 }
 
 .darkBand {
-  padding: 96px 40px;
+  padding: 76px 40px;
   background: var(--dark);
 }
 
@@ -568,7 +569,7 @@ h1 {
   border: 1px solid rgba(251, 247, 240, 0.18);
   color: rgba(251, 247, 240, 0.82);
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(44px, 8vw, 92px);
+  font-size: clamp(38px, 6.5vw, 72px);
   line-height: 1;
   padding: 24px 10px;
   text-align: center;
@@ -578,7 +579,7 @@ h1 {
 .faqSection,
 .finalCta,
 .contrastLists {
-  padding: 96px 40px;
+  padding: 76px 40px;
   background: var(--cream);
 }
 
@@ -694,7 +695,7 @@ details p {
 
 .twoCards h2 {
   margin-bottom: 24px;
-  font-size: clamp(30px, 3.6vw, 46px);
+  font-size: clamp(25px, 2.7vw, 34px);
   font-weight: 500;
 }
 
@@ -740,7 +741,7 @@ details p {
 
 .aboutSection {
   background: var(--cream-2);
-  padding: 96px 40px;
+  padding: 76px 40px;
 }
 
 .aboutWrap {
@@ -782,7 +783,7 @@ details p {
 
 .aboutCopy h2 {
   margin-bottom: 8px;
-  font-size: clamp(26px, 3.5vw, 42px);
+  font-size: clamp(24px, 2.7vw, 34px);
   font-weight: 500;
   line-height: 1.2;
 }
@@ -903,8 +904,8 @@ details p {
 @media (max-width: 520px) {
   .hero {
     min-height: auto;
-    padding-top: 76px;
-    padding-bottom: 76px;
+    padding-top: 64px;
+    padding-bottom: 64px;
   }
 
   .heroActions,
