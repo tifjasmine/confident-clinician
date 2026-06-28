@@ -135,6 +135,28 @@ a {
   background: var(--cream);
 }
 
+.subHero {
+  padding: 112px 40px 96px;
+  background: var(--cream);
+}
+
+.subHero.centered {
+  text-align: center;
+}
+
+.subHero.centered .lede,
+.lede.center {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.lede.small {
+  max-width: 760px;
+  margin-top: 34px;
+  margin-bottom: 34px;
+  font-size: 17px;
+}
+
 .eyebrow {
   margin-bottom: 28px;
   color: var(--accent);
@@ -236,6 +258,136 @@ h1 {
   margin-top: 20px;
 }
 
+.thoughtBox {
+  max-width: 720px;
+  margin: 46px auto 0;
+  padding: 34px 38px;
+  border-left: 3px solid var(--accent);
+  background: var(--cream-2);
+  text-align: left;
+}
+
+.thoughtBox p {
+  margin-bottom: 14px;
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.thoughtBox ul,
+.dashList,
+.iconList {
+  list-style: none;
+}
+
+.thoughtBox li {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.splitStatement {
+  padding: 80px 40px;
+  background: var(--cream-2);
+}
+
+.splitTwo {
+  display: grid;
+  grid-template-columns: 0.55fr 1.45fr;
+  gap: 60px;
+}
+
+.splitTwo.aligned {
+  align-items: center;
+}
+
+.splitTwo p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.sectionMark {
+  color: var(--accent) !important;
+  font-size: 36px !important;
+  line-height: 1;
+}
+
+.splitStatement h2,
+.creamPanel h2,
+.detailsSection h2,
+.faqSection h2,
+.finalCta h2 {
+  margin-bottom: 26px;
+  font-size: clamp(32px, 4.2vw, 54px);
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.listSection {
+  padding: 78px 40px;
+  background: var(--cream);
+}
+
+.listSection p {
+  margin-top: 34px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.dashList li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--dark);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.dashList li::before {
+  content: "—";
+  color: var(--accent);
+}
+
+.creamPanel {
+  padding: 96px 40px;
+  background: var(--cream-2);
+}
+
+.bulletGrid,
+.takeawayGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 28px;
+  margin-top: 34px;
+}
+
+.bulletGrid p,
+.miniList p {
+  display: flex;
+  gap: 12px;
+  color: var(--dark);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.bulletGrid span,
+.miniList span {
+  color: var(--accent);
+}
+
+.pullQuote {
+  max-width: 760px;
+  margin: 54px auto 0;
+  color: var(--dark);
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(28px, 3.6vw, 44px);
+  line-height: 1.12;
+  text-align: center;
+}
+
 .offersSection {
   background: var(--cream);
   padding: 96px 40px;
@@ -332,6 +484,258 @@ h1 {
 
 .button.darkOutline:hover {
   background: rgba(251, 247, 240, 0.08);
+}
+
+.numberGrid,
+.programGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.numberGrid p,
+.programGrid article,
+.takeawayGrid p {
+  border: 1px solid var(--border);
+  background: rgba(251, 247, 240, 0.52);
+  padding: 26px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.numberGrid span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+}
+
+.programGrid h3 {
+  margin-bottom: 12px;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.programGrid p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.centerNote {
+  max-width: 740px;
+  margin: 46px auto 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.darkBand {
+  padding: 96px 40px;
+  background: var(--dark);
+}
+
+.darkBand h2,
+.darkBand p {
+  color: var(--soft-white);
+}
+
+.darkBand p {
+  color: rgba(251, 247, 240, 0.7);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.darkBand p + p {
+  margin-top: 18px;
+}
+
+.darkBand strong {
+  color: var(--soft-white);
+}
+
+.letterRow {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 42px;
+}
+
+.letterRow span {
+  border: 1px solid rgba(251, 247, 240, 0.18);
+  color: rgba(251, 247, 240, 0.82);
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(44px, 8vw, 92px);
+  line-height: 1;
+  padding: 24px 10px;
+  text-align: center;
+}
+
+.detailsSection,
+.faqSection,
+.finalCta,
+.contrastLists {
+  padding: 96px 40px;
+  background: var(--cream);
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 34px 0 38px;
+}
+
+.detailsGrid p {
+  border: 1px solid var(--border);
+  background: var(--cream-2);
+  padding: 24px;
+  color: var(--dark);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.detailsGrid span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.inlineLink {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.miniList {
+  display: grid;
+  gap: 10px;
+  margin: 26px 0;
+}
+
+.weeksCard {
+  display: grid;
+  min-height: 280px;
+  place-items: center;
+  background: var(--dark);
+  color: var(--soft-white);
+}
+
+.weeksCard strong {
+  display: block;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(96px, 12vw, 150px);
+  font-weight: 300;
+  line-height: 0.8;
+}
+
+.weeksCard span {
+  display: block;
+  color: rgba(251, 247, 240, 0.58);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+details {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+}
+
+details:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+summary {
+  cursor: pointer;
+  color: var(--dark);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+details p {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.finalCta {
+  background: var(--cream-2);
+  text-align: center;
+}
+
+.finalCta p {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.finalCta p + p {
+  margin-top: 10px;
+}
+
+.finalCta .button {
+  margin-top: 36px;
+}
+
+.twoCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.twoCards h2 {
+  margin-bottom: 24px;
+  font-size: clamp(30px, 3.6vw, 46px);
+  font-weight: 500;
+}
+
+.twoCards h2 em {
+  font-style: italic;
+}
+
+.offerCard.dark h2,
+.offerCard.dark li {
+  color: var(--soft-white);
+}
+
+.iconList {
+  display: grid;
+  gap: 16px;
+}
+
+.iconList li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.iconList.cross li::before {
+  content: "×";
+  color: var(--accent);
+}
+
+.iconList.sparkle li::before {
+  content: "✦";
+  color: var(--accent);
+}
+
+.centeredText {
+  text-align: center;
+}
+
+.centeredText .button {
+  margin-top: 32px;
 }
 
 .aboutSection {
@@ -474,7 +878,14 @@ h1 {
   }
 
   .offerGrid,
-  .credentialGrid {
+  .credentialGrid,
+  .bulletGrid,
+  .numberGrid,
+  .takeawayGrid,
+  .programGrid,
+  .detailsGrid,
+  .twoCards,
+  .splitTwo {
     grid-template-columns: 1fr;
   }
 
