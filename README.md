@@ -1,6 +1,12 @@
 # The Confident Clinician
 
-Static Netlify site for The Confident Clinician Fast Track home page.
+Static Netlify site for The Confident Clinician Fast Track.
+
+## Pages
+
+- `index.html`
+- `workshop.html`
+- `program.html`
 
 ## Deploy
 
