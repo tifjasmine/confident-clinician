@@ -12,3 +12,4 @@ Static Netlify site for The Confident Clinician Fast Track.
 
 - Publish directory: `.`
 - Build command: none
+- Netlify deploys from `main`.
