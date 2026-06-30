@@ -367,6 +367,24 @@ h1 {
   margin-top: 34px;
 }
 
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.topicGrid p {
+  border: 1px solid var(--border);
+  background: rgba(251, 247, 240, 0.55);
+  padding: 18px 14px;
+  color: var(--dark);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .bulletGrid p,
 .miniList p {
   display: flex;
@@ -909,6 +927,10 @@ details p {
     grid-template-columns: 1fr;
   }
 
+  .topicGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .aboutWrap {
     flex-direction: column;
     gap: 34px;
@@ -1059,9 +1081,14 @@ details p {
   }
 
   .bulletGrid,
-  .takeawayGrid {
+  .takeawayGrid,
+  .topicGrid {
     margin-top: 26px;
     gap: 12px;
+  }
+
+  .topicGrid {
+    grid-template-columns: 1fr;
   }
 
   .pullQuote,
