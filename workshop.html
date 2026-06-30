@@ -65,9 +65,62 @@
         min-height: 50px;
       }
 
+      .workshopPoster {
+        min-height: 520px;
+        border: 1px solid var(--border);
+        background:
+          linear-gradient(145deg, rgba(195, 117, 84, 0.18), rgba(76, 123, 100, 0.12)),
+          var(--cream-2);
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        gap: 20px;
+        padding: 48px 36px;
+        text-align: center;
+      }
+
+      .workshopPoster .posterBrand {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .workshopPoster .posterLabel {
+        border: 1px solid rgba(195, 117, 84, 0.5);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        padding: 9px 14px;
+        text-transform: uppercase;
+      }
+
+      .workshopPoster h3 {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(52px, 7vw, 92px);
+        font-weight: 400;
+        line-height: 0.94;
+        margin: 0;
+      }
+
+      .workshopPoster .posterPromise {
+        color: var(--text);
+        font-size: 21px;
+        line-height: 1.5;
+        max-width: 460px;
+      }
+
       @media (max-width: 860px) {
         .subscribeForm {
           grid-template-columns: 1fr;
+        }
+
+        .workshopPoster {
+          min-height: 420px;
+          padding: 36px 24px;
         }
       }
     </style>
@@ -92,18 +145,18 @@
           <p class="eyebrow">The Confident Clinician Workshops</p>
           <h1>For the things therapy school did not fully teach you.</h1>
           <p class="lede center">
-            Short, focused trainings for therapists who want practical support with the moments that make them pause, spiral, overthink, or question themselves.
+            Short, focused trainings for therapists who are ready to turn everything they have learned into a clearer, steadier way of working.
           </p>
           <div class="thoughtBox">
             <p>Sometimes it can feel like…</p>
             <ul>
-              <li>"What do I do with this silence?"</li>
-              <li>"How do I end on time without feeling cold?"</li>
-              <li>"Why am I carrying this session home with me?"</li>
+              <li>"Why do I know so much, but still feel unsure in the room?"</li>
+              <li>"How do I stop borrowing everyone else's clinical voice?"</li>
+              <li>"What am I actually doing when I am doing good therapy?"</li>
             </ul>
           </div>
           <p class="lede center small">
-            Join the list for first access to the August 1 prerecorded workshop and occasional notes when another training or live meeting opens.
+            Join the list for first access to the August 1 prerecorded workshop and updates when future topics or live meetings are announced.
           </p>
           <form class="subscribeForm" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
             <input type="hidden" name="_subject" value="The Confident Clinician Workshop Updates Signup" />
@@ -151,13 +204,16 @@
           <div>
             <p class="eyebrow">Featured Workshop</p>
             <p class="featureMeta"><span>Releases August 1</span> Prerecorded workshop</p>
-            <h2>From Textbook to Therapy Chair: what to do when you freeze in session.</h2>
-            <p>A practical first workshop for newer therapists who know the theory, but want help with the moment itself: client silence, uncertainty, spiraling, over-explaining, and the pressure to say the right thing.</p>
-            <p>You will learn how to slow the moment down, find your footing, and choose a next response without turning every hard pause into proof that you are failing.</p>
+            <h2>Therapy School Didn't Teach Me This.</h2>
+            <p>A first workshop for clinicians who know the theories, care deeply about the work, and still want help understanding how experienced therapists actually think in the room.</p>
+            <p>We will talk about the gap between learning therapy and doing therapy: finding your clinical lens, trusting your voice, explaining your work, and making clearer choices when there is no perfect script.</p>
           </div>
-          <figure class="posterFrame">
-            <img src="./textbook-to-therapy-chair.jpg" alt="From Textbook to Therapy Chair workshop graphic" />
-          </figure>
+          <div class="workshopPoster" role="img" aria-label="Therapy School Didn't Teach Me This workshop graphic">
+            <p class="posterBrand">The Confident Clinician</p>
+            <p class="posterLabel">Clinical Mentorship &amp; Training</p>
+            <h3>Therapy School Didn't Teach Me This</h3>
+            <p class="posterPromise">For the clinician who wants to stop collecting more answers and start building a voice they can trust.</p>
+          </div>
         </div>
       </section>
 
@@ -165,17 +221,17 @@
         <div class="wrap">
           <div class="sectionHeading">
             <p class="eyebrow">Inside the Featured Workshop</p>
-            <h2>What you'll begin practicing</h2>
+            <h2>What we will actually unpack</h2>
           </div>
           <div class="numberGrid">
-            <p><span>01</span>How to slow down when you feel the urge to perform, fix, or fill the space</p>
-            <p><span>02</span>How to name what is happening without making every pause a problem</p>
-            <p><span>03</span>How to use simple grounding questions when your mind goes blank</p>
-            <p><span>04</span>How to stay warm and boundaried when the frame gets hard to hold</p>
-            <p><span>05</span>How to review sessions without turning reflection into a shame spiral</p>
-            <p><span>06</span>How to trust steadiness, curiosity, and clinical information - not just interventions</p>
+            <p><span>01</span>Why confidence can feel shaky early on, even when you are thoughtful and well-trained</p>
+            <p><span>02</span>The thinking gap, voice gap, and confidence gap that make therapy feel harder than it has to</p>
+            <p><span>03</span>How to understand therapy approaches without drowning in every model, acronym, and technique</p>
+            <p><span>04</span>How to start naming your clinical lens instead of trying to become every therapist you admire</p>
+            <p><span>05</span>How to think through "what do I do next?" with more clarity and less panic</p>
+            <p><span>06</span>How to explain your work in a way that sounds grounded, human, and like you</p>
           </div>
-          <p class="centerNote">A useful place to pause and sort things out - not another training that leaves you with 100 things to memorize.</p>
+          <p class="centerNote">Not another pile of scripts to memorize. A clearer way to think about the work you are already trying so hard to do well.</p>
         </div>
       </section>
 
@@ -204,14 +260,14 @@
           <p class="eyebrow">Your Takeaways</p>
           <h2>By the end of the workshop,<br />you'll walk away with:</h2>
           <div class="takeawayGrid">
-            <p>A better understanding of why certain moments make you freeze or over-function</p>
-            <p>Language for silence, uncertainty, boundaries, and clinical repair</p>
-            <p>A more organized way to return to your role when self-doubt gets loud</p>
-            <p>A simple way to review sessions without picking yourself apart</p>
-            <p>More permission to be human in the therapy room</p>
+            <p>A better understanding of why learning therapy and doing therapy can feel so different</p>
+            <p>Language for the thinking gap, voice gap, and confidence gap</p>
+            <p>A more grounded way to sort through approaches, tools, and clinical instincts</p>
+            <p>A starting point for naming your own clinical lens</p>
+            <p>More confidence explaining what you do without sounding scripted</p>
             <p>A next-step path if you want deeper support</p>
           </div>
-          <p class="centerNote">You will not walk away knowing every intervention for every client. You will walk away knowing how to come back to yourself and what to practice next.</p>
+          <p class="centerNote">You will not leave with a script for every client. You will leave with a clearer way to think, choose, and explain what you are doing in the room.</p>
         </div>
       </section>
 
@@ -231,7 +287,7 @@
           <p class="eyebrow">The Details</p>
           <h2>Workshop Details</h2>
           <div class="detailsGrid">
-            <p><span>Featured Workshop</span>From Textbook to Therapy Chair</p>
+            <p><span>Featured Workshop</span>Therapy School Didn't Teach Me This</p>
             <p><span>Release Date</span>August 1</p>
             <p><span>Format</span>Prerecorded workshop</p>
             <p><span>Location</span>Virtual</p>
