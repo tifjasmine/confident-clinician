@@ -15,6 +15,62 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
+    <style>
+      .subscribeForm {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+        gap: 12px;
+        max-width: 860px;
+        margin: 28px auto 0;
+        text-align: left;
+      }
+
+      .subscribeForm.leftForm {
+        margin-right: 0;
+        margin-left: 0;
+      }
+
+      .subscribeForm label {
+        display: grid;
+        gap: 7px;
+      }
+
+      .subscribeForm span {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .subscribeForm input {
+        width: 100%;
+        min-height: 50px;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        background: var(--cream-2);
+        color: var(--dark);
+        font: inherit;
+        padding: 12px 14px;
+      }
+
+      .subscribeForm input::placeholder {
+        color: rgba(100, 90, 82, 0.62);
+      }
+
+      .subscribeForm .button {
+        align-self: end;
+        border: 0;
+        cursor: pointer;
+        min-height: 50px;
+      }
+
+      @media (max-width: 860px) {
+        .subscribeForm {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
   <body>
     <nav class="siteNav">
@@ -47,9 +103,21 @@
             </ul>
           </div>
           <p class="lede center small">
-            New workshops will be shared as they are ready, with formats that fit the topic and the kind of support it needs.
+            Join the list for first access to the August 1 prerecorded workshop and occasional notes when another training or live meeting opens.
           </p>
-          <a href="#interest" class="button primary">Get Workshop Updates</a>
+          <form class="subscribeForm" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
+            <input type="hidden" name="_subject" value="The Confident Clinician Workshop Updates Signup" />
+            <input type="hidden" name="_captcha" value="false" />
+            <label>
+              <span>Name</span>
+              <input type="text" name="name" autocomplete="name" placeholder="Your name" />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" autocomplete="email" placeholder="Your email" required />
+            </label>
+            <button type="submit" class="button primary">Join the Workshop List</button>
+          </form>
         </div>
       </section>
 
@@ -160,7 +228,19 @@
             <p><span>Investment</span>Coming Soon</p>
             <p><span>Updates</span>Join the list to hear what opens next</p>
           </div>
-          <a href="mailto:theembodiedself@proton.me?subject=The%20Confident%20Clinician%20Workshop%20Interest" class="button primary">Get Workshop Updates</a>
+          <form class="subscribeForm leftForm" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
+            <input type="hidden" name="_subject" value="The Confident Clinician Workshop Updates Signup" />
+            <input type="hidden" name="_captcha" value="false" />
+            <label>
+              <span>Name</span>
+              <input type="text" name="name" autocomplete="name" placeholder="Your name" />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" autocomplete="email" placeholder="Your email" required />
+            </label>
+            <button type="submit" class="button primary">Join the Workshop List</button>
+          </form>
         </div>
       </section>
 
