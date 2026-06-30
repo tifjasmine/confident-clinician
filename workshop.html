@@ -65,8 +65,36 @@
         min-height: 50px;
       }
 
+      .featureWorkshop {
+        padding-top: 58px;
+        padding-bottom: 58px;
+        background: var(--cream);
+      }
+
+      .featureWorkshopGrid {
+        grid-template-columns: minmax(0, 0.95fr) minmax(280px, 380px);
+        align-items: center;
+        gap: 42px;
+      }
+
+      .featureWorkshop .eyebrow {
+        margin-bottom: 18px;
+      }
+
+      .featureWorkshop h2 {
+        max-width: 620px;
+        margin-bottom: 22px;
+        font-size: clamp(34px, 4vw, 52px);
+        line-height: 1.05;
+      }
+
+      .featureWorkshop p {
+        max-width: 620px;
+      }
+
       .workshopPoster {
-        min-height: 520px;
+        width: 100%;
+        aspect-ratio: 4 / 5;
         border: 1px solid var(--border);
         background:
           linear-gradient(145deg, rgba(195, 117, 84, 0.18), rgba(76, 123, 100, 0.12)),
@@ -74,8 +102,10 @@
         display: grid;
         align-content: center;
         justify-items: center;
-        gap: 20px;
-        padding: 48px 36px;
+        gap: 18px;
+        min-height: 0;
+        overflow: hidden;
+        padding: 34px 26px;
         text-align: center;
       }
 
@@ -100,17 +130,17 @@
       .workshopPoster h3 {
         color: var(--dark);
         font-family: "Cormorant Garamond", serif;
-        font-size: clamp(52px, 7vw, 92px);
+        font-size: clamp(40px, 4.8vw, 62px);
         font-weight: 400;
-        line-height: 0.94;
+        line-height: 0.98;
         margin: 0;
       }
 
       .workshopPoster .posterPromise {
         color: var(--text);
-        font-size: 21px;
+        font-size: 17px;
         line-height: 1.5;
-        max-width: 460px;
+        max-width: 320px;
       }
 
       @media (max-width: 860px) {
@@ -118,9 +148,26 @@
           grid-template-columns: 1fr;
         }
 
+        .featureWorkshop {
+          padding-top: 46px;
+          padding-bottom: 46px;
+        }
+
+        .featureWorkshopGrid {
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+
         .workshopPoster {
-          min-height: 420px;
-          padding: 36px 24px;
+          max-width: 360px;
+          margin: 0 auto;
+          padding: 30px 22px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .workshopPoster h3 {
+          font-size: 38px;
         }
       }
     </style>
@@ -191,9 +238,6 @@
               <li>Therapists beginning to think about their niche, messaging, or private practice identity</li>
               <li>Clinicians who are tired of collecting trainings but still not feeling confident</li>
             </ul>
-            <div class="thoughtBox">
-              <p>This is for the therapist who knows they have something meaningful to offer, but needs support connecting the dots.</p>
-            </div>
           </div>
         </div>
       </section>
