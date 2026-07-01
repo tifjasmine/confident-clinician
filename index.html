@@ -14,80 +14,656 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      :root {
+        --cream: #faf7f3;
+        --cream-deep: #f0e9e1;
+        --line: #ede4dc;
+        --line-strong: #e8ddd4;
+        --dark: #3d1f0d;
+        --brown: #5c3520;
+        --accent: #b5522a;
+        --clay: #c8a898;
+        --muted-clay: #9c7060;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--cream);
+        color: var(--dark);
+        font-family: "Jost", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      .siteNav {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 52px;
+        border-bottom: 1px solid var(--line);
+        background: var(--cream);
+      }
+
+      .brand {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .navLinks {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .navLinks a {
+        color: var(--brown);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .navLinks .navCta {
+        border-radius: 2px;
+        background: var(--accent);
+        color: var(--cream);
+        padding: 10px 22px;
+        font-weight: 600;
+      }
+
+      .heroSplit {
+        display: grid;
+        grid-template-columns: 55fr 45fr;
+        min-height: calc(100vh - 65px);
+        background: var(--cream);
+      }
+
+      .heroCopy {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 56px 80px 52px;
+        border-right: 1px solid var(--line);
+      }
+
+      .eyebrow {
+        margin-bottom: 28px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 400;
+        color: var(--dark);
+        text-wrap: balance;
+      }
+
+      h1 {
+        margin-bottom: 30px;
+        font-size: clamp(48px, 5.5vw, 76px);
+        font-weight: 500;
+        line-height: 1.07;
+      }
+
+      h1 em,
+      h2 em {
+        color: var(--accent);
+        font-style: italic;
+      }
+
+      .heroLead {
+        max-width: 480px;
+        margin-bottom: 44px;
+        color: var(--brown);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.8;
+      }
+
+      .buttonRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      .button {
+        display: inline-block;
+        border-radius: 2px;
+        padding: 15px 32px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .button.primary {
+        background: var(--accent);
+        color: var(--cream);
+      }
+
+      .button.outline {
+        border: 1.5px solid var(--accent);
+        color: var(--accent);
+      }
+
+      .heroBuild {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 52px 80px 56px;
+        background: var(--cream-deep);
+      }
+
+      .buildList {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .buildItem {
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+      }
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        margin-top: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .buildItem p {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 21px;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+
+      .empathy {
+        background: var(--dark);
+        padding: 88px 52px;
+      }
+
+      .empathyInner {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .empathyQuote {
+        margin-bottom: 32px;
+        color: var(--cream);
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(24px, 3vw, 34px);
+        font-style: italic;
+        font-weight: 400;
+        line-height: 1.6;
+      }
+
+      .smallRule {
+        width: 48px;
+        height: 1.5px;
+        margin-bottom: 28px;
+        background: var(--accent);
+      }
+
+      .empathyText {
+        color: var(--clay);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.85;
+      }
+
+      .offers {
+        background: var(--cream);
+        padding: 96px 52px;
+      }
+
+      .offersInner,
+      .aboutInner,
+      .footerInner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .sectionTitle {
+        margin-bottom: 12px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .offers h2 {
+        margin-bottom: 52px;
+        font-size: clamp(32px, 4vw, 48px);
+        line-height: 1.2;
+      }
+
+      .offerGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .offerCard {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 52px 44px;
+      }
+
+      .offerCard.light {
+        border: 1px solid var(--line-strong);
+        background: var(--cream);
+      }
+
+      .offerCard.dark {
+        background: var(--dark);
+      }
+
+      .kicker {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .offerCard.dark .kicker {
+        color: var(--clay);
+      }
+
+      .offerCard h3 {
+        font-size: 30px;
+        font-weight: 500;
+        line-height: 1.2;
+      }
+
+      .offerCard.dark h3,
+      .offerCard.dark .button {
+        color: var(--cream);
+      }
+
+      .cardRule {
+        width: 40px;
+        height: 1.5px;
+        background: var(--clay);
+      }
+
+      .offerCard.dark .cardRule {
+        background: #7a4830;
+      }
+
+      .offerCard p:not(.kicker) {
+        flex: 1;
+        color: var(--brown);
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 1.75;
+      }
+
+      .offerCard.dark p:not(.kicker) {
+        color: var(--clay);
+      }
+
+      .offerCard .button {
+        align-self: flex-start;
+        padding: 13px 26px;
+      }
+
+      .offerCard.dark .button {
+        border-color: var(--clay);
+      }
+
+      .about {
+        background: var(--cream-deep);
+        padding: 96px 52px;
+      }
+
+      .aboutTop {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 40px;
+        margin-bottom: 56px;
+      }
+
+      .about h2 {
+        font-size: clamp(30px, 4vw, 50px);
+        line-height: 1.15;
+      }
+
+      .aboutGrid {
+        display: grid;
+        grid-template-columns: 280px 1fr 1fr;
+        align-items: start;
+        gap: 48px;
+      }
+
+      .photoFrame {
+        width: 280px;
+        height: 340px;
+        overflow: hidden;
+        border-radius: 4px;
+        background: #e8ddd4;
+      }
+
+      .photoFrame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .bioCopy p {
+        margin-bottom: 20px;
+        color: var(--brown);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.85;
+      }
+
+      .bioCopy p:last-child {
+        margin-bottom: 0;
+      }
+
+      .beliefStack {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+
+      .belief {
+        border-left: 2px solid var(--accent);
+        padding-left: 22px;
+      }
+
+      .beliefLabel {
+        margin-bottom: 8px;
+        color: var(--accent);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .beliefText {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 19px;
+        font-weight: 400;
+        line-height: 1.55;
+      }
+
+      .footer {
+        background: var(--dark);
+        padding: 44px 52px;
+      }
+
+      .footerInner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .footerBrand {
+        margin-bottom: 6px;
+        color: var(--cream);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .footer p {
+        color: var(--clay);
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      .footerNote {
+        color: var(--muted-clay) !important;
+        font-size: 12px !important;
+      }
+
+      @media (max-width: 920px) {
+        .siteNav {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 18px;
+          padding: 20px 24px;
+        }
+
+        .navLinks {
+          flex-wrap: wrap;
+          gap: 14px 20px;
+        }
+
+        .heroSplit,
+        .offerGrid,
+        .aboutGrid {
+          grid-template-columns: 1fr;
+        }
+
+        .heroCopy {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .aboutTop,
+        .footerInner {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .siteNav,
+        .heroCopy,
+        .heroBuild,
+        .empathy,
+        .offers,
+        .about,
+        .footer {
+          padding-right: 24px;
+          padding-left: 24px;
+        }
+
+        .heroCopy,
+        .heroBuild {
+          padding-top: 58px;
+          padding-bottom: 58px;
+        }
+
+        h1 {
+          font-size: clamp(44px, 14vw, 58px);
+        }
+
+        .heroLead {
+          font-size: 15px;
+        }
+
+        .navLinks .navCta {
+          width: 100%;
+          text-align: center;
+        }
+
+        .button,
+        .offerCard .button {
+          width: 100%;
+          text-align: center;
+        }
+
+        .offerCard {
+          padding: 38px 28px;
+        }
+
+        .photoFrame {
+          width: 100%;
+          height: auto;
+          aspect-ratio: 4 / 5;
+        }
+      }
+    </style>
   </head>
   <body>
     <nav class="siteNav">
-      <div class="navInner">
-        <a href="./" class="brand">The Confident Clinician</a>
-        <div class="navLinks">
-          <a href="./" class="active">Home</a>
-          <a href="./about.html">About</a>
-          <a href="./workshop.html">Workshops</a>
-          <a href="./program.html">12-Week Program</a>
-          <a href="./workshop.html" class="navCta">Explore Workshops</a>
-        </div>
+      <a href="./" class="brand">The Confident Clinician</a>
+      <div class="navLinks">
+        <a href="./">Home</a>
+        <a href="./about.html">About</a>
+        <a href="./workshop.html">Workshops</a>
+        <a href="./program.html">12-Week Program</a>
+        <a href="./workshop.html" class="navCta">Explore Workshops</a>
       </div>
     </nav>
 
     <main>
-      <section class="hero" data-screen-label="Hero">
-        <div class="wrap">
+      <section class="heroSplit" data-screen-label="Hero">
+        <div class="heroCopy">
           <p class="eyebrow">Professional Development for Newer Therapists</p>
-          <h1>Build the clinical confidence school didn't fully teach you.</h1>
-          <p class="lede">
-            You already care deeply about the work. Now you need support for the moments no one really prepares you for: client silence, ending on time, not knowing what to say, feeling anxious in session, and carrying the work home. The Confident Clinician helps newer therapists build a grounded clinical voice that feels honest, steady, and like their own.
+          <h1>Build the clinical<br /><em>confidence</em><br />school didn't<br />fully teach you.</h1>
+          <p class="heroLead">
+            For newer therapists, interns, and early-career clinicians ready to feel grounded, clear, and capable in the therapy room - not just competent on paper.
           </p>
-          <div class="heroActions">
-            <a href="./workshop.html" class="button primary">Explore Workshops</a>
-            <a href="./program.html" class="button secondary">Explore the 12-Week Program</a>
+          <div class="buttonRow">
+            <a href="./workshop.html" class="button primary">Join a Workshop</a>
+            <a href="./program.html" class="button outline">The 12-Week Program</a>
+          </div>
+        </div>
+
+        <div class="heroBuild">
+          <p class="sectionTitle">What you'll walk away with</p>
+          <div class="buildList">
+            <div class="buildItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>A clinical voice that sounds like <em>you</em>, not a textbook</p>
+            </div>
+            <div class="buildItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Real strategies for the hard moments - silence, conflict, ending on time</p>
+            </div>
+            <div class="buildItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Boundaries that protect you and your clients</p>
+            </div>
+            <div class="buildItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>The self-trust to show up steady, even when it's hard</p>
+            </div>
+            <div class="buildItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>A sustainable practice you don't want to escape from</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="introSection" data-screen-label="For the Clinician Who">
-        <div class="narrow">
-          <h2>This is where the pieces start to connect.</h2>
-          <p>The trainings. The theories. The supervision notes. The things you know in your head but still struggle to trust in real sessions.</p>
-          <p>The Confident Clinician helps you turn all of that into a clearer clinical foundation: your lens, your language, your boundaries, your decision-making, your self-trust, your ethics, your sustainability, and your way of being with clients that feels more honest and grounded.</p>
+      <section class="empathy" data-screen-label="Empathy">
+        <div class="empathyInner">
+          <p class="empathyQuote">"You already care deeply about the work. The training, the theories, the supervision notes - you have them. But knowing and trusting are different things."</p>
+          <div class="smallRule"></div>
+          <p class="empathyText">
+            Client silence. Not knowing what to say. Carrying sessions home. Feeling anxious before an intake. These aren't signs you're in the wrong field - they're signs you need better support than you've been given. That's exactly what this is.
+          </p>
         </div>
       </section>
 
-      <section class="offersSection" data-screen-label="The Two Offers">
-        <div class="wrap">
-          <div class="sectionHeading">
-            <p class="eyebrow">Two Ways to Start</p>
-          </div>
-
+      <section class="offers" data-screen-label="Offers">
+        <div class="offersInner">
+          <p class="sectionTitle">Two Ways to Start</p>
+          <h2>Pick your entry point.</h2>
           <div class="offerGrid">
             <article class="offerCard light">
-              <p class="kicker">Focused Trainings</p>
-              <h3>The Confident Clinician Workshops</h3>
-              <div class="rule"></div>
-              <p>Short, practical workshops on the moments therapy school often skips: silence, feedback, boundaries, documentation anxiety, clinical voice, burnout, and more.</p>
+              <p class="kicker">Quick Impact</p>
+              <h3>Focused Workshops</h3>
+              <div class="cardRule"></div>
+              <p>Short, targeted trainings on the moments school skips: silence, feedback, documentation anxiety, boundaries, burnout, clinical voice, and more. Drop in when you need it most.</p>
               <a href="./workshop.html" class="button primary">View Workshops</a>
             </article>
 
             <article class="offerCard dark">
-              <p class="kicker">Deeper Pathway</p>
-              <h3>The 12-Week Confident Clinician Program</h3>
-              <div class="rule"></div>
-              <p>A longer-form professional development space for building clinical presence, boundaries, reflection, sustainability, and a voice that sounds like you.</p>
-              <a href="./program.html" class="button darkOutline">View 12-Week Program</a>
+              <p class="kicker">Deeper Transformation</p>
+              <h3>The 12-Week Program</h3>
+              <div class="cardRule"></div>
+              <p>A comprehensive professional development journey covering clinical presence, ethical decision-making, self-trust, sustainable practice, and building a voice that's unmistakably yours.</p>
+              <a href="./program.html" class="button outline">View the Program</a>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="introSection" data-screen-label="About Tiffany">
-        <div class="wrap splitTwo aligned">
-          <div>
-            <p class="eyebrow">Meet the Founder</p>
-            <h2>Hi, I'm Tiffany Wright - and I know the search spiral from the inside.</h2>
-            <p>I'm a licensed professional counselor who has worked in higher levels of care, crisis work, schools, community settings, private practice, and trauma-informed therapy spaces. I created The Confident Clinician because I have been the clinician searching for one more training, one more course, one more explanation that would finally make the work feel less shaky.</p>
-            <p>Over the years, I've learned that many newer clinicians are not lacking passion, intelligence, or care. They're lacking a bridge: between theory and real sessions, between training and confidence, between "I know the information" and "I know how to be with this person in front of me."</p>
+      <section class="about" data-screen-label="About Tiffany">
+        <div class="aboutInner">
+          <div class="aboutTop">
+            <div>
+              <p class="sectionTitle">Meet the Founder</p>
+              <h2>Hi, I'm Tiffany Wright -<br /><em>and I built this because I needed it too.</em></h2>
+            </div>
+            <a href="./about.html" class="button primary">Read My Story</a>
           </div>
-          <a href="./about.html" class="button primary">Read About Tiffany</a>
+
+          <div class="aboutGrid">
+            <div class="photoFrame">
+              <img src="./tiffany-wright-headshot.jpg" alt="Tiffany Wright, LPC" />
+            </div>
+
+            <div class="bioCopy">
+              <p>I'm a Licensed Professional Counselor (LPC) with years of experience working alongside individuals in some of their most vulnerable moments - from crisis stabilization and higher levels of care to school-based counseling and private practice.</p>
+              <p>I know what it feels like to walk into a session and second-guess everything. The anxiety before, during, and after. The crisis call that kept you up all night. Cycling through documentation platform after documentation platform. Googling "am I doing this right?" at 11pm - again.</p>
+              <p>I didn't build this from a place of having it all together. I built it from the exact same place you're standing.</p>
+            </div>
+
+            <div class="beliefStack">
+              <div class="belief">
+                <p class="beliefLabel">What I believe</p>
+                <p class="beliefText">Newer clinicians don't need more information - they need someone who actually gets what the first years feel like.</p>
+              </div>
+              <div class="belief">
+                <p class="beliefLabel">Where I've worked</p>
+                <p class="beliefText">Crisis settings, partial care, schools, and private practice - supporting children, adolescents, and adults through life transitions and mood disorders all the way to severe mental illness, psychosis, trauma, and substance use.</p>
+              </div>
+              <div class="belief">
+                <p class="beliefLabel">What I've built</p>
+                <p class="beliefText">The Confident Clinician and The Embodied Self - two spaces dedicated to grounded, sustainable clinical practice.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -96,9 +672,9 @@
       <div class="footerInner">
         <div>
           <p class="footerBrand">The Confident Clinician</p>
-          <p>Created by Tiffany Wright, LPC · Founder of The Embodied Self</p>
+          <p>Created by Tiffany Wright, LPC - Founder of The Embodied Self</p>
         </div>
-        <p>Not a substitute for clinical supervision</p>
+        <p class="footerNote">Not a substitute for clinical supervision</p>
       </div>
     </footer>
   </body>
