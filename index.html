@@ -94,6 +94,19 @@
         font-weight: 600;
       }
 
+      .mobileNavCta {
+        display: none;
+        border-radius: 2px;
+        background: var(--accent);
+        color: var(--cream);
+        padding: 10px 20px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
       .heroSplit {
         display: grid;
         grid-template-columns: 55fr 45fr;
@@ -553,6 +566,84 @@
           aspect-ratio: 4 / 5;
         }
       }
+
+      @media (max-width: 768px) {
+        .siteNav {
+          align-items: center;
+          flex-direction: row;
+          gap: 18px;
+          padding: 18px 24px;
+        }
+
+        .brand {
+          font-size: 16px;
+          line-height: 1.2;
+        }
+
+        .navLinks {
+          display: none;
+        }
+
+        .mobileNavCta {
+          display: inline-block;
+        }
+
+        .heroSplit {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+
+        .heroCopy {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+          padding: 52px 24px 40px;
+        }
+
+        .heroBuild {
+          padding: 40px 24px 52px;
+        }
+
+        .heroLead {
+          margin-bottom: 36px;
+        }
+
+        .buttonRow {
+          gap: 12px;
+        }
+
+        .button,
+        .offerCard .button {
+          width: auto;
+          text-align: center;
+        }
+
+        .empathy,
+        .offers,
+        .about {
+          padding-top: 60px;
+          padding-bottom: 60px;
+        }
+
+        .offers h2 {
+          margin-bottom: 42px;
+        }
+
+        .aboutTop {
+          gap: 24px;
+          margin-bottom: 40px;
+        }
+
+        .photoFrame {
+          width: 100%;
+          height: 280px;
+          aspect-ratio: auto;
+        }
+
+        .footer {
+          padding-top: 36px;
+          padding-bottom: 36px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -560,11 +651,12 @@
       <a href="./" class="brand">The Confident Clinician</a>
       <div class="navLinks">
         <a href="./">Home</a>
-        <a href="./about.html">About</a>
+        <a href="./about.html">About Me</a>
         <a href="./workshop.html">Workshops</a>
         <a href="./program.html">12-Week Program</a>
         <a href="./workshop.html" class="navCta">Explore Workshops</a>
       </div>
+      <a href="./workshop.html" class="mobileNavCta">Workshops</a>
     </nav>
 
     <main>
@@ -687,6 +779,7 @@
           <p>Created by Tiffany McGilloway, LPC - Founder of The Embodied Self</p>
         </div>
         <div class="footerNote">
+          <a href="./privacy.html">Privacy Policy</a>
           <a href="./terms.html">Terms &amp; Conditions</a>
           <span>Not a substitute for clinical supervision</span>
         </div>
