@@ -14,112 +14,320 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: #FAF7F3;
+        color: #3D1F0D;
+        font-family: "Jost", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      input,
+      button {
+        font-family: inherit;
+      }
+
+      @media (max-width: 900px) {
+        nav {
+          align-items: flex-start !important;
+          flex-direction: column !important;
+          gap: 18px !important;
+          padding: 20px 24px !important;
+        }
+
+        nav > div {
+          flex-wrap: wrap !important;
+          gap: 14px 20px !important;
+        }
+
+        section,
+        footer {
+          padding-right: 24px !important;
+          padding-left: 24px !important;
+        }
+
+        section[style*="grid-template-columns"],
+        div[style*="grid-template-columns"] {
+          grid-template-columns: 1fr !important;
+        }
+
+        div[style*="justify-content: space-between"] {
+          align-items: flex-start !important;
+          flex-direction: column !important;
+        }
+
+        a[style*="white-space: nowrap"] {
+          white-space: normal !important;
+        }
+
+        form {
+          max-width: 100% !important;
+        }
+
+        button,
+        a[style*="padding: 15px 32px"] {
+          width: 100% !important;
+          text-align: center !important;
+        }
+
+        h1 {
+          font-size: clamp(42px, 13vw, 56px) !important;
+        }
+      }
+    </style>
   </head>
   <body>
-    <nav class="siteNav">
-      <div class="navInner">
-        <a href="./" class="brand">The Confident Clinician</a>
-        <div class="navLinks">
-          <a href="./">Home</a>
-          <a href="./about.html">About</a>
-          <a href="./workshop.html">Workshops</a>
-          <a href="./program.html" class="active">12-Week Program</a>
-          <a href="#waitlist" class="navCta">Join the Interest List</a>
+<!-- NAV -->
+<nav style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 22px 52px; background: #FAF7F3; border-bottom: 1px solid #EDE4DC;">
+  <a href="./" style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; letter-spacing: 0.1em; color: #3D1F0D; text-transform: uppercase;">The Confident Clinician</a>
+  <div style="display: flex; align-items: center; gap: 32px;">
+    <a href="./" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Home</a>
+    <a href="./about.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">About</a>
+    <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Workshops</a>
+    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #B5522A; border-bottom: 1.5px solid #B5522A; padding-bottom: 2px;">12-Week Program</a>
+    <a href="#waitlist" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 22px; background: #B5522A; color: #FAF7F3; border-radius: 2px;">Join the Waitlist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section data-screen-label="Hero" style="display: grid; grid-template-columns: 55fr 45fr; min-height: 560px; background: #FAF7F3;">
+  <div style="display: flex; flex-direction: column; justify-content: center; padding: 80px 56px 80px 52px; border-right: 1px solid #EDE4DC;">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 24px;">12-Week Professional Development Program</p>
+    <h1 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 5vw, 68px); font-weight: 500; line-height: 1.08; color: #3D1F0D; margin-bottom: 28px;">Build the clinical foundation<br><em style="color: #B5522A; font-style: italic;">that grad school promised<br>and didn't fully deliver.</em></h1>
+    <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 460px; margin-bottom: 36px;">A deeper professional development space for therapists who want to feel grounded in the room, clearer in their clinical voice, and less alone in the messy middle of becoming.</p>
+    <a href="#waitlist" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; background: #B5522A; color: #FAF7F3; border-radius: 2px; display: inline-block; align-self: flex-start;">Join the Founding Cohort Waitlist</a>
+  </div>
+
+  <!-- Right: this is for you if... -->
+  <div style="display: flex; flex-direction: column; justify-content: center; padding: 80px 52px; background: #F0E9E1; gap: 28px;">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #B5522A;">This is for you if...</p>
+    <div style="display: flex; gap: 18px; align-items: flex-start;">
+      <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; line-height: 1.45; color: #3D1F0D;">You have the degree, the license, and a genuine desire to help. You still feel like you're winging it.</p>
+    </div>
+    <div style="display: flex; gap: 18px; align-items: flex-start;">
+      <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; line-height: 1.45; color: #3D1F0D;">You want to feel settled in the room. Not just technically correct.</p>
+    </div>
+    <div style="display: flex; gap: 18px; align-items: flex-start;">
+      <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; line-height: 1.45; color: #3D1F0D;">You're ready to go deeper than a workshop and actually build something that lasts.</p>
+    </div>
+    <div style="display: flex; gap: 18px; align-items: flex-start;">
+      <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; line-height: 1.45; color: #3D1F0D;">You want a clinical identity that feels grounded, clear, and genuinely yours.</p>
+    </div>
+    <div style="display: flex; gap: 18px; align-items: flex-start;">
+      <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; line-height: 1.45; color: #3D1F0D;">You're in it for the long haul. And you want a practice that actually feels sustainable.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section data-screen-label="Who It's For" style="background: #3D1F0D; padding: 88px 52px;">
+  <div style="max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;">
+    <div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #C8A898; margin-bottom: 20px;">Who This Is For</p>
+      <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 50px); font-weight: 400; line-height: 1.15; color: #FAF7F3; margin-bottom: 28px;">The clinician who wants support becoming grounded - not just more information to memorize.</h2>
+      <div style="width: 40px; height: 1.5px; background: #B5522A;"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #C8A898;">You have the training. You have the care. And you're still dealing with session silence that makes you want to fill every pause, boundaries you mean to hold but keep adjusting, feedback that stings more than it probably should, and the emotional hangover that follows you home after a hard week.</p>
+      <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #C8A898;">This program gives you a real place to work through it - not to perform wellness, but to actually build the kind of clinical steadiness that lasts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROGRAM MODULES -->
+<section data-screen-label="Program Modules" style="background: #FAF7F3; padding: 88px 52px;">
+  <div style="max-width: 1060px; margin: 0 auto;">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 16px;">The Curriculum</p>
+    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 50px); font-weight: 400; line-height: 1.15; color: #3D1F0D; margin-bottom: 52px;">Everything you wish had been covered in grad school.</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px;">
+
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 01</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Why Confidence Feels Shaky Early On</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">We separate skill gaps from confidence gaps, name what's actually blocking you, and give you permission to be uncertain without treating it as proof you're failing.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-left: 2px solid #FAF7F3; border-right: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 02</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">The Therapist Nervous System</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Fight, flight, freeze, and fawn show up in clinical work too. Learn to recognize your activation patterns and build a grounding practice that actually holds.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 03</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">The CLEAR Method and Clinical Decision-Making</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">The CLEAR method gives you three questions to ask yourself in any session moment: what am I noticing, what does the client need, and what is my role right now.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 04</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Session Structure and Flow</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Open, explore, intervene, close. We map your current session habits, find where you lose direction, and practice more intentional openings and closings.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3; border-left: 2px solid #FAF7F3; border-right: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 05</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Case Conceptualization and Treatment Thread</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">The 5-Lens Clinical Clarity Map helps you see the pattern beneath the problem and build a treatment thread that gives sessions real direction over time.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 06</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Modalities Without the Overwhelm</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Modalities are maps, not identities you have to perfectly perform. We cover the major approaches, when each fits, and how to blend them ethically without losing your footing.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 07</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Difficult Session Moments and Complex Clients</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Countertransference, resistance, emotional flooding, complex presentations. We work through what gets activated in you and how to stay grounded and ethical when sessions get hard.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3; border-left: 2px solid #FAF7F3; border-right: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 08</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Boundaries, Rupture, Repair, and Client Feedback</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Time, communication, fees, cancellations - plus rupture scripts, repair language, and how to hold client disappointment without caving or over-apologizing.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 09</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Ethics, Risk, Documentation, and Consultation</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Risk assessment without panic, documentation that actually protects you, ethical decision-making in real time, and knowing when to consult rather than sit alone with uncertainty.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 10</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Burnout Prevention Beyond Self-Care</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Compassion fatigue, vicarious trauma, and burnout are not the same thing. We audit the real sources - caseload, acuity, emotional over-responsibility - and build a sustainability plan that goes way past self-care advice.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3; border-left: 2px solid #FAF7F3; border-right: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 11</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Self-Advocacy, Workplace Reality, Money, and Sustainability</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">W2 vs. 1099, caseload boundaries, workplace red flags, fee conversations, and how to advocate for yourself without feeling like you're being difficult.</p>
+      </div>
+      <div style="background: #F0E9E1; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #FAF7F3;">
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C8A898;">Week 12</span>
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.25; color: #3D1F0D;">Clinical Identity, Professional Presence, and Integration</h3>
+        <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #5C3520;">Your clinical voice statement, your therapeutic philosophy, your 90-day growth plan. We close by naming who you are as a clinician - not perfectly, but honestly.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- NOT / IS -->
+<section data-screen-label="Not vs Is" style="background: #F0E9E1; padding: 88px 52px;">
+  <div style="max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+    <div style="background: #FAF7F3; border: 1px solid #E8DDD4; padding: 52px 44px;">
+      <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 40px); font-weight: 400; line-height: 1.2; color: #3D1F0D; margin-bottom: 36px;">This is <em style="font-style: italic;">not</em>:</h2>
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <span style="color: #C8A898; font-size: 18px; line-height: 1.4; flex-shrink: 0; margin-top: 2px;">-</span>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Clinical supervision or a replacement for board-approved consultation</p>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <span style="color: #C8A898; font-size: 18px; line-height: 1.4; flex-shrink: 0; margin-top: 2px;">-</span>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">A diagnosis or treatment planning certification</p>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <span style="color: #C8A898; font-size: 18px; line-height: 1.4; flex-shrink: 0; margin-top: 2px;">-</span>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">A rigid therapy model you must follow</p>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <span style="color: #C8A898; font-size: 18px; line-height: 1.4; flex-shrink: 0; margin-top: 2px;">-</span>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">A business coaching or marketing program</p>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <span style="color: #C8A898; font-size: 18px; line-height: 1.4; flex-shrink: 0; margin-top: 2px;">-</span>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">A space where you have to pretend you already feel confident</p>
         </div>
       </div>
-    </nav>
+    </div>
 
-    <main>
-      <section class="subHero">
-        <div class="wrap">
-          <p class="eyebrow">12-Week Professional Development Program</p>
-          <h1>Build confidence for the parts of the work no one fully prepared you for.</h1>
-          <p class="lede">
-            A deeper professional development space for therapists who want to feel more grounded in the room, clearer in their clinical voice, and less alone in the messy middle of becoming.
-          </p>
-          <a href="#waitlist" class="button primary">Join the Founding Cohort Waitlist</a>
+    <div style="background: #3D1F0D; padding: 52px 44px;">
+      <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 40px); font-weight: 400; line-height: 1.2; color: #FAF7F3; margin-bottom: 36px;">This <em style="font-style: italic;">is</em>:</h2>
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #C8A898;">A structured professional development program - not another passive training</p>
         </div>
-      </section>
-
-      <section class="introSection">
-        <div class="narrow">
-          <p class="eyebrow">Who This Is For</p>
-          <h2>This is for the clinician who wants support becoming grounded, not just more information to memorize.</h2>
-          <p>It is for the therapist who has training and care, but still wants support with silence, boundaries, feedback, documentation anxiety, emotional hangovers, client cancellations, comparison, and the pressure to always know what to say.</p>
-          <p>The 12-week program gives clinicians a place to slow down, practice reflection, ask better questions, and build a clinical voice that is ethical, boundaried, human, and their own.</p>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #C8A898;">A space for honest reflection, real practice, and clinical language that actually sounds like you</p>
         </div>
-      </section>
-
-      <section class="offersSection">
-        <div class="wrap">
-          <div class="sectionHeading">
-            <p class="eyebrow">The Program</p>
-            <h2>What we'll work through together</h2>
-          </div>
-          <div class="programGrid">
-            <article><h3>Clinical Presence</h3><p>Practice what to do when you freeze, over-talk, rush to fix, or do not know what to say next.</p></article>
-            <article><h3>The Therapeutic Frame</h3><p>Work with session endings, cancellations, boundaries, consistency, warmth, and containment.</p></article>
-            <article><h3>Your Clinical Voice</h3><p>Find language that sounds like you while staying ethical, grounded, and professional.</p></article>
-            <article><h3>Feedback &amp; Consultation</h3><p>Learn how to stay curious when feedback stings, supervision feels personal, or a case needs support.</p></article>
-            <article><h3>Documentation &amp; Over-Responsibility</h3><p>Write and reflect with clarity without trying to prove your worth in every note.</p></article>
-            <article><h3>Sustainability</h3><p>Explore burnout, emotional hangovers, advocacy, workplace expectations, and what is actually yours to carry.</p></article>
-          </div>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #C8A898;">A place to build boundaries, presence, and self-trust - not just learn about them</p>
         </div>
-      </section>
-
-      <section class="contrastLists">
-        <div class="wrap twoCards">
-          <article class="offerCard light">
-            <h2>This is <em>not</em>:</h2>
-            <ul class="iconList cross">
-              <li>Clinical supervision or a replacement for board-approved consultation</li>
-              <li>A diagnosis or treatment planning certification</li>
-              <li>A rigid therapy model you must follow</li>
-              <li>A niche, marketing, or business coaching program</li>
-              <li>A space where you have to pretend you already feel confident</li>
-            </ul>
-          </article>
-          <article class="offerCard dark">
-            <h2>This <em>is</em>:</h2>
-            <ul class="iconList sparkle">
-              <li>A structured professional development program</li>
-              <li>A space for honest reflection, practice, and clinical language</li>
-              <li>A place to build boundaries, presence, and self-trust</li>
-              <li>A bridge between theory and the real moments in the room</li>
-              <li>A supportive place for clinicians finding their voice</li>
-            </ul>
-          </article>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #C8A898;">A bridge from theory to the real moments that happen in real sessions</p>
         </div>
-      </section>
-
-      <section class="introSection">
-        <div class="narrow centeredText">
-          <p class="eyebrow">Start Here First</p>
-          <h2>Not ready for 12 weeks? Begin with a workshop.</h2>
-          <p>The workshops are focused first steps. Join the workshop list to hear about new topics, self-paced options, and future bundles.</p>
-          <a href="./workshop.html" class="button secondary">View Workshops</a>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+          <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+          <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #C8A898;">A supportive place where you don't have to perform having it together</p>
         </div>
-      </section>
-
-      <section class="finalCta" id="waitlist">
-        <div class="narrow">
-          <p class="eyebrow">Coming Soon</p>
-          <h2>Get first access to the founding cohort.</h2>
-          <p>The full program is not open yet. Join the waitlist for founding cohort details, early pricing, and launch updates.</p>
-          <a href="mailto:theembodiedself@proton.me?subject=The%2012-Week%20Confident%20Clinician%20Waitlist" class="button primary">Join the Founding Cohort Waitlist</a>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="footerInner">
-        <div>
-          <p class="footerBrand">The Confident Clinician</p>
-          <p>Created by Tiffany McGilloway, LPC · Founder of The Embodied Self</p>
-        </div>
-        <p>Not a substitute for clinical supervision</p>
       </div>
-    </footer>
+    </div>
+
+  </div>
+</section>
+
+<!-- START WITH A WORKSHOP -->
+<section data-screen-label="Start Here First" style="background: #FAF7F3; padding: 72px 52px; text-align: center;">
+  <div style="max-width: 640px; margin: 0 auto;">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 16px;">Not Ready for 12 Weeks?</p>
+    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 44px); font-weight: 400; line-height: 1.2; color: #3D1F0D; margin-bottom: 20px;">Start with a workshop. No commitment required.</h2>
+    <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.8; color: #5C3520; margin-bottom: 36px;">The workshops are focused first steps - 90 minutes on one specific part of the work. Drop in for a topic that's been on your mind and see if this is the right fit before committing to something longer.</p>
+    <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border: 1.5px solid #B5522A; color: #B5522A; border-radius: 2px; display: inline-block;">View the Workshops</a>
+  </div>
+</section>
+
+<!-- WAITLIST CTA -->
+<section data-screen-label="Waitlist" id="waitlist" style="background: #3D1F0D; padding: 96px 52px;">
+  <div style="max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+    <div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #C8A898; margin-bottom: 16px;">Coming Soon</p>
+      <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.15; color: #FAF7F3; margin-bottom: 24px;">Get first access to the founding cohort.</h2>
+      <div style="width: 40px; height: 1.5px; background: #B5522A; margin-bottom: 24px;"></div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #C8A898;">The full program isn't open yet. Founding cohort members get early access, introductory pricing, and a direct say in how the program takes shape. If this sounds like what you've been looking for - this is where you start.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 20px;">
+      <div style="border-left: 2px solid #B5522A; padding-left: 22px;">
+        <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #C8A898; margin-bottom: 8px;">What founding cohort members get</p>
+        <p style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: #FAF7F3; line-height: 1.55;">Early access + introductory pricing + direct input into how the program is built</p>
+      </div>
+      <div style="border-left: 2px solid #B5522A; padding-left: 22px;">
+        <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #C8A898; margin-bottom: 8px;">Program length</p>
+        <p style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: #FAF7F3; line-height: 1.55;">12 weeks - Virtual - Details coming soon</p>
+      </div>
+      <a href="mailto:theembodiedself@proton.me?subject=The%2012-Week%20Confident%20Clinician%20Waitlist" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 36px; background: #B5522A; color: #FAF7F3; border-radius: 2px; margin-top: 8px;">Join the Founding Cohort Waitlist</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background: #3D1F0D; border-top: 1px solid rgba(200,168,152,0.15); padding: 44px 52px;">
+  <div style="max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; letter-spacing: 0.08em; color: #FAF7F3; text-transform: uppercase; margin-bottom: 6px;">The Confident Clinician</p>
+      <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; color: #C8A898;">Created by Tiffany McGilloway, LPC - Founder of The Embodied Self</p>
+    </div>
+    <p style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 300; color: #9C7060;">Not a substitute for clinical supervision</p>
+  </div>
+</footer>
   </body>
 </html>
