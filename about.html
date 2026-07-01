@@ -359,9 +359,19 @@
       }
 
       .aboutFooterNote {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 14px;
         color: #9c7060;
         font-size: 12px;
         text-align: right;
+      }
+
+      .aboutFooterNote a,
+      .aboutFooterNote span {
+        color: inherit;
+        font-size: inherit;
       }
 
       @media (max-width: 900px) {
@@ -419,6 +429,7 @@
         }
 
         .aboutFooterNote {
+          justify-content: flex-start;
           text-align: left;
         }
       }
@@ -627,7 +638,10 @@
           <p class="aboutFooterBrand">The Confident Clinician</p>
           <p>Created by Tiffany McGilloway, LPC - Founder of The Embodied Self</p>
         </div>
-        <p class="aboutFooterNote">Not a substitute for clinical supervision</p>
+        <div class="aboutFooterNote">
+          <a href="./terms.html">Terms &amp; Conditions</a>
+          <span>Not a substitute for clinical supervision</span>
+        </div>
       </div>
     </footer>
   </body>
