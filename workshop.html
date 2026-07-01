@@ -6,7 +6,7 @@
     <title>The Confident Clinician Workshops</title>
     <meta
       name="description"
-      content="Short workshops for therapists navigating the real clinical moments therapy school did not fully prepare them for."
+      content="Short, focused workshops for newer therapists building clinical confidence, language, and sustainable practice."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,778 +14,976 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
     <style>
-      .subscribeForm {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-        gap: 12px;
-        max-width: 860px;
-        margin: 28px auto 0;
-        text-align: left;
+      :root {
+        --cream: #faf7f3;
+        --cream-deep: #f0e9e1;
+        --line: #ede4dc;
+        --line-strong: #ddd0c4;
+        --dark: #3d1f0d;
+        --brown: #5c3520;
+        --accent: #b5522a;
+        --clay: #c8a898;
+        --muted-clay: #9c7060;
       }
 
-      .subscribeForm.leftForm {
-        margin-right: 0;
-        margin-left: 0;
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
-      .subscribeForm label {
-        display: grid;
-        gap: 7px;
+      html {
+        scroll-behavior: smooth;
       }
 
-      .subscribeForm span {
-        color: var(--accent);
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.16em;
+      body {
+        background: var(--cream);
+        color: var(--dark);
+        font-family: "Jost", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 400;
+        text-wrap: balance;
+      }
+
+      em {
+        font-style: italic;
+      }
+
+      .siteNav {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        background: var(--cream);
+        padding: 22px 52px;
+      }
+
+      .brand {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
       }
 
-      .subscribeForm input {
-        width: 100%;
-        min-height: 50px;
-        border: 1px solid var(--border);
+      .navLinks {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .navLinks a {
+        color: var(--brown);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .navLinks a.active {
+        border-bottom: 1.5px solid var(--accent);
+        color: var(--accent);
+        padding-bottom: 2px;
+      }
+
+      .navLinks .navCta {
+        border: 0;
         border-radius: 2px;
-        background: var(--cream-2);
+        background: var(--accent);
+        color: var(--cream);
+        padding: 10px 22px;
+        font-weight: 600;
+      }
+
+      .button {
+        display: inline-block;
+        border-radius: 2px;
+        padding: 15px 32px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .button.primary {
+        background: var(--accent);
+        color: var(--cream);
+      }
+
+      .button.outlineLight {
+        border: 1.5px solid var(--clay);
+        color: var(--cream);
+      }
+
+      .eyebrow {
+        margin-bottom: 20px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        line-height: 1.3;
+        text-transform: uppercase;
+      }
+
+      .wrap {
+        max-width: 1060px;
+        margin: 0 auto;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 55fr 45fr;
+        min-height: 560px;
+        background: var(--cream);
+      }
+
+      .heroCopy {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-right: 1px solid var(--line);
+        padding: 80px 56px 80px 52px;
+      }
+
+      .hero h1 {
+        margin-bottom: 24px;
+        font-size: clamp(44px, 5vw, 68px);
+        font-weight: 500;
+        line-height: 1.08;
+      }
+
+      .hero h1 em {
+        color: var(--accent);
+      }
+
+      .heroLead {
+        max-width: 480px;
+        margin-bottom: 36px;
+        color: var(--brown);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.8;
+      }
+
+      .thoughtPanel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+        background: var(--cream-deep);
+        padding: 80px 52px;
+      }
+
+      .thoughtCard {
+        border: 1px solid var(--line-strong);
+        border-radius: 3px;
+        background: var(--cream);
+        padding: 18px 22px;
+      }
+
+      .thoughtCard p {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 19px;
+        font-style: italic;
+        line-height: 1.5;
+      }
+
+      .darkSplit,
+      .nextWorkshop,
+      .pathway {
+        background: var(--dark);
+        padding: 88px 52px;
+      }
+
+      .splitGrid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 80px;
+        align-items: start;
+      }
+
+      .darkSplit h2,
+      .nextWorkshop h2,
+      .pathway h2 {
+        color: var(--cream);
+        font-size: clamp(32px, 4vw, 50px);
+        line-height: 1.15;
+      }
+
+      .darkSplit .eyebrow,
+      .nextWorkshop .eyebrow,
+      .pathway .eyebrow {
+        color: var(--clay);
+      }
+
+      .darkText {
+        color: var(--clay);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.85;
+      }
+
+      .darkText + .darkText {
+        margin-top: 20px;
+      }
+
+      .rule {
+        width: 40px;
+        height: 1.5px;
+        margin-top: 28px;
+        background: var(--accent);
+      }
+
+      .who,
+      .seriesIntro,
+      .futureTopics,
+      .signup {
+        background: var(--cream);
+        padding: 88px 52px;
+      }
+
+      .who h2,
+      .seriesIntro h2,
+      .futureTopics h2,
+      .signup h2 {
+        font-size: clamp(30px, 4vw, 50px);
+        line-height: 1.15;
+      }
+
+      .whoIntro,
+      .seriesText,
+      .signupText {
+        color: var(--brown);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.85;
+      }
+
+      .bulletList {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .bulletItem {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        margin-top: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .bulletItem p {
+        color: var(--brown);
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 1.7;
+      }
+
+      .seriesIntro {
+        text-align: center;
+      }
+
+      .seriesIntro .wrap {
+        max-width: 720px;
+      }
+
+      .seriesIntro h2 {
+        margin-bottom: 24px;
+      }
+
+      .featured {
+        background: var(--cream-deep);
+        padding: 88px 52px;
+      }
+
+      .workshopHeader {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 40px;
+        margin-bottom: 56px;
+      }
+
+      .badgeRow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .badge,
+      .metaBadge {
+        border-radius: 2px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+
+      .badge {
+        background: var(--accent);
+        color: var(--cream);
+        padding: 5px 12px;
+      }
+
+      .metaBadge {
+        color: var(--accent);
+      }
+
+      .workshopHeader h2 {
+        max-width: 700px;
+        font-size: clamp(30px, 3.8vw, 48px);
+        line-height: 1.15;
+      }
+
+      .workshopMeta {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: flex-end;
+        gap: 10px;
+      }
+
+      .workshopMeta p {
+        color: var(--brown);
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .workshopGrid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 48px;
+        align-items: start;
+      }
+
+      .miniTitle {
+        margin-bottom: 24px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .numberList {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .numberItem {
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        gap: 20px;
+        align-items: start;
+        border-top: 1px solid var(--line-strong);
+        padding: 20px 0;
+      }
+
+      .numberItem:last-child {
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .numberItem span {
+        color: var(--clay);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .numberItem p,
+      .takeawayCard p {
+        color: var(--brown);
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.7;
+      }
+
+      .takeawayStack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 32px;
+      }
+
+      .takeawayCard {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: var(--cream);
+        padding: 18px 20px;
+      }
+
+      .noteBox {
+        border-left: 3px solid var(--accent);
+        background: var(--cream);
+        padding: 20px 24px;
+      }
+
+      .noteBox p {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 19px;
+        font-style: italic;
+        line-height: 1.6;
+      }
+
+      .nextWorkshop {
+        padding-top: 72px;
+        padding-bottom: 72px;
+      }
+
+      .nextMeta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .nextMeta .badge {
+        border: 1px solid rgba(200, 168, 152, 0.4);
+        background: transparent;
+        color: var(--clay);
+      }
+
+      .nextWorkshop h2 {
+        margin-bottom: 20px;
+        font-size: clamp(28px, 3.5vw, 44px);
+        line-height: 1.2;
+      }
+
+      .nextWorkshop .rule {
+        margin: 0 0 24px;
+      }
+
+      .futureTopics {
+        padding-top: 72px;
+        padding-bottom: 72px;
+      }
+
+      .futureTopics h2 {
+        margin-bottom: 40px;
+        font-size: clamp(28px, 3.5vw, 42px);
+      }
+
+      .topicGrid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .topicCard {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        border: 1px solid var(--line-strong);
+        padding: 36px 32px;
+      }
+
+      .topicCard h3 {
+        font-size: 24px;
+        line-height: 1.3;
+      }
+
+      .topicCard p {
+        color: var(--brown);
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.7;
+      }
+
+      .signupForm {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .signupForm label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .signupForm span {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .signupForm input {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid var(--line-strong);
+        border-radius: 2px;
+        background: var(--cream-deep);
         color: var(--dark);
         font: inherit;
         padding: 12px 14px;
       }
 
-      .subscribeForm input::placeholder {
-        color: rgba(100, 90, 82, 0.62);
-      }
-
-      .subscribeForm .button {
-        align-self: end;
+      .signupForm button {
+        align-self: flex-start;
         border: 0;
         cursor: pointer;
-        min-height: 50px;
+        margin-top: 4px;
       }
 
-      .workshopStory,
-      .promisePanel,
-      .insideWorkshop,
-      .facilitatorBridge,
-      .deeperPathway,
-      .workshopDetailsPanel {
-        padding: 78px 40px;
+      .pathway {
+        padding-top: 88px;
+        padding-bottom: 88px;
       }
 
-      .workshopStory {
-        background: var(--cream-3);
+      .pathwayInner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 60px;
       }
 
-      .storyInner {
-        max-width: 1040px;
+      .pathwayText {
+        max-width: 620px;
+      }
+
+      .pathway h2 {
+        margin-bottom: 20px;
+        font-size: clamp(30px, 3.5vw, 46px);
+        line-height: 1.2;
+      }
+
+      .footer {
+        border-top: 1px solid rgba(200, 168, 152, 0.15);
+        background: var(--dark);
+        padding: 44px 52px;
+      }
+
+      .footerInner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+        max-width: 1100px;
         margin: 0 auto;
       }
 
-      .storyInner h2,
-      .promisePanel h2,
-      .insideWorkshop h2,
-      .takeawaysPanel h2,
-      .workshopDetailsPanel h2 {
+      .footerBrand {
+        margin-bottom: 6px;
+        color: var(--cream);
         font-family: "Cormorant Garamond", serif;
+        font-size: 17px;
         font-weight: 500;
-        line-height: 1.05;
-      }
-
-      .storyInner h2 {
-        max-width: 780px;
-        margin-bottom: 38px;
-        font-size: clamp(42px, 5.4vw, 72px);
-      }
-
-      .storyLead {
-        max-width: 910px;
-        color: var(--muted);
-        font-size: 19px;
-        line-height: 1.72;
-      }
-
-      .dashColumns {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px 56px;
-        margin-top: 42px;
-      }
-
-      .dashColumns p {
-        display: grid;
-        grid-template-columns: 28px 1fr;
-        gap: 18px;
-        color: var(--dark);
-        font-size: 18px;
-        line-height: 1.55;
-      }
-
-      .dashColumns p::before {
-        content: "-";
-        color: var(--green);
-        font-weight: 800;
-      }
-
-      .storyQuote,
-      .takeawayNote,
-      .bridgeQuote {
-        border-top: 1px solid var(--border);
-        margin-top: 48px;
-        padding-top: 34px;
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-size: clamp(24px, 3vw, 34px);
-        font-style: italic;
-        line-height: 1.65;
-      }
-
-      .whoPanel {
-        padding: 78px 40px;
-        background: var(--cream-2);
-      }
-
-      .whoPanel .eyebrow,
-      .promisePanel .eyebrow,
-      .insideWorkshop .eyebrow,
-      .takeawaysPanel .eyebrow,
-      .workshopDetailsPanel .eyebrow {
-        color: var(--green);
-      }
-
-      .whoPanel .iconList.sparkle li::before {
-        color: var(--green);
-      }
-
-      .promisePanel {
-        background: var(--cream-3);
-        text-align: center;
-      }
-
-      .promisePanel h2 {
-        max-width: 920px;
-        margin: 0 auto 34px;
-        font-size: clamp(42px, 5vw, 68px);
-      }
-
-      .promisePanel .rule {
-        margin-right: auto;
-        margin-left: auto;
-      }
-
-      .promisePanel p {
-        max-width: 900px;
-        margin: 32px auto 0;
-        color: var(--muted);
-        font-size: 19px;
-        line-height: 1.7;
-      }
-
-      .insideWorkshop {
-        background: var(--cream-2);
-      }
-
-      .insideWorkshop .sectionHeading {
-        text-align: center;
-      }
-
-      .insideWorkshop h2 {
-        font-size: clamp(40px, 5vw, 66px);
-      }
-
-      .clarifyGrid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0 58px;
-        margin-top: 44px;
-      }
-
-      .clarifyGrid p {
-        display: grid;
-        grid-template-columns: 56px 1fr;
-        gap: 18px;
-        border-top: 1px solid var(--border);
-        padding: 28px 0;
-        color: var(--dark);
-        font-size: 18px;
-        line-height: 1.55;
-      }
-
-      .clarifyGrid span {
-        color: var(--cream-3);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 32px;
-        line-height: 1;
-      }
-
-      .frameworkBand {
-        position: relative;
-        overflow: hidden;
-        padding: 86px 40px;
-        background: var(--green);
-      }
-
-      .frameworkBand .wrap {
-        position: relative;
-        z-index: 1;
-      }
-
-      .frameworkBand h2 {
-        max-width: 880px;
-        margin-bottom: 44px;
-        color: var(--soft-white);
-        font-family: "Cormorant Garamond", serif;
-        font-size: clamp(42px, 5.2vw, 72px);
-        font-weight: 400;
-        line-height: 1.08;
-      }
-
-      .frameworkBand p {
-        max-width: 870px;
-        color: rgba(251, 247, 240, 0.86);
-        font-size: 19px;
-        line-height: 1.72;
-      }
-
-      .frameworkBand p + p {
-        margin-top: 28px;
-      }
-
-      .frameworkBand strong {
-        color: var(--soft-white);
-      }
-
-      .frameworkBand .scriptLine {
-        color: var(--soft-white);
-        font-family: "Cormorant Garamond", serif;
-        font-size: clamp(24px, 3vw, 32px);
-        font-style: italic;
-      }
-
-      .clearLetters {
-        position: absolute;
-        top: 74px;
-        right: 8vw;
-        color: rgba(251, 247, 240, 0.16);
-        font-family: "Cormorant Garamond", serif;
-        font-size: clamp(58px, 8vw, 98px);
-        line-height: 1.02;
-        text-align: center;
-      }
-
-      .clearLetters span {
-        display: block;
-      }
-
-      .takeawaysPanel {
-        padding: 78px 40px;
-        background: var(--cream-2);
-        text-align: center;
-      }
-
-      .takeawaysPanel h2 {
-        max-width: 720px;
-        margin: 0 auto 54px;
-        font-size: clamp(40px, 5vw, 66px);
-      }
-
-      .takeawaysPanel .takeawayGrid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        text-align: left;
-      }
-
-      .takeawaysPanel .takeawayGrid p {
-        border: 0;
-        background: var(--cream);
-        color: var(--dark);
-        font-size: 18px;
-      }
-
-      .takeawayNote {
-        border: 1px solid var(--border);
-        margin-top: 42px;
-        padding: 34px;
-        text-align: center;
-      }
-
-      .facilitatorBridge {
-        background: var(--cream-3);
-      }
-
-      .facilitatorBridge .storyLead {
-        margin-bottom: 34px;
-      }
-
-      .bridgeQuote {
-        border-top: 0;
-        border-left: 3px solid var(--accent);
-        margin: 0 0 34px;
-        padding: 10px 0 10px 30px;
-      }
-
-      .workshopDetailsPanel {
-        background: var(--cream-2);
-        text-align: center;
-      }
-
-      .deeperPathway {
-        background: var(--cream);
-      }
-
-      .deeperPathway h2 {
-        max-width: 760px;
-      }
-
-      .deeperPathway .programGrid {
-        margin-top: 34px;
-      }
-
-      .deeperPathway .programGrid article {
-        background: var(--cream-2);
-      }
-
-      .deeperPathway .programGrid h3 {
-        color: var(--green);
-      }
-
-      .workshopDetailsPanel h2 {
-        margin-bottom: 50px;
-        font-size: clamp(42px, 5vw, 66px);
-      }
-
-      .workshopDetailsPanel .detailsGrid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        max-width: 920px;
-        margin: 0 auto 38px;
-        gap: 0;
-        border: 1px solid var(--border);
-      }
-
-      .workshopDetailsPanel .detailsGrid p {
-        border: 0;
-        border-right: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        background: var(--cream-2);
-        padding: 34px 38px;
-        text-align: left;
-      }
-
-      .workshopDetailsPanel .detailsGrid p:nth-child(2n) {
-        border-right: 0;
-      }
-
-      .workshopDetailsPanel .detailsGrid p:nth-last-child(-n + 2) {
-        border-bottom: 0;
-      }
-
-      .workshopDetailsPanel .detailsGrid strong {
-        display: block;
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 26px;
-        font-weight: 400;
-        line-height: 1.25;
-      }
-
-      .detailsSignup {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-        max-width: 920px;
-        margin-right: auto;
-        margin-left: auto;
-      }
-
-      .detailsSignup .button {
-        background: var(--accent-hover);
-      }
-
-      .texturedQuote {
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-style: italic;
-      }
-
-      .greenText {
-        color: var(--green);
-      }
-
-      .sectionLabel {
-        color: var(--accent);
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0.2em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
       }
 
-      @media (max-width: 860px) {
-        .subscribeForm {
+      .footer p {
+        color: var(--clay);
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      .footerNote {
+        color: var(--muted-clay) !important;
+        font-size: 12px !important;
+      }
+
+      @media (max-width: 940px) {
+        .siteNav {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 18px;
+          padding: 20px 24px;
+        }
+
+        .navLinks {
+          flex-wrap: wrap;
+          gap: 14px 20px;
+        }
+
+        .hero,
+        .splitGrid,
+        .workshopGrid,
+        .topicGrid,
+        .signup .splitGrid {
           grid-template-columns: 1fr;
         }
 
-        .workshopStory,
-        .whoPanel,
-        .promisePanel,
-        .insideWorkshop,
-        .frameworkBand,
-        .takeawaysPanel,
-        .facilitatorBridge,
-        .deeperPathway,
-        .workshopDetailsPanel {
-          padding: 50px 24px;
-        }
-
-        .dashColumns,
-        .clarifyGrid,
-        .takeawaysPanel .takeawayGrid,
-        .workshopDetailsPanel .detailsGrid,
-        .detailsSignup {
-          grid-template-columns: 1fr;
-        }
-
-        .workshopDetailsPanel .detailsGrid p,
-        .workshopDetailsPanel .detailsGrid p:nth-child(2n),
-        .workshopDetailsPanel .detailsGrid p:nth-last-child(-n + 2) {
+        .heroCopy {
           border-right: 0;
-          border-bottom: 1px solid var(--border);
+          border-bottom: 1px solid var(--line);
         }
 
-        .workshopDetailsPanel .detailsGrid p:last-child {
-          border-bottom: 0;
+        .workshopHeader,
+        .pathwayInner,
+        .footerInner {
+          align-items: flex-start;
+          flex-direction: column;
         }
 
-        .clearLetters {
-          display: none;
-        }
-
-        .bridgeQuote {
-          padding-left: 22px;
-        }
-
-        .storyInner h2 {
-          margin-bottom: 28px;
-        }
-
-        .storyLead,
-        .promisePanel p,
-        .frameworkBand p {
-          font-size: 18px;
-          line-height: 1.62;
-        }
-
-        .dashColumns {
-          gap: 14px;
-          margin-top: 30px;
-        }
-
-        .clarifyGrid {
-          margin-top: 32px;
-        }
-
-        .clarifyGrid p {
-          padding: 22px 0;
-        }
-
-        .takeawaysPanel h2,
-        .workshopDetailsPanel h2 {
-          margin-bottom: 34px;
-        }
-
-        .takeawaysPanel .takeawayGrid {
-          gap: 14px;
-        }
-
-        .takeawaysPanel .takeawayGrid p {
-          padding: 24px;
-        }
-
-        .workshopDetailsPanel .detailsGrid p {
-          padding: 24px;
+        .workshopMeta {
+          align-items: flex-start;
         }
       }
 
-      @media (max-width: 520px) {
-        .storyInner h2,
-        .promisePanel h2,
-        .insideWorkshop h2,
-        .takeawaysPanel h2,
-        .workshopDetailsPanel h2 {
-          font-size: 38px;
+      @media (max-width: 640px) {
+        .siteNav,
+        .heroCopy,
+        .thoughtPanel,
+        .darkSplit,
+        .who,
+        .seriesIntro,
+        .featured,
+        .nextWorkshop,
+        .futureTopics,
+        .signup,
+        .pathway,
+        .footer {
+          padding-right: 24px;
+          padding-left: 24px;
         }
 
-        .dashColumns p,
-        .clarifyGrid p {
+        .heroCopy,
+        .thoughtPanel {
+          padding-top: 58px;
+          padding-bottom: 58px;
+        }
+
+        .darkSplit,
+        .who,
+        .seriesIntro,
+        .featured,
+        .signup,
+        .pathway {
+          padding-top: 64px;
+          padding-bottom: 64px;
+        }
+
+        .navLinks .navCta,
+        .button,
+        .signupForm button {
+          width: 100%;
+          text-align: center;
+        }
+
+        h1 {
+          font-size: clamp(42px, 13vw, 56px);
+        }
+
+        .workshopHeader {
+          gap: 26px;
+        }
+
+        .numberItem {
           grid-template-columns: 34px 1fr;
-          gap: 12px;
+          gap: 14px;
         }
 
-        .takeawayNote,
-        .bridgeQuote {
-          font-size: 24px;
-        }
-
-        .workshopStory,
-        .whoPanel,
-        .promisePanel,
-        .insideWorkshop,
-        .frameworkBand,
-        .takeawaysPanel,
-        .facilitatorBridge,
-        .deeperPathway,
-        .workshopDetailsPanel {
-          padding: 44px 18px;
-        }
-
-        .storyQuote,
-        .takeawayNote {
-          margin-top: 32px;
-          padding-top: 26px;
-        }
-
-        .takeawayNote {
-          padding: 24px;
-        }
-
-        .workshopDetailsPanel .detailsGrid strong {
-          font-size: 23px;
+        .topicCard {
+          padding: 30px 24px;
         }
       }
     </style>
   </head>
   <body>
     <nav class="siteNav">
-      <div class="navInner">
-        <a href="./" class="brand">The Confident Clinician</a>
-        <div class="navLinks">
-          <a href="./">Home</a>
-          <a href="./about.html">About</a>
-          <a href="./workshop.html" class="active">Workshops</a>
-          <a href="./program.html">12-Week Program</a>
-          <a href="#interest" class="navCta">Join the Interest List</a>
-        </div>
+      <a href="./" class="brand">The Confident Clinician</a>
+      <div class="navLinks">
+        <a href="./">Home</a>
+        <a href="./about.html">About</a>
+        <a href="./workshop.html" class="active">Workshops</a>
+        <a href="./program.html">12-Week Program</a>
+        <a href="#interest" class="navCta">Join the List</a>
       </div>
     </nav>
 
     <main>
-      <section class="subHero centered">
-        <div class="narrow">
+      <section class="hero" data-screen-label="Hero">
+        <div class="heroCopy">
           <p class="eyebrow">The Confident Clinician Workshops</p>
-          <h1>For the things therapy school did not fully teach you.</h1>
-          <p class="lede center">
-            Short, focused trainings for therapists who are ready to turn everything they have learned into a clearer, steadier way of working.
+          <h1>For the things therapy school<br /><em>didn't fully teach you.</em></h1>
+          <p class="heroLead">
+            Short, focused trainings to help you stop spiraling, stop over-collecting certifications, and start building a clinical voice you can actually trust.
           </p>
-          <div class="thoughtBox">
-            <p>Sometimes it can feel like...</p>
-            <p><em>"Am I doing this right?"</em></p>
-            <p><em>"What do I say next?"</em></p>
-            <p><em>"Should I be using CBT, ACT, DBT, somatic work, inner child work, or something else?"</em></p>
-            <p><em>"Why do I feel so unsure when I technically know what I'm doing?"</em></p>
+          <a href="#interest" class="button primary">Join the Interest List</a>
+        </div>
+
+        <div class="thoughtPanel">
+          <p class="eyebrow">Sound familiar?</p>
+          <div class="thoughtCard">
+            <p>"Am I doing this right?"</p>
           </div>
-          <p class="lede center small">
-            These grounded workshops were created to help you stop spiraling, stop over-consuming trainings, and start building a grounded clinical voice you can actually trust.
+          <div class="thoughtCard">
+            <p>"What do I say next?"</p>
+          </div>
+          <div class="thoughtCard">
+            <p>"Why do I feel so unsure when I technically know what I'm doing?"</p>
+          </div>
+          <div class="thoughtCard">
+            <p>"Should I be using CBT, ACT, DBT, or something else entirely?"</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="darkSplit" data-screen-label="Not Underqualified">
+        <div class="wrap splitGrid">
+          <div>
+            <p class="eyebrow">The Real Problem</p>
+            <h2>You're not underqualified.<br /><em>You're under-supported.</em></h2>
+            <div class="rule"></div>
+          </div>
+          <div>
+            <p class="darkText">
+              You left school with a degree, a diagnosis manual, a few therapy models, and a genuine desire to help people. Nobody handed you a guide for what to actually do when a client shuts down, asks if you've ever been through something similar, or sits in silence for three minutes while you try not to visibly panic.
+            </p>
+            <p class="darkText">
+              The gap isn't your commitment or your intelligence. It's the missing bridge between everything you learned and everything you actually need in that room. That's what these workshops are for.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="who" data-screen-label="Who It's For">
+        <div class="wrap splitGrid">
+          <div>
+            <p class="eyebrow">Who This Is For</p>
+            <h2>The clinician who's still finding their voice.</h2>
+            <p class="whoIntro">
+              Whether you're freshly licensed, still working toward licensure, or a few years in and realizing grad school left some gaps - this is for you.
+            </p>
+          </div>
+          <div class="bulletList">
+            <div class="bulletItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Interns, provisionally licensed clinicians, and newer therapists</p>
+            </div>
+            <div class="bulletItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Clinicians who know the theories but can't always access them naturally in session</p>
+            </div>
+            <div class="bulletItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Therapists who replay sessions in the car and can't quite let them go</p>
+            </div>
+            <div class="bulletItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Clinicians who want their own style - not a copy of their supervisor's</p>
+            </div>
+            <div class="bulletItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Therapists who are tired of collecting trainings that don't actually build confidence</p>
+            </div>
+            <div class="bulletItem">
+              <span class="dot" aria-hidden="true"></span>
+              <p>Anyone beginning to think about niche, messaging, or building a private practice</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="seriesIntro" data-screen-label="The Series">
+        <div class="wrap">
+          <p class="eyebrow">The Workshop Series</p>
+          <h2>A new workshop, every month.</h2>
+          <p class="seriesText">
+            Each 90-minute workshop tackles one specific part of clinical life that nobody explains well enough. Some are live. Some are pre-recorded. All are practical, grounded, and designed to give you something real to take back into the room.
           </p>
-          <form class="subscribeForm" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
-            <input type="hidden" name="_subject" value="The Confident Clinician Workshop Updates Signup" />
+        </div>
+      </section>
+
+      <section class="featured" data-screen-label="Workshop 01">
+        <div class="wrap">
+          <div class="workshopHeader">
+            <div>
+              <div class="badgeRow">
+                <span class="badge">Current Workshop</span>
+                <span class="metaBadge">Pre-recorded - Available August 1</span>
+              </div>
+              <h2>Building Your Clinical Foundation:<br /><em>Finding Your Voice with the CLEAR Process</em></h2>
+            </div>
+            <div class="workshopMeta">
+              <p>90 minutes - Virtual</p>
+              <a href="#interest" class="button primary">Get Early Access</a>
+            </div>
+          </div>
+
+          <div class="workshopGrid">
+            <div>
+              <p class="miniTitle">What You'll Clarify</p>
+              <div class="numberList">
+                <div class="numberItem">
+                  <span>01</span>
+                  <p>Why clinical confidence feels shaky in the beginning - and why that's not a you problem</p>
+                </div>
+                <div class="numberItem">
+                  <span>02</span>
+                  <p>How to understand therapy approaches without drowning in them</p>
+                </div>
+                <div class="numberItem">
+                  <span>03</span>
+                  <p>How to identify your own clinical lens - not just borrow someone else's</p>
+                </div>
+                <div class="numberItem">
+                  <span>04</span>
+                  <p>How to think through "what do I do next?" in session without freezing</p>
+                </div>
+                <div class="numberItem">
+                  <span>05</span>
+                  <p>How to trust your presence, not just your interventions</p>
+                </div>
+                <div class="numberItem">
+                  <span>06</span>
+                  <p>How to stop chasing "perfect therapist" and start becoming a clearer one</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="miniTitle">You'll Walk Away With</p>
+              <div class="takeawayStack">
+                <div class="takeawayCard">
+                  <span class="dot" aria-hidden="true"></span>
+                  <p>A clearer understanding of why you feel stuck - and what to actually do about it</p>
+                </div>
+                <div class="takeawayCard">
+                  <span class="dot" aria-hidden="true"></span>
+                  <p>Real language for describing your therapeutic style to clients and colleagues</p>
+                </div>
+                <div class="takeawayCard">
+                  <span class="dot" aria-hidden="true"></span>
+                  <p>A simple way to reflect on sessions without spiraling into self-doubt</p>
+                </div>
+                <div class="takeawayCard">
+                  <span class="dot" aria-hidden="true"></span>
+                  <p>Permission to be human in the therapy room - not just technically correct</p>
+                </div>
+              </div>
+              <div class="noteBox">
+                <p>You won't leave knowing every intervention for every client. You'll leave knowing how to start trusting yourself.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="nextWorkshop" data-screen-label="Workshop 02">
+        <div class="wrap splitGrid">
+          <div>
+            <div class="nextMeta">
+              <span class="badge">Next Workshop</span>
+              <span class="metaBadge">Coming Soon</span>
+            </div>
+            <h2>Burnout Prevention Beyond Self-Care</h2>
+            <div class="rule"></div>
+            <p class="darkText">90 minutes - Virtual - Date TBA</p>
+          </div>
+          <div>
+            <p class="darkText">
+              "Do more yoga. Take a bath. Set boundaries." You've heard it all - and you're still exhausted. This workshop goes past the surface to the real reasons newer clinicians burn out: absorbing too much, holding too little, and never being taught how to carry the work sustainably.
+            </p>
+            <a href="#interest" class="button outlineLight">Get Notified</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="futureTopics" data-screen-label="Future Topics">
+        <div class="wrap">
+          <p class="eyebrow">On the Horizon</p>
+          <h2>New workshops released monthly.</h2>
+          <div class="topicGrid">
+            <article class="topicCard">
+              <h3>What to Do When a Client Goes Silent</h3>
+              <p>Silence in session doesn't have to feel like failure. Learn how to read it, respond to it, and use it - without filling every pause with your own anxiety.</p>
+            </article>
+            <article class="topicCard">
+              <h3>Boundaries That Actually Hold</h3>
+              <p>Late cancellations, fee questions, session overruns, the client who texts at 9pm. How to hold limits with warmth and without guilt.</p>
+            </article>
+            <article class="topicCard">
+              <h3>Documentation Without the Dread</h3>
+              <p>Stop rewriting the same note four times. A grounded, practical approach to progress notes that captures the session without consuming your evening.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="signup" id="interest" data-screen-label="Sign Up">
+        <div class="wrap splitGrid">
+          <div>
+            <p class="eyebrow">Stay in the Loop</p>
+            <h2>Be the first to know when a new workshop drops.</h2>
+            <p class="signupText">
+              New workshops release monthly. Get early access links, dates, and pricing straight to your inbox - before they go public. No spam. No pressure. Just a heads-up when something new is ready.
+            </p>
+          </div>
+          <form class="signupForm" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
+            <input type="hidden" name="_subject" value="The Confident Clinician Workshop Interest" />
             <input type="hidden" name="_captcha" value="false" />
             <label>
               <span>Name</span>
-              <input type="text" name="name" autocomplete="name" placeholder="Your name" />
+              <input type="text" name="name" placeholder="Your name" autocomplete="name" />
             </label>
             <label>
               <span>Email</span>
-              <input type="email" name="email" autocomplete="email" placeholder="Your email" required />
+              <input type="email" name="email" placeholder="Your email" autocomplete="email" required />
             </label>
             <button type="submit" class="button primary">Join the Workshop List</button>
           </form>
         </div>
       </section>
 
-      <section class="workshopStory">
-        <div class="storyInner">
-          <p class="eyebrow greenText">The Real Problem</p>
-          <h2>You're not underqualified.<br />You're under-supported.</h2>
-          <p class="storyLead">
-            So many newer clinicians leave school with a degree, a diagnosis manual, a few therapy models, and a deep desire to help people - but not always a clear sense of how to actually be themselves in the room. You may know the textbook version of therapy, but still feel unsure about:
-          </p>
-          <div class="dashColumns">
-            <p>How to choose an intervention in the moment</p>
-            <p>How to stop comparing yourself to more seasoned clinicians</p>
-            <p>How to structure sessions without sounding robotic</p>
-            <p>How to trust your instincts without feeling like you're "making it up"</p>
-            <p>How to blend different therapy styles ethically</p>
-            <p>How to market yourself without feeling fake, pushy, or outside your values</p>
-            <p>How to explain your approach to clients</p>
-          </div>
-          <p class="storyQuote">This workshop is here to help you breathe, zoom out, and start building the kind of confidence that does not come from knowing everything - but from having a clearer way to think, respond, and show up.</p>
-        </div>
-      </section>
-
-      <section class="whoPanel">
-        <div class="wrap splitTwo">
-          <div>
-            <p class="eyebrow">Who This Is For</p>
-            <h2>This is for the clinician who is still finding their voice.</h2>
-            <div class="rule"></div>
-          </div>
-          <div>
-            <ul class="iconList sparkle">
-              <li>Interns, provisionally licensed clinicians, and newer therapists</li>
-              <li>Clinicians who feel like they learned theories but not how to apply them naturally</li>
-              <li>Therapists who feel anxious before or after sessions</li>
-              <li>Clinicians who second-guess their interventions</li>
-              <li>Therapists who want to find their style instead of copying someone else's</li>
-              <li>Clinicians who want to feel more grounded, ethical, and human in their work</li>
-              <li>Therapists beginning to think about their niche, messaging, or private practice identity</li>
-              <li>Clinicians who are tired of collecting trainings but still not feeling confident</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="promisePanel">
-        <div class="wrap">
-          <p class="eyebrow">The Promise</p>
-          <h2>Leave with more clarity, more language, and a stronger sense of yourself as a clinician.</h2>
-          <div class="rule"></div>
-          <p>The goal of this workshop is not to make you a perfect therapist. The goal is to help you feel less scattered and more grounded.</p>
-          <p>Inside the workshop, we'll look at what actually builds clinician confidence: not just more information, but clearer thinking, stronger clinical language, embodied presence, and a deeper understanding of how you want to work.</p>
-        </div>
-      </section>
-
-      <section class="insideWorkshop">
-        <div class="wrap">
-          <div class="sectionHeading">
-            <p class="eyebrow">Inside the Workshop</p>
-            <h2>What you'll begin to clarify</h2>
-          </div>
-          <div class="clarifyGrid">
-            <p><span>01</span>Why clinician confidence often feels shaky in the beginning</p>
-            <p><span>02</span>How to understand different therapy approaches without drowning in them</p>
-            <p><span>03</span>How to start identifying your own clinical lens</p>
-            <p><span>04</span>How to think through "what do I do next?" in session</p>
-            <p><span>05</span>How to sound more grounded when explaining your work</p>
-            <p><span>06</span>How to trust your presence, not just your interventions</p>
-            <p><span>07</span>How to connect your clinical style to ethical marketing and aligned visibility</p>
-            <p><span>08</span>How to stop trying to become "the perfect therapist" and start becoming a clearer one</p>
-          </div>
-          <p class="centerNote texturedQuote">A practical, reflective, and grounding space - not another overwhelming training that leaves you with 100 things to memorize.</p>
-        </div>
-      </section>
-
-      <section class="frameworkBand">
-        <div class="wrap">
-          <p class="eyebrow">The Framework</p>
-          <h2>A clearer way to grow into your clinical voice</h2>
-          <p>This workshop introduces the foundation of the <strong>CLEAR process</strong> - a professional development framework designed to help newer clinicians move from scattered, anxious, and unsure to more grounded, intentional, and self-trusting.</p>
-          <p>We won't be cramming every therapy model into one workshop. Instead, we'll focus on helping you create a clearer internal map for how you think, speak, and show up as a clinician.</p>
-          <p class="scriptLine">Because confidence is not just about learning more. It's about knowing how to use what you already know.</p>
-        </div>
-        <div class="clearLetters" aria-hidden="true">
-          <span>C</span><span>L</span><span>E</span><span>A</span><span>R</span>
-        </div>
-      </section>
-
-      <section class="takeawaysPanel">
-        <div class="wrap">
-          <p class="eyebrow">Your Takeaways</p>
-          <h2>By the end of the workshop,<br />you'll walk away with:</h2>
-          <div class="takeawayGrid">
-            <p>A clearer understanding of why you feel stuck or unsure</p>
-            <p>Language to begin describing your therapeutic style</p>
-            <p>A more grounded way to think about your clinical identity</p>
-            <p>A simple way to reflect on sessions without spiraling</p>
-            <p>More permission to be human in the therapy room</p>
-            <p>A better sense of which therapy approaches actually feel aligned for you</p>
-            <p>A starting point for ethical, authentic clinical messaging</p>
-            <p>A next-step path if you want deeper support</p>
-          </div>
-          <p class="takeawayNote">You will not walk away knowing every intervention for every client. You will walk away with more clarity around how to begin trusting yourself.</p>
-        </div>
-      </section>
-
-      <section class="facilitatorBridge">
-        <div class="storyInner">
-          <p class="storyLead">Over the years, I've learned that many newer clinicians are not lacking passion, intelligence, or care. They're lacking a bridge.</p>
-          <p class="bridgeQuote">A bridge between theory and real sessions.<br />A bridge between training and confidence.<br />A bridge between "I know the information" and "I know how to be with this person in front of me."</p>
-          <p class="storyLead">My work blends clinical clarity, nervous system awareness, self-trust, identity, and embodied presence - because the therapist is not separate from the work.</p>
-        </div>
-      </section>
-
-      <section class="workshopDetailsPanel" id="interest">
-        <div class="wrap">
-          <p class="eyebrow">The Details</p>
-          <h2>Workshop Details</h2>
-          <div class="detailsGrid">
-            <p><span>Date</span><strong>Coming Soon</strong></p>
-            <p><span>Location</span><strong>Virtual</strong></p>
-            <p><span>Length</span><strong>90 - 120 Minutes</strong></p>
-            <p><span>Investment</span><strong>Coming Soon</strong></p>
-            <p><span>Format</span><strong>Teaching, reflection, guided prompts &amp; practical application</strong></p>
-            <p><span>Spots</span><strong>Limited to keep the space personal and supportive</strong></p>
-          </div>
-          <form class="subscribeForm detailsSignup" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
-            <input type="hidden" name="_subject" value="The Confident Clinician Workshop Details Signup" />
-            <input type="hidden" name="_captcha" value="false" />
-            <label>
-              <span>Name</span>
-              <input type="text" name="name" autocomplete="name" placeholder="Your name" />
-            </label>
-            <label>
-              <span>Email</span>
-              <input type="email" name="email" autocomplete="email" placeholder="Your email" required />
-            </label>
-            <button type="submit" class="button primary">Get Workshop Details First</button>
-          </form>
-        </div>
-      </section>
-
-      <section class="deeperPathway">
-        <div class="wrap">
-          <div class="sectionHeading">
+      <section class="pathway" data-screen-label="12-Week Pathway">
+        <div class="wrap pathwayInner">
+          <div class="pathwayText">
             <p class="eyebrow">What Comes Next</p>
-            <h2>The 12-week program is where this work gets practiced, personalized, and integrated.</h2>
-            <p>If the workshop helps you name what has felt scattered, the 12-week program gives you a longer space to build the way you actually want to think, speak, market, set boundaries, and show up as a clinician.</p>
+            <h2>Ready to go deeper?</h2>
+            <p class="darkText">
+              If the workshop helps you name what's felt scattered, the 12-week program gives you the space to actually build the clinical foundation - your lens, your language, your boundaries, your self-trust - that makes this work sustainable.
+            </p>
           </div>
-          <div class="programGrid">
-            <article>
-              <h3>Session Clarity</h3>
-              <p>Practice thinking through real clinical moments without reaching for a script, over-explaining, or abandoning your own judgment.</p>
-            </article>
-            <article>
-              <h3>Your Clinical Lens</h3>
-              <p>Sort through the models, trainings, instincts, and lived experience that shape your work so your approach starts to sound like you.</p>
-            </article>
-            <article>
-              <h3>Boundaries &amp; Repair</h3>
-              <p>Work with endings, cancellations, feedback, client discomfort, and the moments where warmth and structure both matter.</p>
-            </article>
-            <article>
-              <h3>Reflection Without Spiraling</h3>
-              <p>Build a way to review sessions, notes, consultation, and hard moments without turning every uncertainty into proof you are failing.</p>
-            </article>
-            <article>
-              <h3>Ethical Visibility</h3>
-              <p>Connect your clinical identity to messaging, niche, and marketing language that feels grounded, honest, and aligned with your values.</p>
-            </article>
-            <article>
-              <h3>Sustainable Confidence</h3>
-              <p>Create practices for carrying the work with more steadiness, more self-trust, and less pressure to become a perfect therapist.</p>
-            </article>
-          </div>
-          <p class="centerNote">The deeper program is for clinicians who want more than reassurance. It is for building a clinical voice you can keep growing into.</p>
-          <div class="centeredText">
-            <a href="./program.html" class="button secondary">View the 12-Week Program</a>
-          </div>
+          <a href="./program.html" class="button outlineLight">View the 12-Week Program</a>
         </div>
       </section>
-
     </main>
 
     <footer class="footer">
       <div class="footerInner">
         <div>
           <p class="footerBrand">The Confident Clinician</p>
-          <p>© 2024 Tiffany McGilloway, LPC · Not a substitute for clinical supervision</p>
+          <p>Created by Tiffany McGilloway, LPC - Founder of The Embodied Self</p>
         </div>
+        <p class="footerNote">Not a substitute for clinical supervision</p>
       </div>
     </footer>
   </body>
