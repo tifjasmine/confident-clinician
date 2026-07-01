@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms and Conditions | The Confident Clinician</title>
+    <meta
+      name="description"
+      content="Terms and conditions for The Confident Clinician website, workshops, programs, digital materials, and related services."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --cream: #faf7f3;
+        --cream-deep: #f0e9e1;
+        --line: #ede4dc;
+        --line-strong: #e8ddd4;
+        --dark: #3d1f0d;
+        --brown: #5c3520;
+        --accent: #b5522a;
+        --clay: #c8a898;
+        --muted-clay: #9c7060;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--cream);
+        color: var(--dark);
+        font-family: "Jost", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .siteNav {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        background: var(--cream);
+        padding: 22px 52px;
+      }
+
+      .brand {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .navLinks {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .navLinks a {
+        color: var(--brown);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .navLinks .navCta {
+        border-radius: 2px;
+        background: var(--accent);
+        color: var(--cream);
+        padding: 10px 22px;
+        font-weight: 600;
+      }
+
+      .termsHero {
+        background: var(--cream-deep);
+        border-bottom: 1px solid var(--line);
+        padding: 88px 52px 76px;
+      }
+
+      .termsWrap {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+
+      .eyebrow {
+        margin-bottom: 22px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        line-height: 1.3;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2 {
+        color: var(--dark);
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 400;
+        text-wrap: balance;
+      }
+
+      h1 {
+        max-width: 820px;
+        margin-bottom: 24px;
+        font-size: clamp(46px, 6vw, 76px);
+        font-weight: 500;
+        line-height: 1.04;
+      }
+
+      .heroLead {
+        max-width: 720px;
+        color: var(--brown);
+        font-size: 17px;
+        font-weight: 300;
+        line-height: 1.85;
+      }
+
+      .updated {
+        margin-top: 24px;
+        color: var(--muted-clay);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .termsBody {
+        background: var(--cream);
+        padding: 84px 52px;
+      }
+
+      .termsIntro {
+        border-left: 2px solid var(--accent);
+        background: var(--cream-deep);
+        margin-bottom: 52px;
+        padding: 28px 32px;
+      }
+
+      .termsIntro p,
+      .termsSection p,
+      .termsSection li {
+        color: var(--brown);
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.85;
+      }
+
+      .termsSection {
+        border-top: 1px solid var(--line-strong);
+        padding: 36px 0;
+      }
+
+      .termsSection h2 {
+        margin-bottom: 16px;
+        font-size: clamp(28px, 3vw, 38px);
+        line-height: 1.15;
+      }
+
+      .termsSection p + p {
+        margin-top: 14px;
+      }
+
+      .termsSection ul {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+        padding-left: 22px;
+      }
+
+      .termsSection strong {
+        color: var(--dark);
+        font-weight: 500;
+      }
+
+      .contactBox {
+        border: 1px solid var(--line-strong);
+        background: var(--cream-deep);
+        margin-top: 44px;
+        padding: 32px;
+      }
+
+      .contactBox a {
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      .footer {
+        border-top: 1px solid rgba(200, 168, 152, 0.15);
+        background: var(--dark);
+        padding: 44px 52px;
+      }
+
+      .footerInner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .footer p,
+      .footer a {
+        color: var(--clay);
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      .footerBrand {
+        margin-bottom: 6px;
+        color: var(--cream) !important;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 17px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .footerLinks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: flex-end;
+      }
+
+      .footerLinks a {
+        color: var(--muted-clay);
+        font-size: 12px;
+      }
+
+      @media (max-width: 860px) {
+        .siteNav,
+        .footerInner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .siteNav,
+        .termsHero,
+        .termsBody,
+        .footer {
+          padding-right: 24px;
+          padding-left: 24px;
+        }
+
+        .navLinks {
+          flex-wrap: wrap;
+          gap: 14px 20px;
+        }
+
+        .termsHero,
+        .termsBody {
+          padding-top: 64px;
+          padding-bottom: 64px;
+        }
+
+        .footerLinks {
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="siteNav">
+      <a href="./" class="brand">The Confident Clinician</a>
+      <div class="navLinks">
+        <a href="./">Home</a>
+        <a href="./about.html">About</a>
+        <a href="./workshop.html">Workshops</a>
+        <a href="./program.html">12-Week Program</a>
+        <a href="./workshop.html" class="navCta">Explore Workshops</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="termsHero">
+        <div class="termsWrap">
+          <p class="eyebrow">Terms and Conditions</p>
+          <h1>Clear expectations for using this site and joining this work.</h1>
+          <p class="heroLead">
+            These terms explain what The Confident Clinician provides, what it does not provide, and what you agree to when you use this website, join a workshop, download a resource, submit a form, or participate in a paid or free offering.
+          </p>
+          <p class="updated">Last updated: July 1, 2026</p>
+        </div>
+      </section>
+
+      <section class="termsBody">
+        <div class="termsWrap">
+          <div class="termsIntro">
+            <p>
+              Please read these Terms and Conditions carefully. By accessing this website or purchasing, registering for, downloading, or participating in any The Confident Clinician offering, you agree to these terms. If you do not agree, please do not use the website or participate in the offerings.
+            </p>
+          </div>
+
+          <section class="termsSection">
+            <h2>1. Who We Are</h2>
+            <p>
+              The Confident Clinician provides professional development, workshops, educational resources, and related support for therapists, interns, provisionally licensed clinicians, and early-career mental health professionals. The Confident Clinician is created by Tiffany McGilloway, LPC.
+            </p>
+            <p>
+              In these terms, "The Confident Clinician," "we," "us," and "our" refer to this website, brand, programs, workshops, resources, and related communications. "You" refers to any person who accesses the website, submits information, purchases an offering, joins a waitlist, downloads a resource, or participates in a program or workshop.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>2. Educational Use Only</h2>
+            <p>
+              All content provided through The Confident Clinician is for general educational and professional development purposes only. This includes website copy, emails, workshops, programs, videos, worksheets, templates, examples, scripts, demonstrations, consultation-style discussions, and any other materials.
+            </p>
+            <p>
+              The content is intended to support reflection, skill-building, clinical confidence, and professional growth. It is not a substitute for clinical supervision, legal advice, ethical consultation, mental health treatment, crisis support, board guidance, tax advice, financial advice, or individualized professional direction.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>3. Not Clinical Supervision, Therapy, or Legal Advice</h2>
+            <p>
+              Participation in any The Confident Clinician offering does not create a therapist-client relationship, supervisor-supervisee relationship, attorney-client relationship, consultant-client relationship, or any other licensed professional relationship.
+            </p>
+            <p>
+              You are responsible for your own clinical judgment, ethical decision-making, scope of practice, documentation, consultation, supervision requirements, licensing board requirements, employment obligations, and applicable laws. Always seek appropriate supervision, consultation, legal counsel, tax support, or emergency support when needed.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>4. Emergencies and Client Care</h2>
+            <p>
+              This website and its offerings are not crisis services and are not monitored for emergencies. Do not use this website, forms, email, workshops, or programs to request urgent help for yourself, a client, or another person.
+            </p>
+            <p>
+              If you or someone else may be in immediate danger, contact emergency services, call 911 in the United States, contact a local crisis line, or use the crisis procedures required by your workplace, license, supervisor, or jurisdiction.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>5. Your Professional Responsibility</h2>
+            <p>
+              You agree that you remain fully responsible for how you apply any ideas, scripts, examples, frameworks, or strategies discussed through The Confident Clinician. Clinical examples are educational and may not fit every client, setting, license, state, board, employer, or situation.
+            </p>
+            <ul>
+              <li>Use your own clinical judgment before applying anything with clients.</li>
+              <li>Consult with a supervisor, board-approved supervisor, attorney, accountant, risk management professional, or ethics consultant when appropriate.</li>
+              <li>Follow your licensing board, professional code of ethics, workplace policies, informed consent documents, and local laws.</li>
+              <li>Do not share identifying client information unless you are explicitly in a setting where it is legally and ethically appropriate to do so.</li>
+            </ul>
+          </section>
+
+          <section class="termsSection">
+            <h2>6. Confidentiality and Community Spaces</h2>
+            <p>
+              We value privacy and care. If an offering includes a live meeting, group space, Q&amp;A, chat, community platform, email reply, or other interactive element, you agree to protect the privacy of others and avoid sharing identifying client information.
+            </p>
+            <p>
+              While we may set expectations for respectful participation, we cannot guarantee that other participants will keep information confidential. Please participate thoughtfully and avoid sharing anything you would not want repeated outside the space.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>7. Payments, Pricing, and Access</h2>
+            <p>
+              Prices, payment options, bonuses, access periods, start dates, and included materials may change at any time. The details listed on the checkout page, registration page, or written offer at the time of purchase control your purchase.
+            </p>
+            <p>
+              You agree to provide accurate billing and contact information. If a payment fails, access to the purchased offering may be paused, limited, or removed until payment is resolved. If payment plans are offered, you remain responsible for completing the full payment plan unless a written exception is made.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>8. Refunds, Cancellations, and Transfers</h2>
+            <p>
+              Unless a specific refund policy is clearly stated on the sales or registration page for a particular offer, purchases are final and non-refundable. This includes workshops, digital resources, replays, courses, programs, and downloadable materials.
+            </p>
+            <p>
+              If an event is canceled by The Confident Clinician, we may offer a refund, transfer, replay access, credit, or rescheduled date, depending on the nature of the offering. Access to programs, workshops, or resources may not be transferred, shared, resold, or assigned to another person without written permission.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>9. Intellectual Property</h2>
+            <p>
+              All website content, program materials, workshop materials, videos, PDFs, worksheets, templates, scripts, frameworks, copy, graphics, branding, images, and other resources are owned by The Confident Clinician or used with permission unless otherwise stated.
+            </p>
+            <p>
+              Your purchase or registration gives you a personal, non-transferable, limited license to access and use the materials for your own learning and professional development. You may not copy, reproduce, distribute, teach, sell, resell, upload, record, publish, adapt, or share the materials without written permission.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>10. Respectful Use and Prohibited Conduct</h2>
+            <p>
+              You agree to use this website and any related spaces respectfully and lawfully. We may remove access, refuse service, or end participation if conduct is disruptive, unsafe, harassing, discriminatory, threatening, unlawful, unethical, or inconsistent with the purpose of the space.
+            </p>
+            <ul>
+              <li>Do not share login links, downloads, replays, or purchased materials with others.</li>
+              <li>Do not use the materials to train, teach, or certify others without written permission.</li>
+              <li>Do not submit false, misleading, or unlawful information through forms or email.</li>
+              <li>Do not attempt to interfere with the website, forms, payment systems, or delivery platforms.</li>
+            </ul>
+          </section>
+
+          <section class="termsSection">
+            <h2>11. Results Are Not Guaranteed</h2>
+            <p>
+              The Confident Clinician is designed to support learning, reflection, clinical clarity, confidence, and professional development. However, we cannot guarantee specific outcomes, clinical results, income, client outcomes, licensure outcomes, employment outcomes, business outcomes, or personal results.
+            </p>
+            <p>
+              Your results depend on many factors, including your training, supervision, license, setting, effort, context, client population, jurisdiction, employer, and how you choose to apply the material.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>12. Testimonials and Examples</h2>
+            <p>
+              Testimonials, stories, examples, or hypothetical scenarios are provided for illustration and education. They do not promise or guarantee that you will have the same experience. Client or clinician examples may be changed, combined, fictionalized, or de-identified to protect privacy.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>13. Third-Party Links and Tools</h2>
+            <p>
+              This website may link to or use third-party platforms for forms, email, scheduling, payment processing, video hosting, downloads, analytics, website hosting, or other services. We are not responsible for the content, policies, availability, security, or practices of third-party websites or tools.
+            </p>
+            <p>
+              When you use a third-party link or platform, your use may be governed by that third party's own terms and privacy policies.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>14. Website Availability and Errors</h2>
+            <p>
+              We try to keep the website and materials accurate, clear, and available, but we do not guarantee that the website will always be uninterrupted, error-free, secure, current, or complete. We may update, remove, revise, pause, or discontinue any part of the website or offerings at any time.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>15. Limitation of Liability</h2>
+            <p>
+              To the fullest extent allowed by law, The Confident Clinician, Tiffany McGilloway, and any related contractors, collaborators, or service providers are not liable for any direct, indirect, incidental, consequential, special, punitive, professional, clinical, financial, legal, ethical, licensing, employment, business, or personal damages that may arise from your use of the website, offerings, materials, or related communications.
+            </p>
+            <p>
+              You agree that your use of the website and offerings is at your own discretion and risk.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>16. Indemnification</h2>
+            <p>
+              You agree to hold harmless and indemnify The Confident Clinician, Tiffany McGilloway, and any related contractors, collaborators, or service providers from claims, damages, losses, liabilities, costs, or expenses that arise from your use of the website or offerings, your violation of these terms, your professional decisions, or your misuse of the materials.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>17. Privacy</h2>
+            <p>
+              When you submit your name, email, payment details, or other information, that information may be used to provide access, send updates, process payments, respond to inquiries, and deliver the services or materials you requested. We do not intentionally sell personal information.
+            </p>
+            <p>
+              No online system is perfectly secure. Please use discretion when submitting information through forms, email, checkout pages, or third-party platforms.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>18. Changes to These Terms</h2>
+            <p>
+              We may update these Terms and Conditions from time to time. Updates are effective when posted on this page unless otherwise stated. Your continued use of the website or offerings after changes are posted means you accept the updated terms.
+            </p>
+          </section>
+
+          <section class="termsSection">
+            <h2>19. Governing Law</h2>
+            <p>
+              These terms are governed by the laws of the Commonwealth of Pennsylvania, without regard to conflict of law principles, unless another jurisdiction is required by law.
+            </p>
+          </section>
+
+          <div class="contactBox">
+            <p>
+              Questions about these terms? Contact <a href="mailto:admin@theconfidentclinician.me">admin@theconfidentclinician.me</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footerInner">
+        <div>
+          <p class="footerBrand">The Confident Clinician</p>
+          <p>Created by Tiffany McGilloway, LPC - Founder of The Embodied Self</p>
+        </div>
+        <div class="footerLinks">
+          <a href="./terms.html">Terms &amp; Conditions</a>
+          <span style="color: #9C7060; font-size: 12px;">Not a substitute for clinical supervision</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
