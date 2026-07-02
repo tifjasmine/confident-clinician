@@ -20,10 +20,7 @@
     #about-hero { display: grid; grid-template-columns: 55fr 45fr; min-height: 500px; background: #FAF7F3; }
     #about-hero-left { display: flex; flex-direction: column; justify-content: center; padding: 72px 56px 72px 52px; border-right: 1px solid #EDE4DC; }
     #about-hero-right { display: flex; align-items: center; justify-content: center; background: #F0E9E1; padding: 52px; }
-    #about-headshot,
-    #tiffany-action-photo { width: 100%; object-fit: cover; display: block; }
-    #about-headshot { max-width: 340px; height: 420px; border-radius: 4px; }
-    #tiffany-action-photo { height: 280px; }
+    #about-headshot { width: 100%; max-width: 340px; height: 420px; object-fit: cover; border-radius: 4px; display: block; }
 
     #real-story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: end; margin-bottom: 40px; }
     #training-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
@@ -109,121 +106,33 @@
 <section id="training-section" data-screen-label="Training" style="background: #FAF7F3; padding: 78px 52px;">
   <div style="max-width: 1060px; margin: 0 auto;">
     <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">Training and Background</p>
-    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.15; color: #3D1F0D; margin-bottom: 20px;">The license, the background, and a few fun facts.</h2>
+    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.15; color: #3D1F0D; margin-bottom: 20px;">Not your typical clinician bio<br>(but still very much a real one).</h2>
     <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 760px; margin-bottom: 40px;">Yes, I have the degree and the license. I also do aerial arts on the weekends. Here's the full picture.</p>
 
-    <div id="training-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px;">
-
-      <!-- Left column: two stacked cards -->
-      <div style="display: flex; flex-direction: column; gap: 2px;">
-        <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; gap: 16px;">
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Clinical foundation</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">I am a Licensed Professional Counselor with a Master of Science degree in Mental Health Counseling and years of experience supporting adults, children, teens, and families across a range of mental health settings.</p>
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A;">Psychotherapy</p>
+    <div id="training-grid">
+      <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px;">
+        <div>
+          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D; margin-bottom: 16px;">The clinical part</h3>
+          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">MS in Mental Health Counseling. LPC. Years of experience in crisis work, higher levels of care, schools, community mental health, and private practice — with kids, teens, adults, and families across a wide range of presentations.</p>
         </div>
-        <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; gap: 16px;">
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Mind-body training</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">My background includes yoga, therapeutic yoga training, mindfulness, movement-based practices, and somatic awareness. I often help clients notice how emotions, stress, and old patterns live in the body.</p>
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A;">Embodiment</p>
-        </div>
+        <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-top: 32px;">Psychotherapy</p>
       </div>
-
-      <!-- Right column: photo + movement card -->
-      <div style="display: flex; flex-direction: column; gap: 2px;">
-        <img id="tiffany-action-photo" src="./tiffany-wright-headshot-web.jpg" alt="Tiffany McGilloway" />
-        <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; gap: 16px;">
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Creative movement</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">My movement background includes cheerleading, partner dance, and circus-inspired practices such as handstands, contortion, partner acrobatics, and aerial arts.</p>
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A;">Movement</p>
+      <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px; border-left: 2px solid #FAF7F3; border-right: 2px solid #FAF7F3;">
+        <div>
+          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D; margin-bottom: 16px;">The body part</h3>
+          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Background in yoga, yoga therapy, mindfulness, movement-based practices, and somatic awareness. This training is woven into everything. It actively shapes how I understand nervous system responses, emotional patterns, and what it means to truly settle into a session — for clinicians and clients alike.</p>
         </div>
+        <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-top: 32px;">Embodiment</p>
       </div>
-
+      <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px;">
+        <div>
+          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D; margin-bottom: 16px;">The unexpected part</h3>
+          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">My movement background includes cheerleading, partner dance, and circus-inspired practices such as handstands, contortion, partner acrobatics, and aerial arts. Yes, really. It keeps the work — and the person doing it — alive.</p>
+        </div>
+        <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-top: 32px;">Movement</p>
+      </div>
     </div>
   </div>
-</section>
-
-<!-- THE HUMAN PART -->
-<section data-screen-label="The Human Part" style="background: #F0E9E1; padding: 78px 0 0 0;">
-
-  <!-- Header row -->
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; padding: 0 52px 48px; max-width: 1200px; margin: 0 auto;">
-    <div>
-      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">Get to Know Me <span style="display: inline-block; width: 40px; height: 1.5px; background: #B5522A; vertical-align: middle;"></span></p>
-      <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 6vw, 76px); font-weight: 400; line-height: 1.05; color: #3D1F0D;">The human part<br>belongs here <em style="font-style: italic; color: #B5522A;">too.</em></h2>
-    </div>
-    <div style="background: #FAF7F3; padding: 36px 40px; align-self: stretch; display: flex; align-items: center;">
-      <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #5C3520;">Therapy is professional, but I believe it should also feel deeply human. You are not sitting across from a blank wall — you are working with a real person who brings warmth, creativity, groundedness, curiosity, reflection, and a little playfulness into the room. My hope is that this helps therapy feel honest and supportive, while still leaving space for depth, movement, self-discovery, and the kind of healing that helps you come home to yourself.</p>
-    </div>
-  </div>
-
-    <!-- Carousel wrapper -->
-    <div style="position: relative; overflow: hidden; margin: 0 -52px;">
-      <!-- Track -->
-      <div id="gtkm-track" style="display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; cursor: grab; align-items: stretch; padding: 0 52px;">
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Inner Child Joy</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">What my inner child loves</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Being upside down! Handstands, acrobatics, contortion, flying through the air with aerials, and dancing — especially partner dancing like Bachata and Brazilian Zouk.</p>
-        </div>
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Life Outside Therapy</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">How I spend my free time</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Being a mommy to two beautiful little humans, growing as a woman, partner, therapist, and business owner, creating whenever I can, and learning constantly. Honestly, learning might be one of my favorite hobbies.</p>
-        </div>
-        <div style="background: #3D1F0D; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #C8A898;">What I Wish More Women Knew</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.3; color: #FAF7F3; font-style: italic;">You do not have to earn rest.</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #C8A898;">You do not have to prove your worthiness or carry everything alone. Your enoughness is not something you achieve. You are allowed to choose yourself without apology, rest without guilt, and love yourself without permission.</p>
-        </div>
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Places That Shaped Me</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">Countries I have traveled to</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Indonesia, Thailand, Jamaica, Spain, Italy, France, the UK, Mexico, China, Malaysia, the Bahamas — and counting. Thailand was especially meaningful; I spent five months there deepening my relationship with healing, movement, and myself.</p>
-        </div>
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Travel Lessons</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">What traveling has taught me</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Happiness is not hidden in faraway places. It is something you carry with you. You can find joy with very little, peace in unexpected moments, and clarity when you finally slow down. The world has taught me that life is choreography.</p>
-        </div>
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Another Lifetime, Same Calling</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">If therapy were not my career</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">I would still find some way to teach, heal, and perform. I started teaching movement in high school — gymnastics, acrobatics, yoga, dance — and I never really stopped. I love the joy of telling a story without words.</p>
-        </div>
-        <div style="background: #3D1F0D; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #C8A898;">A Lesson Life Keeps Teaching Me</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.3; color: #FAF7F3; font-style: italic;">Peace is something I choose.</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #C8A898;">Life keeps reminding me that I always have the option to respond differently, breathe deeper, and come back to myself before reaching for anything outside of me.</p>
-        </div>
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Healing Favorite</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">My most-used app for healing</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Insight Timer — my favorite meditation app, hands down, and it is free. Simple practices for grounding, reflection, breath, sleep, and returning to myself.</p>
-        </div>
-        <div style="background: #FAF7F3; padding: 38px 32px; display: flex; flex-direction: column; gap: 18px; width: calc((100vw - 136px) / 3.15); min-width: calc((100vw - 136px) / 3.15); flex-shrink: 0; scroll-snap-align: start; min-height: 390px;">
-          <p style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #B5522A;">Learn About My Journey</p>
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; color: #3D1F0D;">The person sitting across from you has a story too.</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">My journey was shaped by therapy, movement, travel, motherhood, creativity, and self-love — and all of it shapes how I show up in this work.</p>
-        </div>
-      </div>
-    </div>
-      <!-- Scroll indicator -->
-      <div style="height: 3px; background: #E8DDD4; margin-top: 0;">
-        <div id="gtkm-bar" style="height: 3px; background: #B5522A; width: 33%; transition: width 0.2s;"></div>
-      </div>
-      <script>
-        (function(){
-          var track = document.getElementById('gtkm-track');
-          var bar = document.getElementById('gtkm-bar');
-          if(track && bar){
-            track.addEventListener('scroll', function(){
-              var pct = track.scrollLeft / (track.scrollWidth - track.clientWidth);
-              bar.style.width = (33 + pct * 67) + '%';
-            });
-          }
-        })();
-      </script>
-  
 </section>
 
 <!-- THE EMBODIED SELF -->
