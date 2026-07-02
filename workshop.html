@@ -1,1025 +1,336 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Confident Clinician Workshops</title>
-    <meta
-      name="description"
-      content="Short, focused workshops for newer therapists building clinical confidence, language, and sustainable practice."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --cream: #faf7f3;
-        --cream-deep: #f0e9e1;
-        --line: #ede4dc;
-        --line-strong: #ddd0c4;
-        --dark: #3d1f0d;
-        --brown: #5c3520;
-        --accent: #b5522a;
-        --clay: #c8a898;
-        --muted-clay: #9c7060;
-      }
-
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        background: var(--cream);
-        color: var(--dark);
-        font-family: "Jost", sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      h1,
-      h2,
-      h3 {
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-weight: 400;
-        text-wrap: balance;
-      }
-
-      em {
-        font-style: italic;
-      }
-
-      .siteNav {
-        position: relative;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid var(--line);
-        background: var(--cream);
-        padding: 22px 52px;
-      }
-
-      .brand {
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 17px;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .navLinks {
-        display: flex;
-        align-items: center;
-        gap: 0;
-      }
-
-      .navLinks a {
-        color: var(--brown);
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .navLinks a + a {
-        border-left: 1px solid rgba(92, 53, 32, 0.24);
-        margin-left: 18px;
-        padding-left: 18px;
-      }
-
-      .navLinks a.active {
-        border-bottom: 1.5px solid var(--accent);
-        color: var(--accent);
-        padding-bottom: 2px;
-      }
-
-      .button {
-        display: inline-block;
-        border-radius: 2px;
-        padding: 15px 32px;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-align: center;
-        text-transform: uppercase;
-      }
-
-      .button.primary {
-        background: var(--accent);
-        color: var(--cream);
-      }
-
-      .button.outlineLight {
-        border: 1.5px solid var(--clay);
-        color: var(--cream);
-      }
-
-      .eyebrow {
-        margin-bottom: 20px;
-        color: var(--accent);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.22em;
-        line-height: 1.3;
-        text-transform: uppercase;
-      }
-
-      .wrap {
-        max-width: 1060px;
-        margin: 0 auto;
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: 55fr 45fr;
-        min-height: 560px;
-        background: var(--cream);
-      }
-
-      .heroCopy {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        border-right: 1px solid var(--line);
-        padding: 80px 56px 80px 52px;
-      }
-
-      .hero h1 {
-        margin-bottom: 24px;
-        font-size: clamp(44px, 5vw, 68px);
-        font-weight: 500;
-        line-height: 1.08;
-      }
-
-      .hero h1 em {
-        color: var(--accent);
-      }
-
-      .heroLead {
-        max-width: 480px;
-        margin-bottom: 36px;
-        color: var(--brown);
-        font-size: 16px;
-        font-weight: 300;
-        line-height: 1.8;
-      }
-
-      .thoughtPanel {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 16px;
-        background: var(--cream-deep);
-        padding: 80px 52px;
-      }
-
-      .thoughtCard {
-        border: 1px solid var(--line-strong);
-        border-radius: 3px;
-        background: var(--cream);
-        padding: 18px 22px;
-      }
-
-      .thoughtCard p {
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 19px;
-        font-style: italic;
-        line-height: 1.5;
-      }
-
-      .darkSplit,
-      .nextWorkshop,
-      .pathway {
-        background: var(--dark);
-        padding: 88px 52px;
-      }
-
-      .splitGrid {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 80px;
-        align-items: start;
-      }
-
-      .darkSplit h2,
-      .nextWorkshop h2,
-      .pathway h2 {
-        color: var(--cream);
-        font-size: clamp(32px, 4vw, 50px);
-        line-height: 1.15;
-      }
-
-      .darkSplit .eyebrow,
-      .nextWorkshop .eyebrow,
-      .pathway .eyebrow {
-        color: var(--clay);
-      }
-
-      .darkText {
-        color: var(--clay);
-        font-size: 16px;
-        font-weight: 300;
-        line-height: 1.85;
-      }
-
-      .darkText + .darkText {
-        margin-top: 20px;
-      }
-
-      .rule {
-        width: 40px;
-        height: 1.5px;
-        margin-top: 28px;
-        background: var(--accent);
-      }
-
-      .who,
-      .seriesIntro,
-      .futureTopics,
-      .signup {
-        background: var(--cream);
-        padding: 88px 52px;
-      }
-
-      .who h2,
-      .seriesIntro h2,
-      .futureTopics h2,
-      .signup h2 {
-        font-size: clamp(30px, 4vw, 50px);
-        line-height: 1.15;
-      }
-
-      .whoIntro,
-      .seriesText,
-      .signupText {
-        color: var(--brown);
-        font-size: 16px;
-        font-weight: 300;
-        line-height: 1.85;
-      }
-
-      .bulletList {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .bulletItem {
-        display: flex;
-        align-items: flex-start;
-        gap: 16px;
-      }
-
-      .dot {
-        width: 6px;
-        height: 6px;
-        flex: 0 0 6px;
-        margin-top: 9px;
-        border-radius: 50%;
-        background: var(--accent);
-      }
-
-      .bulletItem p {
-        color: var(--brown);
-        font-size: 15px;
-        font-weight: 300;
-        line-height: 1.7;
-      }
-
-      .seriesIntro {
-        text-align: center;
-      }
-
-      .seriesIntro .wrap {
-        max-width: 720px;
-      }
-
-      .seriesIntro h2 {
-        margin-bottom: 24px;
-      }
-
-      .featured {
-        background: var(--cream-deep);
-        padding: 88px 52px;
-      }
-
-      .workshopHeader {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 40px;
-        margin-bottom: 56px;
-      }
-
-      .badgeRow {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
-
-      .badge,
-      .metaBadge {
-        border-radius: 2px;
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.18em;
-        line-height: 1.4;
-        text-transform: uppercase;
-      }
-
-      .badge {
-        background: var(--accent);
-        color: var(--cream);
-        padding: 5px 12px;
-      }
-
-      .metaBadge {
-        color: var(--accent);
-      }
-
-      .workshopHeader h2 {
-        max-width: 700px;
-        font-size: clamp(30px, 3.8vw, 48px);
-        line-height: 1.15;
-      }
-
-      .workshopMeta {
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        align-items: flex-end;
-        gap: 10px;
-      }
-
-      .workshopMeta p {
-        color: var(--brown);
-        font-size: 12px;
-        font-weight: 500;
-      }
-
-      .workshopGrid {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 48px;
-        align-items: start;
-      }
-
-      .miniTitle {
-        margin-bottom: 24px;
-        color: var(--accent);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-      }
-
-      .numberList {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .numberItem {
-        display: grid;
-        grid-template-columns: 42px 1fr;
-        gap: 20px;
-        align-items: start;
-        border-top: 1px solid var(--line-strong);
-        padding: 20px 0;
-      }
-
-      .numberItem:last-child {
-        border-bottom: 1px solid var(--line-strong);
-      }
-
-      .numberItem span {
-        color: var(--clay);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 24px;
-        line-height: 1;
-      }
-
-      .numberItem p,
-      .takeawayCard p {
-        color: var(--brown);
-        font-size: 14px;
-        font-weight: 300;
-        line-height: 1.7;
-      }
-
-      .takeawayStack {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-bottom: 32px;
-      }
-
-      .takeawayCard {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        background: var(--cream);
-        padding: 18px 20px;
-      }
-
-      .noteBox {
-        border-left: 3px solid var(--accent);
-        background: var(--cream);
-        padding: 20px 24px;
-      }
-
-      .noteBox p {
-        color: var(--dark);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 19px;
-        font-style: italic;
-        line-height: 1.6;
-      }
-
-      .nextWorkshop {
-        padding-top: 72px;
-        padding-bottom: 72px;
-      }
-
-      .nextMeta {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 20px;
-      }
-
-      .nextMeta .badge {
-        border: 1px solid rgba(200, 168, 152, 0.4);
-        background: transparent;
-        color: var(--clay);
-      }
-
-      .nextWorkshop h2 {
-        margin-bottom: 20px;
-        font-size: clamp(28px, 3.5vw, 44px);
-        line-height: 1.2;
-      }
-
-      .nextWorkshop .rule {
-        margin: 0 0 24px;
-      }
-
-      .futureTopics {
-        padding-top: 72px;
-        padding-bottom: 72px;
-      }
-
-      .futureTopics h2 {
-        margin-bottom: 40px;
-        font-size: clamp(28px, 3.5vw, 42px);
-      }
-
-      .topicGrid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 24px;
-      }
-
-      .topicCard {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        border: 1px solid var(--line-strong);
-        padding: 36px 32px;
-      }
-
-      .topicCard h3 {
-        font-size: 24px;
-        line-height: 1.3;
-      }
-
-      .topicCard p {
-        color: var(--brown);
-        font-size: 14px;
-        font-weight: 300;
-        line-height: 1.7;
-      }
-
-      .signupForm {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      .signupForm label {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .signupForm span {
-        color: var(--accent);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
-      .signupForm input {
-        width: 100%;
-        min-height: 48px;
-        border: 1px solid var(--line-strong);
-        border-radius: 2px;
-        background: var(--cream-deep);
-        color: var(--dark);
-        font: inherit;
-        padding: 12px 14px;
-      }
-
-      .signupForm button {
-        align-self: flex-start;
-        border: 0;
-        cursor: pointer;
-        margin-top: 4px;
-      }
-
-      .pathway {
-        padding-top: 88px;
-        padding-bottom: 88px;
-      }
-
-      .pathwayInner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 60px;
-      }
-
-      .pathwayText {
-        max-width: 620px;
-      }
-
-      .pathway h2 {
-        margin-bottom: 20px;
-        font-size: clamp(30px, 3.5vw, 46px);
-        line-height: 1.2;
-      }
-
-      .footer {
-        border-top: 1px solid rgba(200, 168, 152, 0.15);
-        background: var(--dark);
-        padding: 44px 52px;
-      }
-
-      .footerInner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 28px;
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-
-      .footerBrand {
-        margin-bottom: 6px;
-        color: var(--cream);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 17px;
-        font-weight: 500;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .footer p {
-        color: var(--clay);
-        font-size: 13px;
-        font-weight: 300;
-      }
-
-      .footerNote {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 14px;
-        color: var(--muted-clay) !important;
-        font-size: 12px !important;
-      }
-
-      .footerNote a,
-      .footerNote span {
-        color: inherit;
-        font-size: inherit;
-      }
-
-      @media (max-width: 940px) {
-        .siteNav {
-          align-items: flex-start;
-          flex-direction: column;
-          gap: 18px;
-          padding: 20px 24px;
-        }
-
-        .navLinks {
-          flex-wrap: wrap;
-          gap: 10px 0;
-        }
-
-        .hero,
-        .splitGrid,
-        .workshopGrid,
-        .topicGrid,
-        .signup .splitGrid {
-          grid-template-columns: 1fr;
-        }
-
-        .heroCopy {
-          border-right: 0;
-          border-bottom: 1px solid var(--line);
-        }
-
-        .workshopHeader,
-        .pathwayInner,
-        .footerInner {
-          align-items: flex-start;
-          flex-direction: column;
-        }
-
-        .footerNote {
-          justify-content: flex-start;
-        }
-
-        .workshopMeta {
-          align-items: flex-start;
-        }
-      }
-
-      @media (max-width: 640px) {
-        .siteNav,
-        .heroCopy,
-        .thoughtPanel,
-        .darkSplit,
-        .who,
-        .seriesIntro,
-        .featured,
-        .nextWorkshop,
-        .futureTopics,
-        .signup,
-        .pathway,
-        .footer {
-          padding-right: 24px;
-          padding-left: 24px;
-        }
-
-        .heroCopy,
-        .thoughtPanel {
-          padding-top: 58px;
-          padding-bottom: 58px;
-        }
-
-        .thoughtPanel {
-          gap: 12px;
-        }
-
-        .thoughtPanel .eyebrow {
-          margin-bottom: 10px;
-        }
-
-        .thoughtCard {
-          border: 0;
-          border-left: 3px solid var(--accent);
-          border-radius: 2px;
-          background: rgba(250, 247, 243, 0.72);
-          padding: 14px 16px;
-        }
-
-        .thoughtCard p {
-          font-size: 18px;
-          line-height: 1.35;
-        }
-
-        .darkSplit,
-        .who,
-        .seriesIntro,
-        .featured,
-        .signup,
-        .pathway {
-          padding-top: 64px;
-          padding-bottom: 64px;
-        }
-
-        .button,
-        .signupForm button {
-          width: 100%;
-          text-align: center;
-        }
-
-        h1 {
-          font-size: clamp(42px, 13vw, 56px);
-        }
-
-        .workshopHeader {
-          gap: 26px;
-        }
-
-        .numberItem {
-          grid-template-columns: 34px 1fr;
-          gap: 14px;
-        }
-
-        .topicCard {
-          padding: 30px 24px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="siteNav">
-      <a href="./" class="brand">The Confident Clinician</a>
-      <div class="navLinks">
-        <a href="./">Home</a>
-        <a href="./about.html">About Me</a>
-        <a href="./workshop.html" class="active">Workshops</a>
-        <a href="./program.html">12-Week Program</a>
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workshops | The Confident Clinician</title>
+<meta name="description" content="Practical workshops for newer therapists from The Confident Clinician.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+</head>
+<body>
+ <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Jost', sans-serif; background: #FAF7F3; color: #3D1F0D; }
+    a { text-decoration: none; color: inherit; }
+    input, button { font-family: inherit; }
+
+    #ws-nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 52px; background: #FAF7F3; border-bottom: 1px solid #EDE4DC; position: relative; z-index: 10; }
+    #ws-nav-links { display: flex; align-items: center; gap: 32px; }
+    #ws-hero { display: grid; grid-template-columns: 55fr 45fr; min-height: 520px; }
+    #ws-hero-left { display: flex; flex-direction: column; justify-content: center; padding: 72px 56px 72px 52px; border-right: 1px solid #EDE4DC; }
+    #ws-hero-right { display: flex; flex-direction: column; justify-content: center; padding: 72px 52px; background: #F0E9E1; gap: 14px; }
+    #ws-problem { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; max-width: 1060px; margin: 0 auto; }
+    #ws-for { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; max-width: 1060px; margin: 0 auto; }
+    #ws-w1-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    #ws-w2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1060px; margin: 0 auto; }
+    #ws-w1-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; margin-bottom: 48px; flex-wrap: wrap; }
+    #ws-future-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    #ws-signup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; max-width: 1060px; margin: 0 auto; }
+    #ws-deeper { display: flex; align-items: center; justify-content: space-between; gap: 60px; max-width: 1060px; margin: 0 auto; }
+    #ws-footer-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; }
+
+    @media (max-width: 768px) {
+      #ws-nav { padding: 18px 24px; }
+      #ws-nav-links { display: none; }
+      #ws-nav-mobile-cta { display: inline-block !important; }
+
+      #ws-hero { grid-template-columns: 1fr; min-height: auto; }
+      #ws-hero-left { padding: 48px 24px 36px; border-right: none; border-bottom: 1px solid #EDE4DC; }
+      #ws-hero-right { padding: 36px 24px 48px; }
+
+      .ws-section { padding: 52px 24px !important; }
+      #ws-problem { grid-template-columns: 1fr; gap: 32px; }
+      #ws-for { grid-template-columns: 1fr; gap: 24px; }
+      #ws-for-bullets { margin-top: 0 !important; padding-top: 0 !important; }
+      #ws-w1-header { flex-direction: column; gap: 20px; }
+      #ws-w1-header-cta { align-items: flex-start !important; }
+      #ws-w1-cols { grid-template-columns: 1fr; gap: 36px; }
+      #ws-w2-cols { grid-template-columns: 1fr; gap: 36px; }
+      #ws-future-grid { grid-template-columns: 1fr; gap: 16px; }
+      #ws-signup-grid { grid-template-columns: 1fr; gap: 36px; }
+      #ws-deeper { flex-direction: column; align-items: flex-start; gap: 28px; }
+      #ws-footer-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+      #ws-photo-slot { height: 260px !important; }
+
+      .ws-h2 { font-size: clamp(28px, 7vw, 42px) !important; }
+      .ws-body { font-size: 16px !important; line-height: 1.85 !important; }
+      .ws-bullet-text { font-size: 16px !important; }
+    }
+  </style>
+
+<!-- NAV -->
+<nav id="ws-nav">
+  <a href="./" style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; letter-spacing: 0.1em; color: #3D1F0D; text-transform: uppercase;">The Confident Clinician</a>
+  <div id="ws-nav-links">
+    <a href="./" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Home</a>
+    <a href="./about.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">About Me</a>
+    <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #B5522A; border-bottom: 1.5px solid #B5522A; padding-bottom: 2px;">Workshops</a>
+    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">12-Week Program</a>
+    <a href="https://buy.stripe.com/price_1ToiPCCHrIjRFE8gpGM5lfy2" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 22px; background: #B5522A; color: #FAF7F3; border-radius: 2px;">Purchase Workshop</a>
+  </div>
+  <a id="ws-nav-mobile-cta" href="https://buy.stripe.com/price_1ToiPCCHrIjRFE8gpGM5lfy2" style="display: none; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 18px; background: #B5522A; color: #FAF7F3; border-radius: 2px;">Purchase</a>
+</nav>
+
+<!-- HERO -->
+<section id="ws-hero" data-screen-label="Hero">
+  <div id="ws-hero-left">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 22px;">The Confident Clinician Workshops</p>
+    <h1 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 5vw, 68px); font-weight: 500; line-height: 1.08; color: #3D1F0D; margin-bottom: 22px;">For the things therapy school<br><em style="color: #B5522A; font-style: italic;">didn't fully teach you.</em></h1>
+    <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 480px; margin-bottom: 32px;">Short, focused trainings to help you stop spiraling, stop over-collecting certifications, and start building a clinical voice you can actually trust.</p>
+    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+      <a href="https://buy.stripe.com/price_1ToiPCCHrIjRFE8gpGM5lfy2" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px 28px; background: #B5522A; color: #FAF7F3; border-radius: 2px; display: inline-block;">Purchase Workshop — $17</a>
+      <p style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 300; color: #B5522A;">Get early access for $10 off (reg. $27) · Use code <strong style="font-weight: 600; letter-spacing: 0.05em;">EARLYACCESSAUGUST</strong></p>
+    </div>
+  </div>
+
+  <div id="ws-hero-right" style="padding: 0 !important; gap: 0 !important; overflow: hidden;">
+    <image-slot id="ws-hero-photo" shape="rect" placeholder="Drop a photo here" style="width: 100%; height: 220px; display: block; flex-shrink: 0;"></image-slot>
+    <div style="display: flex; flex-direction: column; gap: 0;">
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; padding: 20px 24px 12px;">Sound familiar?</p>
+      <div style="background: #FAF7F3; border: 1px solid #E8DDD4; border-radius: 0; padding: 14px 24px; border-left: none; border-right: none; border-top: none;">
+        <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: #3D1F0D; line-height: 1.4;">"Am I doing this right?"</p>
       </div>
-    </nav>
+      <div style="background: #FAF7F3; border: 1px solid #E8DDD4; border-radius: 0; padding: 14px 24px; border-left: none; border-right: none; border-top: none;">
+        <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: #3D1F0D; line-height: 1.4;">"What do I say next?"</p>
+      </div>
+      <div style="background: #FAF7F3; border: 1px solid #E8DDD4; border-radius: 0; padding: 14px 24px; border-left: none; border-right: none; border-top: none;">
+        <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: #3D1F0D; line-height: 1.4;">"Why do I feel so unsure when I technically know what I'm doing?"</p>
+      </div>
+      <div style="background: #FAF7F3; border: 1px solid #E8DDD4; border-radius: 0; padding: 14px 24px; border-left: none; border-right: none; border-top: none;">
+        <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: #3D1F0D; line-height: 1.4;">"Should I be using CBT, ACT, DBT, or something else entirely?"</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <main>
-      <section class="hero" data-screen-label="Hero">
-        <div class="heroCopy">
-          <p class="eyebrow">The Confident Clinician Workshops</p>
-          <h1>For the things therapy school<br /><em>didn't fully teach you.</em></h1>
-          <p class="heroLead">
-            Short, focused trainings to help you stop spiraling, stop over-collecting certifications, and start building a clinical voice you can actually trust.
-          </p>
-          <a href="#interest" class="button primary">Join the Interest List</a>
-        </div>
+<!-- NOT UNDERQUALIFIED -->
+<section class="ws-section" data-screen-label="Not Underqualified" style="background: #3D1F0D; padding: 72px 52px;">
+  <div id="ws-problem">
+    <div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #C8A898; margin-bottom: 18px;">The Real Problem</p>
+      <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 54px); font-weight: 400; line-height: 1.12; color: #FAF7F3;">You're not underqualified.<br><em style="font-style: italic;">You're under-supported.</em></h2>
+      <div style="width: 40px; height: 1.5px; background: #B5522A; margin-top: 24px;"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #C8A898;">You left school with a degree, a diagnosis manual, a few therapy models, and a genuine desire to help people. Nobody handed you a guide for what to actually do when a client shuts down, asks if you've ever been through something similar, or sits in silence for three minutes while you try not to visibly panic.</p>
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #C8A898;">The gap isn't your commitment or your intelligence. It's the missing bridge between everything you learned and everything you actually need in that room. That's what these workshops are for.</p>
+    </div>
+  </div>
+</section>
 
-        <div class="thoughtPanel">
-          <p class="eyebrow">Sound familiar?</p>
-          <div class="thoughtCard">
-            <p>"Am I doing this right?"</p>
-          </div>
-          <div class="thoughtCard">
-            <p>"What do I say next?"</p>
-          </div>
-          <div class="thoughtCard">
-            <p>"Why do I feel so unsure when I technically know what I'm doing?"</p>
-          </div>
-          <div class="thoughtCard">
-            <p>"Should I be using CBT, ACT, DBT, or something else entirely?"</p>
-          </div>
-        </div>
-      </section>
+<!-- WHO IT'S FOR -->
+<section class="ws-section" data-screen-label="Who It's For" style="background: #FAF7F3; padding: 72px 52px;">
+  <div id="ws-for">
+    <div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 18px;">Who This Is For</p>
+      <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 54px); font-weight: 400; line-height: 1.12; color: #3D1F0D; margin-bottom: 20px;">The clinician still finding their voice.</h2>
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #5C3520;">Whether you're freshly licensed, still working toward licensure, or a few years in and realizing grad school left some gaps — this is for you.</p>
+    </div>
+    <div id="ws-for-bullets" style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+        <p class="ws-bullet-text" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Interns, provisionally licensed clinicians, and newer therapists</p>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+        <p class="ws-bullet-text" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Clinicians who know the theories but can't always access them naturally in session</p>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+        <p class="ws-bullet-text" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Therapists who replay sessions in the car and can't quite let them go</p>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+        <p class="ws-bullet-text" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Clinicians who want their own style — not a copy of their supervisor's</p>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+        <p class="ws-bullet-text" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Therapists tired of collecting trainings that don't actually build confidence</p>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 9px; flex-shrink: 0;"></div>
+        <p class="ws-bullet-text" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.7; color: #5C3520;">Anyone beginning to think about niche, messaging, or building a private practice</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <section class="darkSplit" data-screen-label="Not Underqualified">
-        <div class="wrap splitGrid">
-          <div>
-            <p class="eyebrow">The Real Problem</p>
-            <h2>You're not underqualified.<br /><em>You're under-supported.</em></h2>
-            <div class="rule"></div>
-          </div>
-          <div>
-            <p class="darkText">
-              You left school with a degree, a diagnosis manual, a few therapy models, and a genuine desire to help people. Nobody handed you a guide for what to actually do when a client shuts down, asks if you've ever been through something similar, or sits in silence for three minutes while you try not to visibly panic.
-            </p>
-            <p class="darkText">
-              The gap isn't your commitment or your intelligence. It's the missing bridge between everything you learned and everything you actually need in that room. That's what these workshops are for.
-            </p>
-          </div>
-        </div>
-      </section>
+<!-- SERIES INTRO -->
+<section class="ws-section" data-screen-label="The Series" style="background: #F0E9E1; padding: 64px 52px; text-align: center;">
+  <div style="max-width: 720px; margin: 0 auto;">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 16px;">The Workshop Series</p>
+    <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 50px); font-weight: 400; line-height: 1.15; color: #3D1F0D; margin-bottom: 20px;">A new workshop, every month.</h2>
+    <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #5C3520;">Each 90-minute workshop tackles one specific part of clinical life that nobody explains well enough. Some are live. Some are pre-recorded. All are practical, grounded, and designed to give you something real to take back into the room.</p>
+  </div>
+</section>
 
-      <section class="who" data-screen-label="Who It's For">
-        <div class="wrap splitGrid">
-          <div>
-            <p class="eyebrow">Who This Is For</p>
-            <h2>The clinician who's still finding their voice.</h2>
-            <p class="whoIntro">
-              Whether you're freshly licensed, still working toward licensure, or a few years in and realizing grad school left some gaps - this is for you.
-            </p>
-          </div>
-          <div class="bulletList">
-            <div class="bulletItem">
-              <span class="dot" aria-hidden="true"></span>
-              <p>Interns, provisionally licensed clinicians, and newer therapists</p>
-            </div>
-            <div class="bulletItem">
-              <span class="dot" aria-hidden="true"></span>
-              <p>Clinicians who know the theories but can't always access them naturally in session</p>
-            </div>
-            <div class="bulletItem">
-              <span class="dot" aria-hidden="true"></span>
-              <p>Therapists who replay sessions in the car and can't quite let them go</p>
-            </div>
-            <div class="bulletItem">
-              <span class="dot" aria-hidden="true"></span>
-              <p>Clinicians who want their own style - not a copy of their supervisor's</p>
-            </div>
-            <div class="bulletItem">
-              <span class="dot" aria-hidden="true"></span>
-              <p>Therapists who are tired of collecting trainings that don't actually build confidence</p>
-            </div>
-            <div class="bulletItem">
-              <span class="dot" aria-hidden="true"></span>
-              <p>Anyone beginning to think about niche, messaging, or building a private practice</p>
-            </div>
-          </div>
-        </div>
-      </section>
+<!-- WORKSHOP 01 -->
+<section class="ws-section" data-screen-label="Current Workshop" style="background: #FAF7F3; padding: 72px 52px;">
+  <div style="max-width: 1060px; margin: 0 auto;">
+    <!-- Workshop meta row -->
+    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+      <span style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #FAF7F3; background: #B5522A; padding: 5px 12px; border-radius: 2px;">Current Workshop</span>
+      <span style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A;">Pre-recorded · Available August 1 · 90 min · Virtual</span>
+    </div>
+    <!-- Title + CTA -->
+    <div style="margin-bottom: 40px;">
+      <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.8vw, 46px); font-weight: 400; line-height: 1.15; color: #3D1F0D; max-width: 780px;">The 5 Skills That Separate New Therapists from Confident Clinicians</h2>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 2vw, 22px); font-style: italic; color: #5C3520; margin-top: 10px; line-height: 1.4; max-width: 680px;">What graduate school didn't teach you about trusting yourself in the therapy room</p>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 32px;">
+        <a href="https://buy.stripe.com/price_1ToiPCCHrIjRFE8gpGM5lfy2" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px 32px; background: #B5522A; color: #FAF7F3; border-radius: 2px; display: inline-block; white-space: nowrap;">Purchase Workshop — $17</a>
+        <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 300; color: #B5522A; text-align: center;">Get early access for $10 off (reg. $27) · Use code <strong style="font-weight: 600;">EARLYACCESSAUGUST</strong></p>
+      </div>
+    </div>
 
-      <section class="seriesIntro" data-screen-label="The Series">
-        <div class="wrap">
-          <p class="eyebrow">The Workshop Series</p>
-          <h2>A new workshop, every month.</h2>
-          <p class="seriesText">
-            Each 90-minute workshop tackles one specific part of clinical life that nobody explains well enough. Some are live. Some are pre-recorded. All are practical, grounded, and designed to give you something real to take back into the room.
-          </p>
-        </div>
-      </section>
+    <!-- Photo slot -->
+    <image-slot id="ws-photo-slot" shape="rounded" radius="4" placeholder="Drop a photo here — you presenting, a session setup, or anything that feels like the work" style="width: 100%; height: 340px; display: block; margin-bottom: 48px;"></image-slot>
 
-      <section class="featured" data-screen-label="Workshop 01">
-        <div class="wrap">
-          <div class="workshopHeader">
-            <div>
-              <div class="badgeRow">
-                <span class="badge">Current Workshop</span>
-                <span class="metaBadge">Pre-recorded - Available August 1</span>
-              </div>
-              <h2>Building Your Clinical Foundation:<br /><em>Finding Your Voice with the CLEAR Process</em></h2>
-            </div>
-            <div class="workshopMeta">
-              <p>90 minutes - Virtual</p>
-              <a href="#interest" class="button primary">Get Early Access</a>
-            </div>
+    <div id="ws-w1-cols">
+      <div>
+        <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">What You'll Clarify</p>
+        <div style="display: flex; flex-direction: column;">
+          <div style="display: flex; gap: 20px; align-items: flex-start; border-top: 1px solid #DDD0C4; padding: 18px 0;">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #C8A898; line-height: 1; flex-shrink: 0;">01</span>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;"><strong style="font-weight: 500;">Stop Performing Therapy</strong> — shift from proving you're good to actually understanding the person in front of you</p>
           </div>
-
-          <div class="workshopGrid">
-            <div>
-              <p class="miniTitle">What You'll Clarify</p>
-              <div class="numberList">
-                <div class="numberItem">
-                  <span>01</span>
-                  <p>Why clinical confidence feels shaky in the beginning - and why that's not a you problem</p>
-                </div>
-                <div class="numberItem">
-                  <span>02</span>
-                  <p>How to understand therapy approaches without drowning in them</p>
-                </div>
-                <div class="numberItem">
-                  <span>03</span>
-                  <p>How to identify your own clinical lens - not just borrow someone else's</p>
-                </div>
-                <div class="numberItem">
-                  <span>04</span>
-                  <p>How to think through "what do I do next?" in session without freezing</p>
-                </div>
-                <div class="numberItem">
-                  <span>05</span>
-                  <p>How to trust your presence, not just your interventions</p>
-                </div>
-                <div class="numberItem">
-                  <span>06</span>
-                  <p>How to stop chasing "perfect therapist" and start becoming a clearer one</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <p class="miniTitle">You'll Walk Away With</p>
-              <div class="takeawayStack">
-                <div class="takeawayCard">
-                  <span class="dot" aria-hidden="true"></span>
-                  <p>A clearer understanding of why you feel stuck - and what to actually do about it</p>
-                </div>
-                <div class="takeawayCard">
-                  <span class="dot" aria-hidden="true"></span>
-                  <p>Real language for describing your therapeutic style to clients and colleagues</p>
-                </div>
-                <div class="takeawayCard">
-                  <span class="dot" aria-hidden="true"></span>
-                  <p>A simple way to reflect on sessions without spiraling into self-doubt</p>
-                </div>
-                <div class="takeawayCard">
-                  <span class="dot" aria-hidden="true"></span>
-                  <p>Permission to be human in the therapy room - not just technically correct</p>
-                </div>
-              </div>
-              <div class="noteBox">
-                <p>You won't leave knowing every intervention for every client. You'll leave knowing how to start trusting yourself.</p>
-              </div>
-            </div>
+          <div style="display: flex; gap: 20px; align-items: flex-start; border-top: 1px solid #DDD0C4; padding: 18px 0;">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #C8A898; line-height: 1; flex-shrink: 0;">02</span>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;"><strong style="font-weight: 500;">Learn to Tolerate Not Knowing</strong> — confidence isn't certainty. It's the ability to stay grounded when things are uncertain</p>
           </div>
-        </div>
-      </section>
-
-      <section class="nextWorkshop" data-screen-label="Workshop 02">
-        <div class="wrap splitGrid">
-          <div>
-            <div class="nextMeta">
-              <span class="badge">Next Workshop</span>
-              <span class="metaBadge">Coming Soon</span>
-            </div>
-            <h2>Burnout Prevention Beyond Self-Care</h2>
-            <div class="rule"></div>
-            <p class="darkText">90 minutes - Virtual - Date TBA</p>
+          <div style="display: flex; gap: 20px; align-items: flex-start; border-top: 1px solid #DDD0C4; padding: 18px 0;">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #C8A898; line-height: 1; flex-shrink: 0;">03</span>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;"><strong style="font-weight: 500;">Trust the Process Over the Perfect Intervention</strong> — clients remember feeling seen, not whether you picked the right worksheet</p>
           </div>
-          <div>
-            <p class="darkText">
-              "Do more yoga. Take a bath. Set boundaries." You've heard it all - and you're still exhausted. This workshop goes past the surface to the real reasons newer clinicians burn out: absorbing too much, holding too little, and never being taught how to carry the work sustainably.
-            </p>
-            <a href="#interest" class="button outlineLight">Get Notified</a>
+          <div style="display: flex; gap: 20px; align-items: flex-start; border-top: 1px solid #DDD0C4; padding: 18px 0;">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #C8A898; line-height: 1; flex-shrink: 0;">04</span>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;"><strong style="font-weight: 500;">Regulate Yourself First</strong> — when your nervous system is dysregulated, your clinical judgment changes. Learn a 30-second practice to use between sessions</p>
           </div>
-        </div>
-      </section>
-
-      <section class="futureTopics" data-screen-label="Future Topics">
-        <div class="wrap">
-          <p class="eyebrow">On the Horizon</p>
-          <h2>New workshops released monthly.</h2>
-          <div class="topicGrid">
-            <article class="topicCard">
-              <h3>What to Do When a Client Goes Silent</h3>
-              <p>Silence in session doesn't have to feel like failure. Learn how to read it, respond to it, and use it - without filling every pause with your own anxiety.</p>
-            </article>
-            <article class="topicCard">
-              <h3>Boundaries That Actually Hold</h3>
-              <p>Late cancellations, fee questions, session overruns, the client who texts at 9pm. How to hold limits with warmth and without guilt.</p>
-            </article>
-            <article class="topicCard">
-              <h3>Documentation Without the Dread</h3>
-              <p>Stop rewriting the same note four times. A grounded, practical approach to progress notes that captures the session without consuming your evening.</p>
-            </article>
+          <div style="display: flex; gap: 20px; align-items: flex-start; border-top: 1px solid #DDD0C4; border-bottom: 1px solid #DDD0C4; padding: 18px 0;">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #C8A898; line-height: 1; flex-shrink: 0;">05</span>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;"><strong style="font-weight: 500;">Build Self-Trust Instead of Seeking Constant Reassurance</strong> — stop replaying sessions looking for mistakes. Start replaying them looking for information</p>
           </div>
-        </div>
-      </section>
-
-      <section class="signup" id="interest" data-screen-label="Sign Up">
-        <div class="wrap splitGrid">
-          <div>
-            <p class="eyebrow">Stay in the Loop</p>
-            <h2>Be the first to know when a new workshop drops.</h2>
-            <p class="signupText">
-              New workshops release monthly. Get early access links, dates, and pricing straight to your inbox - before they go public. No spam. No pressure. Just a heads-up when something new is ready.
-            </p>
-          </div>
-          <form class="signupForm" action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST">
-            <input type="hidden" name="_subject" value="The Confident Clinician Workshop Interest" />
-            <input type="hidden" name="_captcha" value="false" />
-            <label>
-              <span>Name</span>
-              <input type="text" name="name" placeholder="Your name" autocomplete="name" />
-            </label>
-            <label>
-              <span>Email</span>
-              <input type="email" name="email" placeholder="Your email" autocomplete="email" required />
-            </label>
-            <button type="submit" class="button primary">Join the Workshop List</button>
-          </form>
-        </div>
-      </section>
-
-      <section class="pathway" data-screen-label="12-Week Pathway">
-        <div class="wrap pathwayInner">
-          <div class="pathwayText">
-            <p class="eyebrow">What Comes Next</p>
-            <h2>Ready to go deeper?</h2>
-            <p class="darkText">
-              If the workshop helps you name what's felt scattered, the 12-week program gives you the space to actually build the clinical foundation - your lens, your language, your boundaries, your self-trust - that makes this work sustainable.
-            </p>
-          </div>
-          <a href="./program.html" class="button outlineLight">View the 12-Week Program</a>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="footerInner">
-        <div>
-          <p class="footerBrand">The Confident Clinician</p>
-          <p>Created by Tiffany McGilloway, LPC - Founder of The Embodied Self</p>
-        </div>
-        <div class="footerNote">
-          <a href="./privacy.html">Privacy Policy</a>
-          <a href="./terms.html">Terms &amp; Conditions</a>
-          <a href="./disclaimer.html">Professional Disclaimer</a>
-          <span>Not a substitute for clinical supervision</span>
         </div>
       </div>
-    </footer>
-  </body>
-</html>
+
+      <div>
+        <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">You'll Walk Away With</p>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
+            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">A clearer understanding of why you feel stuck — and what to actually do about it</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
+            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">Real language for describing your therapeutic style to clients and colleagues</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
+            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">A simple way to reflect on sessions without spiraling into self-doubt</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
+            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
+            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">Permission to be human in the therapy room — not just technically correct</p>
+          </div>
+        </div>
+        <div style="border-left: 3px solid #B5522A; padding: 20px 24px; background: #F0E9E1;">
+          <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; line-height: 1.6; color: #3D1F0D;">Confidence isn't having all the answers. It's trusting yourself even when you don't.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKSHOP 02: NEXT -->
+<section class="ws-section" data-screen-label="Next Workshop" style="background: #3D1F0D; padding: 72px 52px;">
+  <div id="ws-w2-cols">
+    <div>
+      <div style="display: inline-flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+        <span style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #C8A898; border: 1px solid rgba(200,168,152,0.4); padding: 5px 12px; border-radius: 2px;">Next Workshop</span>
+        <span style="font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #C8A898;">Coming Soon</span>
+      </div>
+      <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 3.8vw, 48px); font-weight: 400; line-height: 1.15; color: #FAF7F3; margin-bottom: 16px;">Burnout Prevention Beyond Self-Care</h2>
+      <div style="width: 40px; height: 1.5px; background: #B5522A; margin-bottom: 20px;"></div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #9C7060;">90 minutes · Virtual · Date TBA</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #C8A898;">"Do more yoga. Take a bath. Set boundaries." You've heard it all — and you're still exhausted. This workshop goes past the surface to the real reasons newer clinicians burn out: absorbing too much, holding too little, and never being taught how to carry the work sustainably.</p>
+      <a href="#interest" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 26px; border: 1.5px solid #C8A898; color: #FAF7F3; border-radius: 2px; display: inline-block; align-self: flex-start;">Get Notified</a>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURE TOPICS -->
+<section class="ws-section" data-screen-label="Future Topics" style="background: #FAF7F3; padding: 64px 52px;">
+  <div style="max-width: 1060px; margin: 0 auto;">
+    <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 10px;">On the Horizon</p>
+    <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 44px); font-weight: 400; line-height: 1.2; color: #3D1F0D; margin-bottom: 36px;">New workshops released monthly.</h2>
+    <div id="ws-future-grid">
+      <div style="border: 1px solid #E8DDD4; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;">
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">What to Do When a Client Goes Silent</h3>
+        <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520; flex: 1;">Silence in session doesn't have to feel like failure. Learn how to read it, respond to it, and use it — without filling every pause with your own anxiety.</p>
+      </div>
+      <div style="border: 1px solid #E8DDD4; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;">
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Boundaries That Actually Hold</h3>
+        <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520; flex: 1;">Late cancellations, fee questions, session overruns, the client who texts at 9pm. How to hold limits with warmth and without guilt.</p>
+      </div>
+      <div style="border: 1px solid #E8DDD4; padding: 32px 28px; display: flex; flex-direction: column; gap: 12px;">
+        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Documentation Without the Dread</h3>
+        <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520; flex: 1;">Stop rewriting the same note four times. A grounded, practical approach to progress notes that captures the session without consuming your evening.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGN UP -->
+<section class="ws-section" data-screen-label="Sign Up" id="interest" style="background: #F0E9E1; padding: 72px 52px;">
+  <div id="ws-signup-grid">
+    <div>
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #B5522A; margin-bottom: 14px;">Stay in the Loop</p>
+      <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 44px); font-weight: 400; line-height: 1.2; color: #3D1F0D; margin-bottom: 16px;">Be the first to know when a new workshop drops.</h2>
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #5C3520;">New workshops release monthly. Get early access links, dates, and pricing straight to your inbox — before they go public. No spam. No pressure. Just a heads-up when something new is ready.</p>
+    </div>
+    <div>
+      <form action="https://formsubmit.co/admin@theconfidentclinician.me" method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+        <input type="hidden" name="_subject" value="The Confident Clinician Workshop Interest">
+        <input type="hidden" name="_captcha" value="false">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #B5522A;">Name</label>
+          <input type="text" name="name" placeholder="Your name" autocomplete="name" style="width: 100%; min-height: 48px; border: 1px solid #DDD0C4; border-radius: 2px; background: #FAF7F3; color: #3D1F0D; padding: 12px 14px; font-size: 15px;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #B5522A;">Email</label>
+          <input type="email" name="email" placeholder="Your email" autocomplete="email" required="" style="width: 100%; min-height: 48px; border: 1px solid #DDD0C4; border-radius: 2px; background: #FAF7F3; color: #3D1F0D; padding: 12px 14px; font-size: 15px;">
+        </div>
+        <button type="submit" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; background: #B5522A; color: #FAF7F3; border: none; border-radius: 2px; cursor: pointer; margin-top: 4px; align-self: flex-start;">Join the Workshop List</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- DEEPER PATHWAY -->
+<section class="ws-section" data-screen-label="12-Week Pathway" style="background: #3D1F0D; padding: 72px 52px;">
+  <div id="ws-deeper">
+    <div style="max-width: 620px;">
+      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #C8A898; margin-bottom: 14px;">What Comes Next</p>
+      <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 46px); font-weight: 400; line-height: 1.2; color: #FAF7F3; margin-bottom: 16px;">Ready to go deeper?</h2>
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #C8A898;">If the workshop helps you name what's felt scattered, the 12-week program gives you the space to actually build the clinical foundation — your lens, your language, your boundaries, your self-trust — that makes this work sustainable.</p>
+    </div>
+    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border: 1.5px solid #C8A898; color: #FAF7F3; border-radius: 2px; white-space: nowrap; flex-shrink: 0;">View the 12-Week Program</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background: #3D1F0D; border-top: 1px solid rgba(200,168,152,0.15); padding: 44px 52px;">
+  <div id="ws-footer-inner">
+    <div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; letter-spacing: 0.08em; color: #FAF7F3; text-transform: uppercase; margin-bottom: 6px;">The Confident Clinician</p>
+      <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; color: #C8A898;">Created by Tiffany McGilloway, LPC · Founder of The Embodied Self</p>
+    </div>
+    <p style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 300; color: #9C7060;">Not a substitute for clinical supervision</p>
+  </div>
+</footer>
+
+
+</body></html>
