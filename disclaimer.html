@@ -74,7 +74,7 @@
       .navLinks {
         display: flex;
         align-items: center;
-        gap: 32px;
+        gap: 0;
       }
 
       .navLinks a {
@@ -85,12 +85,10 @@
         text-transform: uppercase;
       }
 
-      .navLinks .navCta {
-        border-radius: 2px;
-        background: var(--accent);
-        color: var(--cream);
-        padding: 10px 22px;
-        font-weight: 600;
+      .navLinks a + a {
+        border-left: 1px solid rgba(92, 53, 32, 0.24);
+        margin-left: 18px;
+        padding-left: 18px;
       }
 
       .disclaimerHero {
@@ -269,7 +267,7 @@
 
         .navLinks {
           flex-wrap: wrap;
-          gap: 14px 20px;
+          gap: 10px 0;
         }
 
         .disclaimerHero,
@@ -292,7 +290,6 @@
         <a href="./about.html">About Me</a>
         <a href="./workshop.html">Workshops</a>
         <a href="./program.html">12-Week Program</a>
-        <a href="./workshop.html" class="navCta">Explore Workshops</a>
       </div>
     </nav>
 

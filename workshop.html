@@ -87,7 +87,7 @@
       .navLinks {
         display: flex;
         align-items: center;
-        gap: 32px;
+        gap: 0;
       }
 
       .navLinks a {
@@ -98,19 +98,16 @@
         text-transform: uppercase;
       }
 
+      .navLinks a + a {
+        border-left: 1px solid rgba(92, 53, 32, 0.24);
+        margin-left: 18px;
+        padding-left: 18px;
+      }
+
       .navLinks a.active {
         border-bottom: 1.5px solid var(--accent);
         color: var(--accent);
         padding-bottom: 2px;
-      }
-
-      .navLinks .navCta {
-        border: 0;
-        border-radius: 2px;
-        background: var(--accent);
-        color: var(--cream);
-        padding: 10px 22px;
-        font-weight: 600;
       }
 
       .button {
@@ -639,7 +636,7 @@
 
         .navLinks {
           flex-wrap: wrap;
-          gap: 14px 20px;
+          gap: 10px 0;
         }
 
         .hero,
@@ -731,10 +728,6 @@
           text-align: center;
         }
 
-        .navLinks .navCta {
-          display: none;
-        }
-
         h1 {
           font-size: clamp(42px, 13vw, 56px);
         }
@@ -762,7 +755,6 @@
         <a href="./about.html">About Me</a>
         <a href="./workshop.html" class="active">Workshops</a>
         <a href="./program.html">12-Week Program</a>
-        <a href="#interest" class="navCta">Join the List</a>
       </div>
     </nav>
 

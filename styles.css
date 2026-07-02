@@ -87,7 +87,7 @@ a {
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 0;
 }
 
 .navLinks a {
@@ -97,25 +97,15 @@ a {
   letter-spacing: 0.06em;
 }
 
+.navLinks a + a {
+  border-left: 1px solid rgba(27, 21, 16, 0.22);
+  margin-left: 18px;
+  padding-left: 18px;
+}
+
 .navLinks a.active,
 .navLinks a:hover {
   color: var(--dark);
-}
-
-.navLinks .navCta {
-  border-radius: 2px;
-  background: var(--accent);
-  color: var(--soft-white);
-  padding: 10px 22px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-
-.navLinks .navCta:hover {
-  background: var(--accent-hover);
-  color: var(--soft-white);
 }
 
 .wrap {
@@ -938,11 +928,6 @@ details p {
     font-size: 12px;
   }
 
-  .navLinks .navCta {
-    padding: 9px 14px;
-    font-size: 11px;
-  }
-
   .hero,
   .introSection,
   .offersSection,
@@ -1026,12 +1011,6 @@ details p {
     display: inline-flex;
     align-items: center;
     min-height: 34px;
-  }
-
-  .navLinks .navCta {
-    justify-content: center;
-    width: 100%;
-    margin-top: 4px;
   }
 
   .hero {
