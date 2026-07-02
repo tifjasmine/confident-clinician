@@ -30,6 +30,7 @@
     #ws-signup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; max-width: 1060px; margin: 0 auto; }
     #ws-deeper { display: flex; align-items: center; justify-content: space-between; gap: 60px; max-width: 1060px; margin: 0 auto; }
     #ws-footer-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; }
+    .ws-photo { display: block; width: 100%; height: 100%; object-fit: cover; }
 
     @media (max-width: 768px) {
       #ws-nav { padding: 18px 24px; }
@@ -86,7 +87,9 @@
   </div>
 
   <div id="ws-hero-right" style="padding: 0 !important; gap: 0 !important; overflow: hidden;">
-    <image-slot id="ws-hero-photo" shape="rect" placeholder="Drop a photo here" style="width: 100%; height: 220px; display: block; flex-shrink: 0;"></image-slot>
+    <div id="ws-hero-photo" style="width: 100%; height: 220px; flex-shrink: 0; overflow: hidden; background: #EDE4DC;">
+      <img class="ws-photo" src="./tiffany-mcgilloway-artist-photo.jpg" alt="Tiffany Wright" style="object-position: center 32%;">
+    </div>
     <div style="display: flex; flex-direction: column; gap: 0;">
       <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; padding: 20px 24px 12px;">Sound familiar?</p>
       <div style="background: #FAF7F3; border: 1px solid #E8DDD4; border-radius: 0; padding: 14px 24px; border-left: none; border-right: none; border-top: none;">
@@ -185,7 +188,9 @@
     </div>
 
     <!-- Photo slot -->
-    <image-slot id="ws-photo-slot" shape="rounded" radius="4" placeholder="Drop a photo here — you presenting, a session setup, or anything that feels like the work" style="width: 100%; height: 340px; display: block; margin-bottom: 48px;"></image-slot>
+    <div id="ws-photo-slot" style="width: 100%; height: 340px; display: block; margin-bottom: 48px; overflow: hidden; border-radius: 4px; background: #EDE4DC;">
+      <img class="ws-photo" src="./tiffany-mcgilloway-movement.jpg" alt="Tiffany Wright balancing in a movement practice" style="object-position: center 45%;">
+    </div>
 
     <div id="ws-w1-cols">
       <div>
