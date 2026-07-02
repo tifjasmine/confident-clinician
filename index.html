@@ -94,19 +94,6 @@
         font-weight: 600;
       }
 
-      .mobileNavCta {
-        display: none;
-        border-radius: 2px;
-        background: var(--accent);
-        color: var(--cream);
-        padding: 10px 20px;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        white-space: nowrap;
-      }
-
       .heroSplit {
         display: grid;
         grid-template-columns: 55fr 45fr;
@@ -568,43 +555,80 @@
       }
 
       @media (max-width: 768px) {
+        main {
+          display: flex;
+          flex-direction: column;
+        }
+
         .siteNav {
-          align-items: center;
-          flex-direction: row;
-          gap: 18px;
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 14px;
           padding: 18px 24px;
         }
 
         .brand {
-          font-size: 16px;
+          font-size: 17px;
           line-height: 1.2;
         }
 
         .navLinks {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px 18px;
+        }
+
+        .navLinks a {
+          font-size: 12px;
+          line-height: 1.25;
+        }
+
+        .navLinks .navCta {
           display: none;
         }
 
-        .mobileNavCta {
-          display: inline-block;
+        .heroSplit {
+          display: contents;
         }
 
-        .heroSplit {
-          grid-template-columns: 1fr;
-          min-height: auto;
+        .heroCopy {
+          order: 1;
+        }
+
+        .empathy {
+          order: 2;
+        }
+
+        .offers {
+          order: 3;
+        }
+
+        .heroBuild {
+          order: 4;
+          border-top: 1px solid var(--line);
+          padding: 40px 24px 52px;
+        }
+
+        .about {
+          order: 5;
         }
 
         .heroCopy {
           border-right: 0;
           border-bottom: 1px solid var(--line);
-          padding: 52px 24px 40px;
+          padding: 52px 24px 44px;
         }
 
-        .heroBuild {
-          padding: 40px 24px 52px;
+        .heroCopy .eyebrow {
+          margin-bottom: 24px;
+          font-size: 13px;
+          line-height: 1.35;
         }
 
         .heroLead {
           margin-bottom: 36px;
+          font-size: 17px;
+          line-height: 1.82;
         }
 
         .buttonRow {
@@ -622,6 +646,23 @@
         .about {
           padding-top: 60px;
           padding-bottom: 60px;
+        }
+
+        .empathyQuote {
+          font-size: clamp(27px, 8vw, 36px);
+          line-height: 1.42;
+        }
+
+        .empathyText,
+        .offerCard p:not(.kicker),
+        .bioCopy p {
+          font-size: 17px;
+          line-height: 1.8;
+        }
+
+        .buildItem p {
+          font-size: 23px;
+          line-height: 1.35;
         }
 
         .offers h2 {
@@ -656,7 +697,6 @@
         <a href="./program.html">12-Week Program</a>
         <a href="./workshop.html" class="navCta">Explore Workshops</a>
       </div>
-      <a href="./workshop.html" class="mobileNavCta">Workshops</a>
     </nav>
 
     <main>
