@@ -176,8 +176,8 @@
       .heroBuild {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding: 80px 52px 80px 56px;
+        justify-content: flex-start;
+        padding: 52px 52px 60px 56px;
         background: var(--cream-deep);
       }
 
@@ -212,7 +212,7 @@
 
       .empathy {
         background: var(--dark);
-        padding: 88px 52px;
+        padding: 52px 52px 44px;
       }
 
       .empathyInner {
@@ -221,7 +221,7 @@
       }
 
       .empathyQuote {
-        margin-bottom: 32px;
+        margin-bottom: 24px;
         color: var(--cream);
         font-family: "Cormorant Garamond", serif;
         font-size: clamp(24px, 3vw, 34px);
@@ -233,7 +233,7 @@
       .smallRule {
         width: 48px;
         height: 1.5px;
-        margin-bottom: 28px;
+        margin-bottom: 0;
         background: var(--accent);
       }
 
@@ -246,7 +246,7 @@
 
       .offers {
         background: var(--cream);
-        padding: 96px 52px;
+        padding: 56px 52px 84px;
       }
 
       .offersInner,
@@ -605,7 +605,7 @@
         .heroBuild {
           order: 4;
           border-top: 1px solid var(--line);
-          padding: 40px 24px 52px;
+          padding: 34px 24px 44px;
         }
 
         .about {
@@ -641,8 +641,16 @@
           text-align: center;
         }
 
-        .empathy,
-        .offers,
+        .empathy {
+          padding-top: 42px;
+          padding-bottom: 38px;
+        }
+
+        .offers {
+          padding-top: 44px;
+          padding-bottom: 56px;
+        }
+
         .about {
           padding-top: 60px;
           padding-bottom: 60px;
