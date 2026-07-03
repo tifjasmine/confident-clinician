@@ -33,9 +33,12 @@
     .ws-photo { display: block; width: 100%; height: 100%; object-fit: cover; }
 
     @media (max-width: 768px) {
-      #ws-nav { padding: 18px 24px; }
-      #ws-nav-links { display: none; }
-      #ws-nav-mobile-cta { display: inline-block !important; }
+      #ws-nav { align-items: center; flex-direction: column; gap: 12px; padding: 16px 18px; }
+      #ws-nav > a:first-child { font-size: 16px !important; letter-spacing: 0.085em !important; line-height: 1.2 !important; text-align: center; }
+      #ws-nav-links { display: flex !important; flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
+      #ws-nav-links a { font-size: 11px !important; letter-spacing: 0.055em !important; line-height: 1.1 !important; white-space: nowrap; }
+      #ws-nav-links a[href^="https://buy.stripe"] { display: none !important; }
+      #ws-nav-mobile-cta { display: none !important; }
 
       #ws-hero { grid-template-columns: 1fr; min-height: auto; }
       #ws-hero-left { padding: 48px 24px 36px; border-right: none; border-bottom: 1px solid #EDE4DC; }
@@ -56,8 +59,8 @@
       #ws-photo-slot { height: 260px !important; }
 
       .ws-h2 { font-size: clamp(28px, 7vw, 42px) !important; }
-      .ws-body { font-size: 16px !important; line-height: 1.85 !important; }
-      .ws-bullet-text { font-size: 16px !important; }
+      .ws-body { font-size: 17px !important; font-weight: 400 !important; line-height: 1.78 !important; }
+      .ws-bullet-text { font-size: 17px !important; font-weight: 400 !important; }
     }
   </style>
 
@@ -68,7 +71,7 @@
     <a href="./" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Home</a>
     <a href="./about.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">About Me</a>
     <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #B5522A; border-bottom: 1.5px solid #B5522A; padding-bottom: 2px;">Workshops</a>
-    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">12-Week Program</a>
+    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">12-Week Intensive</a>
     <a href="https://buy.stripe.com/price_1ToiPCCHrIjRFE8gpGM5lfy2" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 22px; background: #B5522A; color: #FAF7F3; border-radius: 2px;">Purchase Workshop</a>
   </div>
   <a id="ws-nav-mobile-cta" href="https://buy.stripe.com/price_1ToiPCCHrIjRFE8gpGM5lfy2" style="display: none; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 18px; background: #B5522A; color: #FAF7F3; border-radius: 2px;">Purchase</a>
@@ -220,27 +223,28 @@
       </div>
 
       <div>
-        <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">You'll Walk Away With</p>
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
-          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
-            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
-            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">A clearer understanding of why you feel stuck — and what to actually do about it</p>
+        <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #B5522A; margin-bottom: 34px;">What You'll Walk Away With</p>
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+          <div style="display: flex; gap: 26px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; background: #B5522A; border-radius: 50%; margin-top: 14px; flex-shrink: 0;"></div>
+            <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 400; line-height: 1.3; color: #3D1F0D;">Real words for when a client shuts down, cries before you saw it coming, or says something that catches you completely off guard</p>
           </div>
-          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
-            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
-            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">Real language for describing your therapeutic style to clients and colleagues</p>
+          <div style="display: flex; gap: 26px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; background: #B5522A; border-radius: 50%; margin-top: 14px; flex-shrink: 0;"></div>
+            <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 400; line-height: 1.3; color: #3D1F0D;">A way to stay grounded when your own nervous system is working against you in session</p>
           </div>
-          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
-            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
-            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">A simple way to reflect on sessions without spiraling into self-doubt</p>
+          <div style="display: flex; gap: 26px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; background: #B5522A; border-radius: 50%; margin-top: 14px; flex-shrink: 0;"></div>
+            <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 400; line-height: 1.3; color: #3D1F0D;">Session structure and case clarity so your work has a real thread instead of just floating wherever the client leads</p>
           </div>
-          <div style="display: flex; gap: 14px; align-items: flex-start; background: #F0E9E1; padding: 18px 20px;">
-            <div style="width: 6px; height: 6px; background: #B5522A; border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
-            <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C3520;">Permission to be human in the therapy room — not just technically correct</p>
+          <div style="display: flex; gap: 26px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; background: #B5522A; border-radius: 50%; margin-top: 14px; flex-shrink: 0;"></div>
+            <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 400; line-height: 1.3; color: #3D1F0D;">Boundaries that are warm, clear, and actually possible to hold without over-apologizing</p>
           </div>
-        </div>
-        <div style="border-left: 3px solid #B5522A; padding: 20px 24px; background: #F0E9E1;">
-          <p style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; line-height: 1.6; color: #3D1F0D;">Confidence isn't having all the answers. It's trusting yourself even when you don't.</p>
+          <div style="display: flex; gap: 26px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; background: #B5522A; border-radius: 50%; margin-top: 14px; flex-shrink: 0;"></div>
+            <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 400; line-height: 1.3; color: #3D1F0D;">A clinical voice that sounds like you. Not a textbook. Not your supervisor.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -320,9 +324,9 @@
     <div style="max-width: 620px;">
       <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #C8A898; margin-bottom: 14px;">What Comes Next</p>
       <h2 class="ws-h2" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 46px); font-weight: 400; line-height: 1.2; color: #FAF7F3; margin-bottom: 16px;">Ready to go deeper?</h2>
-      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #C8A898;">If the workshop helps you name what's felt scattered, the 12-week program gives you the space to actually build the clinical foundation — your lens, your language, your boundaries, your self-trust — that makes this work sustainable.</p>
+      <p class="ws-body" style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.85; color: #C8A898;">If the workshop helps you name what's felt scattered, the 12-week intensive gives you the space to actually build the clinical foundation — your lens, your language, your boundaries, your self-trust — that makes this work sustainable.</p>
     </div>
-    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border: 1.5px solid #C8A898; color: #FAF7F3; border-radius: 2px; white-space: nowrap; flex-shrink: 0;">View the 12-Week Program</a>
+    <a href="./program.html" style="display: inline-flex; align-items: center; justify-content: center; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; background: #FAF7F3; color: #3D1F0D; border: 1.5px solid #FAF7F3; border-radius: 2px; white-space: nowrap; flex-shrink: 0; box-shadow: 0 10px 24px rgba(0,0,0,0.18);">View the 12-Week Intensive</a>
   </div>
 </section>
 

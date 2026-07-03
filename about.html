@@ -30,8 +30,11 @@
     #about-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 
     @media (max-width: 768px) {
-      #about-nav { align-items: flex-start; flex-direction: column; gap: 14px; padding: 18px 24px; }
-      #about-nav-links { flex-wrap: wrap; gap: 10px 0; }
+      #about-nav { align-items: center; flex-direction: column; gap: 12px; padding: 16px 18px; }
+      #about-nav > a:first-child { font-size: 16px !important; letter-spacing: 0.085em !important; line-height: 1.2 !important; text-align: center; }
+      #about-nav-links { flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
+      #about-nav-links a { font-size: 11px !important; letter-spacing: 0.055em !important; line-height: 1.1 !important; white-space: nowrap; }
+      #about-nav-links a + a { border-left: 0; margin-left: 0; padding-left: 0; }
 
       #about-hero { grid-template-columns: 1fr; min-height: auto; }
       #about-hero-left { padding: 48px 24px 36px; border-right: none; border-bottom: 1px solid #EDE4DC; }
@@ -54,6 +57,10 @@
       #cta-section { padding: 48px 24px !important; }
       #about-footer { padding: 36px 24px !important; }
       #about-footer-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+      section p[style*="font-size: 14px"],
+      section p[style*="font-size: 15px"],
+      section p[style*="font-size: 16px"],
+      section p[style*="font-size: 17px"] { font-size: 17px !important; font-weight: 400 !important; line-height: 1.78 !important; }
     }
   </style>
   </head>
@@ -65,7 +72,7 @@
     <a href="./" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Home</a>
     <a href="./about.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #B5522A; border-bottom: 1.5px solid #B5522A; padding-bottom: 2px;">About Me</a>
     <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Workshops</a>
-    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">12-Week Program</a>
+    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">12-Week Intensive</a>
   </div>
 </nav>
 
@@ -200,7 +207,7 @@
   <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 500px; margin: 0 auto 44px;">Whether you need a focused workshop for one hard moment or a full 12-week reset — there's a place for you here. No judgment. No performance. Just real support for real clinical work.</p>
   <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
     <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; background: #B5522A; color: #FAF7F3; border-radius: 2px;">Join a Workshop</a>
-    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border: 1.5px solid #B5522A; color: #B5522A; border-radius: 2px;">The 12-Week Program</a>
+    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border: 1.5px solid #B5522A; color: #B5522A; border-radius: 2px;">The 12-Week Intensive</a>
   </div>
 </section>
 

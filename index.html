@@ -554,26 +554,36 @@
         }
 
         .siteNav {
-          align-items: flex-start;
+          align-items: center;
           flex-direction: column;
-          gap: 14px;
-          padding: 18px 24px;
+          gap: 12px;
+          padding: 16px 18px;
         }
 
         .brand {
-          font-size: 17px;
+          font-size: 16px;
           line-height: 1.2;
+          text-align: center;
         }
 
         .navLinks {
           display: flex;
           flex-wrap: wrap;
-          gap: 10px 0;
+          justify-content: center;
+          gap: 8px 12px;
         }
 
         .navLinks a {
-          font-size: 12px;
-          line-height: 1.25;
+          font-size: 11px;
+          letter-spacing: 0.055em;
+          line-height: 1.1;
+          white-space: nowrap;
+        }
+
+        .navLinks a + a {
+          border-left: 0;
+          margin-left: 0;
+          padding-left: 0;
         }
 
         .heroSplit {
@@ -617,6 +627,7 @@
         .heroLead {
           margin-bottom: 36px;
           font-size: 17px;
+          font-weight: 400;
           line-height: 1.82;
         }
 
@@ -646,6 +657,7 @@
         .offerCard p:not(.kicker),
         .bioCopy p {
           font-size: 17px;
+          font-weight: 400;
           line-height: 1.8;
         }
 
@@ -683,7 +695,7 @@
         <a href="./">Home</a>
         <a href="./about.html">About Me</a>
         <a href="./workshop.html">Workshops</a>
-        <a href="./program.html">12-Week Program</a>
+        <a href="./program.html">12-Week Intensive</a>
       </div>
     </nav>
 
@@ -693,11 +705,13 @@
           <p class="eyebrow">Professional Development for Newer Therapists</p>
           <h1>Build the clinical<br /><em>confidence</em><br />school didn't<br />fully teach you.</h1>
           <p class="heroLead">
-            Grad school gave you the theory. Supervision gave you feedback. But nobody actually taught you what to do when a client goes silent, you're running five minutes over, and your nervous system is convinced you're doing it all wrong.
+            Grad school gave you the theory. Supervision gave you feedback. But somewhere between the DSM and your first solo session, nobody covered the midnight replays, the boundary you kept meaning to hold, or the client who caught you off guard and you've been thinking about ever since.
+            <br /><br />
+            You're not broken. You're undertrained for the real stuff. Let's fix that.
           </p>
           <div class="buttonRow">
             <a href="./workshop.html" class="button primary">Join a Workshop</a>
-            <a href="./program.html" class="button outline">The 12-Week Program</a>
+            <a href="./program.html" class="button outline">The 12-Week Intensive</a>
           </div>
         </div>
 
@@ -732,7 +746,6 @@
         <div class="empathyInner">
           <p class="empathyQuote">"The hardest part of being a newer therapist isn't the work itself - it's doing the work while quietly wondering if you're doing it right."</p>
           <div class="smallRule"></div>
-          <p class="empathyText">The midnight replays. The sessions you overanalyzed for three days. The boundary you kept meaning to hold. The client who caught you off guard and you've been thinking about ever since. You're not broken - you're undertrained for the real stuff. Let's fix that.</p>
         </div>
       </section>
 
@@ -751,10 +764,10 @@
 
             <article class="offerCard dark">
               <p class="kicker">Deeper Transformation</p>
-              <h3>The 12-Week Program</h3>
+              <h3>The 12-Week Intensive</h3>
               <div class="cardRule"></div>
               <p>Twelve weeks to build the clinical foundation that grad school promised and didn't fully deliver. Presence, self-trust, boundaries, sustainability, and a voice that finally sounds like you - not a textbook.</p>
-              <a href="./program.html" class="button outline">View the Program</a>
+              <a href="./program.html" class="button outline">View the Intensive</a>
             </article>
           </div>
         </div>
@@ -772,7 +785,7 @@
 
           <div class="aboutGrid">
             <div class="photoFrame">
-              <img src="./tiffany-wright-headshot.jpg" alt="Tiffany McGilloway, LPC" />
+              <img src="./tiffany-wright-homepage.jpg" alt="Tiffany McGilloway, LPC" />
             </div>
 
             <div class="bioCopy">
