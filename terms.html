@@ -268,26 +268,31 @@
           padding-left: 24px;
         }
 
-        .siteNav { gap: 12px; padding-top: 16px; padding-bottom: 16px; }
-        .brand { font-size: 16px; letter-spacing: 0.085em; line-height: 1.2; text-align: center; }
+        .siteNav { background: var(--cream-deep); border-bottom-color: rgba(181, 82, 42, 0.22); gap: 12px; padding-top: 16px; padding-bottom: 16px; }
+        .brand { color: var(--dark); font-size: 16px; font-weight: 600; letter-spacing: 0.085em; line-height: 1.2; text-align: center; }
 
         .navLinks {
           flex-wrap: wrap;
           justify-content: center;
-          gap: 8px 12px;
+          gap: 8px;
         }
 
         .navLinks a {
+          background: rgba(250, 247, 243, 0.72);
+          border: 1px solid rgba(181, 82, 42, 0.24);
+          border-radius: 999px;
+          color: var(--brown);
           font-size: 11px;
           letter-spacing: 0.055em;
           line-height: 1.1;
+          padding: 8px 11px;
           white-space: nowrap;
         }
 
         .navLinks a + a {
-          border-left: 0;
+          border-left: 1px solid rgba(181, 82, 42, 0.24);
           margin-left: 0;
-          padding-left: 0;
+          padding-left: 11px;
         }
 
         .termsHero,

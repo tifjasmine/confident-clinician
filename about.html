@@ -30,11 +30,12 @@
     #about-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 
     @media (max-width: 768px) {
-      #about-nav { align-items: center; flex-direction: column; gap: 12px; padding: 16px 18px; }
-      #about-nav > a:first-child { font-size: 16px !important; letter-spacing: 0.085em !important; line-height: 1.2 !important; text-align: center; }
-      #about-nav-links { flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
-      #about-nav-links a { font-size: 11px !important; letter-spacing: 0.055em !important; line-height: 1.1 !important; white-space: nowrap; }
-      #about-nav-links a + a { border-left: 0; margin-left: 0; padding-left: 0; }
+      #about-nav { align-items: center; background: #F0E9E1; border-bottom-color: rgba(181, 82, 42, 0.22); flex-direction: column; gap: 12px; padding: 16px 18px; }
+      #about-nav > a:first-child { color: #3D1F0D; font-size: 16px !important; font-weight: 600; letter-spacing: 0.085em !important; line-height: 1.2 !important; text-align: center; }
+      #about-nav-links { flex-wrap: wrap; justify-content: center; gap: 8px; }
+      #about-nav-links a { background: rgba(250, 247, 243, 0.72); border: 1px solid rgba(181, 82, 42, 0.24); border-radius: 999px; color: #5C3520 !important; font-size: 11px !important; letter-spacing: 0.055em !important; line-height: 1.1 !important; padding: 8px 11px !important; white-space: nowrap; }
+      #about-nav-links a + a { border-left: 1px solid rgba(181, 82, 42, 0.24); margin-left: 0; padding-left: 0; }
+      #about-nav-links a[href="./about.html"] { background: #B5522A; border-color: #B5522A; color: #FAF7F3 !important; }
 
       #about-hero { grid-template-columns: 1fr; min-height: auto; }
       #about-hero-left { padding: 48px 24px 36px; border-right: none; border-bottom: 1px solid #EDE4DC; }

@@ -46,6 +46,8 @@
       @media (max-width: 900px) {
         nav {
           align-items: center !important;
+          background: #F0E9E1 !important;
+          border-bottom-color: rgba(181, 82, 42, 0.22) !important;
           flex-direction: column !important;
           gap: 12px !important;
           padding: 16px 18px !important;
@@ -54,11 +56,13 @@
         nav > div {
           flex-wrap: wrap !important;
           justify-content: center !important;
-          gap: 8px 12px !important;
+          gap: 8px !important;
         }
 
         nav > a:first-child {
+          color: #3D1F0D !important;
           font-size: 16px !important;
+          font-weight: 600 !important;
           letter-spacing: 0.085em !important;
           line-height: 1.2 !important;
           text-align: center !important;
@@ -66,12 +70,22 @@
 
         nav > div a {
           border-left: 0 !important;
+          background: rgba(250, 247, 243, 0.72) !important;
+          border: 1px solid rgba(181, 82, 42, 0.24) !important;
+          border-radius: 999px !important;
+          color: #5C3520 !important;
           margin-left: 0 !important;
-          padding-left: 0 !important;
           font-size: 11px !important;
           letter-spacing: 0.055em !important;
           line-height: 1.1 !important;
+          padding: 8px 11px !important;
           white-space: nowrap !important;
+        }
+
+        nav > div a[href="./program.html"] {
+          background: #B5522A !important;
+          border-color: #B5522A !important;
+          color: #FAF7F3 !important;
         }
 
         section,

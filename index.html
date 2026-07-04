@@ -555,13 +555,17 @@
 
         .siteNav {
           align-items: center;
+          background: #F0E9E1;
+          border-bottom: 1px solid rgba(181, 82, 42, 0.22);
           flex-direction: column;
           gap: 12px;
           padding: 16px 18px;
         }
 
         .brand {
+          color: var(--dark);
           font-size: 16px;
+          font-weight: 600;
           line-height: 1.2;
           text-align: center;
         }
@@ -570,20 +574,31 @@
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 8px 12px;
+          gap: 8px;
         }
 
         .navLinks a {
+          border: 1px solid rgba(181, 82, 42, 0.24);
+          border-radius: 999px;
+          background: rgba(250, 247, 243, 0.72);
+          color: var(--brown);
           font-size: 11px;
           letter-spacing: 0.055em;
           line-height: 1.1;
+          padding: 8px 11px;
           white-space: nowrap;
         }
 
         .navLinks a + a {
-          border-left: 0;
+          border-left: 1px solid rgba(181, 82, 42, 0.24);
           margin-left: 0;
-          padding-left: 0;
+          padding-left: 11px;
+        }
+
+        .navLinks a:first-child {
+          background: var(--accent);
+          border-color: var(--accent);
+          color: var(--cream);
         }
 
         .heroSplit {
@@ -766,7 +781,7 @@
               <p class="kicker">Quick Impact</p>
               <h3>Focused Workshops</h3>
               <div class="cardRule"></div>
-              <p>Short, focused trainings on the stuff nobody covers: what to actually say when a client shuts down, how to end a session without it feeling like abandonment, why documentation still makes you want to cry. Drop in for one topic. Leave with something real.</p>
+              <p>Short, focused trainings on the stuff nobody covers: what to actually say when a client shuts down, how to end a session without it feeling like abandonment, what to do about the documentation that still makes you want to cry. Drop in for one topic. Leave with clarity.</p>
               <a href="./workshop.html" class="button primary">View Workshops</a>
             </article>
 
