@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Sent | The Confident Clinician</title>
+  <meta name="description" content="Your message has been sent to The Confident Clinician.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F6F2EB;
+      --dark: #2A3C2F;
+      --mid: #5A6A52;
+      --accent: #C56A4D;
+      --sand: #D7C9B1;
+      --line: #E2DAD0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      font-family: 'Jost', sans-serif;
+      background: var(--dark);
+      color: var(--dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: min(100%, 680px);
+      background: var(--bg);
+      padding: clamp(40px, 7vw, 72px);
+      text-align: center;
+      border-top: 8px solid var(--accent);
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 7vw, 76px);
+      font-weight: 400;
+      line-height: 1;
+      color: var(--dark);
+      margin-bottom: 22px;
+    }
+
+    p {
+      max-width: 460px;
+      margin: 0 auto 32px;
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--mid);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    a {
+      display: inline-block;
+      padding: 14px 28px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .primary {
+      background: var(--dark);
+      color: var(--bg);
+    }
+
+    .secondary {
+      border: 1.5px solid var(--dark);
+      color: var(--dark);
+    }
+
+    @media (max-width: 560px) {
+      .card { padding: 40px 24px; }
+      a { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <p class="eyebrow">Message Sent</p>
+    <h1>Thank you.</h1>
+    <p>Details en route! You will receive a response within the next 48 hours.</p>
+    <div class="actions">
+      <a class="primary" href="./program.html">Back to the Intensive</a>
+      <a class="secondary" href="./">Home</a>
+    </div>
+  </main>
+</body>
+</html>

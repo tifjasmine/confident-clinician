@@ -1,224 +1,288 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Tiffany McGilloway | The Confident Clinician</title>
-    <meta name="description" content="Meet Tiffany McGilloway, LPC, founder of The Confident Clinician and The Embodied Self." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Jost', sans-serif; background: #FAF7F3; color: #3D1F0D; }
-    a { text-decoration: none; color: inherit; }
-
-    #about-nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 52px; background: #FAF7F3; border-bottom: 1px solid #EDE4DC; position: relative; z-index: 10; }
-    #about-nav-links { display: flex; align-items: center; gap: 0; }
-    #about-nav-links a + a { border-left: 1px solid rgba(92, 53, 32, 0.24); margin-left: 18px; padding-left: 18px; }
-
-    #about-hero { display: grid; grid-template-columns: 55fr 45fr; min-height: 500px; background: #FAF7F3; }
-    #about-hero-left { display: flex; flex-direction: column; justify-content: center; padding: 72px 56px 72px 52px; border-right: 1px solid #EDE4DC; }
-    #about-hero-right { display: flex; align-items: center; justify-content: center; background: #F0E9E1; padding: 52px; }
-    #about-headshot { width: 100%; max-width: 340px; height: 420px; object-fit: cover; object-position: 48% 34%; border-radius: 4px; display: block; }
-
-    #real-story-grid { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: 64px; align-items: center; margin-bottom: 34px; }
-    #real-story-panel { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr); gap: 44px; align-items: center; border-top: 1px solid #DDD0C4; padding-top: 38px; }
-    #training-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
-    #embodied-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
-    #beliefs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; }
-    #about-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-
-    @media (max-width: 768px) {
-      #about-nav { align-items: center; background: #F0E9E1; border-bottom-color: rgba(181, 82, 42, 0.22); flex-direction: column; gap: 12px; padding: 16px 18px; }
-      #about-nav > a:first-child { color: #3D1F0D; font-size: 16px !important; font-weight: 600; letter-spacing: 0.085em !important; line-height: 1.2 !important; text-align: center; }
-      #about-nav-links { flex-wrap: wrap; justify-content: center; gap: 8px; }
-      #about-nav-links a { background: rgba(250, 247, 243, 0.72); border: 1px solid rgba(181, 82, 42, 0.24); border-radius: 999px; color: #5C3520 !important; font-size: 11px !important; letter-spacing: 0.055em !important; line-height: 1.1 !important; padding: 8px 11px !important; white-space: nowrap; }
-      #about-nav-links a + a { border-left: 1px solid rgba(181, 82, 42, 0.24); margin-left: 0; padding-left: 0; }
-      #about-nav-links a[href="./about.html"] { background: #B5522A; border-color: #B5522A; color: #FAF7F3 !important; }
-
-      #about-hero { grid-template-columns: 1fr; min-height: auto; }
-      #about-hero-left { padding: 48px 24px 36px; border-right: none; border-bottom: 1px solid #EDE4DC; }
-      #about-hero-right { padding: 36px 24px 48px; }
-      #about-headshot { max-width: 100% !important; height: 300px !important; }
-
-      #real-story-section { padding: 48px 24px !important; }
-      #real-story-grid { grid-template-columns: 1fr; gap: 32px; margin-bottom: 40px; }
-      #real-story-panel { grid-template-columns: 1fr; gap: 28px; padding-top: 32px; }
-
-      #training-section { padding: 48px 24px !important; }
-      #training-grid { grid-template-columns: 1fr !important; gap: 2px !important; }
-
-      #embodied-section { padding: 48px 24px !important; }
-      #embodied-grid { grid-template-columns: 1fr; gap: 48px; }
-
-      #beliefs-section { padding: 48px 24px !important; }
-      #beliefs-grid { grid-template-columns: 1fr; gap: 36px; }
-
-      #cta-section { padding: 48px 24px !important; }
-      #about-footer { padding: 36px 24px !important; }
-      #about-footer-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
-      section p[style*="font-size: 14px"],
-      section p[style*="font-size: 15px"],
-      section p[style*="font-size: 16px"],
-      section p[style*="font-size: 17px"] { font-size: 17px !important; font-weight: 400 !important; line-height: 1.78 !important; }
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Tiffany McGilloway | The Confident Clinician</title>
+  
+  <meta name="description" content="Meet Tiffany McGilloway, LPC, founder of The Confident Clinician and The Embodied Self.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F6F2EB;
+      --dark: #2A3C2F;
+      --mid: #5A6A52;
+      --accent: #C56A4D;
+      --sage: #6B7F5E;
+      --tan: #D7C9B1;
+      --sand: #EDE5D8;
+      --line: #E2DAD0;
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--dark); -webkit-font-smoothing: antialiased; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* NAV */
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 52px; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+    .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dark); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); }
+    .nav-links a.active { color: var(--accent); border-bottom: 1.5px solid var(--accent); padding-bottom: 2px; }
+    .nav-cta { background: var(--dark) !important; color: var(--bg) !important; padding: 10px 22px; }
+
+    /* HERO */
+    .hero { display: grid; grid-template-columns: 55fr 45fr; min-height: 520px; }
+    .hero-left { display: flex; flex-direction: column; justify-content: flex-start; padding: 120px 56px 56px 52px; background: var(--bg); }
+    .hero-right { overflow: hidden; background: var(--tan); position: relative; }
+    .hero-right img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
+    .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+    .hero-h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 5vw, 68px); font-weight: 400; line-height: 1.08; color: var(--dark); margin-bottom: 24px; }
+    .hero-h1 em { font-style: italic; color: var(--accent); }
+    .hero-lead { font-size: 16px; font-weight: 300; line-height: 1.8; color: var(--mid); max-width: 460px; }
+
+    /* STRIP */
+    .strip { background: var(--dark); padding: 18px 52px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .strip a { display: inline-block; min-width: 190px; padding: 13px 24px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; }
+    .strip .strip-workshops { background: var(--bg); color: var(--dark); }
+    .strip .strip-intensive { background: var(--accent); color: var(--bg); }
+
+    /* STORY SECTION */
+    .story { background: var(--sand); padding: 80px 52px; }
+    .story-inner { max-width: 1060px; margin: 0 auto; }
+    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; margin-bottom: 52px; }
+    .story-h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.12; color: var(--dark); }
+    .story-lead { font-size: 16px; font-weight: 300; line-height: 1.85; color: #3A3A2A; margin-top: 16px; }
+    .story-body { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 44px; align-items: start; padding-top: 40px; border-top: 1px solid var(--line); }
+    .story-body p { font-size: 15px; font-weight: 300; line-height: 1.85; color: #3A3A2A; margin-bottom: 16px; }
+    .story-body p:last-child { margin-bottom: 0; }
+    .pull-quote-box { background: rgba(246,242,235,0.8); border-left: 3px solid var(--accent); padding: 28px 30px; }
+    .pull-quote-label { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .pull-quote-text { font-family: 'Cormorant Garamond', serif; font-size: clamp(19px, 2vw, 25px); font-weight: 500; font-style: italic; line-height: 1.55; color: #1C2A20; }
+
+    /* TRAINING */
+    .training { background: var(--bg); padding: 80px 52px; }
+    .training-inner { max-width: 1060px; margin: 0 auto; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .section-h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 46px); font-weight: 400; line-height: 1.15; color: var(--dark); margin-bottom: 44px; }
+    .training-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .training-col { display: flex; flex-direction: column; gap: 2px; }
+    .training-card { background: var(--sand); padding: 40px 36px; display: flex; flex-direction: column; gap: 14px; }
+    .card-h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: var(--dark); }
+    .training-intro { max-width: 760px; font-size: 16px; font-weight: 300; line-height: 1.8; color: #3A3A2A; margin: -22px 0 44px; }
+    .card-body { font-size: 14px; font-weight: 300; line-height: 1.75; color: #3A3A2A; }
+    .card-body + .card-body { margin-top: -4px; }
+    .card-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+    .training-img { width: 100%; height: 280px; object-fit: cover; object-position: 50% 48%; display: block; }
+
+    /* EMBODIED SELF */
+    .embodied { background: var(--dark); padding: 80px 52px; }
+    .embodied-inner { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+    .embodied-h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.15; color: var(--bg); margin-bottom: 16px; }
+    .embodied-sub { font-size: 14px; font-weight: 300; line-height: 1.75; color: rgba(246,242,235,0.55); margin-bottom: 28px; }
+    .embodied-rule { width: 40px; height: 2px; background: var(--accent); margin-bottom: 24px; }
+    .embodied-link { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bg); border-bottom: 1px solid rgba(246,242,235,0.35); padding-bottom: 2px; }
+    .embodied-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .embodied-body p { font-size: 15px; font-weight: 300; line-height: 1.85; color: rgba(246,242,235,0.65); margin-bottom: 18px; }
+    .embodied-body p:last-child { margin-bottom: 0; }
+    .embodied-pullquote { background: rgba(197,106,77,0.15); border-left: 3px solid var(--accent); padding: 24px 28px; margin-top: 28px; }
+    .embodied-pullquote p { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; font-style: italic; line-height: 1.6; color: var(--bg); }
+
+    /* BELIEFS */
+    .beliefs { background: var(--tan); padding: 80px 52px; }
+    .beliefs-inner { max-width: 1060px; margin: 0 auto; }
+    .beliefs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; }
+    .belief-rule { width: 36px; height: 2px; background: var(--accent); margin-bottom: 18px; }
+    .belief-h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.45; color: var(--dark); margin-bottom: 12px; }
+    .belief-p { font-size: 14px; font-weight: 300; line-height: 1.75; color: #3A3A2A; }
+
+    /* CTA */
+    .cta { background: var(--sage); padding: 80px 52px; text-align: center; }
+    .cta-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(246,242,235,0.7); margin-bottom: 16px; }
+    .cta-h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.2; color: var(--bg); margin-bottom: 20px; }
+    .cta-h2 em { font-style: italic; }
+    .cta-lead { font-size: 15px; font-weight: 300; line-height: 1.8; color: rgba(246,242,235,0.75); max-width: 500px; margin: 0 auto 40px; }
+    .cta-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 30px; }
+    .btn-cream { background: var(--bg); color: var(--dark); }
+    .btn-outline { border: 1.5px solid rgba(246,242,235,0.5); color: var(--bg); }
+
+    /* FOOTER */
+    .footer { background: var(--dark); padding: 40px 52px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: 1100px; margin: 0 auto; }
+    .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; letter-spacing: 0.08em; color: var(--bg); text-transform: uppercase; margin-bottom: 4px; }
+    .footer-sub { font-size: 12px; font-weight: 300; color: rgba(246,242,235,0.35); }
+    .footer-note { font-size: 11px; font-weight: 300; color: rgba(246,242,235,0.25); }
+
+    @media (max-width: 900px) {
+      .nav { flex-direction: column; gap: 12px; padding: 16px 18px; }
+      .nav-brand { text-align: center; font-size: 16px; line-height: 1.2; }
+      .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .nav-links a { background: rgba(246,242,235,0.72); border: 1px solid rgba(42,60,47,0.16); border-radius: 999px; color: var(--dark); font-size: 11px; letter-spacing: 0.055em; line-height: 1.1; padding: 8px 11px; white-space: nowrap; }
+      .nav-links a.active { background: var(--accent); border-color: var(--accent); color: var(--bg); padding-bottom: 8px; }
+      .nav-links a.nav-cta { background: var(--dark) !important; border-color: var(--dark); color: var(--bg) !important; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-right { min-height: 320px; }
+      .hero-left { padding: 44px 24px 52px; }
+      .strip { padding: 14px 24px; }
+      .story, .training, .embodied, .beliefs, .cta { padding: 56px 24px; }
+      .story-grid { grid-template-columns: 1fr; gap: 28px; }
+      .story-body { grid-template-columns: 1fr; gap: 32px; }
+      .training-grid { grid-template-columns: 1fr; }
+      .embodied-inner { grid-template-columns: 1fr; gap: 40px; }
+      .beliefs-grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer { padding: 36px 24px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  
+      @media (max-width: 560px) {
+        .hero-h1 { font-size: clamp(40px, 13vw, 56px); }
+        .cta-btns .btn { width: 100%; text-align: center; }
+        .training-img { height: 240px; }
+      }
   </style>
-  </head>
-  <body>
-<!-- NAV -->
-<nav id="about-nav">
-  <a href="./" style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; letter-spacing: 0.1em; color: #3D1F0D; text-transform: uppercase;">The Confident Clinician</a>
-  <div id="about-nav-links">
-    <a href="./" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Home</a>
-    <a href="./about.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #B5522A; border-bottom: 1.5px solid #B5522A; padding-bottom: 2px;">About Me</a>
-    <a href="./workshop.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">Workshops</a>
-    <a href="./program.html" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5C3520;">12-Week Intensive</a>
-  </div>
-</nav>
+</head>
+<body>
 
-<!-- PAGE HEADER -->
-<section id="about-hero" data-screen-label="Header">
-  <div id="about-hero-left">
-    <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A; margin-bottom: 24px;">Meet the Founder</p>
-    <h1 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 5vw, 68px); font-weight: 500; line-height: 1.08; color: #3D1F0D; margin-bottom: 28px;">I'm Tiffany McGilloway.<br><em style="font-style: italic; color: #B5522A;">I built this for you.</em></h1>
-    <p style="font-family: 'Jost', sans-serif; font-size: 17px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 460px;">LPC. Founder of The Confident Clinician and The Embodied Self. Former midnight-Googler. Current believer that newer therapists deserve way better support than they're getting.</p>
-  </div>
-  <div id="about-hero-right">
-    <img id="about-headshot" src="./about-tiffany-portrait.jpg" alt="Tiffany McGilloway, LPC" />
-  </div>
-</section>
-
-<!-- THE REAL STORY -->
-<section id="real-story-section" data-screen-label="The Real Story" style="background: #F0E9E1; padding: 78px 52px;">
-  <div style="max-width: 1060px; margin: 0 auto;">
-
-    <div id="real-story-grid">
-      <div>
-        <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">The Real Story</p>
-        <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 52px); font-weight: 400; line-height: 1.12; color: #3D1F0D; max-width: 520px;">Spoiler: one more CEU never actually fixed it.</h2>
-      </div>
-      <p style="font-family: 'Jost', sans-serif; font-size: 17px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 610px;">I took the trainings. I read the books. I had a supervisor I respected. And I was still Googling "what to do when a client cries and you run out of time" at 10:30pm on a Tuesday.</p>
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="./" class="nav-brand">The Confident Clinician</a>
+    <div class="nav-links">
+      <a href="./">Home</a>
+      <a href="./about.html" class="active">About Me</a>
+      <a href="./workshop.html">Workshops</a>
+      <a href="./program.html">12-Week Intensive</a>
+      <a href="./program.html" class="nav-cta">Join the Waitlist</a>
     </div>
+  </nav>
 
-    <div id="real-story-panel">
-      <div>
-        <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #5C3520; margin-bottom: 20px;">The questions I typed at midnight were embarrassingly relatable: "How do I end a session on time without feeling like I'm abandoning someone?" "What do I actually say when a client goes silent for two minutes?" "Am I the only one who drives home replaying everything I said?" (You're not. I promise.)</p>
-        <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #5C3520; margin-bottom: 20px;">I created The Confident Clinician because I was that therapist - caring, trained, genuinely trying - and still feeling like I was winging it in the moments that mattered most.</p>
-        <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #5C3520;">My work brings together clinical clarity, nervous system awareness, self-trust, and embodied presence because the therapist is not separate from the work. You being okay matters. You having a voice matters. You trusting yourself in that room matters.</p>
-      </div>
-      <div style="border-left: 3px solid #B5522A; background: rgba(250, 247, 243, 0.52); padding: 28px 30px;">
-        <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A; margin-bottom: 16px;">The missing bridge</p>
-        <p style="font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 1.9vw, 24px); font-weight: 400; font-style: italic; line-height: 1.44; color: #3D1F0D;">Between theory and real sessions.<br><br>Between training and confidence.<br><br>Between "I know the information" and "I know how to be with this person in front of me."</p>
-      </div>
+  <!-- HERO -->
+  <section class="hero" data-screen-label="Hero">
+    <div class="hero-left">
+      <p class="eyebrow">Meet the Founder</p>
+      <h1 class="hero-h1">I'm Tiffany McGilloway.<br><em>I built this for you.</em></h1>
+      <p class="hero-lead">LPC. Founder of The Confident Clinician and The Embodied Self. Former midnight-Googler. Current believer that newer therapists deserve way better support than they're getting.</p>
     </div>
+    <div class="hero-right">
+      <img src="./official-me.png" alt="Tiffany McGilloway, LPC in office">
+    </div>
+  </section>
+
+  <!-- STRIP -->
+  <div class="strip">
+    <a href="./workshop.html" class="strip-workshops">View Workshops</a>
+    <a href="./program.html" class="strip-intensive">View Intensive</a>
   </div>
-</section>
 
-<!-- TRAINING & BACKGROUND -->
-<section id="training-section" data-screen-label="Training" style="background: #FAF7F3; padding: 96px 52px;">
-  <div style="max-width: 1060px; margin: 0 auto;">
-    <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">Training and Background</p>
-    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; line-height: 1.15; color: #3D1F0D; margin-bottom: 20px;">Some things that shape how I show up in the room.</h2>
-
-    <div id="training-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px;">
-
-      <!-- Left column: two stacked cards -->
-      <div style="display: flex; flex-direction: column; gap: 2px;">
-        <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; gap: 16px;">
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Clinical foundation</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">I am a Licensed Professional Counselor with a Master of Science degree in Mental Health Counseling and years of experience supporting adults, children, teens, and families across a range of mental health settings.</p>
-          <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A;">Psychotherapy</p>
+  <!-- STORY -->
+  <section class="story" data-screen-label="The Real Story">
+    <div class="story-inner">
+      <div class="story-grid">
+        <div>
+          <p class="section-label">The Real Story</p>
+          <h2 class="story-h2">Spoiler: one more CEU never actually fixed it.</h2>
         </div>
-        <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; gap: 16px;">
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Mind-body training</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">My background includes yoga, therapeutic yoga training, mindfulness, movement-based practices, and somatic awareness. I often help clients notice how emotions, stress, and old patterns live in the body.</p>
-          <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A;">Embodiment</p>
+        <p class="story-lead">I took the trainings. I read the books. I had a supervisor I respected. And I was still Googling "what to do when a client cries and you run out of time" at 10:30pm on a Tuesday.</p>
+      </div>
+      <div class="story-body">
+        <div>
+          <p>The questions I typed at midnight were embarrassingly relatable: "How do I end a session on time without feeling like I'm abandoning someone?" "What do I actually say when a client goes silent for two minutes?" "Am I the only one who drives home replaying everything I said?" (You're not. I promise.)</p>
+          <p>I created The Confident Clinician because I was that therapist — caring, trained, genuinely trying — and still feeling like I was winging it in the moments that mattered most.</p>
+          <p>My work brings together clinical clarity, nervous system awareness, self-trust, and embodied presence because the therapist is not separate from the work. You being okay matters. You having a voice matters. You trusting yourself in that room matters.</p>
+        </div>
+        <div class="pull-quote-box">
+          <p class="pull-quote-label">The missing bridge</p>
+          <p class="pull-quote-text">Between theory and real sessions.<br><br>Between training and confidence.<br><br>Between "I know the information" and "I know how to be with this person in front of me."</p>
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- Right column: photo + movement card -->
-      <div style="display: flex; flex-direction: column; gap: 2px;">
-        <img src="./tiffany-mcgilloway-movement.jpg" alt="Tiffany balancing on handstand canes outdoors" style="width: 100%; height: 280px; display: block; object-fit: cover; object-position: 50% 48%;">
-        <div style="background: #F0E9E1; padding: 40px 36px; display: flex; flex-direction: column; gap: 16px;">
-          <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.3; color: #3D1F0D;">Creative movement</h3>
-          <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">My movement background includes cheerleading, partner dance, and circus-inspired practices such as handstands, contortion, partner acrobatics, and aerial arts.</p>
-          <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A;">Movement</p>
+  <!-- TRAINING -->
+  <section class="training" data-screen-label="Training">
+    <div class="training-inner">
+      <p class="section-label">Training and Background</p>
+      <h2 class="section-h2">Where my clinical skills meet embodied confidence.</h2>
+      <p class="training-intro">The way I teach is shaped by three things: clinical training, mind-body work, and years of creative movement. Together, they influence how I think about confidence, presence, and what it actually takes to feel steady in the therapy room.</p>
+      <div class="training-grid">
+        <div class="training-col">
+          <div class="training-card">
+            <h3 class="card-h3">Clinical foundation</h3>
+            <p class="card-body">I am a Licensed Professional Counselor with a Master of Science in Mental Health Counseling and experience supporting adults, children, teens, and families across a range of mental health settings.</p>
+            <p class="card-body">This gives my work a strong clinical and ethical foundation, but I also know that theory alone does not prepare you for every real-life moment in session.</p>
+            <p class="card-tag">Psychotherapy</p>
+          </div>
+          <div class="training-card">
+            <h3 class="card-h3">Mind-body training</h3>
+            <p class="card-body">My background includes yoga, therapeutic yoga training, mindfulness, movement-based practices, and somatic awareness.</p>
+            <p class="card-body">This lens helps me teach clinicians how to notice what is happening in the room, in the client, and in themselves, especially when the work feels uncertain, emotional, or activating.</p>
+            <p class="card-tag">Embodiment</p>
+          </div>
+        </div>
+        <div class="training-col">
+          <img class="training-img" src="./tiffany-mcgilloway-movement.jpg" alt="Tiffany balancing on handstand canes outdoors">
+          <div class="training-card">
+            <h3 class="card-h3">Creative movement</h3>
+            <p class="card-body">My movement background includes cheerleading, partner dance, circus-inspired practices, handstands, contortion, partner acrobatics, and aerial arts.</p>
+            <p class="card-body">Movement taught me that confidence is not something you simply "have." It is something you practice. You build it through repetition, feedback, risk, adjustment, and learning how to recover when things do not go perfectly.</p>
+            <p class="card-tag">Movement</p>
+          </div>
         </div>
       </div>
+    </div>
+  </section>
 
-    </div>
-  </div>
-</section>
-
-<!-- THE EMBODIED SELF -->
-<section id="embodied-section" data-screen-label="The Embodied Self" style="background: #3D1F0D; padding: 78px 52px;">
-  <div style="max-width: 1060px; margin: 0 auto;">
-    <div id="embodied-grid">
-    <div>
-      <p style="font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #C8A898; margin-bottom: 16px;">My Practice</p>
-      <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 52px); font-weight: 400; line-height: 1.15; color: #FAF7F3; margin-bottom: 20px;">The Embodied Self</h2>
-      <div style="width: 40px; height: 1.5px; background: #B5522A; margin-bottom: 24px;"></div>
-      <p style="font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300; line-height: 1.75; color: #C8A898; margin-bottom: 32px;">Virtual therapy in Pennsylvania &amp; New Jersey</p>
-      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-        <a href="https://theembodiedself.me" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #C8A898; border-bottom: 1px solid #C8A898; padding-bottom: 2px;">Visit theembodiedself.me</a>
-        <a href="https://calendly.com/therapywithtiffany/therapy-session" style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #FAF7F3;">Book a Session</a>
-      </div>
-    </div>
-    <div>
-      <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #C8A898; margin-bottom: 20px;">Outside of The Confident Clinician, I run a private therapy practice for women who are tired of holding everything together while quietly falling apart. The anxiety. The sadness. The burnout. The "I should have it more together by now" feeling.</p>
-      <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: #C8A898; margin-bottom: 32px;">The work I do combines evidence-based talk therapy with body-based and mindfulness-informed approaches — because understanding the nervous system intellectually is not the same as actually learning to regulate it.</p>
-      <div style="border-left: 3px solid #B5522A; padding: 24px 28px; background: rgba(181,82,42,0.1);">
-        <p style="font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 400; font-style: italic; line-height: 1.65; color: #FAF7F3;">You are not sitting across from a wall of credentials. You are sitting with someone who has done their own work, stays curious, and brings as much of themselves into the room as they ask you to.</p>
-      </div>
-    </div>
-    </div>
-  </div>
-</section>
-
-<!-- WHAT I BELIEVE -->
-<section id="beliefs-section" data-screen-label="What I Believe" style="background: #F0E9E1; padding: 76px 52px;">
-  <div style="max-width: 1060px; margin: 0 auto;">
-    <div id="beliefs-grid">
+  <!-- EMBODIED SELF -->
+  <section class="embodied" data-screen-label="The Embodied Self">
+    <div class="embodied-inner">
       <div>
-        <div style="width: 36px; height: 1.5px; background: #B5522A; margin-bottom: 20px;"></div>
-        <p style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.5; color: #3D1F0D; margin-bottom: 14px;">The discomfort means you care.</p>
-        <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">The therapists who worry about whether they're doing it right are usually the ones doing it thoughtfully. You don't need to stop questioning. You need a better place to put those questions.</p>
+        <p class="section-label" style="color:rgba(246,242,235,0.5);">My Practice</p>
+        <h2 class="embodied-h2">The Embodied Self</h2>
+        <div class="embodied-rule"></div>
+        <p class="embodied-sub">Virtual therapy in Pennsylvania &amp; New Jersey</p>
+        <div class="embodied-links">
+          <a href="https://theembodiedself.me" class="embodied-link">Visit theembodiedself.me</a>
+          <a href="https://calendly.com/therapywithtiffany/therapy-session" class="embodied-link" style="border-bottom-color:var(--accent);color:var(--accent);">Book a Session</a>
+        </div>
       </div>
-      <div>
-        <div style="width: 36px; height: 1.5px; background: #B5522A; margin-bottom: 20px;"></div>
-        <p style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.5; color: #3D1F0D; margin-bottom: 14px;">Your presence is part of the treatment.</p>
-        <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">The research is clear: the therapeutic relationship is one of the most significant factors in outcomes. That means you, regulated and grounded and real, is clinical work. Not a nice-to-have.</p>
-      </div>
-      <div>
-        <div style="width: 36px; height: 1.5px; background: #B5522A; margin-bottom: 20px;"></div>
-        <p style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.5; color: #3D1F0D; margin-bottom: 14px;">A career you can't sustain helps no one.</p>
-        <p style="font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C3520;">Burnout doesn't just inconvenience you. It ends careers and harms clients. Learning to protect yourself isn't the opposite of being a good therapist. It's what makes it possible to stay one.</p>
+      <div class="embodied-body">
+        <p>Outside of The Confident Clinician, I run a private therapy practice for women who are tired of holding everything together while quietly falling apart. The anxiety. The sadness. The burnout. The "I should have it more together by now" feeling.</p>
+        <p>The work I do combines evidence-based talk therapy with body-based and mindfulness-informed approaches — because understanding the nervous system intellectually is not the same as actually learning to regulate it.</p>
+        <div class="embodied-pullquote">
+          <p>You are not sitting across from a wall of credentials. You are sitting with someone who has done their own work, stays curious, and brings as much of themselves into the room as they ask you to.</p>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- CTA -->
-<section id="cta-section" data-screen-label="CTA" style="padding: 76px 52px; background: #FAF7F3; text-align: center;">
-  <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #B5522A; margin-bottom: 20px;">You Found the Right Place</p>
-  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 52px); font-weight: 400; line-height: 1.2; color: #3D1F0D; margin-bottom: 20px; max-width: 640px; margin-left: auto; margin-right: auto;">Stop Googling at midnight.<br><em style="font-style: italic;">Start here.</em></h2>
-  <p style="font-family: 'Jost', sans-serif; font-size: 16px; font-weight: 300; line-height: 1.8; color: #5C3520; max-width: 500px; margin: 0 auto 44px;">Whether you need a focused workshop for one hard moment or a full 12-week reset — there's a place for you here. No judgment. No performance. Just real support for real clinical work.</p>
-  <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
-    <a href="./workshop.html" style="display: inline-flex; align-items: center; justify-content: center; min-height: 48px; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; background: #B5522A; color: #FAF7F3; border: 1.5px solid #B5522A; border-radius: 2px; box-shadow: 0 10px 22px rgba(181, 82, 42, 0.16);">Join a Workshop</a>
-    <a href="./program.html" style="display: inline-flex; align-items: center; justify-content: center; min-height: 48px; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; background: #F0E9E1; border: 1.5px solid #B5522A; color: #3D1F0D; border-radius: 2px;">The 12-Week Intensive</a>
-  </div>
-</section>
 
-<!-- FOOTER -->
-<footer id="about-footer" style="background: #3D1F0D; padding: 44px 52px;">
-  <div id="about-footer-inner" style="max-width: 1100px; margin: 0 auto;">
-    <div>
-      <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; letter-spacing: 0.08em; color: #FAF7F3; text-transform: uppercase; margin-bottom: 6px;">The Confident Clinician</p>
-      <p style="font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; color: #C8A898;">Created by Tiffany McGilloway, LPC · Founder of The Embodied Self</p>
+
+  <!-- CTA -->
+  <section class="cta" data-screen-label="CTA">
+    <p class="cta-eyebrow">You Found the Right Place</p>
+    <h2 class="cta-h2">Stop Googling at midnight.<br><em>Start here.</em></h2>
+    <p class="cta-lead">Whether you need a focused workshop for one hard moment or a full 12-week reset — there's a place for you here. No judgment. No performance. Just real support for real clinical work.</p>
+    <div class="cta-btns">
+      <a href="./workshop.html" class="btn btn-cream">Join a Workshop</a>
+      <a href="./program.html" class="btn btn-outline">The 12-Week Intensive</a>
     </div>
-    <p style="font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 300; color: #9C7060;">Not a substitute for clinical supervision</p>
-  </div>
-</footer>
-  </body>
-</html>
+  </section>
+
+<!-- GOOGLE PROFILE MAP -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <p class="footer-brand">The Confident Clinician</p>
+        <p class="footer-sub">Created by Tiffany McGilloway, LPC · theconfidentclinician.me</p>
+      </div>
+      <p class="footer-note">Not a substitute for clinical supervision</p>
+    </div>
+  </footer>
+
+
+
+</body></html>

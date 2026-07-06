@@ -16,15 +16,20 @@
     />
     <style>
       :root {
-        --cream: #faf7f3;
-        --cream-deep: #f0e9e1;
-        --line: #ede4dc;
-        --line-strong: #e8ddd4;
-        --dark: #3d1f0d;
-        --brown: #5c3520;
-        --accent: #b5522a;
-        --clay: #c8a898;
-        --muted-clay: #9c7060;
+        --bg: #F6F2EB;
+        --dark: #2A3C2F;
+        --mid: #5A6A52;
+        --accent: #C56A4D;
+        --sage: #6B7F5E;
+        --tan: #D7C9B1;
+        --sand: #EDE5D8;
+        --line: #E2DAD0;
+        --cream: var(--bg);
+        --cream-deep: var(--sand);
+        --line-strong: var(--line);
+        --brown: #3A4A34;
+        --clay: var(--tan);
+        --muted-clay: rgba(215, 201, 177, 0.62);
       }
 
       *,
@@ -74,7 +79,7 @@
       .navLinks {
         display: flex;
         align-items: center;
-        gap: 0;
+        gap: 28px;
       }
 
       .navLinks a {
@@ -86,9 +91,9 @@
       }
 
       .navLinks a + a {
-        border-left: 1px solid rgba(92, 53, 32, 0.24);
-        margin-left: 18px;
-        padding-left: 18px;
+        border-left: 0;
+        margin-left: 0;
+        padding-left: 0;
       }
 
       .termsHero {
@@ -205,7 +210,7 @@
       }
 
       .footer {
-        border-top: 1px solid rgba(200, 168, 152, 0.15);
+        border-top: 1px solid rgba(215, 201, 177, 0.15);
         background: var(--dark);
         padding: 44px 52px;
       }
@@ -268,7 +273,7 @@
           padding-left: 24px;
         }
 
-        .siteNav { background: var(--cream-deep); border-bottom-color: rgba(181, 82, 42, 0.22); gap: 12px; padding-top: 16px; padding-bottom: 16px; }
+        .siteNav { background: var(--bg); border-bottom-color: var(--line); gap: 12px; padding-top: 16px; padding-bottom: 16px; }
         .brand { color: var(--dark); font-size: 16px; font-weight: 600; letter-spacing: 0.085em; line-height: 1.2; text-align: center; }
 
         .navLinks {
@@ -278,10 +283,10 @@
         }
 
         .navLinks a {
-          background: rgba(250, 247, 243, 0.72);
-          border: 1px solid rgba(181, 82, 42, 0.24);
+          background: rgba(246, 242, 235, 0.72);
+          border: 1px solid rgba(42, 60, 47, 0.16);
           border-radius: 999px;
-          color: var(--brown);
+          color: var(--dark);
           font-size: 11px;
           letter-spacing: 0.055em;
           line-height: 1.1;
@@ -290,7 +295,7 @@
         }
 
         .navLinks a + a {
-          border-left: 1px solid rgba(181, 82, 42, 0.24);
+          border-left: 0;
           margin-left: 0;
           padding-left: 11px;
         }
@@ -534,6 +539,8 @@
         </div>
       </section>
     </main>
+
+<!-- GOOGLE PROFILE MAP -->
 
     <footer class="footer">
       <div class="footerInner">

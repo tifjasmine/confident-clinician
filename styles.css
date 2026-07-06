@@ -1,14 +1,20 @@
 :root {
-  --cream: #f6efe6;
-  --cream-2: #fbf7f0;
-  --cream-3: #e5d9c8;
-  --dark: #1b1510;
-  --muted: #4f463f;
-  --accent: #b85f3c;
-  --accent-hover: #94452f;
-  --green: #315f4b;
-  --border: #27231d21;
-  --soft-white: #fbf7f0;
+  --bg: #F6F2EB;
+  --dark: #2A3C2F;
+  --mid: #5A6A52;
+  --accent: #C56A4D;
+  --accent-hover: #A9513B;
+  --sage: #6B7F5E;
+  --tan: #D7C9B1;
+  --sand: #EDE5D8;
+  --line: #E2DAD0;
+  --cream: var(--bg);
+  --cream-2: var(--sand);
+  --cream-3: var(--tan);
+  --muted: var(--mid);
+  --green: var(--sage);
+  --border: rgba(42, 60, 47, 0.16);
+  --soft-white: var(--bg);
 }
 
 *,
@@ -61,7 +67,7 @@ a {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid var(--border);
-  background: rgba(246, 239, 230, 0.94);
+  background: rgba(246, 242, 235, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -98,7 +104,7 @@ a {
 }
 
 .navLinks a + a {
-  border-left: 1px solid rgba(27, 21, 16, 0.22);
+  border-left: 1px solid rgba(42, 60, 47, 0.22);
   margin-left: 18px;
   padding-left: 18px;
 }
@@ -410,7 +416,7 @@ h1 {
 
 .topicGrid p {
   border: 1px solid var(--border);
-  background: rgba(251, 247, 240, 0.55);
+  background: rgba(246, 242, 235, 0.55);
   padding: 18px 14px;
   color: var(--dark);
   font-size: 14px;
@@ -495,7 +501,7 @@ h1 {
 }
 
 .offerCard.dark .kicker {
-  color: rgba(251, 247, 240, 0.78);
+  color: rgba(246, 242, 235, 0.78);
 }
 
 .offerCard h3 {
@@ -517,7 +523,7 @@ h1 {
 }
 
 .offerCard.dark .rule {
-  background: rgba(251, 247, 240, 0.3);
+  background: rgba(246, 242, 235, 0.3);
 }
 
 .offerCard > p:not(.kicker) {
@@ -529,17 +535,17 @@ h1 {
 }
 
 .offerCard.dark > p:not(.kicker) {
-  color: rgba(251, 247, 240, 0.78);
+  color: rgba(246, 242, 235, 0.78);
 }
 
 .button.darkOutline {
-  border: 1px solid rgba(251, 247, 240, 0.4);
+  border: 1px solid rgba(246, 242, 235, 0.4);
   background: transparent;
   color: var(--soft-white);
 }
 
 .button.darkOutline:hover {
-  background: rgba(251, 247, 240, 0.08);
+  background: rgba(246, 242, 235, 0.08);
 }
 
 .numberGrid,
@@ -553,7 +559,7 @@ h1 {
 .programGrid article,
 .takeawayGrid p {
   border: 1px solid var(--border);
-  background: rgba(251, 247, 240, 0.52);
+  background: rgba(246, 242, 235, 0.52);
   padding: 24px;
   color: var(--muted);
   font-size: 17px;
@@ -600,7 +606,7 @@ h1 {
 }
 
 .darkBand p {
-  color: rgba(251, 247, 240, 0.82);
+  color: rgba(246, 242, 235, 0.82);
   font-size: 18px;
   line-height: 1.72;
 }
@@ -621,8 +627,8 @@ h1 {
 }
 
 .letterRow span {
-  border: 1px solid rgba(251, 247, 240, 0.18);
-  color: rgba(251, 247, 240, 0.82);
+  border: 1px solid rgba(246, 242, 235, 0.18);
+  color: rgba(246, 242, 235, 0.82);
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(38px, 6.5vw, 72px);
   line-height: 1;
@@ -693,7 +699,7 @@ h1 {
 
 .weeksCard span {
   display: block;
-  color: rgba(251, 247, 240, 0.58);
+  color: rgba(246, 242, 235, 0.58);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -815,7 +821,7 @@ details p {
   overflow: hidden;
   border-radius: 2px;
   background: var(--cream-3);
-  color: rgba(27, 21, 16, 0.28);
+  color: rgba(42, 60, 47, 0.28);
 }
 
 .headshotCard img {
@@ -896,13 +902,13 @@ details p {
 }
 
 .footer p {
-  color: rgba(251, 247, 240, 0.35);
+  color: rgba(246, 242, 235, 0.35);
   font-size: 12px;
 }
 
 .footerBrand {
   margin-bottom: 6px;
-  color: rgba(251, 247, 240, 0.65) !important;
+  color: rgba(246, 242, 235, 0.65) !important;
   font-family: "Cormorant Garamond", serif;
   font-size: 18px !important;
   font-weight: 500;
