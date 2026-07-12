@@ -207,13 +207,36 @@
 
     .video-wrap {
       display: none;
-      width: min(100%, 980px);
+      width: 100%;
     }
 
     .video-card {
-      background: var(--sand);
-      border-left: 4px solid var(--accent);
-      padding: clamp(22px, 3vw, 34px);
+      background: transparent;
+      border-left: 0;
+      padding: 0;
+    }
+
+    .video-shell {
+      width: min(100%, 1220px);
+      margin: 0 auto;
+    }
+
+    .video-card h2 {
+      max-width: 920px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 5vw, 72px);
+      font-weight: 400;
+      line-height: 1.02;
+      color: var(--dark);
+      margin-bottom: 14px;
+    }
+
+    .video-card > p:not(.eyebrow):not(.video-note) {
+      max-width: 720px;
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #3A4A34;
     }
 
     .video-frame {
@@ -222,7 +245,8 @@
       aspect-ratio: 16 / 9;
       background: var(--dark);
       overflow: hidden;
-      margin-top: 24px;
+      margin-top: clamp(24px, 4vw, 42px);
+      box-shadow: 0 22px 70px rgba(42, 60, 47, 0.18);
     }
 
     .video-frame iframe {
@@ -234,11 +258,50 @@
     }
 
     .video-note {
-      margin-top: 18px;
+      max-width: 920px;
+      margin-top: 22px;
       font-size: 13px;
       font-weight: 300;
       line-height: 1.7;
       color: var(--mid);
+    }
+
+    .watch-mode {
+      background: var(--bg);
+    }
+
+    .watch-mode .shell {
+      display: block;
+      min-height: 100vh;
+    }
+
+    .watch-mode .intro {
+      display: none;
+    }
+
+    .watch-mode .access {
+      min-height: 100vh;
+      padding: clamp(28px, 5vw, 72px);
+      justify-content: flex-start;
+    }
+
+    .watch-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .watch-link {
+      display: inline-block;
+      border: 1.5px solid var(--dark);
+      color: var(--dark);
+      padding: 12px 18px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
     }
 
     .support {
@@ -303,7 +366,13 @@
           <p class="eyebrow">You are in</p>
           <h2>The workshop is ready.</h2>
           <p>Watch here when you have a little space to slow down and take notes.</p>
-          <div class="video-frame" data-video-frame></div>
+          <div class="video-shell">
+            <div class="video-frame" data-video-frame></div>
+            <div class="watch-actions">
+              <a class="watch-link" href="./workshop.html">Back to Workshops</a>
+              <a class="watch-link" href="mailto:admin@theconfidentclinician.me">Need Help?</a>
+            </div>
+          </div>
           <p class="video-note">Please do not share this page, access password, or workshop video. Your purchase includes personal access for your own professional development.</p>
         </div>
       </div>
@@ -353,6 +422,7 @@
         iframe.setAttribute('allowfullscreen', '');
         videoFrame.replaceChildren(iframe);
 
+        document.body.classList.add('watch-mode');
         card.style.display = 'none';
         videoWrap.style.display = 'block';
         status.className = 'status success';
