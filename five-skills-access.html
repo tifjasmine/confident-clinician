@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Workshop Access | The Confident Clinician</title>
+  <meta name="description" content="Access The 5 Skills That Separate New Therapists from Confident Clinicians workshop.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F6F2EB;
+      --dark: #2A3C2F;
+      --mid: #5A6A52;
+      --accent: #C56A4D;
+      --tan: #D7C9B1;
+      --sand: #EDE5D8;
+      --line: #E2DAD0;
+      --danger: #9B3E2F;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Jost', sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+    }
+
+    .intro,
+    .access {
+      padding: clamp(34px, 6vw, 78px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .intro {
+      background: var(--dark);
+      color: var(--bg);
+    }
+
+    .access {
+      background: var(--bg);
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .intro .eyebrow { color: var(--tan); }
+
+    h1 {
+      max-width: 740px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(46px, 7vw, 88px);
+      font-weight: 400;
+      line-height: 0.98;
+      margin-bottom: 24px;
+    }
+
+    h1 em {
+      color: var(--tan);
+      font-style: italic;
+    }
+
+    .intro-text {
+      max-width: 620px;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.85;
+      color: rgba(246, 242, 235, 0.7);
+    }
+
+    .intro-rule {
+      width: 44px;
+      height: 2px;
+      background: var(--accent);
+      margin: 30px 0;
+    }
+
+    .tips {
+      display: grid;
+      gap: 14px;
+      max-width: 520px;
+    }
+
+    .tip {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(246, 242, 235, 0.78);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .card {
+      width: min(100%, 640px);
+      background: var(--sand);
+      border-left: 4px solid var(--accent);
+      padding: clamp(26px, 4vw, 40px);
+    }
+
+    .card h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(34px, 5vw, 54px);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--dark);
+      margin-bottom: 16px;
+    }
+
+    .card p {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #3A4A34;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+      margin-top: 26px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    input {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--line);
+      background: rgba(246, 242, 235, 0.82);
+      color: var(--dark);
+      padding: 13px 14px;
+      font: 400 16px 'Jost', sans-serif;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    button {
+      min-height: 50px;
+      border: 0;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 14px 26px;
+      font: 700 12px 'Jost', sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
+    .status {
+      display: none;
+      margin-top: 18px;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.65;
+    }
+
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--dark); }
+
+    .video-wrap {
+      display: none;
+      width: min(100%, 980px);
+    }
+
+    .video-card {
+      background: var(--sand);
+      border-left: 4px solid var(--accent);
+      padding: clamp(22px, 3vw, 34px);
+    }
+
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--dark);
+      overflow: hidden;
+      margin-top: 24px;
+    }
+
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .video-note {
+      margin-top: 18px;
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--mid);
+    }
+
+    .support {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--mid);
+    }
+
+    .support a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(197, 106, 77, 0.35);
+    }
+
+    @media (max-width: 920px) {
+      .shell { grid-template-columns: 1fr; }
+      .intro, .access { padding: 44px 24px; }
+      .access { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="intro">
+      <p class="eyebrow">Workshop Access</p>
+      <h1>The 5 Skills That Separate New Therapists from <em>Confident Clinicians</em></h1>
+      <p class="intro-text">Enter the email you used at checkout and the workshop password from your confirmation email. Once your purchase is confirmed, the video will open on this page.</p>
+      <div class="intro-rule"></div>
+      <div class="tips" aria-label="Workshop tips">
+        <div class="tip"><span class="dot"></span><span>Bring a notebook or your notes app.</span></div>
+        <div class="tip"><span class="dot"></span><span>Pause whenever you need space to reflect.</span></div>
+        <div class="tip"><span class="dot"></span><span>Choose one shift to practice in your next few sessions.</span></div>
+      </div>
+    </section>
+
+    <section class="access">
+      <div class="card" data-access-card>
+        <p class="eyebrow">Private Access</p>
+        <h2>Unlock the workshop.</h2>
+        <p>Your access is connected to the email used at checkout. If you used a different email than expected, try that one first.</p>
+
+        <form data-access-form>
+          <label>
+            Purchase Email
+            <input type="email" name="email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <label>
+            Workshop Password
+            <input type="password" name="password" autocomplete="current-password" required placeholder="Enter password">
+          </label>
+          <button type="submit">Access Workshop</button>
+        </form>
+
+        <p class="status" data-status></p>
+        <p class="support">Trouble getting in? Email <a href="mailto:admin@theconfidentclinician.me">admin@theconfidentclinician.me</a>.</p>
+      </div>
+
+      <div class="video-wrap" data-video-wrap>
+        <div class="video-card">
+          <p class="eyebrow">You are in</p>
+          <h2>The workshop is ready.</h2>
+          <p>Watch here when you have a little space to slow down and take notes.</p>
+          <div class="video-frame" data-video-frame></div>
+          <p class="video-note">Please do not share this page, access password, or workshop video. Your purchase includes personal access for your own professional development.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.querySelector('[data-access-form]');
+    const status = document.querySelector('[data-status]');
+    const card = document.querySelector('[data-access-card]');
+    const videoWrap = document.querySelector('[data-video-wrap]');
+    const videoFrame = document.querySelector('[data-video-frame]');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button');
+      const formData = new FormData(form);
+      const originalText = button.textContent;
+
+      status.className = 'status';
+      status.style.display = 'none';
+      button.disabled = true;
+      button.textContent = 'Checking...';
+
+      try {
+        const response = await fetch('/.netlify/functions/verify-workshop-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.get('email'),
+            password: formData.get('password'),
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || 'Access could not be verified.');
+        }
+
+        const iframe = document.createElement('iframe');
+        iframe.src = result.videoEmbedUrl;
+        iframe.title = 'The 5 Skills Workshop Video';
+        iframe.loading = 'lazy';
+        iframe.allow = 'fullscreen; encrypted-media';
+        iframe.referrerPolicy = 'no-referrer';
+        iframe.setAttribute('allowfullscreen', '');
+        videoFrame.replaceChildren(iframe);
+
+        card.style.display = 'none';
+        videoWrap.style.display = 'block';
+        status.className = 'status success';
+        status.textContent = 'Access confirmed.';
+        status.style.display = 'block';
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = error.message || 'Something went wrong. Please try again.';
+        status.style.display = 'block';
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>
