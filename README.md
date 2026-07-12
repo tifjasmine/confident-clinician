@@ -31,6 +31,9 @@ Required Netlify environment variables:
 - `AIRTABLE_ACCESS_TOKEN`
 - `AIRTABLE_PURCHASES_BASE_ID` = `appPQAC82txeqHx9R`
 - `AIRTABLE_PURCHASES_TABLE_ID` = `tblL3eHxNfYVLbaf6`
+- `FIVE_SKILLS_VIDEO_EMBED_URL`
+
+The access page checks Airtable for a matching `Email` with `Purchased` checked.
 
 Optional field mapping variable if Airtable column names differ:
 
@@ -52,6 +55,7 @@ Example:
   "stripeCustomerId": "Stripe Customer ID",
   "coupon": "Coupon",
   "discount": "Discount",
-  "accessPage": "Access Page"
+  "accessPage": "Access Page",
+  "purchased": "Purchased"
 }
 ```

@@ -267,7 +267,7 @@
     <section class="intro">
       <p class="eyebrow">Workshop Access</p>
       <h1>The 5 Skills That Separate New Therapists from <em>Confident Clinicians</em></h1>
-      <p class="intro-text">Enter the email you used at checkout and the workshop password from your confirmation email. Once your purchase is confirmed, the video will open on this page.</p>
+      <p class="intro-text">Enter the email you used at checkout. Once Airtable confirms that email has purchased access, the video will open on this page.</p>
       <div class="intro-rule"></div>
       <div class="tips" aria-label="Workshop tips">
         <div class="tip"><span class="dot"></span><span>Bring a notebook or your notes app.</span></div>
@@ -287,10 +287,6 @@
             Purchase Email
             <input type="email" name="email" autocomplete="email" required placeholder="you@example.com">
           </label>
-          <label>
-            Workshop Password
-            <input type="password" name="password" autocomplete="current-password" required placeholder="Enter password">
-          </label>
           <button type="submit">Access Workshop</button>
         </form>
 
@@ -304,7 +300,7 @@
           <h2>The workshop is ready.</h2>
           <p>Watch here when you have a little space to slow down and take notes.</p>
           <div class="video-frame" data-video-frame></div>
-          <p class="video-note">Please do not share this page, access password, or workshop video. Your purchase includes personal access for your own professional development.</p>
+          <p class="video-note">Please do not share this page or workshop video. Your purchase includes personal access for your own professional development.</p>
         </div>
       </div>
     </section>
@@ -334,7 +330,6 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: formData.get('email'),
-            password: formData.get('password'),
           }),
         });
 

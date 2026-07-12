@@ -23,6 +23,7 @@ const defaultFieldMap = {
   coupon: 'Coupon',
   discount: 'Discount',
   accessPage: 'Access Page',
+  purchased: 'Purchased',
 };
 
 const parseJsonEnv = (name, fallback) => {
@@ -128,6 +129,7 @@ const buildAirtableFields = (session, lineItems, fieldMap) => {
   addIfConfigured(fields, fieldMap, 'coupon', coupon);
   addIfConfigured(fields, fieldMap, 'discount', discount);
   addIfConfigured(fields, fieldMap, 'accessPage', accessPage);
+  addIfConfigured(fields, fieldMap, 'purchased', true);
   return fields;
 };
 
@@ -160,6 +162,35 @@ const createAirtableRecord = async (fields) => {
   return response.json();
 };
 
+const updateAirtableRecord = async (recordId, fields) => {
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
+  const tableId = process.env.AIRTABLE_PURCHASES_TABLE_ID || 'tblL3eHxNfYVLbaf6';
+
+  if (!token) {
+    throw new Error('AIRTABLE_ACCESS_TOKEN is missing.');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fields,
+      typecast: true,
+    }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Airtable update failed: ${response.status} ${text}`);
+  }
+
+  return response.json();
+};
+
 const airtableFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
 const findExistingAirtableRecord = async (sessionId, fieldMap) => {
@@ -171,6 +202,33 @@ const findExistingAirtableRecord = async (sessionId, fieldMap) => {
   if (!token || !sessionField || !sessionId) return null;
 
   const formula = `{${sessionField}}='${airtableFormulaString(sessionId)}'`;
+  const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
+  url.searchParams.set('maxRecords', '1');
+  url.searchParams.set('filterByFormula', formula);
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const result = await response.json();
+  return result.records && result.records.length > 0 ? result.records[0] : null;
+};
+
+const findAirtableRecordByEmail = async (email, fieldMap) => {
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
+  const tableId = process.env.AIRTABLE_PURCHASES_TABLE_ID || 'tblL3eHxNfYVLbaf6';
+  const emailField = fieldMap.email;
+
+  if (!token || !emailField || !email) return null;
+
+  const formula = `LOWER({${emailField}})='${airtableFormulaString(email)}'`;
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
   url.searchParams.set('maxRecords', '1');
   url.searchParams.set('filterByFormula', formula);
@@ -236,6 +294,20 @@ exports.handler = async (event) => {
     }
 
     const fields = buildAirtableFields(session, lineItems, fieldMap);
+    const customer = session.customer_details || {};
+    const email = String(customer.email || session.customer_email || '').trim().toLowerCase();
+    const existingEmailRecord = await findAirtableRecordByEmail(email, fieldMap);
+
+    if (existingEmailRecord) {
+      const airtableRecord = await updateAirtableRecord(existingEmailRecord.id, fields);
+
+      return json(200, {
+        ok: true,
+        updated: true,
+        recordId: airtableRecord.id,
+      });
+    }
+
     const airtableRecord = await createAirtableRecord(fields);
 
     return json(200, {
