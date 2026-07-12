@@ -32,8 +32,9 @@ Required Netlify environment variables:
 - `AIRTABLE_PURCHASES_BASE_ID` = `appPQAC82txeqHx9R`
 - `AIRTABLE_PURCHASES_TABLE_ID` = `tblL3eHxNfYVLbaf6`
 - `FIVE_SKILLS_VIDEO_EMBED_URL`
+- `FIVE_SKILLS_ACCESS_PASSWORD`
 
-The access page checks Airtable for a matching `Email` with `Purchased` checked.
+The access page requires the workshop password and checks Airtable for a matching `Email` with `Purchased` checked.
 
 Optional field mapping variable if Airtable column names differ:
 

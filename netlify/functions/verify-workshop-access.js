@@ -32,11 +32,9 @@ const findPurchasedRecordByEmail = async (email, fieldMap) => {
   const emailField = fieldMap.email || 'Email';
   const purchasedField = fieldMap.purchased || 'Purchased';
 
-  if (!token) {
-    throw new Error('AIRTABLE_ACCESS_TOKEN is missing.');
-  }
+  if (!token) return { configurationError: 'AIRTABLE_ACCESS_TOKEN is missing.' };
 
-  const formula = `AND(LOWER({${emailField}})='${airtableFormulaString(email)}',{${purchasedField}}=TRUE())`;
+  const formula = `AND(LOWER({${emailField}})='${airtableFormulaString(email)}',{${purchasedField}})`;
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
   url.searchParams.set('maxRecords', '1');
   url.searchParams.set('filterByFormula', formula);
@@ -48,8 +46,7 @@ const findPurchasedRecordByEmail = async (email, fieldMap) => {
   });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Airtable lookup failed: ${response.status} ${text}`);
+    return { airtableError: response.status };
   }
 
   const result = await response.json();
@@ -62,11 +59,12 @@ exports.handler = async (event) => {
   }
 
   const videoEmbedUrl = process.env.FIVE_SKILLS_VIDEO_EMBED_URL;
+  const accessPassword = process.env.FIVE_SKILLS_ACCESS_PASSWORD;
 
-  if (!videoEmbedUrl) {
+  if (!videoEmbedUrl || !accessPassword) {
     return json(500, {
       ok: false,
-      message: 'Workshop access is not configured yet. Please email admin@theconfidentclinician.me.',
+      message: 'Workshop access is not fully configured yet. Please email admin@theconfidentclinician.me.',
     });
   }
 
@@ -74,18 +72,37 @@ exports.handler = async (event) => {
   try {
     payload = JSON.parse(event.body || '{}');
   } catch (error) {
-    return json(400, { ok: false, message: 'Please submit your email again.' });
+    return json(400, { ok: false, message: 'Please submit your email and password again.' });
   }
 
   const email = normalizeEmail(payload.email);
+  const password = String(payload.password || '').trim();
 
-  if (!email) {
-    return json(400, { ok: false, message: 'Please enter the email you used at checkout.' });
+  if (!email || !password) {
+    return json(400, { ok: false, message: 'Please enter the email you used at checkout and the workshop password.' });
+  }
+
+  if (password !== accessPassword) {
+    return json(401, { ok: false, message: 'That password does not match. Please check the workshop email and try again.' });
   }
 
   try {
     const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
     const record = await findPurchasedRecordByEmail(email, fieldMap);
+
+    if (record && record.configurationError) {
+      return json(500, {
+        ok: false,
+        message: 'Airtable is not connected yet. Please add AIRTABLE_ACCESS_TOKEN in Netlify environment variables.',
+      });
+    }
+
+    if (record && record.airtableError) {
+      return json(500, {
+        ok: false,
+        message: 'Airtable could not be checked. Confirm the token has access and the Email/Purchased fields are named correctly.',
+      });
+    }
 
     if (!record) {
       return json(403, {
