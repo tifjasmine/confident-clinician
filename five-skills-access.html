@@ -6,9 +6,27 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Workshop Access | The Confident Clinician</title>
   <meta name="description" content="Access The 5 Skills That Separate New Therapists from Confident Clinicians workshop.">
+  <meta property="og:image" content="https://theconfidentclinician.me/confident-clinician-social.png" />
+  <meta property="og:image:width" content="1254" />
+  <meta property="og:image:height" content="1254" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://theconfidentclinician.me/confident-clinician-social.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get('email');
+      const storedEmail = sessionStorage.getItem('tccMemberEmail');
+      const storedPassword = sessionStorage.getItem('tccMemberPassword');
+      if (email && storedEmail && storedPassword && storedEmail.toLowerCase() === email.toLowerCase()) {
+        document.documentElement.classList.add('session-opening');
+      }
+    } catch (error) {
+      document.documentElement.classList.remove('session-opening');
+    }
+  </script>
   <style>
     :root {
       --bg: #F6F2EB;
@@ -32,6 +50,30 @@
     }
 
     a { color: inherit; }
+
+    .member-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 18px clamp(24px, 5vw, 72px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(246, 242, 235, 0.94);
+    }
+
+    .member-nav a,
+    .member-nav button {
+      border: 1px solid rgba(42, 60, 47, 0.18);
+      background: transparent;
+      color: var(--dark);
+      padding: 9px 13px;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
 
     .shell {
       min-height: 100vh;
@@ -160,9 +202,9 @@
       color: var(--accent);
     }
 
-    input {
+    input,
+    textarea {
       width: 100%;
-      min-height: 50px;
       border: 1px solid var(--line);
       background: rgba(246, 242, 235, 0.82);
       color: var(--dark);
@@ -172,7 +214,18 @@
       text-transform: none;
     }
 
-    input:focus {
+    input {
+      min-height: 50px;
+    }
+
+    textarea {
+      min-height: 170px;
+      line-height: 1.65;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
       outline: 2px solid var(--accent);
       outline-offset: 1px;
     }
@@ -239,6 +292,53 @@
       color: #3A4A34;
     }
 
+    .skill-intro {
+      max-width: 720px;
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #3A4A34;
+      margin-bottom: 20px;
+    }
+
+    .skill-list {
+      display: grid;
+      gap: 10px;
+      max-width: 760px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: skills;
+    }
+
+    .skill-list li {
+      counter-increment: skills;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      align-items: baseline;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.55;
+      color: #3A4A34;
+    }
+
+    .skill-list li::before {
+      content: counter(skills, decimal-leading-zero);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 27px;
+      font-weight: 400;
+      line-height: 1;
+      color: var(--tan);
+    }
+
+    .skill-list strong {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
     .video-frame {
       position: relative;
       width: 100%;
@@ -255,6 +355,86 @@
       width: 100%;
       height: 100%;
       border: 0;
+    }
+
+    .video-frame:fullscreen {
+      background: #050505;
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: auto;
+    }
+
+    .video-frame:fullscreen iframe {
+      object-fit: contain;
+    }
+
+    .youtube-top-shield {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 13%;
+      background: transparent;
+      z-index: 2;
+      pointer-events: auto;
+    }
+
+    .youtube-top-controls-shield {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: min(28%, 340px);
+      height: 86px;
+      background: #000;
+      z-index: 3;
+      pointer-events: auto;
+    }
+
+    .youtube-brand-shield {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: min(52%, 560px);
+      height: 82px;
+      background: #000;
+      z-index: 3;
+      pointer-events: auto;
+    }
+
+    .youtube-link-shield {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 94px;
+      height: 82px;
+      background: #000;
+      z-index: 3;
+      pointer-events: auto;
+    }
+
+    .notes-card {
+      width: min(100%, 920px);
+      margin-top: clamp(28px, 5vw, 56px);
+      background: var(--sand);
+      border-left: 4px solid var(--accent);
+      padding: clamp(24px, 4vw, 36px);
+    }
+
+    .notes-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 400;
+      line-height: 1.08;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .notes-card p {
+      max-width: 680px;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #3A4A34;
     }
 
     .video-note {
@@ -279,29 +459,41 @@
       display: none;
     }
 
+    .session-opening .intro,
+    .session-opening [data-access-card] {
+      display: none;
+    }
+
+    .session-opening .access {
+      min-height: calc(100vh - 56px);
+      justify-content: center;
+    }
+
+    .session-opening .access::before {
+      content: "Opening your workshop...";
+      max-width: 620px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 7vw, 64px);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--dark);
+    }
+
+    .session-opening .access::after {
+      content: "One moment while we pull up your video.";
+      display: block;
+      max-width: 440px;
+      margin-top: 16px;
+      color: var(--mid);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.65;
+    }
+
     .watch-mode .access {
       min-height: 100vh;
       padding: clamp(28px, 5vw, 72px);
       justify-content: flex-start;
-    }
-
-    .watch-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .watch-link {
-      display: inline-block;
-      border: 1.5px solid var(--dark);
-      color: var(--dark);
-      padding: 12px 18px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
     }
 
     .support {
@@ -321,11 +513,43 @@
     @media (max-width: 920px) {
       .shell { grid-template-columns: 1fr; }
       .intro, .access { padding: 44px 24px; }
+      .member-nav { padding: 14px 18px; }
       .access { min-height: auto; }
+      .video-card h2 { font-size: clamp(36px, 12vw, 52px); }
+      .skill-list li {
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 10px;
+        font-size: 15px;
+      }
+      .skill-list li::before { font-size: 24px; }
+      .video-frame {
+        margin-inline: -8px;
+        width: calc(100% + 16px);
+      }
+      .youtube-top-shield { height: 17%; }
+      .youtube-top-controls-shield {
+        width: 42%;
+        height: 58px;
+      }
+      .youtube-brand-shield {
+        width: 58%;
+        height: 62px;
+      }
+      .youtube-link-shield {
+        width: 72px;
+        height: 62px;
+      }
+      .video-note { font-size: 12px; }
     }
   </style>
 </head>
 <body>
+  <nav class="member-nav" aria-label="Member navigation">
+    <a href="./portal.html">Workshop Home</a>
+    <a href="./member-account.html">Edit Account</a>
+    <a href="./">Main Site</a>
+    <button type="button" data-member-logout>Log Out</button>
+  </nav>
   <main class="shell">
     <section class="intro">
       <p class="eyebrow">Your Workshop Space</p>
@@ -364,16 +588,32 @@
       <div class="video-wrap" data-video-wrap>
         <div class="video-card">
           <p class="eyebrow">You’re In</p>
-          <h2>Start here when the work feels messy.</h2>
-          <p>You do not need to watch this perfectly or take beautiful notes. Just listen for what makes you exhale, what feels familiar, and what gives you language for the next time you are sitting across from a real client wondering what to do next.</p>
+          <h2>The 5 Skills That Separate New Therapists from Confident Clinicians</h2>
+          <p class="skill-intro">Inside this workshop, you’ll begin clarifying how to:</p>
+          <ol class="skill-list">
+            <li><span><strong>Stop Performing Therapy</strong> and shift from proving you’re good to actually understanding the person in front of you.</span></li>
+            <li><span><strong>Tolerate Not Knowing</strong> so you can stay grounded when the next step is not immediately clear.</span></li>
+            <li><span><strong>Trust the Process Over the Perfect Intervention</strong> and remember that clients need presence, not performance.</span></li>
+            <li><span><strong>Regulate Yourself First</strong> so your nervous system is not running the session.</span></li>
+            <li><span><strong>Build Self-Trust</strong> instead of replaying every session as proof you missed something.</span></li>
+          </ol>
           <div class="video-shell">
             <div class="video-frame" data-video-frame></div>
-            <div class="watch-actions">
-              <a class="watch-link" href="./workshop.html">Back to Workshops</a>
-              <a class="watch-link" href="mailto:admin@theconfidentclinician.me">Help Me Get In</a>
-            </div>
           </div>
-          <p class="video-note">This access is just for you. Please keep the page, password, and video private so this space can stay personal and sustainable.</p>
+          <div class="notes-card">
+            <p class="eyebrow">Workshop Notes</p>
+            <h3>Keep what you want to remember.</h3>
+            <p>Use this space for takeaways, language you want to practice, or anything you want to come back to later. Notes save to your workshop record.</p>
+            <form data-notes-form>
+              <label>
+                Your Notes
+                <textarea name="notes" required placeholder="Write your notes here..."></textarea>
+              </label>
+              <button type="submit">Save Notes</button>
+            </form>
+            <p class="status" data-notes-status></p>
+          </div>
+          <p class="video-note">Your purchase includes private access for your individual professional development only. This workshop is educational in nature and is not therapy, clinical supervision, paid supervision, legal advice, or a substitute for consultation with your supervisor, licensing board, attorney, or other appropriate professional. Please do not share this page, password, video link, recordings, downloads, screenshots, transcripts, or workshop materials with others. All workshop content is protected and may not be copied, distributed, taught, reproduced, or used commercially without written permission from The Confident Clinician.</p>
         </div>
       </div>
     </section>
@@ -385,26 +625,125 @@
     const card = document.querySelector('[data-access-card]');
     const videoWrap = document.querySelector('[data-video-wrap]');
     const videoFrame = document.querySelector('[data-video-frame]');
+    const notesForm = document.querySelector('[data-notes-form]');
+    const notesStatus = document.querySelector('[data-notes-status]');
+    const notesTextarea = notesForm.querySelector('textarea[name="notes"]');
+    const emailInput = form.querySelector('input[name="email"]');
+    const queryEmail = new URLSearchParams(window.location.search).get('email');
+    let verifiedEmail = '';
+    let verifiedPassword = '';
+    let currentIframe = null;
+    const fiveSkillsWistiaUrl = 'https://fast.wistia.net/embed/iframe/ujh4iffsoi';
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
+    document.querySelectorAll('[data-member-logout]').forEach((button) => {
+      button.addEventListener('click', () => {
+        sessionStorage.removeItem('tccMemberEmail');
+        sessionStorage.removeItem('tccMemberPassword');
+        window.location.href = './portal.html';
+      });
+    });
+
+    if (queryEmail && emailInput) {
+      emailInput.value = queryEmail;
+    }
+
+    const getWistiaMediaId = (rawUrl) => {
+      const value = String(rawUrl || '');
+      const patterns = [
+        /wistia_async_([a-z0-9]+)/i,
+        /\/medias\/([a-z0-9]+)/i,
+        /\/embed\/iframe\/([a-z0-9]+)/i,
+        /[?&]wvideo=([a-z0-9]+)/i,
+      ];
+      for (const pattern of patterns) {
+        const match = value.match(pattern);
+        if (match && match[1]) return match[1];
+      }
+      return '';
+    };
+
+    const configureVideoUrl = (rawUrl) => {
+      const incomingUrl = /youtu\.?be|youtube/i.test(String(rawUrl || ''))
+        ? fiveSkillsWistiaUrl
+        : rawUrl;
+      const wistiaMediaId = getWistiaMediaId(incomingUrl);
+      if (wistiaMediaId) {
+        return {
+          provider: 'wistia',
+          src: `https://fast.wistia.net/embed/iframe/${wistiaMediaId}?videoFoam=true&playerColor=c56a4d&seo=false`,
+        };
+      }
+
+      try {
+        const url = new URL(incomingUrl);
+        if (url.hostname.includes('youtube.com')) {
+          url.hostname = 'www.youtube-nocookie.com';
+        }
+        url.searchParams.set('controls', '1');
+        url.searchParams.set('disablekb', '0');
+        url.searchParams.set('fs', '1');
+        url.searchParams.set('modestbranding', '1');
+        url.searchParams.set('rel', '0');
+        url.searchParams.set('playsinline', '1');
+        url.searchParams.set('iv_load_policy', '3');
+        url.searchParams.set('cc_load_policy', '0');
+        url.searchParams.set('enablejsapi', '1');
+        url.searchParams.set('origin', window.location.origin);
+        return {
+          provider: url.hostname.includes('youtu') ? 'youtube' : 'other',
+          src: url.toString(),
+        };
+      } catch (error) {
+        return {
+          provider: 'other',
+          src: incomingUrl,
+        };
+      }
+    };
+
+    const loadWorkshopNotes = async () => {
+      if (!verifiedEmail || !verifiedPassword || !notesTextarea) return;
+
+      try {
+        const response = await fetch('/.netlify/functions/save-workshop-notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'load',
+            email: verifiedEmail,
+            password: verifiedPassword,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.ok && typeof result.notes === 'string') {
+          notesTextarea.value = result.notes;
+          if (result.notes.trim()) {
+            notesStatus.className = 'status success';
+            notesStatus.textContent = 'Your saved notes are here.';
+            notesStatus.style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.warn('Saved notes could not be loaded', error);
+      }
+    };
+
+    const openWorkshop = async ({ email, password, silent = false } = {}) => {
       const button = form.querySelector('button');
-      const formData = new FormData(form);
       const originalText = button.textContent;
 
       status.className = 'status';
       status.style.display = 'none';
       button.disabled = true;
-      button.textContent = 'Checking...';
+      button.textContent = silent ? 'Opening...' : 'Checking...';
 
       try {
         const response = await fetch('/.netlify/functions/verify-workshop-access', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: formData.get('email'),
-            password: formData.get('password'),
-          }),
+          body: JSON.stringify({ email, password }),
         });
 
         const result = await response.json();
@@ -413,22 +752,45 @@
           throw new Error(result.message || 'Access could not be verified.');
         }
 
+        const video = configureVideoUrl(result.videoEmbedUrl);
         const iframe = document.createElement('iframe');
-        iframe.src = result.videoEmbedUrl;
+        iframe.src = video.src;
         iframe.title = 'The 5 Skills Workshop Video';
         iframe.loading = 'lazy';
-        iframe.allow = 'fullscreen; encrypted-media';
-        iframe.referrerPolicy = 'no-referrer';
+        iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
         iframe.setAttribute('allowfullscreen', '');
-        videoFrame.replaceChildren(iframe);
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        const videoChildren = [iframe];
+        if (video.provider === 'youtube') {
+          const topShield = document.createElement('div');
+          topShield.className = 'youtube-top-shield';
+          topShield.setAttribute('aria-hidden', 'true');
+          const topControlsShield = document.createElement('div');
+          topControlsShield.className = 'youtube-top-controls-shield';
+          topControlsShield.setAttribute('aria-hidden', 'true');
+          const brandShield = document.createElement('div');
+          brandShield.className = 'youtube-brand-shield';
+          brandShield.setAttribute('aria-hidden', 'true');
+          const linkShield = document.createElement('div');
+          linkShield.className = 'youtube-link-shield';
+          linkShield.setAttribute('aria-hidden', 'true');
+          videoChildren.push(topShield, topControlsShield, brandShield, linkShield);
+        }
+        videoFrame.replaceChildren(...videoChildren);
+        currentIframe = iframe;
 
+        verifiedEmail = String(email || '').trim();
+        verifiedPassword = String(password || '').trim();
         document.body.classList.add('watch-mode');
+        document.documentElement.classList.remove('session-opening');
         card.style.display = 'none';
         videoWrap.style.display = 'block';
         status.className = 'status success';
         status.textContent = 'Access confirmed.';
         status.style.display = 'block';
+        await loadWorkshopNotes();
       } catch (error) {
+        document.documentElement.classList.remove('session-opening');
         status.className = 'status error';
         status.textContent = error.message || 'Something went wrong. Please try again.';
         status.style.display = 'block';
@@ -436,7 +798,67 @@
         button.disabled = false;
         button.textContent = originalText;
       }
+    };
+
+    const storedEmail = sessionStorage.getItem('tccMemberEmail');
+    const storedPassword = sessionStorage.getItem('tccMemberPassword');
+
+    if (storedEmail && storedPassword && queryEmail && storedEmail.toLowerCase() === queryEmail.toLowerCase()) {
+      emailInput.value = storedEmail;
+      openWorkshop({ email: storedEmail, password: storedPassword, silent: true });
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      await openWorkshop({
+        email: formData.get('email'),
+        password: formData.get('password'),
+      });
     });
+
+    notesForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = notesForm.querySelector('button');
+      const formData = new FormData(notesForm);
+      const originalText = button.textContent;
+
+      notesStatus.className = 'status';
+      notesStatus.style.display = 'none';
+      button.disabled = true;
+      button.textContent = 'Saving...';
+
+      try {
+        const response = await fetch('/.netlify/functions/save-workshop-notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save',
+            email: verifiedEmail,
+            password: verifiedPassword,
+            notes: formData.get('notes'),
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || 'Your notes could not be saved.');
+        }
+
+        notesStatus.className = 'status success';
+        notesStatus.textContent = 'Saved. You can keep adding notes and save again whenever you want.';
+        notesStatus.style.display = 'block';
+      } catch (error) {
+        notesStatus.className = 'status error';
+        notesStatus.textContent = error.message || 'Something went wrong saving your notes.';
+        notesStatus.style.display = 'block';
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
+
   </script>
 </body>
 </html>

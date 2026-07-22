@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Established Clinician Path | The Confident Clinician</title>
+  <meta name="description" content="A quick check-in for established clinicians, supervisors, referral partners, and collaborators." />
+  <meta property="og:title" content="Established Clinician Path | The Confident Clinician" />
+  <meta property="og:description" content="Tell me what season of your work you are in and how we might connect." />
+  <meta property="og:image" content="https://theconfidentclinician.me/confident-clinician-social.png" />
+  <meta property="og:image:width" content="1254" />
+  <meta property="og:image:height" content="1254" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://theconfidentclinician.me/confident-clinician-social.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #f7f1e8;
+      --sand: #ece3d6;
+      --forest: #264433;
+      --forest-soft: #536852;
+      --clay: #c86f52;
+      --clay-dark: #a95338;
+      --ink: #1b1814;
+      --line: rgba(38, 68, 51, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--forest);
+      font-family: "Jost", sans-serif;
+      font-size: 20px;
+      line-height: 1.75;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .site-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      padding: 22px clamp(20px, 5vw, 64px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      background: rgba(247, 241, 232, 0.9);
+    }
+
+    .brand {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.2rem, 2.1vw, 1.75rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      line-height: 1.1;
+    }
+
+    .home-link {
+      color: var(--forest-soft);
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    main {
+      width: min(1040px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: clamp(34px, 6vw, 68px) 0;
+      flex: 1;
+    }
+
+    .eyebrow {
+      color: var(--clay);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 0.84rem;
+      margin: 0 0 16px;
+    }
+
+    h1, h2 {
+      font-family: "Cormorant Garamond", serif;
+      color: var(--forest);
+      font-weight: 600;
+      line-height: 0.98;
+      letter-spacing: 0;
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 980px;
+      font-size: clamp(3.1rem, 7.5vw, 6.4rem);
+    }
+
+    h2 {
+      font-size: clamp(2.7rem, 7vw, 5.7rem);
+    }
+
+    .intro-copy {
+      max-width: 810px;
+      margin: 22px 0 0;
+      font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+      line-height: 1.65;
+      color: var(--forest-soft);
+    }
+
+    .panel {
+      margin-top: clamp(28px, 5vw, 48px);
+      background: var(--sand);
+      border-left: 6px solid var(--clay);
+      padding: clamp(22px, 4vw, 42px);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    label {
+      display: block;
+      color: var(--clay);
+      font-size: 0.82rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid rgba(38, 68, 51, 0.2);
+      background: #fffaf3;
+      color: var(--forest);
+      font: inherit;
+      border-radius: 0;
+      padding: 13px 16px;
+      min-height: 52px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .question {
+      display: none;
+      margin-top: 28px;
+    }
+
+    .question.active {
+      display: block;
+    }
+
+    .question-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1;
+      color: var(--ink);
+      margin: 0 0 12px;
+    }
+
+    .hint {
+      margin: 0 0 26px;
+      color: var(--forest-soft);
+      font-size: 1rem;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .choice {
+      width: 100%;
+      border: 1px solid rgba(38, 68, 51, 0.24);
+      background: rgba(255, 250, 243, 0.74);
+      color: var(--forest);
+      text-align: left;
+      padding: 14px 16px;
+      min-height: 58px;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .choice:hover,
+    .choice.selected {
+      border-color: var(--clay);
+      background: #fffaf3;
+      transform: translateY(-1px);
+    }
+
+    .choice.selected {
+      box-shadow: inset 5px 0 0 var(--clay);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid var(--forest);
+      background: transparent;
+      color: var(--forest);
+      min-height: 60px;
+      padding: 17px 26px;
+      font-size: 0.92rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      background: var(--clay);
+      border-color: var(--clay);
+      color: #fffaf3;
+    }
+
+    .button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 20px;
+      color: var(--clay-dark);
+      font-size: 1rem;
+    }
+
+    .result {
+      display: none;
+    }
+
+    .result.active {
+      display: block;
+    }
+
+    .result p {
+      max-width: 860px;
+      color: var(--forest-soft);
+      font-size: clamp(1.12rem, 2.2vw, 1.5rem);
+    }
+
+    .result h2 {
+      font-size: clamp(2.6rem, 6vw, 4.7rem);
+    }
+
+    .final-note {
+      margin: 18px 0 0;
+      padding-top: 20px;
+      border-top: 1px solid rgba(200, 111, 82, 0.22);
+    }
+
+    .final-script {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      color: var(--forest-soft);
+      font-size: clamp(1.18rem, 2vw, 1.5rem);
+      line-height: 1.45;
+      margin: 0 0 12px;
+    }
+
+    .final-card {
+      max-width: 760px;
+      margin: 18px 0 0;
+    }
+
+    .final-card p {
+      margin: 0;
+      font-size: clamp(1rem, 1.5vw, 1.14rem);
+      line-height: 1.55;
+      color: var(--forest-soft);
+    }
+
+    .final-question {
+      margin: 22px 0 10px;
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 0.98rem;
+    }
+
+    .result .actions {
+      margin-top: 12px;
+      gap: 10px;
+    }
+
+    .result .button {
+      min-height: 50px;
+      padding: 12px 18px;
+      font-size: 0.78rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 20px;
+      text-align: center;
+      color: var(--forest-soft);
+      font-size: 0.92rem;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(38, 68, 51, 0.48);
+    }
+
+    .modal-overlay.is-open {
+      display: flex;
+    }
+
+    .modal-card {
+      position: relative;
+      width: min(540px, 100%);
+      background: var(--cream);
+      border-left: 4px solid var(--clay);
+      padding: clamp(24px, 5vw, 42px);
+      box-shadow: 0 24px 80px rgba(27, 24, 20, 0.2);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      border: 0;
+      background: transparent;
+      color: var(--forest);
+      font: inherit;
+      font-size: 1.6rem;
+      cursor: pointer;
+    }
+
+    .modal-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.05;
+      margin: 0 28px 12px 0;
+    }
+
+    .modal-copy {
+      color: var(--forest-soft);
+      margin: 0 0 20px;
+      font-size: 1rem;
+    }
+
+    .modal-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-status {
+      display: none;
+      color: var(--forest);
+      margin: 16px 0 0;
+      font-size: 0.95rem;
+    }
+
+    .modal-status.is-visible {
+      display: block;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 52px;
+      background: var(--cream);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .nav-brand {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      line-height: 1.1;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      color: var(--forest-soft);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .nav-cta {
+      background: var(--clay);
+      color: #fffaf3 !important;
+      padding: 10px 22px;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        font-size: 18px;
+      }
+
+      main {
+        width: min(100% - 28px, 1120px);
+        padding-top: 38px;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 17vw, 5.2rem);
+      }
+
+      .panel {
+        padding: 24px 18px;
+        border-left-width: 4px;
+      }
+
+      .contact-grid,
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+        padding-inline: 18px;
+      }
+    }
+    .site-shell {
+      min-height: auto;
+    }
+
+    body {
+      font-size: 18px;
+      line-height: 1.62;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      width: min(920px, calc(100% - 40px));
+      padding: clamp(28px, 5vw, 54px) 0;
+    }
+
+    .eyebrow {
+      font-size: 0.74rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: clamp(2.55rem, 5.8vw, 4.8rem);
+      font-weight: 400;
+      line-height: 1.04;
+    }
+
+    h2 {
+      font-size: clamp(2.15rem, 5vw, 4.2rem);
+      font-weight: 400;
+    }
+
+    .intro-copy {
+      max-width: 690px;
+      margin-top: 16px;
+      font-size: clamp(1rem, 1.4vw, 1.16rem);
+      line-height: 1.58;
+    }
+
+    .panel {
+      margin-top: clamp(20px, 4vw, 34px);
+      border-left-width: 4px;
+      padding: clamp(18px, 3.5vw, 30px);
+    }
+
+    .contact-grid {
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    label {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      margin-bottom: 7px;
+    }
+
+    input,
+    textarea {
+      min-height: 46px;
+      padding: 10px 13px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      min-height: 112px;
+    }
+
+    .question {
+      margin-top: 18px;
+    }
+
+    .question-title {
+      font-size: clamp(1.75rem, 3.5vw, 3rem);
+      line-height: 1.05;
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+
+    .hint {
+      margin-bottom: 16px;
+      font-size: 0.92rem;
+    }
+
+    .choices {
+      gap: 10px;
+    }
+
+    .choice {
+      min-height: 48px;
+      padding: 11px 13px;
+      font-size: 0.98rem;
+      line-height: 1.35;
+      font-weight: 300;
+    }
+
+    .actions {
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .button {
+      min-height: 48px;
+      padding: 12px 18px;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 0.92rem;
+    }
+
+    .result p {
+      font-size: clamp(1rem, 1.7vw, 1.22rem);
+    }
+
+    footer {
+      padding: 22px 18px;
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        font-size: 16px;
+      }
+
+      .nav {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px 18px;
+      }
+
+      .nav-brand {
+        text-align: center;
+        font-size: 16px;
+        line-height: 1.2;
+      }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .nav-links a {
+        background: rgba(255, 255, 255, 0.45);
+        border: 1px solid rgba(42, 60, 47, 0.16);
+        border-radius: 999px;
+        color: var(--ink);
+        font-size: 11px;
+        letter-spacing: 0.055em;
+        line-height: 1.1;
+        padding: 8px 11px;
+        white-space: nowrap;
+      }
+
+      .nav-links a.nav-cta {
+        background: var(--clay);
+        border-color: var(--clay);
+        color: #fffaf3 !important;
+      }
+
+      main {
+        width: min(100% - 24px, 920px);
+        padding-top: 24px;
+        padding-bottom: 34px;
+      }
+
+      h1 {
+        font-size: clamp(2.35rem, 13vw, 3.65rem);
+        line-height: 0.98;
+      }
+
+      .intro-copy {
+        font-size: 1rem;
+      }
+
+      .panel {
+        padding: 18px 14px;
+        border-left-width: 3px;
+      }
+
+      .question-title {
+        font-size: clamp(1.75rem, 9vw, 2.55rem);
+      }
+
+      .choice {
+        min-height: 46px;
+      }
+
+      .button {
+        width: 100%;
+        padding-inline: 14px;
+      }
+
+      .final-note {
+        margin-top: 18px;
+        padding-top: 22px;
+      }
+
+      .final-card {
+        padding: 18px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="site-shell">
+    <nav class="nav">
+      <a href="./" class="nav-brand">The Confident Clinician</a>
+      <div class="nav-links">
+        <a href="./">Home</a>
+        <a href="./about.html">About Me</a>
+        <a href="./workshop.html">Workshops</a>
+        <a href="./program.html">12-Week Intensive</a>
+        <a href="./portal.html">Login</a>
+        <a href="./program.html" class="nav-cta">Join the Waitlist</a>
+      </div>
+    </nav>
+
+    <main>
+      <section id="intro">
+        <p class="eyebrow">Welcome</p>
+        <h1>Let's connect as clinicians.</h1>
+        <p class="intro-copy">You have already built a clinical foundation. I would love to know what season of the work you are in and how The Confident Clinician might support, collaborate with, or connect with you.</p>
+
+        <div class="panel">
+          <div class="contact-grid">
+            <div>
+              <label for="name">Name (optional)</label>
+              <input id="name" autocomplete="name" />
+            </div>
+            <div>
+              <label for="email">Email (optional)</label>
+              <input id="email" type="email" autocomplete="email" />
+            </div>
+            <div>
+              <label for="instagram">Instagram (optional)</label>
+              <input id="instagram" placeholder="@yourhandle" autocomplete="off" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button primary" id="startButton" type="button">Let's get into it</button>
+          </div>
+          <p class="status" id="introStatus" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section id="quiz" class="panel" hidden>
+        <p class="eyebrow" id="stepLabel">Question 1 of 6</p>
+
+        <div class="question active" data-question="role" data-type="multi">
+          <h2 class="question-title">What best describes your current role?</h2>
+          <p class="hint">Pick as many as feel true.</p>
+          <div class="choices">
+            <button class="choice" type="button">Licensed therapist in private practice</button>
+            <button class="choice" type="button">Group practice clinician</button>
+            <button class="choice" type="button">Group practice owner</button>
+            <button class="choice" type="button">Supervisor</button>
+            <button class="choice" type="button">Agency or community-based clinician</button>
+            <button class="choice" type="button">Coach, educator, or wellness professional</button>
+            <button class="choice" type="button">Other</button>
+          </div>
+        </div>
+
+        <div class="question" data-question="focus" data-type="multi">
+          <h2 class="question-title">What are you most focused on right now?</h2>
+          <p class="hint">Pick as many as feel true.</p>
+          <div class="choices">
+            <button class="choice" type="button">Growing or refining my private practice</button>
+            <button class="choice" type="button">Strengthening my clinical skills</button>
+            <button class="choice" type="button">Supporting newer clinicians</button>
+            <button class="choice" type="button">Preventing burnout</button>
+            <button class="choice" type="button">Creating trainings or workshops</button>
+            <button class="choice" type="button">Building professional connections</button>
+            <button class="choice" type="button">Finding referral partners</button>
+            <button class="choice" type="button">Developing a specialty</button>
+            <button class="choice" type="button">Other</button>
+          </div>
+        </div>
+
+        <div class="question" data-question="interest" data-type="multi">
+          <h2 class="question-title">What would you be most interested in hearing about?</h2>
+          <p class="hint">Pick as many as feel true.</p>
+          <div class="choices">
+            <button class="choice" type="button">Advanced clinician workshops</button>
+            <button class="choice" type="button">Collaboration opportunities</button>
+            <button class="choice" type="button">Referral connections</button>
+            <button class="choice" type="button">Supervisor resources</button>
+            <button class="choice" type="button">Guest teaching or speaking</button>
+            <button class="choice" type="button">The Confident Clinician program</button>
+            <button class="choice" type="button">Resources for clinicians I supervise</button>
+            <button class="choice" type="button">Other</button>
+          </div>
+        </div>
+
+        <div class="question" data-question="stateServed" data-type="text">
+          <h2 class="question-title">What state or states do you serve?</h2>
+          <p class="hint">Include whether you offer virtual, in-person, or both.</p>
+          <textarea id="stateText"></textarea>
+        </div>
+
+        <div class="question" data-question="workDescription" data-type="text">
+          <h2 class="question-title">Tell me a little about the work you do.</h2>
+          <p class="hint">You can share your specialty, setting, population, supervision role, collaborations, or the work you are building now.</p>
+          <textarea id="workText"></textarea>
+        </div>
+
+        <div class="question" data-question="wish" data-type="text">
+          <h2 class="question-title">One thing I wish I learned before entering the field is...</h2>
+          <p class="hint">This can be clinical, practical, emotional, business-related, or something else entirely.</p>
+          <textarea id="wishText"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="button" id="backButton" type="button">Back</button>
+          <button class="button primary" id="nextButton" type="button">Next</button>
+        </div>
+        <p class="status" id="quizStatus" aria-live="polite"></p>
+      </section>
+
+      <section id="result" class="result panel">
+        <p class="eyebrow">The Confident Clinician</p>
+        <div class="final-note">
+          <p class="final-script">Thank you. This genuinely helps shape the work I create.</p>
+          <h2>Stay in touch!</h2>
+          <div class="final-card">
+            <p>If you would like occasional resources, workshop notes, referral-minded updates, or collaboration opportunities, you can join the list here.</p>
+          </div>
+          <p class="final-question">Would you like to receive occasional updates?</p>
+        </div>
+        <div class="actions">
+          <button class="button primary" type="button" data-result-subscribe>Yes, please</button>
+          <a class="button" href="index.html">No thanks</a>
+          <a class="button" href="workshop.html">View workshops</a>
+          <a class="button" href="index.html">Return to site</a>
+        </div>
+        <p class="status" data-result-status aria-live="polite"></p>
+      </section>
+    </main>
+
+    <footer>
+      Educational content only. Not therapy, supervision, consultation, or legal advice.
+    </footer>
+
+    <div class="modal-overlay" id="subscribeModal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="subscribeTitle">
+        <button class="modal-close" type="button" data-close-subscribe aria-label="Close subscription form">&times;</button>
+        <h2 class="modal-title" id="subscribeTitle">Stay close to what is coming next.</h2>
+        <p class="modal-copy" data-subscribe-copy>Add your email here to confirm that I can send occasional workshop updates, helpful notes, and collaboration-friendly resources.</p>
+        <form class="modal-form" action="/.netlify/functions/workshop-subscription" method="POST" data-subscribe-form>
+          <div>
+            <label for="subscribeName">Name (optional)</label>
+            <input id="subscribeName" type="text" name="name" autocomplete="name" />
+          </div>
+          <div>
+            <label for="subscribeEmail">Email</label>
+            <input id="subscribeEmail" type="email" name="email" autocomplete="email" required />
+          </div>
+          <button class="button primary" type="submit">Subscribe</button>
+        </form>
+        <p class="modal-status" data-subscribe-status>You're subscribed. I'll only send something when there is something worth sending.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const intro = document.querySelector('#intro');
+    const quiz = document.querySelector('#quiz');
+    const result = document.querySelector('#result');
+    const questions = Array.from(document.querySelectorAll('.question'));
+    const answers = {};
+    let current = 0;
+
+    const friendlyError = 'Something did not send on my end. You can still keep going, but if you want to make sure I see your answers, email admin@theconfidentclinician.me.';
+
+    function normalizeEmail(value) {
+      return value.trim().toLowerCase();
+    }
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(value));
+    }
+
+    function getContact() {
+      return {
+        name: document.querySelector('#name').value.trim(),
+        email: normalizeEmail(document.querySelector('#email').value),
+        instagram: document.querySelector('#instagram').value.trim(),
+      };
+    }
+
+    function updateStep() {
+      questions.forEach((question, index) => {
+        question.classList.toggle('active', index === current);
+      });
+      document.querySelector('#stepLabel').textContent = `Question ${current + 1} of ${questions.length}`;
+      document.querySelector('#backButton').disabled = false;
+      document.querySelector('#nextButton').textContent = current === questions.length - 1 ? 'Submit' : 'Next';
+      document.querySelector('#quizStatus').textContent = '';
+    }
+
+    function currentQuestion() {
+      return questions[current];
+    }
+
+    function valueForQuestion(question) {
+      const key = question.dataset.question;
+      if (key === 'stateServed') return document.querySelector('#stateText').value.trim();
+      if (key === 'workDescription') return document.querySelector('#workText').value.trim();
+      if (key === 'wish') return document.querySelector('#wishText').value.trim();
+      return answers[key] || [];
+    }
+
+    function hasAnswer(question) {
+      if (question.dataset.type === 'text') return true;
+      const value = valueForQuestion(question);
+      return Array.isArray(value) ? value.length > 0 : value.length > 1;
+    }
+
+    function submitToAirtable() {
+      const contact = getContact();
+
+      return fetch('/.netlify/functions/instagram-path-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contact.name,
+          email: contact.email,
+          instagram: contact.instagram,
+          pathway: 'Established Clinician',
+          currentRole: answers.role || [],
+          currentFocus: answers.focus || [],
+          interestedIn: answers.interest || [],
+          stateServed: document.querySelector('#stateText').value.trim(),
+          workDescription: document.querySelector('#workText').value.trim(),
+          confidenceWish: document.querySelector('#wishText').value.trim(),
+          sourceUrl: window.location.href,
+          notes: 'Submitted from the established clinician Instagram pathway.',
+        }),
+      });
+    }
+
+    const subscribeModal = document.querySelector('#subscribeModal');
+    const subscribeName = document.querySelector('#subscribeName');
+    const subscribeEmail = document.querySelector('#subscribeEmail');
+
+    function openSubscribeModal(message = '') {
+      const contact = getContact();
+      const status = document.querySelector('[data-subscribe-status]');
+      if (subscribeName && contact.name) subscribeName.value = contact.name;
+      if (subscribeEmail && contact.email) subscribeEmail.value = contact.email;
+      if (status) {
+        status.textContent = message;
+        status.classList.toggle('is-visible', Boolean(message));
+      }
+      subscribeModal.classList.add('is-open');
+      subscribeModal.setAttribute('aria-hidden', 'false');
+      setTimeout(() => subscribeEmail && subscribeEmail.focus(), 60);
+    }
+
+    function closeSubscribeModal() {
+      subscribeModal.classList.remove('is-open');
+      subscribeModal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('[data-open-subscribe]').forEach((button) => {
+      button.addEventListener('click', openSubscribeModal);
+    });
+
+    document.querySelectorAll('[data-close-subscribe]').forEach((button) => {
+      button.addEventListener('click', closeSubscribeModal);
+    });
+
+    if (subscribeModal) {
+      subscribeModal.addEventListener('click', (event) => {
+        if (event.target === subscribeModal) closeSubscribeModal();
+      });
+    }
+
+    document.querySelectorAll('[data-subscribe-form]').forEach((form) => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const status = form.parentElement.querySelector('[data-subscribe-status]');
+        status.classList.remove('is-visible');
+        const submit = form.querySelector('button[type="submit"]');
+        const emailInput = form.querySelector('[name="email"]');
+        const email = normalizeEmail(emailInput.value);
+
+        if (!isValidEmail(email)) {
+          status.textContent = 'That email looks a little off. Update it here and try again.';
+          status.classList.add('is-visible');
+          emailInput.focus();
+          return;
+        }
+
+        submit.disabled = true;
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: form.querySelector('[name="name"]').value.trim(),
+              email,
+              source: 'Instagram Established Clinician Path',
+            }),
+          });
+          if (!response.ok) throw new Error('Subscription failed');
+          document.querySelector('#email').value = email;
+          form.style.display = 'none';
+          const copy = form.parentElement.querySelector('[data-subscribe-copy]');
+          if (copy) copy.hidden = true;
+          status.textContent = "You're subscribed. I'll only send something when there is something worth sending.";
+          status.classList.add('is-visible');
+        } catch (error) {
+          status.textContent = 'Something did not send. Please try again or email admin@theconfidentclinician.me.';
+          status.classList.add('is-visible');
+          submit.disabled = false;
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-result-subscribe]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const status = document.querySelector('[data-result-status]');
+        const contact = getContact();
+        if (!isValidEmail(contact.email)) {
+          status.textContent = contact.email
+            ? 'That email looks a little off. Update it below and try again.'
+            : '';
+          openSubscribeModal(status.textContent);
+          return;
+        }
+        button.disabled = true;
+        status.textContent = 'Saving...';
+        try {
+          const response = await fetch('/.netlify/functions/workshop-subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: contact.name,
+              email: contact.email,
+              source: 'Instagram Established Clinician Path',
+            }),
+          });
+          if (!response.ok) throw new Error('Subscription failed');
+          status.textContent = "Saved. I'll only send something when there is something worth sending.";
+        } catch (error) {
+          status.textContent = 'Something did not send. Please try again or email admin@theconfidentclinician.me.';
+          button.disabled = false;
+        }
+      });
+    });
+
+    document.querySelector('#startButton').addEventListener('click', () => {
+      document.querySelector('#introStatus').textContent = '';
+      intro.hidden = true;
+      quiz.hidden = false;
+      updateStep();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.querySelectorAll('.choice').forEach((button) => {
+      button.addEventListener('click', () => {
+        const question = button.closest('.question');
+        const key = question.dataset.question;
+        const text = button.textContent.trim();
+        if (question.dataset.type === 'single') {
+          question.querySelectorAll('.choice').forEach((choice) => choice.classList.remove('selected'));
+          button.classList.add('selected');
+          answers[key] = [text];
+          return;
+        }
+        const selected = new Set(answers[key] || []);
+        if (selected.has(text)) {
+          selected.delete(text);
+          button.classList.remove('selected');
+        } else {
+          selected.add(text);
+          button.classList.add('selected');
+        }
+        answers[key] = Array.from(selected);
+      });
+    });
+
+    document.querySelector('#backButton').addEventListener('click', () => {
+      if (current > 0) {
+        current -= 1;
+        updateStep();
+        window.scrollTo({ top: quiz.offsetTop - 20, behavior: 'smooth' });
+        return;
+      }
+      quiz.hidden = true;
+      intro.hidden = false;
+      document.querySelector('#quizStatus').textContent = '';
+      window.scrollTo({ top: intro.offsetTop - 20, behavior: 'smooth' });
+    });
+
+    document.querySelector('#nextButton').addEventListener('click', async () => {
+      const status = document.querySelector('#quizStatus');
+      if (!hasAnswer(currentQuestion())) {
+        status.textContent = 'Add a response before moving on.';
+        return;
+      }
+      if (current < questions.length - 1) {
+        current += 1;
+        updateStep();
+        window.scrollTo({ top: quiz.offsetTop - 20, behavior: 'smooth' });
+        return;
+      }
+
+      status.textContent = 'Saving your answers...';
+      document.querySelector('#nextButton').disabled = true;
+      try {
+        const response = await submitToAirtable();
+        if (!response.ok) {
+          console.warn('Airtable sync did not complete.');
+        }
+      } catch (error) {
+        console.warn(friendlyError, error);
+      }
+      quiz.hidden = true;
+      result.classList.add('active');
+      window.scrollTo({ top: result.offsetTop - 20, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

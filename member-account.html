@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Edit Account | The Confident Clinician</title>
+  <meta property="og:image" content="https://theconfidentclinician.me/confident-clinician-social.png" />
+  <meta property="og:image:width" content="1254" />
+  <meta property="og:image:height" content="1254" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://theconfidentclinician.me/confident-clinician-social.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#F6F2EB; --dark:#2A3C2F; --mid:#5A6A52; --accent:#C56A4D; --sand:#EDE5D8; --line:#E2DAD0; --danger:#9B3E2F; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; font-family: Jost, sans-serif; background: var(--bg); color: var(--dark); }
+    a { color: inherit; text-decoration: none; }
+    .nav { display: flex; flex-wrap: wrap; gap: 10px; padding: 24px clamp(22px, 5vw, 64px); border-bottom: 1px solid var(--line); }
+    .nav a { border: 1px solid rgba(42,60,47,.18); padding: 9px 13px; color: var(--dark); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    main { width: min(100%, 1060px); margin: 0 auto; padding: clamp(38px, 6vw, 80px) 24px; }
+    .intro { max-width: 760px; margin-bottom: 34px; }
+    .eyebrow { margin-bottom: 16px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { margin-bottom: 14px; font: 400 clamp(44px, 8vw, 76px)/.98 "Cormorant Garamond", serif; }
+    p { color: var(--mid); font-size: 16px; font-weight: 300; line-height: 1.75; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .card { background: var(--sand); border-left: 4px solid var(--accent); padding: clamp(24px, 4vw, 38px); }
+    h2 { margin-bottom: 12px; font: 400 clamp(30px, 4vw, 46px)/1.05 "Cormorant Garamond", serif; }
+    form { display: grid; gap: 16px; margin-top: 22px; }
+    label { display: grid; gap: 7px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    input { min-height: 50px; border: 1px solid var(--line); background: rgba(246,242,235,.82); padding: 13px 14px; color: var(--dark); font: 400 16px Jost, sans-serif; }
+    button, .button { min-height: 50px; border: 0; background: var(--accent); color: var(--bg); padding: 14px 26px; font: 700 12px Jost, sans-serif; letter-spacing: .12em; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .status { display: none; margin-top: 16px; font-size: 14px; line-height: 1.65; }
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--dark); }
+    @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Member navigation">
+    <a href="./portal.html">Workshop Home</a>
+    <a href="./member-account.html">Edit Account</a>
+    <a href="./">Main Site</a>
+  </nav>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">Member Account</p>
+      <h1>Update your access.</h1>
+      <p>Use this page to change the email connected to your member account or request a password reset. For security, your password is never visible here.</p>
+    </section>
+    <section class="grid">
+      <article class="card">
+        <p class="eyebrow">Email</p>
+        <h2>Change your email.</h2>
+        <p>This updates the email connected to your member login and workshop access record.</p>
+        <form data-email-form>
+          <label>Current Email<input type="email" name="email" autocomplete="email" required></label>
+          <label>Current Member Password<input type="password" name="password" autocomplete="current-password" required></label>
+          <label>New Email<input type="email" name="newEmail" autocomplete="email" required></label>
+          <button type="submit">Update Email</button>
+        </form>
+        <p class="status" data-email-status></p>
+      </article>
+      <article class="card">
+        <p class="eyebrow">Password</p>
+        <h2>Change your password.</h2>
+        <p>For security, you’ll get a reset email and choose a new password there.</p>
+        <a class="button" href="./forgot-password.html" style="margin-top: 22px;">Send Reset Email</a>
+      </article>
+    </section>
+  </main>
+  <script>
+    const emailForm = document.querySelector('[data-email-form]');
+    const emailStatus = document.querySelector('[data-email-status]');
+
+    emailForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = emailForm.querySelector('button');
+      const original = button.textContent;
+      const formData = new FormData(emailForm);
+      button.disabled = true;
+      button.textContent = 'Updating...';
+      emailStatus.style.display = 'none';
+      try {
+        const response = await fetch('/.netlify/functions/update-member-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.get('email'),
+            password: formData.get('password'),
+            newEmail: formData.get('newEmail'),
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || 'Your email could not be updated.');
+        emailStatus.className = 'status success';
+        emailStatus.textContent = result.message;
+        emailStatus.style.display = 'block';
+        emailForm.reset();
+      } catch (error) {
+        emailStatus.className = 'status error';
+        emailStatus.textContent = error.message || 'Something went wrong.';
+        emailStatus.style.display = 'block';
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    });
+  </script>
+</body>
+</html>

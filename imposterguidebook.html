@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clinical Confidence Reset | The Confident Clinician</title>
+  <meta name="description" content="A free guidebook for newer therapists navigating imposter syndrome, self-doubt, and the real moments of clinical work." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Clinical Confidence Reset | The Confident Clinician" />
+  <meta property="og:description" content="A grounded guide for newer therapists who want help leaving the work in the room." />
+  <meta property="og:url" content="https://theconfidentclinician.me/imposterguidebook" />
+  <meta property="og:image" content="https://theconfidentclinician.me/clinical-reset-share.png" />
+  <meta property="og:image:width" content="1180" />
+  <meta property="og:image:height" content="1060" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Clinical Confidence Reset | The Confident Clinician" />
+  <meta name="twitter:description" content="A grounded guide for newer therapists who want help leaving the work in the room." />
+  <meta name="twitter:image" content="https://theconfidentclinician.me/clinical-reset-share.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F2EB;
+      --dark: #2A3C2F;
+      --mid: #5A6A52;
+      --accent: #C56A4D;
+      --sand: #EDE5D8;
+      --line: #E2DAD0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--dark); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    [hidden] { display: none !important; }
+
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 52px; background: var(--bg);
+      border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20;
+    }
+    .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dark); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); }
+    .nav-cta { background: var(--accent); color: #fff !important; padding: 10px 22px; }
+
+    .hero { padding: 76px 52px 46px; border-bottom: 1px solid var(--line); }
+    .hero-inner { max-width: 900px; margin: 0 auto; }
+    .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 7vw, 88px); font-weight: 400; line-height: 0.98; color: var(--dark); margin-bottom: 24px; }
+    h1 em { color: var(--accent); font-style: italic; }
+    .lead { font-size: 18px; font-weight: 300; line-height: 1.75; color: var(--mid); max-width: 680px; }
+
+    .gate-section { padding: 54px 52px 78px; }
+    .gate-grid { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr); gap: 56px; align-items: start; }
+    .gate-copy h2, .content-header h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 54px); font-weight: 400; line-height: 1.08; margin-bottom: 20px; }
+    .gate-copy p, .content-header p { font-size: 17px; font-weight: 300; line-height: 1.75; color: var(--mid); }
+    .form-card { background: var(--sand); border-left: 3px solid var(--accent); padding: 32px; }
+    .form { display: flex; flex-direction: column; gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+    .field input { min-height: 52px; border: 1px solid var(--line); background: var(--bg); color: var(--dark); padding: 12px 14px; font: inherit; font-size: 17px; }
+    .field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 54px; border: 0; cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 28px; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-dark { background: var(--dark); color: #fff; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--dark); color: var(--dark); }
+    .status { display: none; font-size: 16px; font-weight: 300; line-height: 1.6; color: var(--mid); }
+    .status.is-visible { display: block; }
+    .status.is-error { color: #A84A32; }
+
+    .content { padding: 54px 52px 80px; }
+    .content-inner { max-width: 1180px; margin: 0 auto; }
+    .content-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: end; margin-bottom: 28px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+    .document-frame {
+      width: 100%;
+      min-height: 78vh;
+      height: 900px;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: 0 18px 50px rgba(42, 60, 47, 0.08);
+    }
+    .small-note { margin-top: 18px; color: var(--mid); font-size: 13px; font-weight: 300; line-height: 1.6; }
+
+    .footer { background: var(--dark); padding: 38px 52px; }
+    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; letter-spacing: 0.08em; color: #fff; text-transform: uppercase; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
+    .footer-links a { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+    @media (max-width: 860px) {
+      .nav { flex-direction: column; gap: 12px; padding: 16px 18px; }
+      .nav-brand { text-align: center; font-size: 16px; line-height: 1.2; }
+      .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .nav-links a { background: rgba(255,255,255,0.45); border: 1px solid rgba(42,60,47,0.16); border-radius: 999px; color: var(--dark); font-size: 11px; letter-spacing: 0.055em; line-height: 1.1; padding: 8px 11px; white-space: nowrap; }
+      .nav-links a.nav-cta { background: var(--accent); border-color: var(--accent); color: #fff !important; }
+      .hero { padding: 42px 22px 28px; }
+      .gate-section { padding: 30px 18px 42px; }
+      .content { padding: 30px 0 46px; }
+      .gate-grid, .content-header { grid-template-columns: 1fr; gap: 22px; }
+      h1 { font-size: clamp(42px, 13vw, 58px); line-height: 1.02; margin-bottom: 16px; }
+      .lead { font-size: 16px; line-height: 1.62; }
+      .eyebrow { font-size: 10px; letter-spacing: 0.16em; margin-bottom: 12px; }
+      .gate-copy h2, .content-header h2 { font-size: clamp(34px, 10vw, 46px); margin-bottom: 12px; }
+      .gate-copy p, .content-header p { font-size: 16px; line-height: 1.62; }
+      .form-card { padding: 22px 18px; border-left-width: 3px; }
+      .field input { min-height: 50px; font-size: 16px; }
+      .actions { justify-content: stretch; }
+      .actions .btn, .form .btn { width: 100%; }
+      .content-inner { width: 100%; }
+      .content-header { padding: 0 22px; margin-bottom: 18px; }
+      .document-frame {
+        display: block;
+        width: 100%;
+        min-height: 76vh;
+        height: 78vh;
+        border-left: 0;
+        border-right: 0;
+        box-shadow: none;
+      }
+      .small-note { padding: 0 22px; font-size: 12px; line-height: 1.55; }
+      .footer { padding: 34px 22px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-links { justify-content: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links a { font-size: 10px; padding: 7px 9px; }
+      .hero { padding-top: 34px; }
+      .gate-section { padding-top: 24px; }
+      .btn { min-height: 50px; padding: 14px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="./" class="nav-brand">The Confident Clinician</a>
+    <div class="nav-links">
+      <a href="./">Home</a>
+      <a href="./about.html">About Me</a>
+      <a href="./workshop.html">Workshops</a>
+      <a href="./program.html">12-Week Intensive</a>
+      <a href="./portal.html">Login</a>
+      <a href="./workshop.html" class="nav-cta">View Workshops</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Free Guidebook</p>
+        <h1>Clinical Confidence <em>Reset</em></h1>
+        <p class="lead">A grounded guide for the newer therapist who cares deeply, thinks a lot after sessions, and wants a steadier way back to themselves.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="gate-section" data-gate>
+      <div class="gate-grid">
+        <div class="gate-copy">
+          <h2>Start here when imposter syndrome gets loud.</h2>
+          <p>This guide is for the moment you leave session replaying what you said, wondering if you did enough, or searching for one more answer that will finally make you feel ready.</p>
+        </div>
+        <div class="form-card">
+          <form class="form" data-guide-form>
+            <div class="field">
+              <label for="guide-name">Name</label>
+              <input id="guide-name" name="name" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="guide-email">Email</label>
+              <input id="guide-email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <button class="btn btn-accent" type="submit" data-submit-button>Open the Guidebook</button>
+            <p class="status" data-status></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="content" data-content hidden>
+      <div class="content-inner">
+        <div class="content-header">
+          <div>
+            <p class="eyebrow">You are in</p>
+            <h2>Clinical Confidence Reset</h2>
+            <p data-reader-line>The guidebook is ready below.</p>
+          </div>
+          <div class="actions">
+            <a class="btn btn-outline" href="./imposter-guidebook-document.html" target="_blank" rel="noopener">Open Full Page</a>
+          </div>
+        </div>
+        <iframe class="document-frame" title="Clinical Confidence Reset guidebook" src="./imposter-guidebook-document.html"></iframe>
+        <p class="small-note">This guide is educational content for professional development only. It is not therapy, clinical supervision, consultation, legal advice, or a substitute for your own clinical judgment, supervisor, workplace policies, licensing board, or professional standards.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">The Confident Clinician</div>
+      <div class="footer-links">
+        <a href="./terms.html">Terms</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./disclaimer.html">Disclaimer</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'tccClinicalConfidenceResetAccess';
+    const PRODUCT_NAME = 'Clinical Confidence Reset Guidebook';
+    const form = document.querySelector('[data-guide-form]');
+    const gate = document.querySelector('[data-gate]');
+    const content = document.querySelector('[data-content]');
+    const status = document.querySelector('[data-status]');
+    const submitButton = document.querySelector('[data-submit-button]');
+    const readerLine = document.querySelector('[data-reader-line]');
+
+    const setStatus = (message, isError = false) => {
+      status.textContent = message;
+      status.classList.toggle('is-visible', Boolean(message));
+      status.classList.toggle('is-error', isError);
+    };
+
+    const revealGuide = (person = {}) => {
+      gate.hidden = true;
+      content.hidden = false;
+      if (person.name) {
+        readerLine.textContent = `${person.name}, the guidebook is ready below.`;
+      }
+      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (saved && saved.email) revealGuide(saved);
+    } catch (error) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setStatus('');
+
+      const formData = new FormData(form);
+      const name = String(formData.get('name') || '').trim();
+      const email = String(formData.get('email') || '').trim().toLowerCase();
+
+      if (!name || !email) {
+        setStatus('Please enter your name and email.', true);
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Opening...';
+
+      try {
+        const response = await fetch('/.netlify/functions/product-view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            product: PRODUCT_NAME,
+            notes: 'Opened from /imposterguidebook',
+          }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          throw new Error(data.message || 'Something did not send.');
+        }
+        const access = { name, email, openedAt: new Date().toISOString() };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(access));
+        revealGuide(access);
+      } catch (error) {
+        setStatus('Something did not send. Please try again or email admin@theconfidentclinician.me.', true);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Open the Guidebook';
+      }
+    });
+  </script>
+</body>
+</html>

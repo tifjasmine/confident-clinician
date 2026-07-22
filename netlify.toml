@@ -1,3 +1,43 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+
+[[redirects]]
+  from = "/imposterguidebook"
+  to = "/imposterguidebook.html"
+  status = 200
+
+[[redirects]]
+  from = "/imposterguidebook/"
+  to = "/imposterguidebook.html"
+  status = 200
+
+[[redirects]]
+  from = "/developing-clinician-path"
+  to = "/developing-clinician-path.html"
+  status = 200
+
+[[redirects]]
+  from = "/developing-clinician-path/"
+  to = "/developing-clinician-path.html"
+  status = 200
+
+[[redirects]]
+  from = "/established-clinician-path"
+  to = "/established-clinician-path.html"
+  status = 200
+
+[[redirects]]
+  from = "/established-clinician-path/"
+  to = "/established-clinician-path.html"
+  status = 200
+
+[[redirects]]
+  from = "/workshop-feedback"
+  to = "/workshop-feedback.html"
+  status = 200
+
+[[redirects]]
+  from = "/workshop-feedback/"
+  to = "/workshop-feedback.html"
+  status = 200
