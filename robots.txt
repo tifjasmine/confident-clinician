@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /portal.html
+Disallow: /create-account.html
+Disallow: /forgot-password.html
+Disallow: /reset-password.html
+Disallow: /member-account.html
+Disallow: /five-skills-access.html
+Disallow: /workshop-feedback.html
+Disallow: /thank-you.html
+
+Sitemap: https://theconfidentclinician.me/sitemap.xml
