@@ -46,11 +46,22 @@ const getProductPasswords = () => parseJsonEnv('RESOURCE_PRODUCT_PASSWORDS', def
 
 const parseListEnv = (name, fallback) => {
   if (!process.env[name]) return fallback;
+  try {
+    const parsed = JSON.parse(process.env[name]);
+    if (Array.isArray(parsed)) return parsed.map((item) => String(item).trim()).filter(Boolean);
+  } catch (error) {
+    // Fall through to comma-separated values.
+  }
   return process.env[name]
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
 };
+
+const getPaidProducts = () => Array.from(new Set([
+  ...parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts),
+  ...defaultPaidProducts,
+]));
 
 const isChecked = (value) => value === true || value === 'true' || value === '1' || value === 1;
 
@@ -86,7 +97,7 @@ exports.handler = async (event) => {
   const emailField = fieldMap.email || 'Email';
   const productField = fieldMap.product || 'Product';
   const purchasedField = fieldMap.purchased || 'Purchased';
-  const paidProducts = parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts);
+  const paidProducts = getPaidProducts();
   const purchaseRequired = paidProducts.includes(product);
   const purchaseRequiredMessage =
     'I do not see a purchase connected to that email yet. Use the email from checkout, or purchase the playbook first. If this looks wrong, email admin@theconfidentclinician.me.';

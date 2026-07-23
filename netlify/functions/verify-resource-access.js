@@ -34,10 +34,15 @@ const parseListEnv = (name, fallback) => {
     const parsed = JSON.parse(process.env[name]);
     if (Array.isArray(parsed)) return parsed.map((item) => String(item).trim()).filter(Boolean);
   } catch (error) {
-    return process.env[name].split(',').map((item) => item.trim()).filter(Boolean);
+    // Fall through to comma-separated values.
   }
-  return fallback;
+  return process.env[name].split(',').map((item) => item.trim()).filter(Boolean);
 };
+
+const getPaidProducts = () => Array.from(new Set([
+  ...parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts),
+  ...defaultPaidProducts,
+]));
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -67,7 +72,7 @@ exports.handler = async (event) => {
   const productField = fieldMap.product || 'Product';
   const passwordField = fieldMap.password || 'Password';
   const purchasedField = fieldMap.purchased || 'Purchased';
-  const paidProducts = parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts);
+  const paidProducts = getPaidProducts();
   const purchaseRequired = paidProducts.includes(product);
 
   if (!token) {
