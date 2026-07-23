@@ -38,7 +38,11 @@ const getPending = () => {
 const setPending = (person) => {
   localStorage.setItem(`${page.storageKey}:pending`, JSON.stringify(person));
   if (pendingEmailLine) {
-    pendingEmailLine.textContent = person.alreadyRequested
+    pendingEmailLine.textContent = person.purchased
+      ? page.purchasedMessage
+        ? page.purchasedMessage.replace('{email}', person.email)
+        : 'Found your purchase. Use the password from your email to open it here.'
+      : person.alreadyRequested
       ? 'That email is already on the list. Use the password from your inbox to open it here.'
       : page.pendingMessage
       ? page.pendingMessage.replace('{email}', person.email)
@@ -142,12 +146,17 @@ requestForm?.addEventListener('submit', async (event) => {
       email,
       requestedAt: new Date().toISOString(),
       alreadyRequested: Boolean(data.alreadyRequested),
+      purchased: Boolean(data.purchased),
     };
     setPending(pending);
     setStep('password');
     checkEmailStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) {
-    setStatus(requestStatus, 'Something did not send. Please try again or email admin@theconfidentclinician.me.', true);
+    setStatus(
+      requestStatus,
+      error.message || 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
+      true
+    );
   } finally {
     requestButton.disabled = false;
     requestButton.textContent = page.requestButtonText || 'Send Me The Password';

@@ -34,6 +34,8 @@ const defaultProductViewFieldMap = {
   notes: 'Notes',
   password: 'Password',
   purchased: 'Purchased',
+  firstTime: 'First Time',
+  welcomeEmailSent: 'Welcome Email Sent',
 };
 
 const parseJsonEnv = (name, fallback) => {
@@ -328,6 +330,8 @@ const upsertProductViewAccess = async (session, lineItems, resourceAccess) => {
   addIfConfigured(fields, fieldMap, 'notes', 'Purchased through Stripe checkout.');
   addIfConfigured(fields, fieldMap, 'password', resourceAccess.password);
   addIfConfigured(fields, fieldMap, 'purchased', true);
+  addIfConfigured(fields, fieldMap, 'firstTime', true);
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   const existingRecord = await findProductViewRecord(email, resourceAccess.product, fieldMap);
   const targetUrl = existingRecord

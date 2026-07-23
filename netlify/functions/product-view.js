@@ -24,6 +24,8 @@ const defaultProductPasswords = {
   'Official Playbook': 'FULLCOVER26',
 };
 
+const defaultPaidProducts = ['Official Playbook'];
+
 const parseJsonEnv = (name, fallback) => {
   if (!process.env[name]) return fallback;
   try {
@@ -41,6 +43,16 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
 };
 
 const getProductPasswords = () => parseJsonEnv('RESOURCE_PRODUCT_PASSWORDS', defaultProductPasswords);
+
+const parseListEnv = (name, fallback) => {
+  if (!process.env[name]) return fallback;
+  return process.env[name]
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const isChecked = (value) => value === true || value === 'true' || value === '1' || value === 1;
 
 const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
@@ -73,6 +85,11 @@ exports.handler = async (event) => {
   const productPassword = productPasswords[product] || '';
   const emailField = fieldMap.email || 'Email';
   const productField = fieldMap.product || 'Product';
+  const purchasedField = fieldMap.purchased || 'Purchased';
+  const paidProducts = parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts);
+  const purchaseRequired = paidProducts.includes(product);
+  const purchaseRequiredMessage =
+    'I do not see a purchase connected to that email yet. Use the email from checkout, or purchase the playbook first. If this looks wrong, email admin@theconfidentclinician.me.';
 
   if (!token) {
     console.error('Product view missing Airtable token.');
@@ -116,8 +133,26 @@ exports.handler = async (event) => {
       const existing = await existingResponse.json();
       const existingRecord = (existing.records || [])[0];
       if (existingRecord) {
-        const existingName = String(existingRecord.fields?.[fieldMap.name || 'Name'] || '').trim();
+        const existingFields = existingRecord.fields || {};
+        const existingName = String(existingFields[fieldMap.name || 'Name'] || '').trim();
+        const purchased = isChecked(existingFields[purchasedField]);
+
+        if (purchaseRequired && !purchased) {
+          return json(403, {
+            ok: false,
+            message: purchaseRequiredMessage,
+          });
+        }
+
+        const patchFields = {};
         if (name && !existingName && fieldMap.name) {
+          patchFields[fieldMap.name] = name;
+        }
+        if (productPassword && fieldMap.password && !existingFields[fieldMap.password]) {
+          patchFields[fieldMap.password] = productPassword;
+        }
+
+        if (Object.keys(patchFields).length > 0) {
           await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
             method: 'PATCH',
             headers: {
@@ -125,7 +160,7 @@ exports.handler = async (event) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              records: [{ id: existingRecord.id, fields: { [fieldMap.name]: name } }],
+              records: [{ id: existingRecord.id, fields: patchFields }],
               typecast: true,
             }),
           });
@@ -135,8 +170,16 @@ exports.handler = async (event) => {
           ok: true,
           alreadyRequested: true,
           name: existingName || name,
+          purchased,
         });
       }
+    }
+
+    if (purchaseRequired) {
+      return json(403, {
+        ok: false,
+        message: purchaseRequiredMessage,
+      });
     }
 
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
