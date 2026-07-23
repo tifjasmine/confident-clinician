@@ -16,6 +16,7 @@ const defaultFieldMap = {
   password: 'Password',
   purchased: 'Purchased',
   firstTime: 'First Time',
+  welcomeEmailSent: 'Welcome Email Sent',
 };
 
 const defaultProductPasswords = {
@@ -72,7 +73,6 @@ exports.handler = async (event) => {
   const productPassword = productPasswords[product] || '';
   const emailField = fieldMap.email || 'Email';
   const productField = fieldMap.product || 'Product';
-  const passwordField = fieldMap.password || 'Password';
 
   if (!token) {
     console.error('Product view missing Airtable token.');
@@ -90,12 +90,13 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'notes', notes);
   addIfConfigured(fields, fieldMap, 'password', productPassword);
   addIfConfigured(fields, fieldMap, 'firstTime', Boolean(productPassword));
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   try {
     if (productPassword) {
       const lookup = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
       lookup.searchParams.set('maxRecords', '1');
-      lookup.searchParams.set('filterByFormula', `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', {${productField}} = '${escapeFormulaString(product)}', {${passwordField}} = '${escapeFormulaString(productPassword)}')`);
+      lookup.searchParams.set('filterByFormula', `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', {${productField}} = '${escapeFormulaString(product)}')`);
 
       const existingResponse = await fetch(lookup, {
         headers: {
@@ -115,10 +116,25 @@ exports.handler = async (event) => {
       const existing = await existingResponse.json();
       const existingRecord = (existing.records || [])[0];
       if (existingRecord) {
+        const existingName = String(existingRecord.fields?.[fieldMap.name || 'Name'] || '').trim();
+        if (name && !existingName && fieldMap.name) {
+          await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              records: [{ id: existingRecord.id, fields: { [fieldMap.name]: name } }],
+              typecast: true,
+            }),
+          });
+        }
+
         return json(200, {
           ok: true,
           alreadyRequested: true,
-          name: String(existingRecord.fields?.[fieldMap.name || 'Name'] || name || '').trim(),
+          name: existingName || name,
         });
       }
     }
