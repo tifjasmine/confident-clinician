@@ -41,3 +41,53 @@
   from = "/workshop-feedback/"
   to = "/workshop-feedback.html"
   status = 200
+
+[[redirects]]
+  from = "/mini-playbook"
+  to = "/mini-playbook.html"
+  status = 200
+
+[[redirects]]
+  from = "/mini-playbook/"
+  to = "/mini-playbook.html"
+  status = 200
+
+[[redirects]]
+  from = "/official-playbook"
+  to = "/official-playbook.html"
+  status = 200
+
+[[redirects]]
+  from = "/official-playbook/"
+  to = "/official-playbook.html"
+  status = 200
+
+[[redirects]]
+  from = "/brand-playbook"
+  to = "/mini-playbook"
+  status = 301
+
+[[redirects]]
+  from = "/brand-playbook/"
+  to = "/mini-playbook"
+  status = 301
+
+[[redirects]]
+  from = "/brand-playbook.html"
+  to = "/mini-playbook"
+  status = 301
+
+[[redirects]]
+  from = "/confident-clinician-playbook"
+  to = "/official-playbook"
+  status = 301
+
+[[redirects]]
+  from = "/confident-clinician-playbook/"
+  to = "/official-playbook"
+  status = 301
+
+[[redirects]]
+  from = "/confident-clinician-playbook.html"
+  to = "/official-playbook"
+  status = 301

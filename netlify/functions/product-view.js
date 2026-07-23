@@ -13,6 +13,14 @@ const defaultFieldMap = {
   product: 'Product',
   opened: 'Opened',
   notes: 'Notes',
+  password: 'Password',
+  purchased: 'Purchased',
+  firstTime: 'First Time',
+};
+
+const defaultProductPasswords = {
+  'Mini Playbook': 'MINIBOOK26',
+  'Official Playbook': 'FULLCOVER26',
 };
 
 const parseJsonEnv = (name, fallback) => {
@@ -31,6 +39,10 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
   fields[airtableField] = value;
 };
 
+const getProductPasswords = () => parseJsonEnv('RESOURCE_PRODUCT_PASSWORDS', defaultProductPasswords);
+
+const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { ok: false, message: 'Method not allowed.' });
@@ -48,10 +60,6 @@ exports.handler = async (event) => {
   const product = String(payload.product || 'Clinical Confidence Reset Guidebook').trim();
   const notes = String(payload.notes || '').trim();
 
-  if (!name) {
-    return json(400, { ok: false, message: 'Please enter your name.' });
-  }
-
   if (!email || !email.includes('@')) {
     return json(400, { ok: false, message: 'Please enter a valid email.' });
   }
@@ -60,6 +68,11 @@ exports.handler = async (event) => {
   const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
   const tableId = process.env.AIRTABLE_PRODUCT_VIEWS_TABLE_ID || 'Product Views';
   const fieldMap = parseJsonEnv('AIRTABLE_PRODUCT_VIEW_FIELD_MAP', defaultFieldMap);
+  const productPasswords = getProductPasswords();
+  const productPassword = productPasswords[product] || '';
+  const emailField = fieldMap.email || 'Email';
+  const productField = fieldMap.product || 'Product';
+  const passwordField = fieldMap.password || 'Password';
 
   if (!token) {
     console.error('Product view missing Airtable token.');
@@ -75,8 +88,41 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'product', product);
   addIfConfigured(fields, fieldMap, 'opened', new Date().toISOString());
   addIfConfigured(fields, fieldMap, 'notes', notes);
+  addIfConfigured(fields, fieldMap, 'password', productPassword);
+  addIfConfigured(fields, fieldMap, 'firstTime', Boolean(productPassword));
 
   try {
+    if (productPassword) {
+      const lookup = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
+      lookup.searchParams.set('maxRecords', '1');
+      lookup.searchParams.set('filterByFormula', `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', {${productField}} = '${escapeFormulaString(product)}', {${passwordField}} = '${escapeFormulaString(productPassword)}')`);
+
+      const existingResponse = await fetch(lookup, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!existingResponse.ok) {
+        console.error('Product view Airtable lookup failed', existingResponse.status, await existingResponse.text());
+        return json(500, {
+          ok: false,
+          message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
+        });
+      }
+
+      const existing = await existingResponse.json();
+      const existingRecord = (existing.records || [])[0];
+      if (existingRecord) {
+        return json(200, {
+          ok: true,
+          alreadyRequested: true,
+          name: String(existingRecord.fields?.[fieldMap.name || 'Name'] || name || '').trim(),
+        });
+      }
+    }
+
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
       method: 'POST',
       headers: {

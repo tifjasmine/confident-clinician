@@ -26,6 +26,16 @@ const defaultFieldMap = {
   purchased: 'Purchased',
 };
 
+const defaultProductViewFieldMap = {
+  name: 'Name',
+  email: 'Email',
+  product: 'Product',
+  opened: 'Opened',
+  notes: 'Notes',
+  password: 'Password',
+  purchased: 'Purchased',
+};
+
 const parseJsonEnv = (name, fallback) => {
   if (!process.env[name]) return fallback;
   try {
@@ -34,6 +44,15 @@ const parseJsonEnv = (name, fallback) => {
     return fallback;
   }
 };
+
+const getResourceAccessByPrice = () => ({
+  [process.env.OFFICIAL_PLAYBOOK_STRIPE_PRICE_ID || 'price_1TwA6QASlf43jszV4L67qeoU']: {
+    product: 'Official Playbook',
+    password: 'FULLCOVER26',
+    accessPage: process.env.OFFICIAL_PLAYBOOK_ACCESS_PAGE_URL || 'https://theconfidentclinician.me/official-playbook',
+  },
+  ...parseJsonEnv('RESOURCE_ACCESS_BY_PRICE', {}),
+});
 
 const stripeRequest = async (path, secretKey) => {
   const response = await fetch(`https://api.stripe.com/v1${path}`, {
@@ -107,13 +126,26 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
   fields[airtableField] = value;
 };
 
+const getPurchasedResource = (lineItems) => {
+  const accessByPrice = getResourceAccessByPrice();
+  const items = Array.isArray(lineItems?.data) ? lineItems.data : [];
+
+  for (const item of items) {
+    const priceId = typeof item.price === 'string' ? item.price : item.price?.id;
+    if (priceId && accessByPrice[priceId]) return accessByPrice[priceId];
+  }
+
+  return null;
+};
+
 const buildAirtableFields = (session, lineItems, fieldMap) => {
   const customer = session.customer_details || {};
   const firstLineItem = lineItems && lineItems.data && lineItems.data.length > 0 ? lineItems.data[0] : null;
   const workshop = firstLineItem ? firstLineItem.description : 'The Confident Clinician Workshop';
   const amount = centsToDollars(session.amount_total);
   const { coupon, discount } = getDiscountDetails(session);
-  const accessPage = process.env.FIVE_SKILLS_ACCESS_PAGE_URL || 'https://theconfidentclinician.me/five-skills-access.html';
+  const resourceAccess = getPurchasedResource(lineItems);
+  const accessPage = resourceAccess?.accessPage || process.env.FIVE_SKILLS_ACCESS_PAGE_URL || 'https://theconfidentclinician.me/five-skills-access.html';
 
   const fields = {};
   addIfConfigured(fields, fieldMap, 'name', customer.name || session.customer_email || session.id);
@@ -247,6 +279,78 @@ const findAirtableRecordByEmail = async (email, fieldMap) => {
   return result.records && result.records.length > 0 ? result.records[0] : null;
 };
 
+const findProductViewRecord = async (email, product, fieldMap) => {
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
+  const tableId = process.env.AIRTABLE_PRODUCT_VIEWS_TABLE_ID || 'Product Views';
+  const emailField = fieldMap.email || 'Email';
+  const productField = fieldMap.product || 'Product';
+
+  if (!token || !email || !product) return null;
+
+  const formula = `AND(LOWER({${emailField}})='${airtableFormulaString(email)}', {${productField}}='${airtableFormulaString(product)}')`;
+  const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
+  url.searchParams.set('maxRecords', '1');
+  url.searchParams.set('filterByFormula', formula);
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error('Product access Airtable lookup failed', response.status, await response.text());
+    return null;
+  }
+
+  const result = await response.json();
+  return result.records && result.records.length > 0 ? result.records[0] : null;
+};
+
+const upsertProductViewAccess = async (session, lineItems, resourceAccess) => {
+  if (!resourceAccess) return null;
+
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
+  const tableId = process.env.AIRTABLE_PRODUCT_VIEWS_TABLE_ID || 'Product Views';
+  const fieldMap = parseJsonEnv('AIRTABLE_PRODUCT_VIEW_FIELD_MAP', defaultProductViewFieldMap);
+  const customer = session.customer_details || {};
+  const email = String(customer.email || session.customer_email || '').trim().toLowerCase();
+
+  if (!token || !email) return null;
+
+  const fields = {};
+  addIfConfigured(fields, fieldMap, 'name', customer.name || session.customer_email || session.id);
+  addIfConfigured(fields, fieldMap, 'email', email);
+  addIfConfigured(fields, fieldMap, 'product', resourceAccess.product);
+  addIfConfigured(fields, fieldMap, 'opened', new Date((session.created || Math.floor(Date.now() / 1000)) * 1000).toISOString());
+  addIfConfigured(fields, fieldMap, 'notes', 'Purchased through Stripe checkout.');
+  addIfConfigured(fields, fieldMap, 'password', resourceAccess.password);
+  addIfConfigured(fields, fieldMap, 'purchased', true);
+
+  const existingRecord = await findProductViewRecord(email, resourceAccess.product, fieldMap);
+  const targetUrl = existingRecord
+    ? `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}/${existingRecord.id}`
+    : `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`;
+
+  const response = await fetch(targetUrl, {
+    method: existingRecord ? 'PATCH' : 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(existingRecord ? { fields, typecast: true } : { records: [{ fields }], typecast: true }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Product view access save failed: ${response.status} ${text}`);
+  }
+
+  return response.json();
+};
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { ok: false, message: 'Method not allowed.' });
@@ -283,9 +387,15 @@ exports.handler = async (event) => {
       ? await stripeRequest(`/checkout/sessions/${session.id}/line_items?limit=100`, stripeSecretKey)
       : { data: [] };
     const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
+    const resourceAccess = getPurchasedResource(lineItems);
     const existingRecord = await findExistingAirtableRecord(session.id, fieldMap);
 
     if (existingRecord) {
+      try {
+        await upsertProductViewAccess(session, lineItems, resourceAccess);
+      } catch (error) {
+        console.error('Could not sync resource access for duplicate purchase', error);
+      }
       return json(200, {
         ok: true,
         duplicate: true,
@@ -300,6 +410,11 @@ exports.handler = async (event) => {
 
     if (existingEmailRecord) {
       const airtableRecord = await updateAirtableRecord(existingEmailRecord.id, fields);
+      try {
+        await upsertProductViewAccess(session, lineItems, resourceAccess);
+      } catch (error) {
+        console.error('Could not sync resource access', error);
+      }
 
       return json(200, {
         ok: true,
@@ -309,6 +424,11 @@ exports.handler = async (event) => {
     }
 
     const airtableRecord = await createAirtableRecord(fields);
+    try {
+      await upsertProductViewAccess(session, lineItems, resourceAccess);
+    } catch (error) {
+      console.error('Could not sync resource access', error);
+    }
 
     return json(200, {
       ok: true,
