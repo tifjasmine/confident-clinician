@@ -42,8 +42,6 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
   fields[airtableField] = value;
 };
 
-const getProductPasswords = () => parseJsonEnv('RESOURCE_PRODUCT_PASSWORDS', defaultProductPasswords);
-
 const parseListEnv = (name, fallback) => {
   if (!process.env[name]) return fallback;
   try {
@@ -58,14 +56,64 @@ const parseListEnv = (name, fallback) => {
     .filter(Boolean);
 };
 
-const getPaidProducts = () => Array.from(new Set([
-  ...parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts),
-  ...defaultPaidProducts,
-]));
-
 const isChecked = (value) => value === true || value === 'true' || value === '1' || value === 1;
 
 const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+const supportMessage =
+  'I could not check that email just now. Please try again, or email admin@theconfidentclinician.me and I will help.';
+
+const productAliasGroups = {
+  'Mini Playbook': [
+    'Mini Playbook',
+    'The Confident Clinician Mini Playbook',
+    'Brand Playbook',
+    'Clinical Confidence Mini Playbook',
+  ],
+  'Official Playbook': [
+    'Official Playbook',
+    'The Confident Clinician Official Playbook',
+    'Confident Clinician Playbook',
+    'The Confident Clinician Playbook',
+  ],
+};
+
+const productAliasLookup = Object.entries(productAliasGroups).reduce((lookup, [canonical, aliases]) => {
+  aliases.forEach((alias) => {
+    lookup[String(alias).trim().toLowerCase()] = canonical;
+  });
+  return lookup;
+}, {});
+
+const normalizeProductName = (value = '') => {
+  const raw = String(value || '').trim();
+  return productAliasLookup[raw.toLowerCase()] || raw;
+};
+
+const getProductAliases = (product) => {
+  const canonical = normalizeProductName(product);
+  return productAliasGroups[canonical] || [canonical];
+};
+
+const buildProductFormula = (fieldName, product) => {
+  const clauses = getProductAliases(product)
+    .filter(Boolean)
+    .map((alias) => `{${fieldName}} = '${escapeFormulaString(alias)}'`);
+  return clauses.length > 1 ? `OR(${clauses.join(', ')})` : clauses[0];
+};
+
+const getProductPasswords = () => {
+  const configured = parseJsonEnv('RESOURCE_PRODUCT_PASSWORDS', defaultProductPasswords);
+  return Object.entries(configured).reduce((acc, [key, value]) => {
+    acc[normalizeProductName(key)] = value;
+    return acc;
+  }, {});
+};
+
+const getPaidProducts = () => Array.from(new Set([
+  ...parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts).map(normalizeProductName),
+  ...defaultPaidProducts.map(normalizeProductName),
+]));
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -81,7 +129,7 @@ exports.handler = async (event) => {
 
   const name = String(payload.name || '').trim();
   const email = String(payload.email || '').trim().toLowerCase();
-  const product = String(payload.product || 'Clinical Confidence Reset Guidebook').trim();
+  const product = normalizeProductName(payload.product || 'Clinical Confidence Reset Guidebook');
   const notes = String(payload.notes || '').trim();
 
   if (!email || !email.includes('@')) {
@@ -106,7 +154,7 @@ exports.handler = async (event) => {
     console.error('Product view missing Airtable token.');
     return json(500, {
       ok: false,
-      message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
+      message: supportMessage,
     });
   }
 
@@ -123,8 +171,10 @@ exports.handler = async (event) => {
   try {
     if (productPassword) {
       const lookup = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
-      lookup.searchParams.set('maxRecords', '1');
-      lookup.searchParams.set('filterByFormula', `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', {${productField}} = '${escapeFormulaString(product)}')`);
+      lookup.searchParams.set('maxRecords', '10');
+      lookup.searchParams.set('sort[0][field]', fieldMap.opened || 'Opened');
+      lookup.searchParams.set('sort[0][direction]', 'desc');
+      lookup.searchParams.set('filterByFormula', `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', ${buildProductFormula(productField, product)})`);
 
       const existingResponse = await fetch(lookup, {
         headers: {
@@ -137,23 +187,26 @@ exports.handler = async (event) => {
         console.error('Product view Airtable lookup failed', existingResponse.status, await existingResponse.text());
         return json(500, {
           ok: false,
-          message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
+          message: supportMessage,
         });
       }
 
       const existing = await existingResponse.json();
-      const existingRecord = (existing.records || [])[0];
+      const records = existing.records || [];
+      const purchasedRecord = records.find((record) => isChecked(record.fields?.[purchasedField]));
+      if (purchaseRequired && !purchasedRecord) {
+        return json(403, {
+          ok: false,
+          error: 'purchase_required',
+          message: purchaseRequiredMessage,
+        });
+      }
+
+      const existingRecord = purchaseRequired ? purchasedRecord : records[0];
       if (existingRecord) {
         const existingFields = existingRecord.fields || {};
         const existingName = String(existingFields[fieldMap.name || 'Name'] || '').trim();
         const purchased = isChecked(existingFields[purchasedField]);
-
-        if (purchaseRequired && !purchased) {
-          return json(403, {
-            ok: false,
-            message: purchaseRequiredMessage,
-          });
-        }
 
         const patchFields = {};
         if (name && !existingName && fieldMap.name) {
@@ -161,6 +214,15 @@ exports.handler = async (event) => {
         }
         if (productPassword && fieldMap.password && !existingFields[fieldMap.password]) {
           patchFields[fieldMap.password] = productPassword;
+        }
+        if (fieldMap.product && existingFields[fieldMap.product] !== product) {
+          patchFields[fieldMap.product] = product;
+        }
+        if (fieldMap.firstTime && isChecked(existingFields[fieldMap.firstTime])) {
+          patchFields[fieldMap.firstTime] = false;
+        }
+        if (fieldMap.welcomeEmailSent && !isChecked(existingFields[fieldMap.welcomeEmailSent])) {
+          patchFields[fieldMap.welcomeEmailSent] = true;
         }
 
         if (Object.keys(patchFields).length > 0) {
@@ -189,6 +251,7 @@ exports.handler = async (event) => {
     if (purchaseRequired) {
       return json(403, {
         ok: false,
+        error: 'purchase_required',
         message: purchaseRequiredMessage,
       });
     }
@@ -210,7 +273,7 @@ exports.handler = async (event) => {
       console.error('Product view Airtable save failed', response.status, message);
       return json(500, {
         ok: false,
-        message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
+        message: supportMessage,
       });
     }
 
@@ -219,7 +282,7 @@ exports.handler = async (event) => {
     console.error('Product view failed', error);
     return json(500, {
       ok: false,
-      message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
+      message: supportMessage,
     });
   }
 };

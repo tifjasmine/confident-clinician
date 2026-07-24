@@ -227,6 +227,45 @@ const updateAirtableRecord = async (recordId, fields) => {
 
 const airtableFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
+const productAliasGroups = {
+  'Mini Playbook': [
+    'Mini Playbook',
+    'The Confident Clinician Mini Playbook',
+    'Brand Playbook',
+    'Clinical Confidence Mini Playbook',
+  ],
+  'Official Playbook': [
+    'Official Playbook',
+    'The Confident Clinician Official Playbook',
+    'Confident Clinician Playbook',
+    'The Confident Clinician Playbook',
+  ],
+};
+
+const productAliasLookup = Object.entries(productAliasGroups).reduce((lookup, [canonical, aliases]) => {
+  aliases.forEach((alias) => {
+    lookup[String(alias).trim().toLowerCase()] = canonical;
+  });
+  return lookup;
+}, {});
+
+const normalizeProductName = (value = '') => {
+  const raw = String(value || '').trim();
+  return productAliasLookup[raw.toLowerCase()] || raw;
+};
+
+const getProductAliases = (product) => {
+  const canonical = normalizeProductName(product);
+  return productAliasGroups[canonical] || [canonical];
+};
+
+const buildProductFormula = (fieldName, product) => {
+  const clauses = getProductAliases(product)
+    .filter(Boolean)
+    .map((alias) => `{${fieldName}}='${airtableFormulaString(alias)}'`);
+  return clauses.length > 1 ? `OR(${clauses.join(',')})` : clauses[0];
+};
+
 const findExistingAirtableRecord = async (sessionId, fieldMap) => {
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
@@ -290,7 +329,7 @@ const findProductViewRecord = async (email, product, fieldMap) => {
 
   if (!token || !email || !product) return null;
 
-  const formula = `AND(LOWER({${emailField}})='${airtableFormulaString(email)}', {${productField}}='${airtableFormulaString(product)}')`;
+  const formula = `AND(LOWER({${emailField}})='${airtableFormulaString(email)}', ${buildProductFormula(productField, product)})`;
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
   url.searchParams.set('maxRecords', '1');
   url.searchParams.set('filterByFormula', formula);
@@ -319,13 +358,14 @@ const upsertProductViewAccess = async (session, lineItems, resourceAccess) => {
   const fieldMap = parseJsonEnv('AIRTABLE_PRODUCT_VIEW_FIELD_MAP', defaultProductViewFieldMap);
   const customer = session.customer_details || {};
   const email = String(customer.email || session.customer_email || '').trim().toLowerCase();
+  const product = normalizeProductName(resourceAccess.product);
 
   if (!token || !email) return null;
 
   const fields = {};
   addIfConfigured(fields, fieldMap, 'name', customer.name || session.customer_email || session.id);
   addIfConfigured(fields, fieldMap, 'email', email);
-  addIfConfigured(fields, fieldMap, 'product', resourceAccess.product);
+  addIfConfigured(fields, fieldMap, 'product', product);
   addIfConfigured(fields, fieldMap, 'opened', new Date((session.created || Math.floor(Date.now() / 1000)) * 1000).toISOString());
   addIfConfigured(fields, fieldMap, 'notes', 'Purchased through Stripe checkout.');
   addIfConfigured(fields, fieldMap, 'password', resourceAccess.password);
@@ -333,7 +373,7 @@ const upsertProductViewAccess = async (session, lineItems, resourceAccess) => {
   addIfConfigured(fields, fieldMap, 'firstTime', true);
   addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
-  const existingRecord = await findProductViewRecord(email, resourceAccess.product, fieldMap);
+  const existingRecord = await findProductViewRecord(email, product, fieldMap);
   const targetUrl = existingRecord
     ? `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}/${existingRecord.id}`
     : `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`;

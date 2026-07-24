@@ -13,6 +13,14 @@ const readerLine = document.querySelector('[data-reader-line]');
 const changeEmailButtons = document.querySelectorAll('[data-change-email]');
 let trackedThisLoad = false;
 
+const requestErrorMessage =
+  page.requestErrorMessage ||
+  'I could not check that email just now. Please try again, or email admin@theconfidentclinician.me and I will help.';
+const requiresPurchase = page.requiresPurchase === 'true';
+const purchaseRequiredMessage =
+  page.purchaseRequiredMessage ||
+  'I do not see a purchase connected to that email yet. Use the email you checked out with, or email admin@theconfidentclinician.me and I will help.';
+
 const setStatus = (element, message, isError = false) => {
   if (!element) return;
   element.textContent = message;
@@ -38,7 +46,9 @@ const getPending = () => {
 const setPending = (person) => {
   localStorage.setItem(`${page.storageKey}:pending`, JSON.stringify(person));
   if (pendingEmailLine) {
-    pendingEmailLine.textContent = person.purchased
+    pendingEmailLine.textContent = requiresPurchase && !person.purchased
+      ? purchaseRequiredMessage
+      : person.purchased
       ? page.purchasedMessage
         ? page.purchasedMessage.replace('{email}', person.email)
         : 'Found your purchase. Use the password from your email to open it here.'
@@ -87,13 +97,23 @@ const trackResourceOpen = async (person = {}) => {
 
 try {
   const saved = JSON.parse(localStorage.getItem(page.storageKey) || 'null');
-  if (saved && saved.email) {
+  const savedCanOpen = saved && saved.email && (!requiresPurchase || saved.purchased);
+  if (savedCanOpen) {
     revealResource(saved);
   } else {
+    if (saved && requiresPurchase) {
+      localStorage.removeItem(page.storageKey);
+    }
     const pending = getPending();
-    if (pending && pending.email) {
+    const pendingCanContinue = pending && pending.email && (!requiresPurchase || pending.purchased);
+    if (pendingCanContinue) {
       setPending(pending);
       setStep('password');
+    } else {
+      if (pending && requiresPurchase) {
+        localStorage.removeItem(`${page.storageKey}:pending`);
+      }
+      setStep('request');
     }
   }
 } catch (error) {
@@ -104,6 +124,7 @@ try {
 changeEmailButtons.forEach((button) => {
   button.addEventListener('click', () => {
     localStorage.removeItem(`${page.storageKey}:pending`);
+    localStorage.removeItem(page.storageKey);
     setStatus(unlockStatus, '');
     setStep('request');
     requestForm?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -139,7 +160,10 @@ requestForm?.addEventListener('submit', async (event) => {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.ok) {
-      throw new Error(data.message || 'Something did not send.');
+      throw new Error(data.message || requestErrorMessage);
+    }
+    if (requiresPurchase && !data.purchased) {
+      throw new Error(data.message || purchaseRequiredMessage);
     }
     const pending = {
       name: data.name || name,
@@ -152,11 +176,8 @@ requestForm?.addEventListener('submit', async (event) => {
     setStep('password');
     checkEmailStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) {
-    setStatus(
-      requestStatus,
-      error.message || 'Something did not send. Please try again or email admin@theconfidentclinician.me.',
-      true
-    );
+    console.error('Resource request failed', error);
+    setStatus(requestStatus, error.message || requestErrorMessage, true);
   } finally {
     requestButton.disabled = false;
     requestButton.textContent = page.requestButtonText || 'Send Me The Password';
@@ -197,6 +218,7 @@ unlockForm?.addEventListener('submit', async (event) => {
     const access = {
       name: data.name || pending.name || '',
       email,
+      purchased: Boolean(data.purchased),
       openedAt: new Date().toISOString(),
     };
     localStorage.setItem(page.storageKey, JSON.stringify(access));

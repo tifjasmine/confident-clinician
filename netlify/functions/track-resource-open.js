@@ -35,6 +35,45 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
 
 const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
+const productAliasGroups = {
+  'Mini Playbook': [
+    'Mini Playbook',
+    'The Confident Clinician Mini Playbook',
+    'Brand Playbook',
+    'Clinical Confidence Mini Playbook',
+  ],
+  'Official Playbook': [
+    'Official Playbook',
+    'The Confident Clinician Official Playbook',
+    'Confident Clinician Playbook',
+    'The Confident Clinician Playbook',
+  ],
+};
+
+const productAliasLookup = Object.entries(productAliasGroups).reduce((lookup, [canonical, aliases]) => {
+  aliases.forEach((alias) => {
+    lookup[String(alias).trim().toLowerCase()] = canonical;
+  });
+  return lookup;
+}, {});
+
+const normalizeProductName = (value = '') => {
+  const raw = String(value || '').trim();
+  return productAliasLookup[raw.toLowerCase()] || raw;
+};
+
+const getProductAliases = (product) => {
+  const canonical = normalizeProductName(product);
+  return productAliasGroups[canonical] || [canonical];
+};
+
+const buildProductFormula = (fieldName, product) => {
+  const clauses = getProductAliases(product)
+    .filter(Boolean)
+    .map((alias) => `{${fieldName}} = '${escapeFormulaString(alias)}'`);
+  return clauses.length > 1 ? `OR(${clauses.join(', ')})` : clauses[0];
+};
+
 const markMatchingWelcomeRequestsHandled = async ({ token, baseId, tableId, fieldMap, email, product }) => {
   const firstTimeField = fieldMap.firstTime;
   const welcomeEmailSentField = fieldMap.welcomeEmailSent;
@@ -47,7 +86,7 @@ const markMatchingWelcomeRequestsHandled = async ({ token, baseId, tableId, fiel
   lookup.searchParams.set('maxRecords', '10');
   lookup.searchParams.set(
     'filterByFormula',
-    `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', {${productField}} = '${escapeFormulaString(product)}', {${firstTimeField}} = TRUE(), NOT({${welcomeEmailSentField}}))`,
+    `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', ${buildProductFormula(productField, product)}, {${firstTimeField}} = TRUE(), NOT({${welcomeEmailSentField}}))`,
   );
 
   const response = await fetch(lookup, {
@@ -98,7 +137,7 @@ exports.handler = async (event) => {
 
   const name = String(payload.name || '').trim();
   const email = String(payload.email || '').trim().toLowerCase();
-  const product = String(payload.product || '').trim();
+  const product = normalizeProductName(payload.product || '');
   const notes = String(payload.notes || 'Document opened.').trim();
 
   if (!email || !email.includes('@') || !product) {
@@ -122,6 +161,7 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'opened', new Date().toISOString());
   addIfConfigured(fields, fieldMap, 'notes', notes);
   addIfConfigured(fields, fieldMap, 'firstTime', false);
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', true);
 
   try {
     await markMatchingWelcomeRequestsHandled({ token, baseId, tableId, fieldMap, email, product });

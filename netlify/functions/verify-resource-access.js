@@ -28,6 +28,45 @@ const parseJsonEnv = (name, fallback) => {
 
 const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
+const productAliasGroups = {
+  'Mini Playbook': [
+    'Mini Playbook',
+    'The Confident Clinician Mini Playbook',
+    'Brand Playbook',
+    'Clinical Confidence Mini Playbook',
+  ],
+  'Official Playbook': [
+    'Official Playbook',
+    'The Confident Clinician Official Playbook',
+    'Confident Clinician Playbook',
+    'The Confident Clinician Playbook',
+  ],
+};
+
+const productAliasLookup = Object.entries(productAliasGroups).reduce((lookup, [canonical, aliases]) => {
+  aliases.forEach((alias) => {
+    lookup[String(alias).trim().toLowerCase()] = canonical;
+  });
+  return lookup;
+}, {});
+
+const normalizeProductName = (value = '') => {
+  const raw = String(value || '').trim();
+  return productAliasLookup[raw.toLowerCase()] || raw;
+};
+
+const getProductAliases = (product) => {
+  const canonical = normalizeProductName(product);
+  return productAliasGroups[canonical] || [canonical];
+};
+
+const buildProductFormula = (fieldName, product) => {
+  const clauses = getProductAliases(product)
+    .filter(Boolean)
+    .map((alias) => `{${fieldName}} = '${escapeFormulaString(alias)}'`);
+  return clauses.length > 1 ? `OR(${clauses.join(', ')})` : clauses[0];
+};
+
 const parseListEnv = (name, fallback) => {
   if (!process.env[name]) return fallback;
   try {
@@ -39,9 +78,11 @@ const parseListEnv = (name, fallback) => {
   return process.env[name].split(',').map((item) => item.trim()).filter(Boolean);
 };
 
+const isChecked = (value) => value === true || value === 'true' || value === '1' || value === 1;
+
 const getPaidProducts = () => Array.from(new Set([
-  ...parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts),
-  ...defaultPaidProducts,
+  ...parseListEnv('RESOURCE_PAID_PRODUCTS', defaultPaidProducts).map(normalizeProductName),
+  ...defaultPaidProducts.map(normalizeProductName),
 ]));
 
 exports.handler = async (event) => {
@@ -58,7 +99,7 @@ exports.handler = async (event) => {
 
   const email = String(payload.email || '').trim().toLowerCase();
   const password = String(payload.password || '').trim();
-  const product = String(payload.product || '').trim();
+  const product = normalizeProductName(payload.product || '');
 
   if (!email || !email.includes('@') || !password || !product) {
     return json(400, { ok: false, message: 'Please enter the email you used and the password from your email.' });
@@ -83,7 +124,7 @@ exports.handler = async (event) => {
     });
   }
 
-  const formula = `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', {${productField}} = '${escapeFormulaString(product)}', {${passwordField}} = '${escapeFormulaString(password)}')`;
+  const formula = `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', ${buildProductFormula(productField, product)}, {${passwordField}} = '${escapeFormulaString(password)}')`;
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
   url.searchParams.set('maxRecords', '10');
   url.searchParams.set('sort[0][field]', fieldMap.opened || 'Opened');
@@ -107,16 +148,26 @@ exports.handler = async (event) => {
     }
 
     const data = await response.json();
-    const record = (data.records || [])[0];
+    const records = data.records || [];
+    const record = purchaseRequired
+      ? records.find((candidate) => isChecked(candidate.fields?.[purchasedField]))
+      : records[0];
 
     if (!record) {
+      if (purchaseRequired && records.length > 0) {
+        return json(403, {
+          ok: false,
+          message: 'That email is not showing an active purchase yet. Use the email from checkout, or email admin@theconfidentclinician.me if you need help.',
+        });
+      }
+
       return json(401, {
         ok: false,
         message: 'That email and password did not match. Check your email and try again, or use a different email.',
       });
     }
 
-    if (purchaseRequired && record.fields?.[purchasedField] !== true) {
+    if (purchaseRequired && !isChecked(record.fields?.[purchasedField])) {
       return json(403, {
         ok: false,
         message: 'That email is not showing an active purchase yet. Use the email from checkout, or email admin@theconfidentclinician.me if you need help.',
@@ -128,6 +179,7 @@ exports.handler = async (event) => {
       name: String(record.fields?.Name || '').trim(),
       email,
       product,
+      purchased: purchaseRequired ? true : isChecked(record.fields?.[purchasedField]),
     });
   } catch (error) {
     console.error('Resource access failed', error);
