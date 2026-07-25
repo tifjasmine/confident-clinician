@@ -166,7 +166,7 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'notes', notes);
   addIfConfigured(fields, fieldMap, 'password', productPassword);
   addIfConfigured(fields, fieldMap, 'firstTime', Boolean(productPassword));
-  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', Boolean(productPassword));
 
   try {
     if (productPassword) {
@@ -218,13 +218,6 @@ exports.handler = async (event) => {
         if (fieldMap.product && existingFields[fieldMap.product] !== product) {
           patchFields[fieldMap.product] = product;
         }
-        if (fieldMap.firstTime && isChecked(existingFields[fieldMap.firstTime])) {
-          patchFields[fieldMap.firstTime] = false;
-        }
-        if (fieldMap.welcomeEmailSent && !isChecked(existingFields[fieldMap.welcomeEmailSent])) {
-          patchFields[fieldMap.welcomeEmailSent] = true;
-        }
-
         if (Object.keys(patchFields).length > 0) {
           await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
             method: 'PATCH',

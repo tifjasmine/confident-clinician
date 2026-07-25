@@ -33,8 +33,6 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
   fields[airtableField] = value;
 };
 
-const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-
 const productAliasGroups = {
   'Mini Playbook': [
     'Mini Playbook',
@@ -60,67 +58,6 @@ const productAliasLookup = Object.entries(productAliasGroups).reduce((lookup, [c
 const normalizeProductName = (value = '') => {
   const raw = String(value || '').trim();
   return productAliasLookup[raw.toLowerCase()] || raw;
-};
-
-const getProductAliases = (product) => {
-  const canonical = normalizeProductName(product);
-  return productAliasGroups[canonical] || [canonical];
-};
-
-const buildProductFormula = (fieldName, product) => {
-  const clauses = getProductAliases(product)
-    .filter(Boolean)
-    .map((alias) => `{${fieldName}} = '${escapeFormulaString(alias)}'`);
-  return clauses.length > 1 ? `OR(${clauses.join(', ')})` : clauses[0];
-};
-
-const markMatchingWelcomeRequestsHandled = async ({ token, baseId, tableId, fieldMap, email, product }) => {
-  const firstTimeField = fieldMap.firstTime;
-  const welcomeEmailSentField = fieldMap.welcomeEmailSent;
-  const emailField = fieldMap.email || 'Email';
-  const productField = fieldMap.product || 'Product';
-
-  if (!firstTimeField || !welcomeEmailSentField) return;
-
-  const lookup = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
-  lookup.searchParams.set('maxRecords', '10');
-  lookup.searchParams.set(
-    'filterByFormula',
-    `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', ${buildProductFormula(productField, product)}, {${firstTimeField}} = TRUE(), NOT({${welcomeEmailSentField}}))`,
-  );
-
-  const response = await fetch(lookup, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    console.error('Resource open Airtable request cleanup lookup failed', response.status, await response.text());
-    return;
-  }
-
-  const data = await response.json();
-  const records = (data.records || []).map((record) => ({
-    id: record.id,
-    fields: { [welcomeEmailSentField]: true },
-  }));
-
-  if (!records.length) return;
-
-  const patchResponse = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ records, typecast: true }),
-  });
-
-  if (!patchResponse.ok) {
-    console.error('Resource open Airtable request cleanup patch failed', patchResponse.status, await patchResponse.text());
-  }
 };
 
 exports.handler = async (event) => {
@@ -161,11 +98,9 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'opened', new Date().toISOString());
   addIfConfigured(fields, fieldMap, 'notes', notes);
   addIfConfigured(fields, fieldMap, 'firstTime', false);
-  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', true);
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   try {
-    await markMatchingWelcomeRequestsHandled({ token, baseId, tableId, fieldMap, email, product });
-
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
       method: 'POST',
       headers: {
