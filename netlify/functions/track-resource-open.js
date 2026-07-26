@@ -33,8 +33,6 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
   fields[airtableField] = value;
 };
 
-const escapeFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-
 const productAliasGroups = {
   'Mini Playbook': [
     'Mini Playbook',
@@ -60,18 +58,6 @@ const productAliasLookup = Object.entries(productAliasGroups).reduce((lookup, [c
 const normalizeProductName = (value = '') => {
   const raw = String(value || '').trim();
   return productAliasLookup[raw.toLowerCase()] || raw;
-};
-
-const getProductAliases = (product) => {
-  const canonical = normalizeProductName(product);
-  return productAliasGroups[canonical] || [canonical];
-};
-
-const buildProductFormula = (fieldName, product) => {
-  const clauses = getProductAliases(product)
-    .filter(Boolean)
-    .map((alias) => `{${fieldName}} = '${escapeFormulaString(alias)}'`);
-  return clauses.length > 1 ? `OR(${clauses.join(', ')})` : clauses[0];
 };
 
 exports.handler = async (event) => {
@@ -111,49 +97,18 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'product', product);
   addIfConfigured(fields, fieldMap, 'opened', new Date().toISOString());
   addIfConfigured(fields, fieldMap, 'notes', notes);
+  addIfConfigured(fields, fieldMap, 'firstTime', false);
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   try {
-    const emailField = fieldMap.email || 'Email';
-    const productField = fieldMap.product || 'Product';
-    const openedField = fieldMap.opened || 'Opened';
-    const lookup = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
-    lookup.searchParams.set('maxRecords', '1');
-    lookup.searchParams.set('sort[0][field]', openedField);
-    lookup.searchParams.set('sort[0][direction]', 'desc');
-    lookup.searchParams.set(
-      'filterByFormula',
-      `AND(LOWER({${emailField}}) = '${escapeFormulaString(email)}', ${buildProductFormula(productField, product)})`,
-    );
-
-    const lookupResponse = await fetch(lookup, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!lookupResponse.ok) {
-      console.error('Resource open Airtable lookup failed', lookupResponse.status, await lookupResponse.text());
-      return json(500, { ok: false });
-    }
-
-    const existing = await lookupResponse.json();
-    const existingRecord = existing.records?.[0];
-    if (!existingRecord) {
-      // Access requests create the canonical row before the resource can be opened.
-      // Do not create an open-only row because Airtable welcome automations may
-      // interpret any newly created Product Views row as a new subscriber.
-      return json(200, { ok: true, tracked: false });
-    }
-
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
-      method: 'PATCH',
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        records: [{ id: existingRecord.id, fields }],
+        records: [{ fields }],
         typecast: true,
       }),
     });
