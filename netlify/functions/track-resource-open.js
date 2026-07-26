@@ -11,10 +11,8 @@ const defaultFieldMap = {
   name: 'Name',
   email: 'Email',
   product: 'Product',
-  opened: 'Opened',
+  opened: 'Viewed At',
   notes: 'Notes',
-  firstTime: 'First Time',
-  welcomeEmailSent: 'Welcome Email Sent',
 };
 
 const parseJsonEnv = (name, fallback) => {
@@ -83,8 +81,8 @@ exports.handler = async (event) => {
 
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
-  const tableId = process.env.AIRTABLE_PRODUCT_VIEWS_TABLE_ID || 'Product Views';
-  const fieldMap = parseJsonEnv('AIRTABLE_PRODUCT_VIEW_FIELD_MAP', defaultFieldMap);
+  const tableId = process.env.AIRTABLE_RESOURCE_VIEWS_TABLE_ID || 'tblr8OteSut0WYEzz';
+  const fieldMap = parseJsonEnv('AIRTABLE_RESOURCE_VIEW_FIELD_MAP', defaultFieldMap);
 
   if (!token) {
     console.error('Resource open missing Airtable token.');
@@ -97,8 +95,6 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'product', product);
   addIfConfigured(fields, fieldMap, 'opened', new Date().toISOString());
   addIfConfigured(fields, fieldMap, 'notes', notes);
-  addIfConfigured(fields, fieldMap, 'firstTime', false);
-  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   try {
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
