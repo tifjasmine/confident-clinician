@@ -111,8 +111,6 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'product', product);
   addIfConfigured(fields, fieldMap, 'opened', new Date().toISOString());
   addIfConfigured(fields, fieldMap, 'notes', notes);
-  addIfConfigured(fields, fieldMap, 'firstTime', false);
-  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   try {
     const emailField = fieldMap.email || 'Email';

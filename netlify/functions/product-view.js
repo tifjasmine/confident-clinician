@@ -166,7 +166,7 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'notes', notes);
   addIfConfigured(fields, fieldMap, 'password', productPassword);
   addIfConfigured(fields, fieldMap, 'firstTime', Boolean(productPassword));
-  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', Boolean(productPassword));
+  addIfConfigured(fields, fieldMap, 'welcomeEmailSent', false);
 
   try {
     if (productPassword) {
