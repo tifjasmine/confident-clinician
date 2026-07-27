@@ -14,6 +14,33 @@ Static Netlify site for The Confident Clinician Fast Track.
 - Build command: none
 - Netlify deploys from `main`.
 
+## Founding cohort course app
+
+The secure course portal lives at `/course/` and the admin dashboard lives at
+`/course/admin.html`.
+
+Authentication is handled by Supabase Auth. Airtable stores the participant
+roster, privacy-safe activity, milestone submissions, feedback, and course
+questions. Passwords are never stored in Airtable.
+
+Required environment variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `AIRTABLE_ACCESS_TOKEN`
+- `AIRTABLE_COURSE_BASE_ID` = `app9RCJ6ivTCgwDsl`
+- `AIRTABLE_COURSE_PARTICIPANTS_TABLE_ID` = `tbl9GaXjTRDTm4eg9`
+- `AIRTABLE_COURSE_ACTIVITY_TABLE_ID` = `tblUggqFGAT3f21O5`
+- `AIRTABLE_COURSE_SUBMISSIONS_TABLE_ID` = `tblvjyk8Sb0jF5RFN`
+- `AIRTABLE_COURSE_QUESTIONS_TABLE_ID` = `tblZgodoLmkg2QVjV`
+- `COURSE_ADMIN_EMAILS` = comma-separated Supabase account emails allowed to
+  use the admin dashboard
+
+To enroll a member, create their Supabase account and add a matching email to
+the Airtable `Participants` table. Set `Role` to `Admin` only for course
+administrators. The portal verifies every request against Supabase before
+reading or writing Airtable.
+
 ## Purchase tracking
 
 Stripe workshop purchases can be sent to Airtable through:

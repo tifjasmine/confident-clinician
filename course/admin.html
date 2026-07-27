@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Course Admin | The Confident Clinician</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/course/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="app-wordmark" href="/course/">The Confident Clinician</a>
+      <p class="sidebar-sub">Course Administration</p>
+      <nav class="nav-list">
+        <button class="nav-link active" data-admin-view="overview">Cohort</button>
+        <button class="nav-link" data-admin-view="submissions">Feedback</button>
+        <button class="nav-link" data-admin-view="questions">Questions</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <p class="user-name">Tiffany</p>
+        <a class="text-button" href="/course/">Participant portal</a>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar"><p class="topbar-note">Founding cohort · Admin view</p><button class="text-button" data-refresh>Refresh</button></div>
+      <p class="status" data-admin-status></p>
+      <section class="view active" data-admin-panel="overview">
+        <header class="page-heading"><p class="eyebrow">Cohort Overview</p><h1>See who needs what.</h1><p>Progress is participation evidence, not a judgment of clinical competence.</p></header>
+        <div class="admin-metrics" data-admin-metrics></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Participant</th><th>Status</th><th>Week</th><th>Progress</th><th>Modules</th><th>Milestones</th><th>Mentorship</th><th>Last active</th></tr></thead>
+            <tbody data-participant-rows></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="view" data-admin-panel="submissions">
+        <header class="page-heading"><p class="eyebrow">Feedback Queue</p><h1>Respond with focus.</h1><p>Brief, actionable feedback keeps the founding cohort personal without creating unlimited access.</p></header>
+        <div class="queue-grid" data-submission-queue></div>
+      </section>
+      <section class="view" data-admin-panel="questions">
+        <header class="page-heading"><p class="eyebrow">Course Questions</p><h1>Non-urgent support.</h1><p>Questions are private and connected to the participant’s secure account.</p></header>
+        <div class="queue-grid" data-admin-questions></div>
+      </section>
+    </main>
+  </div>
+  <script src="/course/admin.js"></script>
+</body>
+</html>

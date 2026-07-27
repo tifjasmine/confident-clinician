@@ -78,6 +78,11 @@
   status = 301
 
 [[redirects]]
+  from = "/course"
+  to = "/course/"
+  status = 301
+
+[[redirects]]
   from = "/confident-clinician-playbook"
   to = "/official-playbook"
   status = 301

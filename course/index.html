@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Course Portal | The Confident Clinician</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/course/styles.css">
+</head>
+<body>
+  <section class="login-page" data-login-view>
+    <div class="login-story">
+      <div class="wordmark">The Confident Clinician</div>
+      <div class="login-copy">
+        <p class="eyebrow">Founding Cohort Portal</p>
+        <h1>Build a process you can <em>trust.</em></h1>
+        <p>This is your space to learn, practice, reflect, and return to one grounded next step. You do not need to complete the work perfectly for it to change how you show up in the room.</p>
+      </div>
+      <p>Educational mentorship · Not clinical supervision or emergency consultation</p>
+    </div>
+    <div class="login-form-wrap">
+      <div class="login-card">
+        <p class="eyebrow">Member Sign In</p>
+        <h2>Welcome back.</h2>
+        <p class="supporting">Use the email and password connected to your Confident Clinician member account.</p>
+        <form class="form-grid" data-login-form>
+          <label>Email address<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+          <button class="button" type="submit">Enter the Course</button>
+        </form>
+        <p class="status" data-login-status role="status"></p>
+        <p class="privacy-note">Your password is handled by Supabase and is never stored in Airtable. Please do not enter client names, records, or identifying details anywhere in this portal.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="app-shell" data-app hidden>
+    <aside class="sidebar">
+      <a class="app-wordmark" href="/course/">The Confident Clinician</a>
+      <p class="sidebar-sub">Founding Cohort</p>
+      <nav class="nav-list" aria-label="Course navigation">
+        <button class="nav-link active" data-view-button="dashboard">Today</button>
+        <button class="nav-link" data-view-button="curriculum">Curriculum</button>
+        <button class="nav-link" data-view-button="assessments">Assessments</button>
+        <button class="nav-link" data-view-button="support">Ask Tiffany</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <p class="user-name" data-user-name></p>
+        <p class="user-email" data-user-email></p>
+        <button class="text-button" data-sign-out>Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <p class="topbar-note">One grounded next step is enough.</p>
+        <a class="admin-link" href="/course/admin.html" data-admin-link hidden>Admin dashboard</a>
+      </div>
+
+      <section class="view active" data-view="dashboard">
+        <header class="page-heading">
+          <p class="eyebrow">Your Learning Space</p>
+          <h1>Welcome back, <span data-first-name>clinician</span>.</h1>
+          <p>Return to the work without turning your progress into another performance.</p>
+        </header>
+        <div class="dashboard-grid">
+          <article class="card current-card">
+            <p class="eyebrow" data-current-week-label>Week 1</p>
+            <h2 data-current-week-title></h2>
+            <p class="week-description" data-current-week-description></p>
+            <div class="card-actions">
+              <button class="button" data-open-current>Continue This Week</button>
+              <button class="button secondary" data-show-curriculum>View All Weeks</button>
+            </div>
+          </article>
+          <article class="card progress-card">
+            <p class="eyebrow">Your Progress</p>
+            <div class="progress-ring" data-progress-ring><strong data-progress-percent>0%</strong></div>
+            <div class="progress-stats">
+              <div class="progress-stat"><strong data-modules-count>0</strong><span>Modules opened</span></div>
+              <div class="progress-stat"><strong data-milestones-count>0</strong><span>Milestones</span></div>
+            </div>
+          </article>
+          <article class="card sand">
+            <p class="eyebrow">Next Steps</p>
+            <h3>Keep it simple this week.</h3>
+            <ul class="next-list" data-next-steps></ul>
+          </article>
+          <article class="card">
+            <p class="eyebrow">Reflection Without Spiraling</p>
+            <h3>Learn. Name what you need. Release the rest.</h3>
+            <p class="supporting">Reflection is here to support clinical growth—not turn every uncertain moment into evidence against you.</p>
+          </article>
+        </div>
+        <article class="card boundary-card">
+          <p class="eyebrow">Scope Reminder</p>
+          <p>This program is educational mentorship. It is not clinical supervision, psychotherapy, legal advice, or emergency consultation. For urgent risk, ethical, legal, or supervisory needs, follow your employer, supervisor, board, malpractice carrier, and local emergency procedures.</p>
+        </article>
+      </section>
+
+      <section class="view" data-view="curriculum">
+        <header class="page-heading">
+          <p class="eyebrow">12-Week Roadmap</p>
+          <h1>Your course.</h1>
+          <p>Each week gives you one clinical focus, one practical tool, one application, and one small behavior to practice.</p>
+        </header>
+        <div class="week-grid" data-week-grid></div>
+      </section>
+
+      <section class="view" data-view="module">
+        <header class="page-heading">
+          <p class="eyebrow" data-module-week></p>
+          <h1 data-module-title></h1>
+          <p data-module-description></p>
+        </header>
+        <div class="module-layout">
+          <div class="module-main">
+            <div class="lesson-placeholder">
+              <div><span>Weekly Teaching</span><strong data-video-title>Lesson video coming here</strong></div>
+            </div>
+            <div class="activity-list" data-activity-list></div>
+            <article class="card submission-card" data-milestone-card hidden>
+              <p class="eyebrow">Feedback Milestone</p>
+              <h3 data-milestone-title></h3>
+              <p class="supporting">Share your reasoning, your pattern, and one next step. Do not include identifying client information.</p>
+              <form data-milestone-form>
+                <label>Your submission<textarea name="submission" required placeholder="Focus on your clinical reasoning and learning—not a client’s identifying history."></textarea></label>
+                <div class="warning">Before submitting: remove names, initials, exact dates, locations, employers, screenshots, records, and combinations of details that could identify a client.</div>
+                <div class="form-actions">
+                  <button class="button" type="submit">Submit for Feedback</button>
+                  <span class="inline-success" data-milestone-status></span>
+                </div>
+              </form>
+            </article>
+          </div>
+          <aside class="module-side">
+            <article class="card sand">
+              <p class="eyebrow">This Week’s Tool</p>
+              <h3 data-module-tool></h3>
+              <ul>
+                <li>Ground before you begin</li>
+                <li>Practice one small behavior</li>
+                <li>Reflect without punishment</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="eyebrow">Mentorship Prep</p>
+              <p class="supporting">Bring one question, one pattern you noticed, and one decision point. Mentorship sessions are scheduled outside this portal.</p>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" data-view="assessments">
+        <header class="page-heading">
+          <p class="eyebrow">Developmental Reflection</p>
+          <h1>See what is changing.</h1>
+          <p>These assessments support reflection and pre/post comparison. They do not determine fitness to practice or clinical competence.</p>
+        </header>
+        <div class="assessment-grid" data-assessment-list></div>
+      </section>
+
+      <section class="view" data-view="support">
+        <header class="page-heading">
+          <p class="eyebrow">Non-Urgent Course Support</p>
+          <h1>Ask Tiffany.</h1>
+          <p>Use this space for program questions. Tiffany generally responds within two business days.</p>
+        </header>
+        <article class="card">
+          <form data-question-form>
+            <label>Your question<textarea name="question" required placeholder="Ask about the course material, your learning process, or an implementation question."></textarea></label>
+            <div class="warning">This channel is not monitored continuously and cannot be used for emergencies, urgent risk decisions, supervision, legal or ethical determinations, or identifiable client information.</div>
+            <div class="form-actions">
+              <button class="button" type="submit">Send Question</button>
+              <span class="inline-success" data-question-status></span>
+            </div>
+          </form>
+        </article>
+        <div class="admin-section">
+          <h2>Your questions</h2>
+          <div class="queue-grid" data-question-history></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/course/course-data.js"></script>
+  <script src="/course/app.js"></script>
+</body>
+</html>

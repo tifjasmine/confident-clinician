@@ -1,0 +1,327 @@
+const API = "/.netlify/functions/course-api";
+const AUTH = "/.netlify/functions/course-auth";
+const SESSION_KEY = "tccCourseSession";
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], selectedWeek: 1 };
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
+}[character]));
+
+const api = async (action, options = {}) => {
+  const response = await fetch(`${API}?action=${encodeURIComponent(action)}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${state.token}`,
+      ...(options.headers || {}),
+    },
+  });
+  const result = await response.json().catch(() => ({}));
+  if (response.status === 401) {
+    signOut();
+    throw new Error("Your session expired. Please sign in again.");
+  }
+  if (!response.ok) throw new Error(result.message || "Something did not save. Please try again.");
+  return result;
+};
+
+const saveSession = (session) => {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  state.token = session.accessToken;
+};
+
+const readSession = () => {
+  try {
+    const session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
+    if (session?.accessToken) state.token = session.accessToken;
+    return session;
+  } catch { return null; }
+};
+
+const signOut = () => {
+  sessionStorage.removeItem(SESSION_KEY);
+  state.token = "";
+  state.profile = null;
+  $("[data-app]").hidden = true;
+  $("[data-login-view]").hidden = false;
+};
+
+const showView = (name) => {
+  $$("[data-view]").forEach((view) => view.classList.toggle("active", view.dataset.view === name));
+  $$("[data-view-button]").forEach((button) => button.classList.toggle("active", button.dataset.viewButton === name));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.week) === Number(week) && item.completed);
+const activityDone = (week, type) => activitiesForWeek(week).some((item) => item.activityType === type);
+const weekCompletion = (week) => {
+  const done = window.TCC_COURSE.activityTypes.filter((type) => activityDone(week, type)).length;
+  return Math.round((done / window.TCC_COURSE.activityTypes.length) * 100);
+};
+
+const renderDashboard = () => {
+  const profile = state.profile;
+  const currentWeekNumber = Math.min(12, Math.max(1, Number(profile.currentWeek || 1)));
+  const week = window.TCC_COURSE.weeks[currentWeekNumber - 1];
+  const completedActivities = state.activity.filter((item) => item.completed).length;
+  const totalActivities = window.TCC_COURSE.weeks.length * window.TCC_COURSE.activityTypes.length;
+  const progress = Math.round((completedActivities / totalActivities) * 100);
+  const opened = new Set(state.activity.filter((item) => item.activityType === "Lesson accessed").map((item) => item.week)).size;
+
+  $("[data-first-name]").textContent = (profile.name || "clinician").split(" ")[0];
+  $("[data-current-week-label]").textContent = `Week ${week.number} · ${week.tool}`;
+  $("[data-current-week-title]").textContent = week.title;
+  $("[data-current-week-description]").textContent = week.description;
+  $("[data-progress-ring]").style.setProperty("--value", progress);
+  $("[data-progress-percent]").textContent = `${progress}%`;
+  $("[data-modules-count]").textContent = opened;
+  $("[data-milestones-count]").textContent = state.submissions.length;
+
+  const remaining = window.TCC_COURSE.activityTypes.filter((type) => !activityDone(week.number, type)).slice(0, 3);
+  $("[data-next-steps]").innerHTML = (remaining.length ? remaining : ["Pause and notice what changed", "Prepare one mentorship question"]).map((step, index) => `
+    <li class="next-item"><span class="next-dot">${index + 1}</span><p>${escapeHtml(step)}</p></li>
+  `).join("");
+};
+
+const renderCurriculum = () => {
+  const current = Number(state.profile.currentWeek || 1);
+  $("[data-week-grid]").innerHTML = window.TCC_COURSE.weeks.map((week) => {
+    const locked = week.number > current;
+    const completion = weekCompletion(week.number);
+    return `
+      <button class="week-card ${locked ? "locked" : ""}" data-open-week="${week.number}" ${locked ? "disabled" : ""}>
+        <span class="week-number">Week ${week.number}${week.milestone ? " · Feedback milestone" : ""}</span>
+        <h3>${escapeHtml(week.shortTitle)}</h3>
+        <p>${escapeHtml(week.description)}</p>
+        <span class="week-meta">${escapeHtml(week.tool)}</span>
+        <span class="week-state">${locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
+      </button>
+    `;
+  }).join("");
+  $$("[data-open-week]").forEach((button) => button.addEventListener("click", () => openWeek(Number(button.dataset.openWeek))));
+};
+
+const renderModule = (week) => {
+  $("[data-module-week]").textContent = `Week ${week.number}`;
+  $("[data-module-title]").textContent = week.title;
+  $("[data-module-description]").textContent = week.description;
+  $("[data-video-title]").textContent = week.shortTitle;
+  $("[data-module-tool]").textContent = week.tool;
+
+  $("[data-activity-list]").innerHTML = window.TCC_COURSE.activityTypes.map((type) => {
+    const done = activityDone(week.number, type);
+    const descriptions = {
+      "Lesson accessed": "Watch or listen to the weekly teaching.",
+      "Tool completed": `Work through the ${week.tool}.`,
+      "Case exercise completed": "Apply the week’s lens to the fictional scenario.",
+      "Implementation completed": "Practice one small behavior in your real work.",
+      "Reflection completed": "What did I learn? What do I need? What can I release?",
+    };
+    return `
+      <label class="activity">
+        <input class="activity-check" type="checkbox" data-activity-type="${escapeHtml(type)}" ${done ? "checked" : ""}>
+        <span><strong>${escapeHtml(type)}</strong><span>${escapeHtml(descriptions[type])}</span></span>
+        <span class="pill">${done ? "Complete" : "Not started"}</span>
+      </label>
+    `;
+  }).join("");
+
+  $$("[data-activity-type]").forEach((input) => input.addEventListener("change", async () => {
+    input.disabled = true;
+    try {
+      const result = await api("save-activity", {
+        method: "POST",
+        body: JSON.stringify({ week: week.number, activityType: input.dataset.activityType, completed: input.checked }),
+      });
+      state.activity = result.activity;
+      renderModule(week);
+      renderDashboard();
+      renderCurriculum();
+    } catch (error) {
+      input.checked = !input.checked;
+      alert(error.message);
+    } finally { input.disabled = false; }
+  }));
+
+  $("[data-milestone-card]").hidden = !week.milestone;
+  if (week.milestone) {
+    $("[data-milestone-title]").textContent = week.feedbackFocus;
+    const existing = state.submissions.find((item) => Number(item.week) === week.number);
+    const textarea = $("[data-milestone-form] textarea");
+    textarea.value = existing?.submission || "";
+    $("[data-milestone-status]").textContent = existing ? existing.status : "";
+  }
+};
+
+const openWeek = async (weekNumber) => {
+  const current = Number(state.profile.currentWeek || 1);
+  if (weekNumber > current) return;
+  state.selectedWeek = weekNumber;
+  const week = window.TCC_COURSE.weeks[weekNumber - 1];
+  if (!activityDone(weekNumber, "Lesson accessed")) {
+    const result = await api("save-activity", {
+      method: "POST",
+      body: JSON.stringify({ week: weekNumber, activityType: "Lesson accessed", completed: true }),
+    });
+    state.activity = result.activity;
+  }
+  renderModule(week);
+  renderDashboard();
+  renderCurriculum();
+  showView("module");
+};
+
+const assessmentStatements = [
+  ["Clinical Presence", "I can remain engaged when I do not immediately know what to say.", "I can tolerate silence without assuming I am failing.", "I notice when I am performing, rescuing, overexplaining, or shutting down.", "I can return my attention to the client after becoming self-conscious."],
+  ["Clinical Reasoning", "I can explain why I chose an intervention or question.", "I can identify what matters most in a clinical moment.", "I can distinguish an urgent issue from an uncomfortable issue.", "I know when to continue, slow down, consult, document, refer, or escalate."],
+  ["Session Structure", "I have a flexible way to open, explore, intervene, and close sessions.", "I can redirect a session without feeling controlling.", "I can bring a session back to a treatment thread.", "I can end sessions with enough time for grounding and next steps."],
+  ["Boundaries and Responsibility", "I can be caring without taking responsibility for a client’s outcome.", "I can hold time, communication, cancellation, and fee boundaries.", "I can receive disappointment or feedback without immediately over-apologizing.", "I can recognize when a case requires consultation or support beyond me."],
+  ["Sustainability and Professional Identity", "I have a reliable way to transition out of clinical work.", "I can identify what is draining me instead of calling all distress burnout.", "I can advocate for reasonable expectations in my work setting.", "I can describe the kind of therapist I am becoming without copying someone else."],
+];
+
+const renderAssessments = () => {
+  const cards = [
+    { key: "baseline", title: "Baseline Assessment", available: true, complete: state.profile.baselineComplete },
+    { key: "midpoint", title: "Midpoint Progress Pulse", available: Number(state.profile.currentWeek) >= 6, complete: state.profile.midpointComplete },
+    { key: "final", title: "Final Assessment + Integration", available: Number(state.profile.currentWeek) >= 12, complete: state.profile.finalComplete },
+  ];
+  $("[data-assessment-list]").innerHTML = cards.map((card) => `
+    <article class="assessment-domain">
+      <p class="eyebrow">${card.complete ? "Complete" : card.available ? "Available now" : "Opens later"}</p>
+      <h3>${escapeHtml(card.title)}</h3>
+      <p class="supporting">${card.key === "baseline" ? "Rate your experience during the past four weeks. Honest answers make the program more useful." : "Compare behavior, clinical reasoning, and what support you still need."}</p>
+      <button class="button ${card.available ? "" : "secondary"}" data-assessment="${card.key}" ${card.available ? "" : "disabled"}>${card.complete ? "Review / Retake" : "Begin Assessment"}</button>
+    </article>
+  `).join("");
+  $$("[data-assessment]").forEach((button) => button.addEventListener("click", () => openAssessment(button.dataset.assessment)));
+};
+
+const openAssessment = (kind) => {
+  const container = $("[data-assessment-list]");
+  container.innerHTML = `
+    <form data-assessment-form>
+      ${assessmentStatements.map((domain, domainIndex) => `
+        <section class="assessment-domain">
+          <h3>${escapeHtml(domain[0])}</h3>
+          ${domain.slice(1).map((statement, statementIndex) => {
+            const name = `rating-${domainIndex}-${statementIndex}`;
+            return `<div class="rating-row"><p>${escapeHtml(statement)}</p><div class="rating-options">
+              ${[1,2,3,4,5].map((rating) => `<label>${rating}<input type="radio" name="${name}" value="${rating}" required></label>`).join("")}
+            </div></div>`;
+          }).join("")}
+        </section>
+      `).join("")}
+      <section class="assessment-domain">
+        <label>What do you want to be able to do more consistently?<textarea name="goal" required></textarea></label>
+        <div class="form-actions"><button class="button" type="submit">Save Assessment</button><span data-assessment-status></span></div>
+      </section>
+    </form>
+  `;
+  $("[data-assessment-form]").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = $("button", form);
+    button.disabled = true;
+    const formData = new FormData(form);
+    const ratings = [...formData.entries()].filter(([key]) => key.startsWith("rating-")).map(([, value]) => Number(value));
+    try {
+      const result = await api("save-assessment", { method: "POST", body: JSON.stringify({ kind, ratings, goal: formData.get("goal") }) });
+      state.activity = result.activity;
+      state.profile = result.profile;
+      renderAssessments();
+      renderDashboard();
+    } catch (error) {
+      $("[data-assessment-status]", form).textContent = error.message;
+    } finally { button.disabled = false; }
+  });
+};
+
+const renderQuestions = () => {
+  $("[data-question-history]").innerHTML = state.questions.length ? state.questions.map((item) => `
+    <article class="card queue-card">
+      <p class="eyebrow">${escapeHtml(item.status)}</p>
+      <h3>${escapeHtml(item.question)}</h3>
+      ${item.response ? `<p><strong>Tiffany:</strong> ${escapeHtml(item.response)}</p>` : `<p>Submitted ${escapeHtml(item.submittedAt || "")}. You’ll see Tiffany’s response here.</p>`}
+    </article>
+  `).join("") : `<p class="supporting">You have not submitted any questions yet.</p>`;
+};
+
+const initializeApp = async () => {
+  const result = await api("me");
+  state.profile = result.profile;
+  state.activity = result.activity || [];
+  state.submissions = result.submissions || [];
+  state.questions = result.questions || [];
+  $("[data-login-view]").hidden = true;
+  $("[data-app]").hidden = false;
+  $("[data-user-name]").textContent = state.profile.name || "Course Member";
+  $("[data-user-email]").textContent = state.profile.email;
+  $("[data-admin-link]").hidden = state.profile.role !== "Admin";
+  renderDashboard();
+  renderCurriculum();
+  renderAssessments();
+  renderQuestions();
+};
+
+$("[data-login-form]").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("button", form);
+  const status = $("[data-login-status]");
+  const formData = new FormData(form);
+  button.disabled = true;
+  status.textContent = "";
+  try {
+    const response = await fetch(AUTH, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: formData.get("email"), password: formData.get("password") }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || "We could not sign you in.");
+    saveSession(result);
+    await initializeApp();
+  } catch (error) { status.textContent = error.message; }
+  finally { button.disabled = false; }
+});
+
+$$("[data-view-button]").forEach((button) => button.addEventListener("click", () => showView(button.dataset.viewButton)));
+$("[data-show-curriculum]").addEventListener("click", () => showView("curriculum"));
+$("[data-open-current]").addEventListener("click", () => openWeek(Number(state.profile.currentWeek || 1)));
+$("[data-sign-out]").addEventListener("click", signOut);
+
+$("[data-milestone-form]").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("button", form);
+  const status = $("[data-milestone-status]");
+  button.disabled = true;
+  try {
+    const week = window.TCC_COURSE.weeks[state.selectedWeek - 1];
+    const result = await api("save-milestone", { method: "POST", body: JSON.stringify({ week: week.number, milestone: week.feedbackFocus, submission: form.submission.value }) });
+    state.submissions = result.submissions;
+    status.textContent = "Submitted. Tiffany will respond within three business days.";
+    renderDashboard();
+  } catch (error) { status.textContent = error.message; }
+  finally { button.disabled = false; }
+});
+
+$("[data-question-form]").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("button", form);
+  const status = $("[data-question-status]");
+  button.disabled = true;
+  try {
+    const result = await api("save-question", { method: "POST", body: JSON.stringify({ question: form.question.value }) });
+    state.questions = result.questions;
+    form.reset();
+    status.textContent = "Your question was sent.";
+    renderQuestions();
+  } catch (error) { status.textContent = error.message; }
+  finally { button.disabled = false; }
+});
+
+if (readSession()) initializeApp().catch(signOut);
