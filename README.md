@@ -37,9 +37,18 @@ Required environment variables:
   use the admin dashboard
 
 To enroll a member, create their Supabase account and add a matching email to
-the Airtable `Participants` table. Set `Role` to `Admin` only for course
-administrators. The portal verifies every request against Supabase before
-reading or writing Airtable.
+the Airtable `Participants` table. In the invitation-only course flow, Tiffany
+adds the member to Airtable first and sets `Enrollment Status` to `Invited`.
+The participant clicks **Activate account** on `/course/`; the server confirms
+the roster match, creates the Supabase identity when needed, and sends a secure
+password-setup email. There is no public course signup endpoint.
+
+Set `Role` to `Admin` only for course administrators. The portal verifies every
+request against Supabase before reading or writing Airtable.
+
+Add `https://theconfidentclinician.me/course/set-password.html` to the allowed
+redirect URLs in Supabase Auth URL Configuration so activation emails return
+members to the course password screen.
 
 ## Purchase tracking
 

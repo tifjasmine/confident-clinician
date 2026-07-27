@@ -85,6 +85,28 @@ h1, h2, h3 {
 .login-card h2 { margin-bottom: 14px; font-size: clamp(40px, 5vw, 58px); }
 .supporting { color: var(--olive); line-height: 1.7; }
 .form-grid { display: grid; gap: 17px; margin-top: 28px; }
+.access-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.access-tab {
+  min-height: 48px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--olive);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.access-tab.active {
+  border-bottom-color: var(--terra);
+  color: var(--forest);
+}
 label { display: grid; gap: 8px; color: var(--olive); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 input, textarea, select {
   width: 100%;
@@ -297,20 +319,73 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
 }
 @media (max-width: 760px) {
   .login-page { grid-template-columns: 1fr; }
-  .login-story { min-height: 46vh; gap: 40px; }
+  .login-story { min-height: auto; padding: 30px 22px 34px; gap: 28px; }
+  .login-story h1 { margin-bottom: 18px; font-size: clamp(43px, 13vw, 62px); }
+  .login-story p:not(.eyebrow) { font-size: 15px; line-height: 1.65; }
+  .login-form-wrap { padding: 34px 20px 48px; place-items: start center; }
+  .login-card h2 { font-size: 42px; }
   .app-shell { display: block; }
-  .sidebar { position: static; height: auto; padding: 20px; }
-  .sidebar-sub { margin-bottom: 18px; }
-  .nav-list { grid-template-columns: repeat(4, 1fr); overflow-x: auto; }
-  .nav-link { white-space: nowrap; padding: 10px; font-size: 12px; }
-  .sidebar-bottom { margin-top: 24px; }
-  .main { padding: 28px 18px 60px; }
+  .sidebar {
+    position: static;
+    height: auto;
+    min-height: 108px;
+    padding: 18px 18px 20px;
+  }
+  .sidebar-sub { margin: 5px 0 15px; }
+  .nav-list {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    padding: 7px max(6px, env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-right));
+    border-top: 1px solid rgba(255,255,255,.12);
+    background: var(--forest);
+    box-shadow: 0 -12px 34px rgba(42,60,47,.15);
+  }
+  .nav-link {
+    min-height: 48px;
+    border-left: 0;
+    border-top: 2px solid transparent;
+    white-space: normal;
+    padding: 8px 3px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+  .nav-link:hover, .nav-link.active { border-left-color: transparent; border-top-color: var(--terra); }
+  .sidebar-bottom { margin-top: 0; }
+  .sidebar-bottom .user-name, .sidebar-bottom .user-email { display: none; }
+  .main { padding: 26px 16px calc(92px + env(safe-area-inset-bottom)); }
   .topbar { margin-bottom: 32px; }
+  .topbar-note { font-size: 12px; }
+  .page-heading { margin-bottom: 24px; }
+  .page-heading h1 { font-size: clamp(40px, 12vw, 54px); }
+  .page-heading p { font-size: 15px; line-height: 1.6; }
+  .card { padding: 23px 20px; }
+  .current-card h2 { font-size: 35px; }
+  .card-actions, .form-actions { display: grid; grid-template-columns: 1fr; }
+  .card-actions .button, .form-actions .button { width: 100%; }
+  .lesson-placeholder { min-height: 230px; padding: 24px 18px; }
+  .progress-stats { grid-template-columns: 1fr 1fr; }
   .week-grid, .queue-grid { grid-template-columns: 1fr; }
+  .week-card { min-height: 230px; width: 100%; text-align: left; }
   .rating-row { grid-template-columns: 1fr; }
+  .rating-options { gap: 6px; }
+  .rating-options label { width: 44px; min-height: 44px; }
+  input, textarea, select { min-height: 48px; font-size: 16px; }
+  textarea { min-height: 150px; }
+  .button { min-height: 50px; }
+  .table-wrap { margin: 0 -16px; border-right: 0; border-left: 0; }
 }
 @media (max-width: 480px) {
   .week-grid, .admin-metrics { grid-template-columns: 1fr; }
   .activity { grid-template-columns: 28px minmax(0,1fr); }
   .activity .button { grid-column: 2; }
+  .dashboard-grid { gap: 16px; }
+  .progress-ring { width: 128px; height: 128px; }
+  .access-tabs { margin-top: 22px; }
+  .access-tab { padding: 6px; font-size: 10px; letter-spacing: .06em; }
 }

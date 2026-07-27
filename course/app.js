@@ -1,6 +1,8 @@
 const API = "/.netlify/functions/course-api";
 const AUTH = "/.netlify/functions/course-auth";
+const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
+const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
 const state = { token: "", profile: null, activity: [], submissions: [], questions: [], selectedWeek: 1 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -46,6 +48,20 @@ const signOut = () => {
   state.profile = null;
   $("[data-app]").hidden = true;
   $("[data-login-view]").hidden = false;
+};
+
+const setAccessMode = (mode) => {
+  $$("[data-access-tab]").forEach((button) => {
+    const active = button.dataset.accessTab === mode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  $$("[data-access-form]").forEach((form) => { form.hidden = form.dataset.accessForm !== mode; });
+  $("[data-access-heading]").textContent = mode === "login" ? "Welcome back." : "Activate your account.";
+  $("[data-access-copy]").textContent = mode === "login"
+    ? "Use the email and password connected to your Confident Clinician course account."
+    : "Enter the same email Tiffany added to the course roster. We’ll send you a secure link to choose your password.";
+  $("[data-login-status]").textContent = "";
 };
 
 const showView = (name) => {
@@ -288,6 +304,7 @@ $("[data-login-form]").addEventListener("submit", async (event) => {
 });
 
 $$("[data-view-button]").forEach((button) => button.addEventListener("click", () => showView(button.dataset.viewButton)));
+$$("[data-access-tab]").forEach((button) => button.addEventListener("click", () => setAccessMode(button.dataset.accessTab)));
 $("[data-show-curriculum]").addEventListener("click", () => showView("curriculum"));
 $("[data-open-current]").addEventListener("click", () => openWeek(Number(state.profile.currentWeek || 1)));
 $("[data-sign-out]").addEventListener("click", signOut);
@@ -324,4 +341,62 @@ $("[data-question-form]").addEventListener("submit", async (event) => {
   finally { button.disabled = false; }
 });
 
-if (readSession()) initializeApp().catch(signOut);
+$("[data-activation-form]").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("button", form);
+  const status = $("[data-login-status]");
+  button.disabled = true;
+  status.textContent = "";
+  try {
+    const response = await fetch(ACTIVATE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: new FormData(form).get("email") }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.message || "We could not send the activation email.");
+    status.textContent = result.message;
+    status.style.color = "var(--sage)";
+    form.reset();
+  } catch (error) {
+    status.style.color = "var(--danger)";
+    status.textContent = error.message;
+  } finally { button.disabled = false; }
+});
+
+const initializePreview = () => {
+  state.profile = {
+    name: "Tiffany Preview",
+    email: "preview@theconfidentclinician.me",
+    role: "Admin",
+    cohort: "Founding Cohort",
+    enrollmentStatus: "Active",
+    currentWeek: 3,
+    baselineComplete: true,
+    midpointComplete: false,
+    finalComplete: false,
+  };
+  state.activity = [
+    ...window.TCC_COURSE.activityTypes.map((activityType, index) => ({ week: 1, activityType, completed: true, id: `preview-1-${index}` })),
+    ...window.TCC_COURSE.activityTypes.map((activityType, index) => ({ week: 2, activityType, completed: true, id: `preview-2-${index}` })),
+    { week: 3, activityType: "Lesson accessed", completed: true, id: "preview-3-1" },
+    { week: 3, activityType: "Tool completed", completed: true, id: "preview-3-2" },
+  ];
+  state.submissions = [
+    { week: 1, milestone: "Confidence Block Inventory", submission: "Preview submission", status: "Feedback returned", feedback: "You identified the pattern clearly. Keep the experiment small and observable." },
+  ];
+  state.questions = [];
+  $("[data-login-view]").hidden = true;
+  $("[data-app]").hidden = false;
+  $("[data-user-name]").textContent = state.profile.name;
+  $("[data-user-email]").textContent = "Interactive preview";
+  $("[data-admin-link]").hidden = true;
+  renderDashboard();
+  renderCurriculum();
+  renderAssessments();
+  renderQuestions();
+};
+
+if (isPreview) initializePreview();
+else if (readSession()) initializeApp().catch(signOut);
