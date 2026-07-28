@@ -75,6 +75,8 @@ The access page requires the workshop password and checks Airtable for a matchin
 When access is confirmed, it also creates a record in the `Views` table so you can track who opened the workshop, when they opened it, and how many times they returned.
 The workshop purchase buttons use `/.netlify/functions/create-five-skills-checkout`, which creates a Stripe Checkout session from `FIVE_SKILLS_STRIPE_PRICE_ID`. The member portal at `/portal.html` checks the same purchase email and password, then shows available workshop access pages.
 
+The Clinical Confidence Lab purchase button uses `/.netlify/functions/create-clinical-confidence-lab-checkout`. It creates a Stripe Checkout session with promotion codes enabled and uses `CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID` when configured (falling back to the current founding-price ID).
+
 Member account setup uses `/create-account.html`. Add these fields to the main Airtable purchaser/user table:
 
 - `Account Created` checkbox
