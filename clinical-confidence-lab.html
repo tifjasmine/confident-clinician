@@ -86,14 +86,14 @@
     .button:hover{background:var(--terra-dark)}
     .button.light{background:var(--cream);color:var(--forest)}
     .button.outline{border:1px solid rgba(42,60,47,.28);background:transparent;color:var(--forest)}
-    .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr);min-height:640px}
-    .hero-copy{display:flex;flex-direction:column;justify-content:center;padding:72px 52px}
+    .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr);height:640px}
+    .hero-copy{display:flex;flex-direction:column;justify-content:center;padding:64px 52px}
     .hero h1{max-width:760px;margin:18px 0 24px;font-size:clamp(44px,5vw,72px)}
     .hero h1 em{color:var(--terra);font-weight:400}
     .hero-lede{max-width:610px;color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
     .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
     .hero-image{position:relative;overflow:hidden;background:var(--tan)}
-    .hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 18%}
+    .hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
     .hero-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(42,60,47,.18),transparent 45%)}
     .truth-strip{background:var(--forest);color:white;padding:22px 32px;text-align:center;font:400 clamp(22px,3vw,32px)/1.25 "Cormorant Garamond",serif}
     .truth-strip em{color:var(--tan)}
@@ -150,14 +150,14 @@
     .footer-links{display:flex;flex-wrap:wrap;gap:18px;color:rgba(255,255,255,.45);font-size:11px}
     @media(max-width:900px){
       .nav{flex-direction:column;padding:15px 18px}.nav-links{flex-wrap:wrap;justify-content:center;gap:8px}.nav-links a{border:1px solid rgba(42,60,47,.15);border-radius:999px;padding:8px 10px}
-      .hero{grid-template-columns:1fr;min-height:auto}.hero-copy{padding:56px 24px}.hero-image{min-height:380px}
+      .hero{grid-template-columns:1fr;height:auto}.hero-copy{padding:56px 24px}.hero-image{height:430px;min-height:0}
       .section{padding:56px 24px}
       .outcomes-wrap{grid-template-columns:1fr;gap:32px}.curriculum-grid{grid-template-columns:1fr 1fr}.included-grid{grid-template-columns:1fr}
       .offer-grid{grid-template-columns:1fr}.price-card{max-width:480px}
       .signup-form{grid-template-columns:1fr}.signup-form .button{width:100%}.footer-inner{flex-direction:column;align-items:flex-start}
     }
     @media(max-width:560px){
-      .hero h1{font-size:45px}.hero-image{min-height:300px}.hero-actions{display:grid}.hero-actions .button{width:100%}
+      .hero h1{font-size:45px}.hero-image{height:360px}.hero-actions{display:grid}.hero-actions .button{width:100%}
       .curriculum-grid{grid-template-columns:1fr}.week{min-height:auto}
       .offer-grid{gap:34px}.price-card{padding:28px 22px}.scope,.footer{padding-right:22px;padding-left:22px}
     }
@@ -188,7 +188,7 @@
         </div>
       </div>
       <div class="hero-image">
-        <img src="/tiffany-wright-homepage.jpg" alt="Tiffany McGilloway, LPC, creator of The Clinical Confidence Lab">
+        <img src="/office-self.png" alt="Tiffany McGilloway, LPC, smiling in her office">
       </div>
     </section>
 
