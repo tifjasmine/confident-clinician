@@ -29,6 +29,60 @@ const addIfConfigured = (fields, fieldMap, key, value) => {
   fields[airtableField] = value;
 };
 
+const escapeHtml = (value) => String(value || '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
+const sendFormNotification = async ({ name, email, source }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.FORM_NOTIFICATION_EMAIL || 'admin@theconfidentclinician.me';
+  const from = process.env.FORM_NOTIFICATION_FROM
+    || 'The Confident Clinician <notifications@theconfidentclinician.me>';
+
+  if (!apiKey) {
+    console.warn('Form notification skipped because RESEND_API_KEY is missing.');
+    return false;
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      reply_to: email,
+      subject: `New Clinical Confidence interest: ${name || email}`,
+      text: [
+        'A new interest form was submitted.',
+        '',
+        `Name: ${name || 'Not provided'}`,
+        `Email: ${email}`,
+        `Source: ${source}`,
+      ].join('\n'),
+      html: `
+        <h2>New Clinical Confidence interest</h2>
+        <p><strong>Name:</strong> ${escapeHtml(name || 'Not provided')}</p>
+        <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+        <p><strong>Source:</strong> ${escapeHtml(source)}</p>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    console.error('Form notification email failed', response.status, message);
+    return false;
+  }
+
+  return true;
+};
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { ok: false, message: 'Method not allowed.' });
@@ -84,7 +138,8 @@ exports.handler = async (event) => {
       return json(500, { ok: false, message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.' });
     }
 
-    return json(200, { ok: true });
+    const notificationSent = await sendFormNotification({ name, email, source });
+    return json(200, { ok: true, notificationSent });
   } catch (error) {
     console.error('Workshop subscription failed', error);
     return json(500, { ok: false, message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.' });

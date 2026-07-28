@@ -77,6 +77,16 @@ The workshop purchase buttons use `/.netlify/functions/create-five-skills-checko
 
 The Clinical Confidence Lab purchase button uses `/.netlify/functions/create-clinical-confidence-lab-checkout`. It creates a Stripe Checkout session with promotion codes enabled and uses `CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID` when configured (falling back to the current founding-price ID).
 
+## Interest-form email notifications
+
+Interest forms save to Airtable first, then send a direct notification email through Resend. Configure these Netlify environment variables with Functions scope:
+
+- `RESEND_API_KEY`
+- `FORM_NOTIFICATION_EMAIL` = the inbox that should receive each submission
+- `FORM_NOTIFICATION_FROM` = a sender on a domain verified in Resend, for example `The Confident Clinician <notifications@theconfidentclinician.me>`
+
+If Resend is temporarily unavailable, the Airtable submission remains saved and the email failure is logged without asking the visitor to resubmit.
+
 Member account setup uses `/create-account.html`. Add these fields to the main Airtable purchaser/user table:
 
 - `Account Created` checkbox
