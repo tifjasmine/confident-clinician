@@ -15,7 +15,7 @@
     <div class="login-story">
       <div class="wordmark">The Confident Clinician</div>
       <div class="login-copy">
-        <p class="eyebrow">Founding Cohort Portal</p>
+        <p class="eyebrow">Private Program Portal</p>
         <h1>Build a process you can <em>trust.</em></h1>
         <p>This is your space to learn, practice, reflect, and return to one grounded next step. You do not need to complete the work perfectly for it to change how you show up in the room.</p>
       </div>
@@ -48,7 +48,7 @@
   <div class="app-shell" data-app hidden>
     <aside class="sidebar">
       <a class="app-wordmark" href="/course/">The Confident Clinician</a>
-      <p class="sidebar-sub">Founding Cohort</p>
+      <p class="sidebar-sub" data-program-name>The Clinical Confidence Lab</p>
       <nav class="nav-list" aria-label="Course navigation">
         <button class="nav-link active" data-view-button="dashboard">Today</button>
         <button class="nav-link" data-view-button="curriculum">Curriculum</button>
@@ -111,7 +111,7 @@
 
       <section class="view" data-view="curriculum">
         <header class="page-heading">
-          <p class="eyebrow">12-Week Roadmap</p>
+          <p class="eyebrow" data-roadmap-label>4-Week Roadmap</p>
           <h1>Your course.</h1>
           <p>Each week gives you one clinical focus, one practical tool, one application, and one small behavior to practice.</p>
         </header>
@@ -127,7 +127,7 @@
         <div class="module-layout">
           <div class="module-main">
             <div class="lesson-placeholder">
-              <div><span>Weekly Teaching</span><strong data-video-title>Lesson video coming here</strong></div>
+              <div><span>Weekly Teaching</span><strong data-video-title>Lesson video coming here</strong><div data-lesson-media></div></div>
             </div>
             <div class="activity-list" data-activity-list></div>
             <article class="card submission-card" data-milestone-card hidden>
@@ -148,6 +148,7 @@
             <article class="card sand">
               <p class="eyebrow">This Week’s Tool</p>
               <h3 data-module-tool></h3>
+              <div class="resource-list" data-module-resources></div>
               <ul>
                 <li>Ground before you begin</li>
                 <li>Practice one small behavior</li>

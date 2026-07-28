@@ -6,7 +6,7 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character)
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
 }[character]));
 let token = "";
-let data = { participants: [], submissions: [], questions: [] };
+let data = { participants: [], submissions: [], questions: [], content: [] };
 
 try { token = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}").accessToken || ""; } catch {}
 if (!token) window.location.replace("/course/");
@@ -42,12 +42,22 @@ const render = () => {
   $("[data-participant-rows]").innerHTML = data.participants.length ? data.participants.map((person) => `
     <tr>
       <td><strong>${escapeHtml(person.name || "Unnamed")}</strong><br><small>${escapeHtml(person.email)}</small></td>
+      <td>${escapeHtml(person.program || "Intensive")}<br><small>${escapeHtml(person.cohort || "")}</small></td>
       <td><span class="pill ${person.needsAttention ? "attention" : ""}">${escapeHtml(person.needsAttention ? "Needs attention" : person.enrollmentStatus || "Active")}</span></td>
       <td>${person.currentWeek || 1}</td><td>${Math.round((person.overallProgress || 0) * 100)}%</td>
-      <td>${person.modulesAccessed || 0}/12</td><td>${person.milestonesSubmitted || 0}/6</td>
-      <td>${person.mentorshipAttended || 0}/6</td><td>${escapeHtml(person.lastActive || "—")}</td>
+      <td>${person.modulesAccessed || 0}/${person.programWeeks || 12}</td><td>${person.milestonesSubmitted || 0}/${person.programWeeks === 4 ? 4 : 6}</td>
+      <td>${escapeHtml(person.coachingCallStatus || "Not booked")}</td><td>${escapeHtml(person.lastActive || "—")}</td>
     </tr>
-  `).join("") : `<tr><td colspan="8">No participants have been added yet.</td></tr>`;
+  `).join("") : `<tr><td colspan="9">No participants have been added yet.</td></tr>`;
+
+  $("[data-content-list]").innerHTML = data.content.length ? data.content.map((item) => `
+    <article class="card queue-card">
+      <p class="eyebrow">${escapeHtml(item.program)} · Week ${item.week} · ${item.published ? "Published" : "Draft"}</p>
+      <h3>${escapeHtml(item.title)}</h3>
+      <p>${escapeHtml(item.description || "No description yet.")}</p>
+      <p class="supporting">${escapeHtml(item.contentType)}${item.videoUrl ? " · Video linked" : ""}${item.downloadUrl ? " · Download linked" : ""}${item.transcriptUrl ? " · Transcript linked" : ""}</p>
+    </article>
+  `).join("") : `<p class="supporting">No course content has been added yet.</p>`;
 
   $("[data-submission-queue]").innerHTML = data.submissions.length ? data.submissions.map((item) => `
     <article class="card queue-card">
@@ -98,6 +108,40 @@ const saveResponse = async (event, action, field) => {
   } catch (error) { alert(error.message); }
   finally { button.disabled = false; }
 };
+
+$("[data-content-form]").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("button", form);
+  const status = $("[data-content-status]");
+  const formData = new FormData(form);
+  button.disabled = true;
+  status.textContent = "";
+  try {
+    await request("save-content", {
+      method: "POST",
+      body: JSON.stringify({
+        program: formData.get("program"),
+        week: Number(formData.get("week")),
+        order: Number(formData.get("order")),
+        contentType: formData.get("contentType"),
+        title: formData.get("title"),
+        description: formData.get("description"),
+        videoUrl: formData.get("videoUrl"),
+        downloadUrl: formData.get("downloadUrl"),
+        transcriptUrl: formData.get("transcriptUrl"),
+        published: formData.get("published") === "on",
+      }),
+    });
+    form.reset();
+    status.textContent = "Course content saved.";
+    await load();
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 
 $$("[data-admin-view]").forEach((button) => button.addEventListener("click", () => showPanel(button.dataset.adminView)));
 $("[data-refresh]").addEventListener("click", load);

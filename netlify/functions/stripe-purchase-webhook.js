@@ -140,6 +140,56 @@ const getPurchasedResource = (lineItems) => {
   return null;
 };
 
+const getLineItemPriceIds = (lineItems) => {
+  const items = Array.isArray(lineItems?.data) ? lineItems.data : [];
+  return items.map((item) => (typeof item.price === 'string' ? item.price : item.price?.id)).filter(Boolean);
+};
+
+const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
+  const labPriceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID || 'price_1TyEZCASlf43jszV2eZ2kNon';
+  if (!getLineItemPriceIds(lineItems).includes(labPriceId)) return null;
+
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_COURSE_BASE_ID || 'app9RCJ6ivTCgwDsl';
+  const tableId = process.env.AIRTABLE_COURSE_PARTICIPANTS_TABLE_ID || 'tbl9GaXjTRDTm4eg9';
+  const customer = session.customer_details || {};
+  const email = String(customer.email || session.customer_email || '').trim().toLowerCase();
+  if (!token || !email) return null;
+
+  const formula = `LOWER({Email})='${airtableFormulaString(email)}'`;
+  const lookupUrl = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
+  lookupUrl.searchParams.set('maxRecords', '1');
+  lookupUrl.searchParams.set('filterByFormula', formula);
+  const lookupResponse = await fetch(lookupUrl, { headers: { Authorization: `Bearer ${token}` } });
+  if (!lookupResponse.ok) throw new Error(`Course roster lookup failed: ${lookupResponse.status}`);
+  const existing = (await lookupResponse.json()).records?.[0] || null;
+
+  const fields = {
+    Name: customer.name || email,
+    Email: email,
+    Program: 'Clinical Confidence Lab',
+    'Program Version': 'CCL-2026-v1',
+    'Program Weeks': 4,
+    Cohort: 'Founding Beta · September 2026',
+    'Payment Status': 'Paid',
+    'Onboarding Status': 'Onboarding incomplete',
+    'Current Week': 1,
+    'Coaching Call Status': 'Not booked',
+  };
+  if (!existing?.fields?.['Enrollment Status']) fields['Enrollment Status'] = 'Purchased';
+
+  const target = existing
+    ? `https://api.airtable.com/v0/${baseId}/${tableId}/${existing.id}`
+    : `https://api.airtable.com/v0/${baseId}/${tableId}`;
+  const response = await fetch(target, {
+    method: existing ? 'PATCH' : 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(existing ? { fields, typecast: true } : { records: [{ fields }], typecast: true }),
+  });
+  if (!response.ok) throw new Error(`Course roster sync failed: ${response.status} ${await response.text()}`);
+  return response.json();
+};
+
 const buildAirtableFields = (session, lineItems, fieldMap) => {
   const customer = session.customer_details || {};
   const firstLineItem = lineItems && lineItems.data && lineItems.data.length > 0 ? lineItems.data[0] : null;
@@ -430,6 +480,7 @@ exports.handler = async (event) => {
     const lineItems = stripeSecretKey
       ? await stripeRequest(`/checkout/sessions/${session.id}/line_items?limit=100`, stripeSecretKey)
       : { data: [] };
+    await syncClinicalConfidenceLabEnrollment(session, lineItems);
     const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
     const resourceAccess = getPurchasedResource(lineItems);
     const existingRecord = await findExistingAirtableRecord(session.id, fieldMap);

@@ -17,6 +17,7 @@
       <p class="sidebar-sub">Course Administration</p>
       <nav class="nav-list">
         <button class="nav-link active" data-admin-view="overview">Cohort</button>
+        <button class="nav-link" data-admin-view="content">Course Content</button>
         <button class="nav-link" data-admin-view="submissions">Feedback</button>
         <button class="nav-link" data-admin-view="questions">Questions</button>
       </nav>
@@ -33,10 +34,29 @@
         <div class="admin-metrics" data-admin-metrics></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Participant</th><th>Status</th><th>Week</th><th>Progress</th><th>Modules</th><th>Milestones</th><th>Mentorship</th><th>Last active</th></tr></thead>
+            <thead><tr><th>Participant</th><th>Program</th><th>Status</th><th>Week</th><th>Progress</th><th>Modules</th><th>Milestones</th><th>Coaching</th><th>Last active</th></tr></thead>
             <tbody data-participant-rows></tbody>
           </table>
         </div>
+      </section>
+      <section class="view" data-admin-panel="content">
+        <header class="page-heading"><p class="eyebrow">Course Content</p><h1>Publish lessons and resources.</h1><p>Add secure video, PDF, worksheet, and transcript links. Participants only see items marked published for their program.</p></header>
+        <article class="card">
+          <form class="form-grid content-form" data-content-form>
+            <label>Program<select name="program"><option>Clinical Confidence Lab</option><option>Confident Clinician Intensive</option></select></label>
+            <label>Week<input name="week" type="number" min="1" max="12" value="1" required></label>
+            <label>Order<input name="order" type="number" min="1" value="1" required></label>
+            <label>Type<select name="contentType"><option>Lesson</option><option>Video</option><option>PDF</option><option>Worksheet</option><option>Link</option></select></label>
+            <label class="span-all">Title<input name="title" required></label>
+            <label class="span-all">Description<textarea name="description"></textarea></label>
+            <label class="span-all">Video URL<input name="videoUrl" type="url" placeholder="Vimeo, YouTube, or another secure video link"></label>
+            <label class="span-all">PDF / worksheet URL<input name="downloadUrl" type="url" placeholder="Secure Google Drive or file link"></label>
+            <label class="span-all">Transcript URL<input name="transcriptUrl" type="url"></label>
+            <label class="check-row span-all"><input name="published" type="checkbox"> Publish to participants now</label>
+            <div class="form-actions span-all"><button class="button" type="submit">Save Course Content</button><span data-content-status></span></div>
+          </form>
+        </article>
+        <div class="admin-section"><h2>Published and draft content</h2><div class="queue-grid" data-content-list></div></div>
       </section>
       <section class="view" data-admin-panel="submissions">
         <header class="page-heading"><p class="eyebrow">Feedback Queue</p><h1>Respond with focus.</h1><p>Brief, actionable feedback keeps the founding cohort personal without creating unlimited access.</p></header>

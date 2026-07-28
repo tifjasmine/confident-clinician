@@ -33,6 +33,9 @@ Required environment variables:
 - `AIRTABLE_COURSE_ACTIVITY_TABLE_ID` = `tblUggqFGAT3f21O5`
 - `AIRTABLE_COURSE_SUBMISSIONS_TABLE_ID` = `tblvjyk8Sb0jF5RFN`
 - `AIRTABLE_COURSE_QUESTIONS_TABLE_ID` = `tblZgodoLmkg2QVjV`
+- `AIRTABLE_COURSE_CONTENT_TABLE_ID` = `tblbR7GbCYnRoLLUm`
+- `AIRTABLE_COURSE_ASSESSMENTS_TABLE_ID` = `tblDB1IkqgRT9bjYZ`
+- `AIRTABLE_COURSE_COACHING_TABLE_ID` = `tbl975NGzYmTTtcCc`
 - `COURSE_ADMIN_EMAILS` = comma-separated Supabase account emails allowed to
   use the admin dashboard
 
@@ -45,6 +48,16 @@ password-setup email. There is no public course signup endpoint.
 
 Set `Role` to `Admin` only for course administrators. The portal verifies every
 request against Supabase before reading or writing Airtable.
+
+The same portal supports both `Clinical Confidence Lab` (4 weeks) and
+`Confident Clinician Intensive` (12 weeks). Set the participant's `Program`
+field to choose the correct curriculum. Stripe purchases for the Lab are added
+to the roster with `Enrollment Status` set to `Purchased`; Tiffany changes that
+status to `Invited` when the participant is approved to activate an account.
+
+Course videos, PDFs, worksheets, transcripts, and links are managed in the
+`Program Content` table or through the admin dashboard's **Course Content**
+panel. Only records with `Published` checked appear in the participant portal.
 
 Add `https://theconfidentclinician.me/course/set-password.html` to the allowed
 redirect URLs in Supabase Auth URL Configuration so activation emails return

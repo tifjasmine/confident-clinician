@@ -1,5 +1,6 @@
-window.TCC_COURSE = {
-  title: "The Confident Clinician Founding Cohort",
+const intensiveCourse = {
+  title: "The Confident Clinician Intensive",
+  program: "Confident Clinician Intensive",
   weeks: [
     {
       number: 1,
@@ -106,3 +107,58 @@ window.TCC_COURSE = {
     "Reflection completed",
   ],
 };
+
+const labCourse = {
+  title: "The Clinical Confidence Lab",
+  program: "Clinical Confidence Lab",
+  weeks: [
+    {
+      number: 1,
+      title: "Catch the Confidence Spiral",
+      shortTitle: "Notice What Happens",
+      description: "Spot what knocks you off center, recognize the pattern that follows, and choose one small interruption to practice.",
+      tool: "Confidence Loop Map",
+      milestone: true,
+      feedbackFocus: "Confidence Loop Reflection",
+    },
+    {
+      number: 2,
+      title: "Find Your Next Move",
+      shortTitle: "Use the CLEAR Method™",
+      description: "Slow the urgency, find the clinical thread, and make one intentional next-step decision.",
+      tool: "CLEAR Decision Map",
+      milestone: true,
+      feedbackFocus: "CLEAR Practice Reflection",
+    },
+    {
+      number: 3,
+      title: "Give Sessions a Spine",
+      shortTitle: "Lead Without a Script",
+      description: "Focus, redirect, deepen, and close with flexible structure—without sounding rehearsed or controlling.",
+      tool: "Flexible Session Flow Map",
+      milestone: true,
+      feedbackFocus: "Session Leadership Reflection",
+    },
+    {
+      number: 4,
+      title: "Leave the Session at Work",
+      shortTitle: "Reflect Without Spiraling",
+      description: "Take the lesson, identify the right follow-up, and stop treating every difficult session like a personal emergency.",
+      tool: "Seven-Minute Debrief",
+      milestone: true,
+      feedbackFocus: "30-Day Clinical Confidence Plan",
+    },
+  ],
+  activityTypes: [
+    "Lesson accessed",
+    "Tool completed",
+    "Implementation completed",
+    "Reflection completed",
+  ],
+};
+
+window.TCC_COURSES = {
+  "Clinical Confidence Lab": labCourse,
+  "Confident Clinician Intensive": intensiveCourse,
+};
+window.TCC_COURSE = labCourse;

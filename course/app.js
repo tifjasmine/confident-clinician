@@ -3,7 +3,7 @@ const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
 const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
-const state = { token: "", profile: null, activity: [], submissions: [], questions: [], selectedWeek: 1 };
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], selectedWeek: 1 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -70,6 +70,13 @@ const showView = (name) => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
+const setCourseForProfile = () => {
+  window.TCC_COURSE = window.TCC_COURSES[state.profile?.program]
+    || window.TCC_COURSES["Confident Clinician Intensive"];
+  $("[data-program-name]").textContent = window.TCC_COURSE.title;
+  $("[data-roadmap-label]").textContent = `${window.TCC_COURSE.weeks.length}-Week Roadmap`;
+};
+
 const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.week) === Number(week) && item.completed);
 const activityDone = (week, type) => activitiesForWeek(week).some((item) => item.activityType === type);
 const weekCompletion = (week) => {
@@ -79,7 +86,7 @@ const weekCompletion = (week) => {
 
 const renderDashboard = () => {
   const profile = state.profile;
-  const currentWeekNumber = Math.min(12, Math.max(1, Number(profile.currentWeek || 1)));
+  const currentWeekNumber = Math.min(window.TCC_COURSE.weeks.length, Math.max(1, Number(profile.currentWeek || 1)));
   const week = window.TCC_COURSE.weeks[currentWeekNumber - 1];
   const completedActivities = state.activity.filter((item) => item.completed).length;
   const totalActivities = window.TCC_COURSE.weeks.length * window.TCC_COURSE.activityTypes.length;
@@ -120,11 +127,29 @@ const renderCurriculum = () => {
 };
 
 const renderModule = (week) => {
+  const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
+  const primaryContent = weekContent.find((item) => item.contentType === "Video") || weekContent[0];
   $("[data-module-week]").textContent = `Week ${week.number}`;
-  $("[data-module-title]").textContent = week.title;
-  $("[data-module-description]").textContent = week.description;
-  $("[data-video-title]").textContent = week.shortTitle;
+  $("[data-module-title]").textContent = primaryContent?.title || week.title;
+  $("[data-module-description]").textContent = primaryContent?.description || week.description;
+  $("[data-video-title]").textContent = primaryContent?.title || week.shortTitle;
   $("[data-module-tool]").textContent = week.tool;
+  const media = $("[data-lesson-media]");
+  if (primaryContent?.videoUrl) {
+    media.innerHTML = `<a class="button light" href="${escapeHtml(primaryContent.videoUrl)}" target="_blank" rel="noopener">Open Weekly Teaching</a>`;
+  } else {
+    media.innerHTML = `<span>Weekly teaching will appear here when Tiffany publishes the video.</span>`;
+  }
+  const resources = weekContent.flatMap((item) => {
+    const rows = [];
+    if (item.downloadUrl) rows.push({ label: item.title || "Download", url: item.downloadUrl });
+    if (item.transcriptUrl) rows.push({ label: `${item.title || "Lesson"} transcript`, url: item.transcriptUrl });
+    (item.files || []).forEach((file) => rows.push({ label: file.filename || item.title || "Course file", url: file.url }));
+    return rows;
+  });
+  $("[data-module-resources]").innerHTML = resources.length
+    ? resources.map((item) => `<a class="resource-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.label)}</a>`).join("")
+    : `<p class="supporting">Downloads and worksheets will appear here when Tiffany publishes them.</p>`;
 
   $("[data-activity-list]").innerHTML = window.TCC_COURSE.activityTypes.map((type) => {
     const done = activityDone(week.number, type);
@@ -198,7 +223,11 @@ const assessmentStatements = [
 ];
 
 const renderAssessments = () => {
-  const cards = [
+  const isLab = state.profile.program === "Clinical Confidence Lab";
+  const cards = isLab ? [
+    { key: "baseline", title: "Baseline Assessment", available: true, complete: state.profile.baselineComplete },
+    { key: "final", title: "Final Assessment + 30-Day Plan", available: Number(state.profile.currentWeek) >= 4, complete: state.profile.finalComplete },
+  ] : [
     { key: "baseline", title: "Baseline Assessment", available: true, complete: state.profile.baselineComplete },
     { key: "midpoint", title: "Midpoint Progress Pulse", available: Number(state.profile.currentWeek) >= 6, complete: state.profile.midpointComplete },
     { key: "final", title: "Final Assessment + Integration", available: Number(state.profile.currentWeek) >= 12, complete: state.profile.finalComplete },
@@ -270,6 +299,8 @@ const initializeApp = async () => {
   state.activity = result.activity || [];
   state.submissions = result.submissions || [];
   state.questions = result.questions || [];
+  state.content = result.content || [];
+  setCourseForProfile();
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;
   $("[data-user-name]").textContent = state.profile.name || "Course Member";
@@ -370,7 +401,9 @@ const initializePreview = () => {
     name: "Tiffany Preview",
     email: "preview@theconfidentclinician.me",
     role: "Admin",
-    cohort: "Founding Cohort",
+    program: "Clinical Confidence Lab",
+    programWeeks: 4,
+    cohort: "Founding Beta · September 2026",
     enrollmentStatus: "Active",
     currentWeek: 3,
     baselineComplete: true,
@@ -387,6 +420,8 @@ const initializePreview = () => {
     { week: 1, milestone: "Confidence Block Inventory", submission: "Preview submission", status: "Feedback returned", feedback: "You identified the pattern clearly. Keep the experiment small and observable." },
   ];
   state.questions = [];
+  state.content = [];
+  setCourseForProfile();
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;
   $("[data-user-name]").textContent = state.profile.name;
