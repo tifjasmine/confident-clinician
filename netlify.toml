@@ -83,6 +83,16 @@
   status = 301
 
 [[redirects]]
+  from = "/clinical-confidence-lab"
+  to = "/clinical-confidence-lab.html"
+  status = 200
+
+[[redirects]]
+  from = "/clinical-confidence-lab/"
+  to = "/clinical-confidence-lab.html"
+  status = 200
+
+[[redirects]]
   from = "/confident-clinician-playbook"
   to = "/official-playbook"
   status = 301

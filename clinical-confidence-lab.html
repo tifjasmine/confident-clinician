@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clinical Confidence Course for New Therapists | 4-Week Lab</title>
+  <meta name="description" content="A 4-week clinical confidence course for newer therapists who want to stop freezing, structure sessions, make grounded clinical decisions, and leave work at work.">
+  <link rel="canonical" href="https://theconfidentclinician.me/clinical-confidence-lab">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Clinical Confidence Lab | A 4-Week Course for New Therapists">
+  <meta property="og:description" content="You know the theory. Build a grounded process for knowing what to do with it in the room. Founding beta begins September 2026.">
+  <meta property="og:url" content="https://theconfidentclinician.me/clinical-confidence-lab">
+  <meta property="og:image" content="https://theconfidentclinician.me/confident-clinician-social.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Clinical Confidence Lab | 4 Weeks for New Therapists">
+  <meta name="twitter:description" content="Practical clinical decision-making, flexible session structure, and steadier reflection for newer therapists.">
+  <meta name="twitter:image" content="https://theconfidentclinician.me/confident-clinician-social.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "The Clinical Confidence Lab",
+    "description": "A four-week educational mentorship program for newer and early-career therapists who want a repeatable process for getting grounded, making clinical decisions, leading sessions with flexible structure, and reflecting without spiraling.",
+    "url": "https://theconfidentclinician.me/clinical-confidence-lab",
+    "provider": {
+      "@type": "Organization",
+      "name": "The Confident Clinician",
+      "url": "https://theconfidentclinician.me/"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "397",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/LimitedAvailability"
+    },
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "online",
+      "courseWorkload": "PT60M",
+      "startDate": "2026-09"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is the Clinical Confidence Lab clinical supervision?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. The Clinical Confidence Lab is educational mentorship and professional development. It does not replace required supervision, emergency consultation, legal advice, or workplace and licensing requirements."}
+      },
+      {
+        "@type": "Question",
+        "name": "Who is this clinical confidence course for?",
+        "acceptedAnswer": {"@type": "Answer", "text": "It is designed for newer and early-career therapists who understand clinical theory but want more structure, steadiness, and trust in their decision-making during real sessions."}
+      },
+      {
+        "@type": "Question",
+        "name": "How much time does the course take?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Plan for approximately 60 to 90 minutes each week, with additional time during the two private mentorship-session weeks."}
+      },
+      {
+        "@type": "Question",
+        "name": "How long can I access the course?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Founding beta participants receive 90 days of access to the lessons and downloadable materials."}
+      }
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#F6F2EB;--forest:#2A3C2F;--olive:#5A6A52;--terra:#C56A4D;--terra-dark:#A9513B;--sage:#6B7F5E;--tan:#D7C9B1;--sand:#EDE5D8;--line:#E2DAD0;--white:#FFFDF9}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--cream);color:var(--forest);font-family:Jost,sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 52px;border-bottom:1px solid var(--line);background:rgba(246,242,235,.95);backdrop-filter:blur(12px)}
+    .brand{font:600 17px "Cormorant Garamond",serif;letter-spacing:.11em;text-transform:uppercase}
+    .nav-links{display:flex;align-items:center;gap:24px}
+    .nav-links a{color:var(--olive);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .nav-links .active{color:var(--terra)}
+    .nav-links .nav-cta{background:var(--terra);color:white;padding:11px 20px}
+    .eyebrow{color:var(--terra);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+    h1,h2,h3{font-family:"Cormorant Garamond",serif;font-weight:500;line-height:1.08}
+    .button{display:inline-flex;min-height:50px;align-items:center;justify-content:center;border:0;background:var(--terra);color:white;padding:14px 28px;font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;cursor:pointer}
+    .button:hover{background:var(--terra-dark)}
+    .button.light{background:var(--cream);color:var(--forest)}
+    .button.outline{border:1px solid rgba(42,60,47,.28);background:transparent;color:var(--forest)}
+    .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr);min-height:720px}
+    .hero-copy{display:flex;flex-direction:column;justify-content:center;padding:82px clamp(32px,6vw,88px)}
+    .hero h1{max-width:760px;margin:18px 0 24px;font-size:clamp(48px,6vw,82px)}
+    .hero h1 em{color:var(--terra);font-weight:400}
+    .hero-lede{max-width:610px;color:var(--olive);font-size:17px;font-weight:300;line-height:1.78}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+    .hero-facts{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:28px;color:var(--olive);font-size:12px}
+    .hero-image{position:relative;overflow:hidden;background:var(--tan)}
+    .hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 18%}
+    .hero-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(42,60,47,.18),transparent 45%)}
+    .truth-strip{background:var(--forest);color:white;padding:24px 32px;text-align:center;font:400 clamp(22px,3vw,34px)/1.25 "Cormorant Garamond",serif}
+    .truth-strip em{color:var(--tan)}
+    .section{padding:82px 52px}
+    .inner{width:min(100%,1080px);margin:0 auto}
+    .section-heading{max-width:760px}
+    .section-heading h2{margin:14px 0 18px;font-size:clamp(38px,5vw,60px)}
+    .section-heading p{color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
+    .recognition{background:var(--sand)}
+    .recognition-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:46px;background:var(--line)}
+    .recognition-card{background:var(--cream);padding:30px}
+    .recognition-card span{display:block;margin-bottom:16px;color:var(--terra);font:400 34px "Cormorant Garamond",serif}
+    .recognition-card p{font:500 20px/1.45 "Cormorant Garamond",serif}
+    .shift{display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;align-items:center}
+    .shift-quote{padding:50px;background:var(--forest);color:white;font:italic 400 clamp(30px,4vw,48px)/1.3 "Cormorant Garamond",serif}
+    .shift-quote em{color:var(--tan)}
+    .outcome-list{display:grid;gap:18px;margin-top:30px}
+    .outcome{display:grid;grid-template-columns:30px 1fr;gap:14px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .outcome-num{color:var(--terra);font:500 18px "Cormorant Garamond",serif}
+    .outcome p{color:var(--olive);font-size:15px;line-height:1.65}
+    .curriculum{background:var(--forest);color:white}
+    .curriculum .section-heading p{color:rgba(246,242,235,.65)}
+    .curriculum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:46px;background:rgba(255,255,255,.13)}
+    .week{min-height:330px;background:var(--forest);padding:30px;display:flex;flex-direction:column}
+    .week-number{color:var(--tan);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+    .week h3{margin:18px 0 16px;color:white;font-size:28px}
+    .week p{color:rgba(246,242,235,.62);font-size:14px;font-weight:300;line-height:1.7}
+    .week-result{margin-top:auto;padding-top:22px;color:var(--tan)!important;font-weight:500!important}
+    .included{background:var(--sand)}
+    .included-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:42px}
+    .included-card{border-left:4px solid var(--terra);background:var(--cream);padding:28px 30px}
+    .included-card h3{margin-bottom:10px;font-size:26px}
+    .included-card p{color:var(--olive);font-size:14px;line-height:1.65}
+    .fit-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:42px}
+    .fit-card{padding:42px;background:var(--sand)}
+    .fit-card.dark{background:var(--forest);color:white}
+    .fit-card h3{margin-bottom:24px;font-size:34px}
+    .fit-list{display:grid;gap:14px}
+    .fit-item{padding-bottom:14px;border-bottom:1px solid rgba(42,60,47,.13);color:var(--olive);font-size:14px;line-height:1.6}
+    .fit-card.dark .fit-item{border-color:rgba(255,255,255,.12);color:rgba(246,242,235,.66)}
+    .mentor{display:grid;grid-template-columns:.85fr 1.15fr;background:var(--tan)}
+    .mentor img{width:100%;height:100%;min-height:560px;object-fit:cover;object-position:center 18%}
+    .mentor-copy{display:flex;flex-direction:column;justify-content:center;padding:70px}
+    .mentor-copy h2{margin:14px 0 24px;font-size:clamp(38px,5vw,58px)}
+    .mentor-copy p{color:#3A4A34;font-size:15px;font-weight:300;line-height:1.8}
+    .offer{background:var(--sage);color:white}
+    .offer-grid{display:grid;grid-template-columns:1fr 360px;gap:60px;align-items:center}
+    .offer h2{margin:14px 0 20px;font-size:clamp(40px,5vw,64px)}
+    .offer-copy{color:rgba(255,255,255,.74);font-size:16px;line-height:1.75}
+    .price-card{background:var(--cream);color:var(--forest);padding:36px}
+    .price{margin:8px 0;font:500 66px "Cormorant Garamond",serif}
+    .price-card p{color:var(--olive);font-size:13px;line-height:1.6}
+    .price-card .button{width:100%;margin-top:24px}
+    .faq-list{margin-top:38px;border-top:1px solid var(--line)}
+    details{border-bottom:1px solid var(--line);padding:22px 0}
+    summary{cursor:pointer;font:500 22px "Cormorant Garamond",serif}
+    details p{max-width:800px;padding-top:14px;color:var(--olive);font-size:14px;line-height:1.7}
+    .signup{background:var(--forest);color:white;text-align:center}
+    .signup h2{max-width:800px;margin:14px auto 16px;font-size:clamp(40px,5vw,62px)}
+    .signup-copy{max-width:680px;margin:0 auto;color:rgba(246,242,235,.65);font-size:15px;line-height:1.7}
+    .signup-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;width:min(100%,820px);margin:32px auto 0}
+    .signup-form input{min-height:52px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:white;padding:13px 15px;font:400 16px Jost,sans-serif}
+    .signup-form input::placeholder{color:rgba(255,255,255,.45)}
+    .form-status{min-height:24px;margin-top:16px;color:var(--tan);font-size:14px}
+    .scope{padding:30px 52px;background:var(--sand);color:var(--olive);font-size:12px;line-height:1.7;text-align:center}
+    .footer{padding:40px 52px;background:var(--forest);color:white}
+    .footer-inner{display:flex;justify-content:space-between;align-items:center;gap:24px;width:min(100%,1100px);margin:0 auto}
+    .footer-title{font:500 17px "Cormorant Garamond",serif;letter-spacing:.08em;text-transform:uppercase}
+    .footer-links{display:flex;flex-wrap:wrap;gap:18px;color:rgba(255,255,255,.45);font-size:11px}
+    @media(max-width:900px){
+      .nav{flex-direction:column;padding:15px 18px}.nav-links{flex-wrap:wrap;justify-content:center;gap:8px}.nav-links a{border:1px solid rgba(42,60,47,.15);border-radius:999px;padding:8px 10px}
+      .hero{grid-template-columns:1fr;min-height:auto}.hero-copy{padding:56px 24px}.hero-image{min-height:380px}
+      .section{padding:62px 24px}.recognition-grid{grid-template-columns:1fr}.shift{grid-template-columns:1fr;gap:30px}.shift-quote{padding:34px}
+      .curriculum-grid{grid-template-columns:1fr 1fr}.included-grid,.fit-grid{grid-template-columns:1fr}
+      .mentor{grid-template-columns:1fr}.mentor img{min-height:360px}.mentor-copy{padding:48px 24px}
+      .offer-grid{grid-template-columns:1fr}.price-card{max-width:480px}
+      .signup-form{grid-template-columns:1fr}.signup-form .button{width:100%}.footer-inner{flex-direction:column;align-items:flex-start}
+    }
+    @media(max-width:560px){
+      .hero h1{font-size:45px}.hero-image{min-height:300px}.hero-actions{display:grid}.hero-actions .button{width:100%}
+      .curriculum-grid{grid-template-columns:1fr}.week{min-height:auto}.recognition-card{padding:25px 22px}
+      .offer-grid{gap:34px}.price-card{padding:28px 22px}.scope,.footer{padding-right:22px;padding-left:22px}
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Primary navigation">
+    <a class="brand" href="/">The Confident Clinician</a>
+    <div class="nav-links">
+      <a href="/about.html">About</a>
+      <a class="active" href="/clinical-confidence-lab">4-Week Lab</a>
+      <a href="/program.html">January Intensive</a>
+      <a href="/course/">Course Login</a>
+      <a class="nav-cta" href="#first-access">Get First Access</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Founding Beta · September 2026 · 6-8 Seats</p>
+        <h1>You know the theory. Now know what the hell to <em>do with it</em> in the room.</h1>
+        <p class="hero-lede">The Clinical Confidence Lab is a four-week professional-development experience for newer therapists who want a grounded process for getting unstuck, leading sessions with more structure, and learning from difficult moments without carrying every session home.</p>
+        <div class="hero-actions">
+          <a class="button" href="#first-access">Get Founding Beta Details</a>
+          <a class="button outline" href="#curriculum">See the 4-Week Focus</a>
+        </div>
+        <div class="hero-facts">
+          <span>4 guided weeks</span><span>Two private mentorship sessions</span><span>90-day access</span><span>$397 founding rate</span>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="/tiffany-wright-homepage.jpg" alt="Tiffany McGilloway, LPC, creator of The Clinical Confidence Lab">
+      </div>
+    </section>
+
+    <div class="truth-strip">Confidence is not always knowing the answer. It is having a process for the moments when <em>you do not.</em></div>
+
+    <section class="section recognition">
+      <div class="inner">
+        <div class="section-heading">
+          <p class="eyebrow">This Might Sound Familiar</p>
+          <h2>Grad school taught the concepts. Real sessions did not get the memo.</h2>
+          <p>You are not looking for another enormous intervention library. You want to trust your thinking when the room becomes quiet, scattered, emotional, or nothing like the example in the textbook.</p>
+        </div>
+        <div class="recognition-grid">
+          <article class="recognition-card"><span>01</span><p>You fill silence, overexplain, or reach for a worksheet because doing something feels safer than not knowing.</p></article>
+          <article class="recognition-card"><span>02</span><p>You know several modalities, but still question which direction actually makes sense in the moment.</p></article>
+          <article class="recognition-card"><span>03</span><p>You leave sessions replaying what you said, searching for certainty, or treating discomfort as proof you failed.</p></article>
+          <article class="recognition-card"><span>04</span><p>You want more structure, but you do not want to sound scripted, robotic, or controlling.</p></article>
+          <article class="recognition-card"><span>05</span><p>Your own nervous system gets loud while you are still expected to stay present and think clinically.</p></article>
+          <article class="recognition-card"><span>06</span><p>You want support that respects your intelligence and still gives you something practical to do next.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="inner shift">
+        <blockquote class="shift-quote">The goal is not to become the therapist who never thinks, <em>“I don’t know.”</em> It is to stop treating that moment like an emergency.</blockquote>
+        <div>
+          <p class="eyebrow">The Shift</p>
+          <h2 style="margin:14px 0 18px;font-size:clamp(38px,5vw,58px)">Build clinical self-trust you can actually use.</h2>
+          <p style="color:var(--olive);font-size:15px;line-height:1.75">By the end of the Lab, you will have a repeatable way to slow down, identify what matters, choose one responsible next step, and recognize when the next step is consultation, documentation, referral, or more training.</p>
+          <div class="outcome-list">
+            <div class="outcome"><span class="outcome-num">01</span><p>Recognize what happens when your confidence drops—and interrupt the pattern earlier.</p></div>
+            <div class="outcome"><span class="outcome-num">02</span><p>Make more intentional clinical decisions without hunting for one perfect sentence.</p></div>
+            <div class="outcome"><span class="outcome-num">03</span><p>Give sessions a flexible beginning, middle, and ending without becoming rigid.</p></div>
+            <div class="outcome"><span class="outcome-num">04</span><p>Reflect long enough to learn, take the next responsible action, and then stop.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section curriculum" id="curriculum">
+      <div class="inner">
+        <div class="section-heading">
+          <p class="eyebrow" style="color:var(--tan)">Four Focused Weeks</p>
+          <h2>A small course with a clear job.</h2>
+          <p>Each week combines short teaching, a practical tool, a fictional case lab, one small real-world experiment, and a clear stopping point.</p>
+        </div>
+        <div class="curriculum-grid">
+          <article class="week"><span class="week-number">Week 1</span><h3>Why Confidence Feels Shaky</h3><p>Understand what disrupts your confidence and recognize the protective pattern that follows.</p><p class="week-result">Leave knowing what to practice—not just what to criticize.</p></article>
+          <article class="week"><span class="week-number">Week 2</span><h3>Getting Unstuck in the Room</h3><p>Use a grounded clinical decision-making process when your brain suddenly has no useful suggestions.</p><p class="week-result">Choose one intentional next move instead of five anxious ones.</p></article>
+          <article class="week"><span class="week-number">Week 3</span><h3>Lead Without Becoming Robotic</h3><p>Create flexible session structure and language for focusing, redirecting, deepening, and closing.</p><p class="week-result">Give the session a spine without scripting every word.</p></article>
+          <article class="week"><span class="week-number">Week 4</span><h3>Stop Carrying Every Session Home</h3><p>Separate responsibility from total control and build a contained reflection practice.</p><p class="week-result">Learn, consult when needed, and close the tab.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section included">
+      <div class="inner">
+        <div class="section-heading">
+          <p class="eyebrow">What You Receive</p>
+          <h2>Held, practical, and intentionally not huge.</h2>
+          <p>You will always know where to begin, what to practice, what to submit, and when you are done for the week.</p>
+        </div>
+        <div class="included-grid">
+          <article class="included-card"><h3>Short prerecorded teaching</h3><p>Focused mini-lessons you can complete around your clinical schedule.</p></article>
+          <article class="included-card"><h3>Four practical clinical tools</h3><p>Useable maps and reflection structures designed for repetition—not shelf decoration.</p></article>
+          <article class="included-card"><h3>Fictional case labs</h3><p>Practice explaining your reasoning without sharing identifiable client information.</p></article>
+          <article class="included-card"><h3>Two private mentorship sessions</h3><p>Personalize the work around one pattern, one question, and one decision point.</p></article>
+          <article class="included-card"><h3>Selected personal feedback</h3><p>Brief written or audio guidance at the moments where feedback matters most.</p></article>
+          <article class="included-card"><h3>90 days of course access</h3><p>Return to the lessons and downloads after the live four-week experience ends.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="inner">
+        <div class="section-heading">
+          <p class="eyebrow">Is This for You?</p>
+          <h2>Support for the space between knowing and doing.</h2>
+        </div>
+        <div class="fit-grid">
+          <article class="fit-card">
+            <h3>This may fit if...</h3>
+            <div class="fit-list">
+              <p class="fit-item">You are a newer or early-career therapist actively seeing clients.</p>
+              <p class="fit-item">You understand theory but do not consistently trust yourself to apply it.</p>
+              <p class="fit-item">You want structure without becoming dependent on scripts.</p>
+              <p class="fit-item">You are willing to practice, reflect honestly, and receive feedback.</p>
+              <p class="fit-item">You have separate supervision when your role or license requires it.</p>
+            </div>
+          </article>
+          <article class="fit-card dark">
+            <h3>This is not...</h3>
+            <div class="fit-list">
+              <p class="fit-item">Clinical supervision, emergency consultation, or case authorization.</p>
+              <p class="fit-item">A specialty certification or determination of clinical competence.</p>
+              <p class="fit-item">A guarantee that you will never feel uncertain or make a mistake.</p>
+              <p class="fit-item">A place to upload client records or identifiable clinical material.</p>
+              <p class="fit-item">A replacement for your employer, supervisor, board, or malpractice carrier.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="mentor">
+      <div><img src="/about-tiffany-portrait.jpg" alt="Tiffany McGilloway, Licensed Professional Counselor"></div>
+      <div class="mentor-copy">
+        <p class="eyebrow">Your Mentor</p>
+        <h2>Hi, I’m Tiffany—and I built the support I kept wishing existed.</h2>
+        <p>I’m a Licensed Professional Counselor who has worked across crisis stabilization, higher levels of care, school-based counseling, and private practice. I know what it is to leave a session replaying one sentence and wondering whether everyone else received a secret handbook you somehow missed.</p>
+        <p style="margin-top:16px">The Clinical Confidence Lab is not about performing certainty. It is about building a trustworthy process: notice what is happening, decide what matters, take proportionate action, and use support without shame.</p>
+      </div>
+    </section>
+
+    <section class="section offer">
+      <div class="inner offer-grid">
+        <div>
+          <p class="eyebrow" style="color:var(--tan)">Founding Beta · September 2026</p>
+          <h2>Be part of the first Clinical Confidence Lab.</h2>
+          <p class="offer-copy">The founding group is intentionally limited to 6-8 participants so the experience can stay personal, practical, and useful. Exact September dates and enrollment details will be shared first with the interest list.</p>
+        </div>
+        <aside class="price-card">
+          <p class="eyebrow">Founding Rate</p>
+          <div class="price">$397</div>
+          <p>Four guided weeks · two private mentorship sessions · selected feedback · 90-day access</p>
+          <a class="button" href="#first-access">Get First Access</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="inner">
+        <div class="section-heading"><p class="eyebrow">Questions</p><h2>Before you join the list.</h2></div>
+        <div class="faq-list">
+          <details><summary>Is this clinical supervision?</summary><p>No. This is educational mentorship and professional development. It does not replace required supervision, emergency consultation, legal guidance, workplace procedures, or licensing requirements.</p></details>
+          <details><summary>How much time should I plan each week?</summary><p>Approximately 60-90 minutes for the lessons, tool, case practice, implementation prompt, and reflection. The two private-session weeks require additional time.</p></details>
+          <details><summary>Do I need to share real client details?</summary><p>No. Fictional, composite, or fully de-identified examples are required. The course focuses on your reasoning, patterns, decisions, and support needs—not retelling a client’s private history.</p></details>
+          <details><summary>What if I still feel unsure after four weeks?</summary><p>You will still encounter uncertainty. The goal is to have a more grounded way to respond to it, clearer language for what support you need, and practical behaviors you can continue strengthening.</p></details>
+          <details><summary>Is this the same as the 12-week Intensive?</summary><p>No. The Lab is a focused four-week experience with a complete, practical outcome. The deeper 12-week Intensive is planned for January 2027 and will expand into case conceptualization, complex moments, boundaries, sustainability, and clinical identity.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section signup" id="first-access">
+      <div class="inner">
+        <p class="eyebrow" style="color:var(--tan)">September 2026</p>
+        <h2>Get first access to the founding beta.</h2>
+        <p class="signup-copy">Join the interest list for exact dates, enrollment opening, and founding-beta details. Limited to 6-8 participants.</p>
+        <form class="signup-form" data-interest-form>
+          <input type="text" name="name" autocomplete="name" placeholder="Your name">
+          <input type="email" name="email" autocomplete="email" placeholder="Your email" required>
+          <button class="button" type="submit">Send Me Details</button>
+        </form>
+        <p class="form-status" data-form-status role="status"></p>
+      </div>
+    </section>
+  </main>
+
+  <p class="scope">The Clinical Confidence Lab is an educational mentorship and professional-development program. It is not psychotherapy, clinical supervision, emergency consultation, legal advice, a certification, or a substitute for required professional support.</p>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><p class="footer-title">The Confident Clinician</p><p style="margin-top:5px;color:rgba(255,255,255,.4);font-size:12px">Created by Tiffany McGilloway, LPC</p></div>
+      <div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/disclaimer.html">Disclaimer</a><a href="/course/">Course Login</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.querySelector('[data-interest-form]');
+    const status = document.querySelector('[data-form-status]');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button');
+      const data = new FormData(form);
+      button.disabled = true;
+      button.textContent = 'Sending...';
+      status.textContent = '';
+      try {
+        const response = await fetch('/.netlify/functions/workshop-subscription', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({name:data.get('name'),email:data.get('email'),source:'Clinical Confidence Lab - September 2026'})
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || 'Something did not send.');
+        status.textContent = 'You are on the list. Watch your inbox for founding-beta details.';
+        form.reset();
+      } catch (error) {
+        status.textContent = error.message || 'Something did not send. Please email admin@theconfidentclinician.me.';
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Send Me Details';
+      }
+    });
+  </script>
+</body>
+</html>
