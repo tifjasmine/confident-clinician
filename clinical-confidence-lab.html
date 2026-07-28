@@ -55,6 +55,16 @@
         "@type": "Question",
         "name": "How much time does the course take?",
         "acceptedAnswer": {"@type": "Answer", "text": "Plan for approximately 60 to 90 minutes each week, plus one private completion session with Tiffany after the four course weeks."}
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to share real client details?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Fictional, composite, or fully de-identified examples are required. The course focuses on clinical reasoning, patterns, decisions, and support needs."}
+      },
+      {
+        "@type": "Question",
+        "name": "Is this the same as the 12-week Intensive?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. The Lab is a focused four-week experience. The deeper 12-week Intensive is planned for January 2027."}
       }
     ]
   }
@@ -87,7 +97,6 @@
     .hero h1 em{color:var(--terra);font-weight:400}
     .hero-lede{max-width:610px;color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
     .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-    .hero-facts{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:28px;color:var(--olive);font-size:12px}
     .hero-image{position:relative;overflow:hidden;background:var(--tan)}
     .hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 18%}
     .hero-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(42,60,47,.18),transparent 45%)}
@@ -98,6 +107,11 @@
     .section-heading{max-width:760px}
     .section-heading h2{margin:14px 0 18px;font-size:clamp(34px,4vw,50px)}
     .section-heading p{color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
+    .outcomes{background:var(--sand)}
+    .outcomes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+    .outcome{background:var(--cream);padding:28px}
+    .outcome h3{margin-bottom:10px;font-size:26px}
+    .outcome p{color:var(--olive);font-size:14px;line-height:1.65}
     .curriculum{background:var(--forest);color:white}
     .curriculum .section-heading p{color:rgba(246,242,235,.65)}
     .curriculum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:38px;background:rgba(255,255,255,.13)}
@@ -138,7 +152,7 @@
       .nav{flex-direction:column;padding:15px 18px}.nav-links{flex-wrap:wrap;justify-content:center;gap:8px}.nav-links a{border:1px solid rgba(42,60,47,.15);border-radius:999px;padding:8px 10px}
       .hero{grid-template-columns:1fr;min-height:auto}.hero-copy{padding:56px 24px}.hero-image{min-height:380px}
       .section{padding:56px 24px}
-      .curriculum-grid{grid-template-columns:1fr 1fr}.included-grid{grid-template-columns:1fr}
+      .outcomes-grid{grid-template-columns:1fr}.curriculum-grid{grid-template-columns:1fr 1fr}.included-grid{grid-template-columns:1fr}
       .offer-grid{grid-template-columns:1fr}.price-card{max-width:480px}
       .signup-form{grid-template-columns:1fr}.signup-form .button{width:100%}.footer-inner{flex-direction:column;align-items:flex-start}
     }
@@ -165,15 +179,12 @@
   <main>
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Founding Beta · September 2026 · 6-8 Seats</p>
+        <p class="eyebrow">Founding Beta · September 2026</p>
         <h1>You know the theory. Now know what the hell to <em>do with it</em> in the room.</h1>
         <p class="hero-lede">A four-week lab for newer therapists who want to get unstuck, guide sessions with more direction, and stop replaying every hard moment afterward.</p>
         <div class="hero-actions">
           <a class="button" href="#first-access">Get Founding Beta Details</a>
           <a class="button outline" href="#curriculum">See the 4-Week Focus</a>
-        </div>
-        <div class="hero-facts">
-          <span>4 guided weeks</span><span>One private completion session</span><span>90-day access</span><span>$397 founding rate</span>
         </div>
       </div>
       <div class="hero-image">
@@ -183,12 +194,27 @@
 
     <div class="truth-strip">Less performing therapy. <em>More trusting how you think.</em></div>
 
+    <section class="section outcomes">
+      <div class="inner">
+        <div class="section-heading">
+          <p class="eyebrow">The Shift</p>
+          <h2>Feel steadier when the session gets messy.</h2>
+          <p>This Lab helps you build a usable way of thinking in the moments when theory alone is not enough.</p>
+        </div>
+        <div class="outcomes-grid">
+          <article class="outcome"><h3>Get unstuck sooner</h3><p>Notice the spiral, slow it down, and choose a grounded next move.</p></article>
+          <article class="outcome"><h3>Lead with direction</h3><p>Bring shape to a session while staying responsive to the person in front of you.</p></article>
+          <article class="outcome"><h3>Stop the after-session replay</h3><p>Reflect on what matters, identify follow-up, and let the rest of the session go.</p></article>
+        </div>
+      </div>
+    </section>
+
     <section class="section curriculum" id="curriculum">
       <div class="inner">
         <div class="section-heading">
           <p class="eyebrow" style="color:var(--tan)">Four Focused Weeks</p>
-          <h2>Four weeks. Four pressure points.</h2>
-          <p>Short teaching, useful practice, and one clear focus at a time.</p>
+          <h2>A clearer way through the moments that shake your confidence.</h2>
+          <p>Each week tackles one part of the clinical-confidence spiral and gives you something concrete to practice.</p>
         </div>
         <div class="curriculum-grid">
           <article class="week"><span class="week-number">Week 1</span><h3>Catch the Confidence Spiral</h3><p>Spot what knocks you off center and what you do next.</p></article>
@@ -206,11 +232,10 @@
           <h2>What comes with the Lab.</h2>
         </div>
         <div class="included-grid">
-          <article class="included-card"><h3>Short weekly lessons</h3><p>Focused teaching that fits around clinical work.</p></article>
-          <article class="included-card"><h3>Practical tools</h3><p>Resources built to be used, not collected.</p></article>
-          <article class="included-card"><h3>Case-based practice</h3><p>Work through clinical choices without sharing identifying details.</p></article>
-          <article class="included-card"><h3>Private completion session</h3><p>One session with Tiffany for questions, integration, and de-identified case discussion.</p></article>
-          <article class="included-card"><h3>90-day access</h3><p>Revisit the course after the four live weeks end.</p></article>
+          <article class="included-card"><h3>Clinical clarity, in small doses</h3><p>Focused weekly lessons designed to fit around a real caseload.</p></article>
+          <article class="included-card"><h3>Tools you will actually reach for</h3><p>Simple resources that help you pause, decide, and move with intention.</p></article>
+          <article class="included-card"><h3>Your private integration session</h3><p>One session with Tiffany for questions, course integration, and de-identified educational case discussion.</p></article>
+          <article class="included-card"><h3>Room to revisit it</h3><p>Keep access for 90 days after the four-week course ends.</p></article>
         </div>
       </div>
     </section>
@@ -220,7 +245,7 @@
         <div>
           <p class="eyebrow" style="color:var(--tan)">Founding Beta · September 2026</p>
           <h2>Join the first Lab.</h2>
-          <p class="offer-copy">Six to eight seats. September dates and enrollment details go to the interest list first.</p>
+          <p class="offer-copy">The first Clinical Confidence Lab begins in September. Dates and enrollment details go to the interest list first.</p>
         </div>
         <aside class="price-card">
           <p class="eyebrow">Founding Rate</p>
@@ -233,10 +258,12 @@
 
     <section class="section">
       <div class="inner">
-        <div class="section-heading"><p class="eyebrow">Two Quick Answers</p><h2>Before you join the list.</h2></div>
+        <div class="section-heading"><p class="eyebrow">Questions</p><h2>Before you join the list.</h2></div>
         <div class="faq-list">
           <details><summary>Is this clinical supervision?</summary><p>No. This is educational mentorship and professional development. It does not replace required supervision, emergency consultation, legal guidance, workplace procedures, or licensing requirements.</p></details>
-          <details><summary>How much time should I plan each week?</summary><p>Approximately 60-90 minutes for the lessons, practical tools, case practice, implementation prompt, and reflection. Your private completion session is scheduled after the four course weeks.</p></details>
+          <details><summary>How much time should I plan each week?</summary><p>Approximately 60-90 minutes for the lesson, practical tool, implementation prompt, and reflection. Your private completion session is scheduled after the four course weeks.</p></details>
+          <details><summary>Do I need to share real client details?</summary><p>No. Fictional, composite, or fully de-identified examples are required. The course focuses on your reasoning, patterns, decisions, and support needs—not retelling a client’s private history.</p></details>
+          <details><summary>Is this the same as the 12-week Intensive?</summary><p>No. The Lab is a focused four-week experience with a complete, practical outcome. The deeper 12-week Intensive begins in January 2027.</p></details>
         </div>
       </div>
     </section>
@@ -245,7 +272,7 @@
       <div class="inner">
         <p class="eyebrow" style="color:var(--tan)">September 2026</p>
         <h2>Get first access to the founding beta.</h2>
-        <p class="signup-copy">Join the interest list for exact dates, enrollment opening, and founding-beta details. Limited to 6-8 participants.</p>
+        <p class="signup-copy">Join the interest list for exact dates, enrollment opening, and founding-beta details.</p>
         <form class="signup-form" data-interest-form>
           <input type="text" name="name" autocomplete="name" placeholder="Your name">
           <input type="email" name="email" autocomplete="email" placeholder="Your email" required>
