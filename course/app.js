@@ -13,6 +13,31 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character)
 
 const promptExample = (prompt = "") => {
   const text = prompt.toLowerCase();
+  if (text.includes("fantasy version")) return "Calm, articulate, certain, never awkward, and always able to say something meaningful right away.";
+  if (text.includes("trustworthy version")) return "I want to notice when I’m activated, slow down enough to think, and respond honestly instead of performing.";
+  if (text.includes("not someone who")) return "Never feels uncertain, always knows the perfect intervention, or makes every session feel profound.";
+  if (text.includes("is someone who")) return "Can pause, stay curious, make a thoughtful choice, repair when needed, and use support.";
+  if (text.includes("least confident")) return "When a client becomes quiet and I cannot tell whether they need space, a question, or a change in direction.";
+  if (text.includes("when that happens")) return "I ask too many questions, explain more than necessary, and replay the session afterward.";
+  if (text.includes("clinical skill i most want")) return "Helping a client move from describing events into exploring the feeling or meaning underneath.";
+  if (text.includes("observable confidence behavior")) return "Pause for one breath and reflect what I heard before asking another question.";
+  if (text.includes("end of four weeks")) return "I can notice my urge to perform and choose one grounded next move instead.";
+  if (text.includes("type your name")) return "Tiffany Wright — I understand these commitments and agree to use de-identified material.";
+  if (text.includes("knowledge or skill")) return "I know the concept of emotional reflection, but I need clearer language for using it naturally in the room.";
+  if (text.includes("practice or repetition")) return "I have tried collaborative focusing only a few times, so it disappears when I feel pressured.";
+  if (text.includes("clinical judgment")) return "I can identify several possible directions but struggle to choose which matters most right now.";
+  if (text.includes("confidence or activation")) return "I know what I could do, but self-consciousness makes me rush and lose access to it.";
+  if (text.includes("role or context")) return "Back-to-back sessions and unclear expectations are making it harder to think and close on time.";
+  if (text.includes("personal support") || text.includes("sustainability")) return "I need a real transition after work instead of reviewing sessions throughout the evening.";
+  if (text.includes("tempted to shame")) return "Needing more time to understand the thread when a client brings several concerns at once.";
+  if (text.includes("more accurate description")) return "I am still building prioritization through repetition; this is a practice need, not proof that I am incapable.";
+  if (text.includes("responsible support or practice step")) return "Use CLEAR on one de-identified example and bring my reasoning to supervision.";
+  if (text.includes("pattern 1")) return "Overexplaining — trigger: silence; what I do: teach too quickly; cost: I stop listening for the client’s meaning.";
+  if (text.includes("pattern 2")) return "Disappearing — trigger: possible disagreement; what I do: avoid redirecting; cost: the session loses direction.";
+  if (text.includes("looks most") && text.includes("helpful")) return "Rescuing, because extra reassurance looks caring even when I am trying to make my own anxiety stop.";
+  if (text.includes("earliest body cue")) return "My jaw tightens and I lean forward as if I need to make something happen immediately.";
+  if (text.includes("pause i can practice")) return "Put both feet on the floor, exhale, and silently ask, “What do I actually know?”";
+  if (text.includes("just before your confidence dropped")) return "The client answered two questions with “I don’t know” and looked toward the floor.";
   if (text.includes("known") || text.includes("observable facts")) return "The client became quiet after we shifted topics; I noticed a longer pause and shorter answers.";
   if (text.includes("story") || text.includes("assuming")) return "My brain said, “They think I’m not helping,” even though I did not have evidence of that.";
   if (text.includes("body") || text.includes("activation")) return "My chest tightened, I spoke faster, and I felt an urge to fill the silence.";
@@ -33,7 +58,23 @@ const promptExample = (prompt = "") => {
   if (text.includes("boundary")) return "I will begin landing at the ten-minute mark and finish at the scheduled time.";
   if (text.includes("evidence")) return "I noticed the urge to rescue, paused, and chose one collaborative question instead.";
   if (text.includes("30-day") || text.includes("weekly")) return "Once each week, I will use CLEAR on one de-identified moment and bring one question to consultation.";
-  return "A brief, specific response from one fictional or fully de-identified moment—enough to show your thinking, not an entire case history.";
+  if (text.includes("immediate result")) return "The client became quieter, and I felt even more pressure to keep talking.";
+  if (text.includes("proof")) return "I treated the client’s quietness as proof that I was boring or ineffective.";
+  if (text.includes("might also be true")) return "The client may have been tired, ashamed, overwhelmed, or simply needing more time.";
+  if (text.includes("earliest point")) return "Right after I notice heat in my face—before I ask several questions in a row.";
+  if (text.includes("sentence i want")) return "Feeling unsure is information, not a verdict. I can get curious before I get urgent.";
+  if (text.includes("activated maya")) return "The sudden quiet may have activated fear of disappointing the client or wasting the session.";
+  if (text.includes("affect the room")) return "The rapid questions increased pressure and left less room for Jordan to notice what was happening.";
+  if (text.includes("three possible")) return "Overwhelm, shame about the difficult week, or uncertainty about whether it feels safe to say more.";
+  if (text.includes("proportionate")) return "It responds to the quiet without assuming its meaning or forcing the client to disclose more.";
+  if (text.includes("formal consultation appropriate")) return "If safety, scope, competence, ethics, or required workplace procedures become relevant.";
+  if (text.includes("most likely to practice")) return "During the first moment of silence in one session this week.";
+  if (text.includes("get in the way")) return "I may interpret the pause as wasted time and start talking automatically.";
+  if (text.includes("backup plan")) return "If I rush, I will slow my voice and use one reflection before asking anything else.";
+  if (text.includes("grounded or responsible")) return "I noticed my urgency, slowed down, and checked my interpretation instead of presenting it as fact.";
+  if (text.includes("learn, clarify, document")) return "Clarify the client’s experience next session and consult if the uncertainty involves scope or safety.";
+  if (text.includes("one next action")) return "Write one follow-up question for the next session, then stop reviewing.";
+  return "I would answer with one brief, concrete example from a fictional or fully de-identified moment and name the specific behavior I noticed.";
 };
 
 const api = async (action, options = {}) => {
