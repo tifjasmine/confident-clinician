@@ -56,6 +56,7 @@ const render = () => {
       <h3>${escapeHtml(item.title)}</h3>
       <p>${escapeHtml(item.description || "No description yet.")}</p>
       <p class="supporting">${escapeHtml(item.contentType)}${item.videoUrl ? " · Video linked" : ""}${item.downloadUrl ? " · Download linked" : ""}${item.transcriptUrl ? " · Transcript linked" : ""}</p>
+      ${item.workbookPrompts?.length ? `<p class="supporting">${item.workbookPrompts.length} interactive workbook prompts</p>` : ""}
     </article>
   `).join("") : `<p class="supporting">No course content has been added yet.</p>`;
 
@@ -130,6 +131,9 @@ $("[data-content-form]").addEventListener("submit", async (event) => {
         videoUrl: formData.get("videoUrl"),
         downloadUrl: formData.get("downloadUrl"),
         transcriptUrl: formData.get("transcriptUrl"),
+        workbookTitle: formData.get("workbookTitle"),
+        workbookPrompts: formData.get("workbookPrompts"),
+        stoppingStatement: formData.get("stoppingStatement"),
         published: formData.get("published") === "on",
       }),
     });

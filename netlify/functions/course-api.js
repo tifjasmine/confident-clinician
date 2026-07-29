@@ -7,6 +7,7 @@ const TABLES = {
   content: process.env.AIRTABLE_COURSE_CONTENT_TABLE_ID || "tblbR7GbCYnRoLLUm",
   assessments: process.env.AIRTABLE_COURSE_ASSESSMENTS_TABLE_ID || "tblDB1IkqgRT9bjYZ",
   coaching: process.env.AIRTABLE_COURSE_COACHING_TABLE_ID || "tbl975NGzYmTTtcCc",
+  workbook: process.env.AIRTABLE_COURSE_WORKBOOK_TABLE_ID || "tblEUY3qUu82ysKUL",
 };
 const json = (statusCode, body) => ({
   statusCode,
@@ -121,12 +122,27 @@ const mapContent = (record) => ({
   downloadUrl: record.fields["Download URL"] || "",
   transcriptUrl: record.fields["Transcript URL"] || "",
   files: record.fields.Files || [],
+  workbookTitle: record.fields["Workbook Title"] || "",
+  workbookPrompts: String(record.fields["Workbook Prompts"] || "").split("\n").map((prompt) => prompt.trim()).filter(Boolean),
+  stoppingStatement: record.fields["Stopping Statement"] || "",
   published: Boolean(record.fields.Published),
 });
+const mapWorkbookResponse = (record) => {
+  let responses = [];
+  try { responses = JSON.parse(record.fields["Responses JSON"] || "[]"); } catch {}
+  return {
+    id: record.id,
+    responseId: record.fields["Response ID"] || "",
+    contentId: record.fields["Content ID"] || "",
+    week: Number(record.fields.Week || 0),
+    responses: Array.isArray(responses) ? responses : [],
+    savedAt: record.fields["Saved At"] || "",
+  };
+};
 
 const syncParticipantSummary = async (participant, email, activity, submissions) => {
   const completed = activity.filter((item) => item.completed);
-  const modules = new Set(completed.filter((item) => item.activityType === "Lesson accessed").map((item) => item.week)).size;
+  const modules = new Set(completed.filter((item) => item.activityType === "Lesson accessed").map((item) => item.response || `week-${item.week}`)).size;
   const clearApplications = completed.filter((item) => item.week >= 3 && item.activityType === "Case exercise completed").length;
   const totalWeeks = Number(participant.programWeeks || 12);
   const activityTypesPerWeek = participant.program === "Clinical Confidence Lab" ? 4 : 5;
@@ -158,9 +174,10 @@ exports.handler = async (event) => {
     if (action === "me") {
       await updateRecord(TABLES.participants, participantRecord.id, { "Supabase User ID": user.id, "Last Active": new Date().toISOString() });
       const contentFormula = `AND({Published}=1,{Program}='${formulaString(profile.program)}')`;
-      const [activityRecords, submissionRecords, questionRecords, contentRecords] = await Promise.all([
+      const [activityRecords, submissionRecords, questionRecords, contentRecords, workbookRecords] = await Promise.all([
         findByEmail(TABLES.activity, user.email), findByEmail(TABLES.submissions, user.email), findByEmail(TABLES.questions, user.email),
         listRecords(TABLES.content, contentFormula),
+        findByEmail(TABLES.workbook, user.email),
       ]);
       return json(200, {
         ok: true,
@@ -169,16 +186,49 @@ exports.handler = async (event) => {
         submissions: submissionRecords.map(mapSubmission),
         questions: questionRecords.map(mapQuestion),
         content: contentRecords.map(mapContent).sort((a, b) => a.week - b.week || a.order - b.order),
+        workbookResponses: workbookRecords.map(mapWorkbookResponse),
       });
+    }
+
+    if (action === "save-workbook" && event.httpMethod === "POST") {
+      const week = Number(payload.week);
+      const contentId = String(payload.contentId || "").trim();
+      const responses = Array.isArray(payload.responses) ? payload.responses.map((value) => String(value || "").slice(0, 10000)) : [];
+      const content = await listRecords(TABLES.content, `AND({Content ID}='${formulaString(contentId)}',{Program}='${formulaString(profile.program)}',{Published}=1)`, 1);
+      const prompts = content[0] ? mapContent(content[0]).workbookPrompts : [];
+      if (!contentId || !Number.isInteger(week) || week < 1 || week > profile.programWeeks || !prompts.length || responses.length !== prompts.length) {
+        return json(400, { message: "That workbook section is not available." });
+      }
+      const responseId = `${user.email}|${profile.program}|${contentId}`;
+      const existing = await listRecords(TABLES.workbook, `{Response ID}='${formulaString(responseId)}'`, 1);
+      const fields = {
+        "Response ID": responseId,
+        "Participant Email": user.email,
+        Program: profile.program,
+        Cohort: profile.cohort,
+        "Content ID": contentId,
+        Week: week,
+        "Responses JSON": JSON.stringify(responses),
+        "Saved At": new Date().toISOString(),
+      };
+      if (existing[0]) await updateRecord(TABLES.workbook, existing[0].id, fields);
+      else await createRecord(TABLES.workbook, fields);
+      const workbookResponses = (await findByEmail(TABLES.workbook, user.email)).map(mapWorkbookResponse);
+      return json(200, { ok: true, workbookResponses });
     }
 
     if (action === "save-activity" && event.httpMethod === "POST") {
       const week = Number(payload.week);
       const allowed = ["Lesson accessed", "Tool completed", "Case exercise completed", "Implementation completed", "Reflection completed", "Assessment completed", "Mentorship attended"];
       if (!Number.isInteger(week) || week < 1 || week > profile.programWeeks || !allowed.includes(payload.activityType)) return json(400, { message: "That course activity is not valid." });
-      const activityId = `${user.email}|${profile.program}|${week}|${payload.activityType}`;
+      const contentId = payload.activityType === "Lesson accessed" ? String(payload.contentId || "").trim() : "";
+      if (payload.activityType === "Lesson accessed") {
+        const content = await listRecords(TABLES.content, `AND({Content ID}='${formulaString(contentId)}',{Program}='${formulaString(profile.program)}',{Published}=1)`, 1);
+        if (!contentId || !content[0] || Number(content[0].fields.Week) !== week || !content[0].fields["Video URL"]) return json(400, { message: "That lesson video is not available." });
+      }
+      const activityId = `${user.email}|${profile.program}|${week}|${payload.activityType}${contentId ? `|${contentId}` : ""}`;
       const existing = await listRecords(TABLES.activity, `{Activity ID}='${formulaString(activityId)}'`, 1);
-      const fields = { "Activity ID": activityId, "Participant Email": user.email, Program: profile.program, Cohort: profile.cohort, Week: week, "Activity Type": payload.activityType, Completed: Boolean(payload.completed), "Completed At": payload.completed ? new Date().toISOString() : null };
+      const fields = { "Activity ID": activityId, "Participant Email": user.email, Program: profile.program, Cohort: profile.cohort, Week: week, "Activity Type": payload.activityType, Completed: Boolean(payload.completed), "Completed At": payload.completed ? new Date().toISOString() : null, Response: contentId || null };
       if (existing[0]) await updateRecord(TABLES.activity, existing[0].id, fields); else await createRecord(TABLES.activity, fields);
       const [activityRecords, submissionRecords] = await Promise.all([findByEmail(TABLES.activity, user.email), findByEmail(TABLES.submissions, user.email)]);
       const activity = activityRecords.map(mapActivity);
@@ -269,6 +319,9 @@ exports.handler = async (event) => {
           "Video URL": String(payload.videoUrl || "").trim() || null,
           "Download URL": String(payload.downloadUrl || "").trim() || null,
           "Transcript URL": String(payload.transcriptUrl || "").trim() || null,
+          "Workbook Title": String(payload.workbookTitle || "").trim() || null,
+          "Workbook Prompts": String(payload.workbookPrompts || "").trim() || null,
+          "Stopping Statement": String(payload.stoppingStatement || "").trim() || null,
           Published: Boolean(payload.published),
         };
         const existing = await listRecords(TABLES.content, `{Content ID}='${formulaString(contentId)}'`, 1);

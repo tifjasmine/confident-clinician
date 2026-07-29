@@ -3,7 +3,7 @@ const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
 const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
-const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], selectedWeek: 1 };
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], selectedWeek: 1 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -79,9 +79,12 @@ const setCourseForProfile = () => {
 
 const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.week) === Number(week) && item.completed);
 const activityDone = (week, type) => activitiesForWeek(week).some((item) => item.activityType === type);
+const lessonWatched = (contentId) => state.activity.some((item) => item.completed && item.activityType === "Lesson accessed" && item.response === contentId);
 const weekCompletion = (week) => {
-  const done = window.TCC_COURSE.activityTypes.filter((type) => activityDone(week, type)).length;
-  return Math.round((done / window.TCC_COURSE.activityTypes.length) * 100);
+  const nonVideoTypes = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed");
+  const videos = state.content.filter((item) => Number(item.week) === Number(week) && item.videoUrl);
+  const done = nonVideoTypes.filter((type) => activityDone(week, type)).length + videos.filter((item) => lessonWatched(item.contentId)).length;
+  return Math.round((done / Math.max(1, nonVideoTypes.length + videos.length)) * 100);
 };
 
 const renderDashboard = () => {
@@ -89,9 +92,10 @@ const renderDashboard = () => {
   const currentWeekNumber = Math.min(window.TCC_COURSE.weeks.length, Math.max(1, Number(profile.currentWeek || 1)));
   const week = window.TCC_COURSE.weeks[currentWeekNumber - 1];
   const completedActivities = state.activity.filter((item) => item.completed).length;
-  const totalActivities = window.TCC_COURSE.weeks.length * window.TCC_COURSE.activityTypes.length;
-  const progress = Math.round((completedActivities / totalActivities) * 100);
-  const opened = new Set(state.activity.filter((item) => item.activityType === "Lesson accessed").map((item) => item.week)).size;
+  const nonVideoTypeCount = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").length;
+  const totalActivities = (window.TCC_COURSE.weeks.length * nonVideoTypeCount) + state.content.filter((item) => item.videoUrl).length;
+  const progress = Math.min(100, Math.round((completedActivities / Math.max(1, totalActivities)) * 100));
+  const opened = new Set(state.activity.filter((item) => item.activityType === "Lesson accessed" && item.completed).map((item) => item.response || `week-${item.week}`)).size;
 
   $("[data-first-name]").textContent = (profile.name || "clinician").split(" ")[0];
   $("[data-current-week-label]").textContent = `Week ${week.number} · ${week.tool}`;
@@ -102,7 +106,11 @@ const renderDashboard = () => {
   $("[data-modules-count]").textContent = opened;
   $("[data-milestones-count]").textContent = state.submissions.length;
 
-  const remaining = window.TCC_COURSE.activityTypes.filter((type) => !activityDone(week.number, type)).slice(0, 3);
+  const weekVideos = state.content.filter((item) => Number(item.week) === Number(week.number) && item.videoUrl);
+  const remaining = [
+    ...(weekVideos.some((item) => !lessonWatched(item.contentId)) ? ["Watch the remaining lesson videos"] : []),
+    ...window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed" && !activityDone(week.number, type)),
+  ].slice(0, 3);
   $("[data-next-steps]").innerHTML = (remaining.length ? remaining : ["Pause and notice what changed", "Prepare one mentorship question"]).map((step, index) => `
     <li class="next-item"><span class="next-dot">${index + 1}</span><p>${escapeHtml(step)}</p></li>
   `).join("");
@@ -163,21 +171,43 @@ const getVideoEmbed = (url) => {
 
 const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
-  const primaryContent = weekContent.find((item) => item.contentType === "Video") || weekContent[0];
+  const primaryContent = weekContent[0];
   $("[data-module-week]").textContent = `Week ${week.number}`;
   $("[data-module-title]").textContent = primaryContent?.title || week.title;
   $("[data-module-description]").textContent = primaryContent?.description || week.description;
-  $("[data-video-title]").textContent = primaryContent?.title || week.shortTitle;
   $("[data-module-tool]").textContent = week.tool;
-  const media = $("[data-lesson-media]");
-  if (primaryContent?.videoUrl) {
-    const video = getVideoEmbed(primaryContent.videoUrl);
-    media.innerHTML = video
-      ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(primaryContent.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`
-      : `<a class="button light" href="${escapeHtml(primaryContent.videoUrl)}" target="_blank" rel="noopener">Open Weekly Teaching</a>`;
-  } else {
-    media.innerHTML = `<span>Weekly teaching will appear here when Tiffany publishes the video.</span>`;
-  }
+  $("[data-lesson-list]").innerHTML = weekContent.length ? weekContent.map((item, index) => {
+    const video = getVideoEmbed(item.videoUrl);
+    const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
+    const prompts = item.workbookPrompts || [];
+    return `
+      <article class="lesson-card">
+        <div class="lesson-heading">
+          <p class="eyebrow">Lesson ${index + 1} · ${escapeHtml(item.contentType)}</p>
+          <h2>${escapeHtml(item.title)}</h2>
+          ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ""}
+        </div>
+        ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : ""}
+        ${item.videoUrl ? `<label class="video-complete"><input type="checkbox" data-video-complete="${escapeHtml(item.contentId)}" data-video-week="${week.number}" ${lessonWatched(item.contentId) ? "checked" : ""}><span><strong>${lessonWatched(item.contentId) ? "Video complete" : "Mark video watched"}</strong><small>Check this after you finish this video.</small></span></label>` : ""}
+        ${prompts.length ? `
+          <form class="workbook-form" data-workbook-form="${escapeHtml(item.contentId)}" data-workbook-week="${week.number}">
+            <div class="workbook-heading">
+              <p class="eyebrow">Interactive Workbook</p>
+              <h3>${escapeHtml(item.workbookTitle || item.title)}</h3>
+              <p>Your answers save privately to your course account. Use fictional, composite, or fully de-identified examples only.</p>
+            </div>
+            <div class="workbook-prompts">
+              ${prompts.map((prompt, promptIndex) => `<label>${escapeHtml(prompt)}<textarea name="response-${promptIndex}" data-workbook-response="${promptIndex}">${escapeHtml(saved?.responses?.[promptIndex] || "")}</textarea></label>`).join("")}
+            </div>
+            ${item.stoppingStatement ? `<blockquote>${escapeHtml(item.stoppingStatement)}</blockquote>` : ""}
+            <div class="form-actions"><button class="button" type="submit">Save My Answers</button><span class="workbook-status" data-workbook-status>${saved?.savedAt ? "Saved" : ""}</span></div>
+          </form>
+        ` : ""}
+      </article>
+    `;
+  }).join("") : `
+    <div class="lesson-placeholder"><div><span>Weekly Teaching</span><strong>${escapeHtml(week.shortTitle)}</strong><div data-lesson-media><span>Lessons will appear here when Tiffany publishes them.</span></div></div></div>
+  `;
   const resources = weekContent.flatMap((item) => {
     const rows = [];
     if (item.downloadUrl) rows.push({ label: item.title || "Download", url: item.downloadUrl });
@@ -189,11 +219,44 @@ const renderModule = (week) => {
     ? resources.map((item) => `<a class="resource-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.label)}</a>`).join("")
     : `<p class="supporting">Downloads and worksheets will appear here when Tiffany publishes them.</p>`;
 
-  $("[data-activity-list]").innerHTML = window.TCC_COURSE.activityTypes.map((type) => {
+  $$("[data-workbook-form]").forEach((form) => form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = $("button", form);
+    const status = $("[data-workbook-status]", form);
+    const responses = $$("[data-workbook-response]", form).map((textarea) => textarea.value);
+    button.disabled = true;
+    status.textContent = "Saving…";
+    try {
+      const result = await api("save-workbook", {
+        method: "POST",
+        body: JSON.stringify({ contentId: form.dataset.workbookForm, week: Number(form.dataset.workbookWeek), responses }),
+      });
+      state.workbookResponses = result.workbookResponses || [];
+      status.textContent = "Saved";
+    } catch (error) {
+      status.textContent = error.message;
+    } finally { button.disabled = false; }
+  }));
+  $$("[data-video-complete]").forEach((input) => input.addEventListener("change", async () => {
+    input.disabled = true;
+    try {
+      const result = await api("save-activity", {
+        method: "POST",
+        body: JSON.stringify({ week: Number(input.dataset.videoWeek), activityType: "Lesson accessed", contentId: input.dataset.videoComplete, completed: input.checked }),
+      });
+      state.activity = result.activity;
+      renderModule(week);
+      renderDashboard();
+      renderCurriculum();
+    } catch (error) {
+      input.checked = !input.checked;
+      alert(error.message);
+    } finally { input.disabled = false; }
+  }));
+
+  $("[data-activity-list]").innerHTML = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").map((type) => {
     const done = activityDone(week.number, type);
-    const displayType = type === "Lesson accessed" ? "Video watched" : type;
     const descriptions = {
-      "Lesson accessed": "Check this only after you finish the weekly teaching.",
       "Tool completed": `Work through the ${week.tool}.`,
       "Case exercise completed": "Apply the week’s lens to the fictional scenario.",
       "Implementation completed": "Practice one small behavior in your real work.",
@@ -202,7 +265,7 @@ const renderModule = (week) => {
     return `
       <label class="activity">
         <input class="activity-check" type="checkbox" data-activity-type="${escapeHtml(type)}" ${done ? "checked" : ""}>
-        <span><strong>${escapeHtml(displayType)}</strong><span>${escapeHtml(descriptions[type])}</span></span>
+        <span><strong>${escapeHtml(type)}</strong><span>${escapeHtml(descriptions[type])}</span></span>
         <span class="pill">${done ? "Complete" : "Not started"}</span>
       </label>
     `;
@@ -332,6 +395,7 @@ const initializeApp = async () => {
   state.submissions = result.submissions || [];
   state.questions = result.questions || [];
   state.content = result.content || [];
+  state.workbookResponses = result.workbookResponses || [];
   setCourseForProfile();
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;
@@ -453,6 +517,7 @@ const initializePreview = () => {
   ];
   state.questions = [];
   state.content = [];
+  state.workbookResponses = [];
   setCourseForProfile();
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;

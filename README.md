@@ -36,6 +36,7 @@ Required environment variables:
 - `AIRTABLE_COURSE_CONTENT_TABLE_ID` = `tblbR7GbCYnRoLLUm`
 - `AIRTABLE_COURSE_ASSESSMENTS_TABLE_ID` = `tblDB1IkqgRT9bjYZ`
 - `AIRTABLE_COURSE_COACHING_TABLE_ID` = `tbl975NGzYmTTtcCc`
+- `AIRTABLE_COURSE_WORKBOOK_TABLE_ID` = `tblEUY3qUu82ysKUL`
 - `COURSE_ADMIN_EMAILS` = comma-separated Supabase account emails allowed to
   use the admin dashboard
 
@@ -58,6 +59,10 @@ status to `Invited` when the participant is approved to activate an account.
 Course videos, PDFs, worksheets, transcripts, and links are managed in the
 `Program Content` table or through the admin dashboard's **Course Content**
 panel. Only records with `Published` checked appear in the participant portal.
+Add multiple ordered content records to publish multiple videos in one week.
+Workbook prompts are entered one per line and render as private, saved answer
+boxes. Responses are stored in the `Workbook Responses` table by participant,
+program, week, and content ID.
 
 Add `https://theconfidentclinician.me/course/set-password.html` to the allowed
 redirect URLs in Supabase Auth URL Configuration so activation emails return
