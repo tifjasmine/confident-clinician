@@ -11,6 +11,31 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character)
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
 }[character]));
 
+const promptExample = (prompt = "") => {
+  const text = prompt.toLowerCase();
+  if (text.includes("known") || text.includes("observable facts")) return "The client became quiet after we shifted topics; I noticed a longer pause and shorter answers.";
+  if (text.includes("story") || text.includes("assuming")) return "My brain said, “They think I’m not helping,” even though I did not have evidence of that.";
+  if (text.includes("body") || text.includes("activation")) return "My chest tightened, I spoke faster, and I felt an urge to fill the silence.";
+  if (text.includes("protective") || text.includes("pattern")) return "I moved into overexplaining so I could feel useful and avoid uncertainty.";
+  if (text.includes("gap") || text.includes("skill")) return "I understand the idea in theory, but I need more repetition using it under pressure.";
+  if (text.includes("support") || text.includes("consult")) return "I will bring one focused question to supervision instead of researching alone after work.";
+  if (text.includes("confidence") && text.includes("someone")) return "Someone who can pause, stay curious, repair when needed, and ask for support.";
+  if (text.includes("experiment") || text.includes("behavior")) return "Pause for one full breath before asking another question.";
+  if (text.includes("thread")) return "The details differ, but the repeating thread may be fear of disappointing other people.";
+  if (text.includes("response") || text.includes("move") || text.includes("action")) return "Reflect what I notice, check whether it fits, and let the client correct me.";
+  if (text.includes("priority") || text.includes("matters most")) return "Connection and clarification come first; advice can wait until I understand the need.";
+  if (text.includes("role")) return "My role is to assess, collaborate, document appropriately, and consult—not control the outcome.";
+  if (text.includes("release") || text.includes("put down")) return "I can release the demand to know exactly how the client experienced every moment.";
+  if (text.includes("next time") || text.includes("differently")) return "I will slow down, summarize the two threads I hear, and ask where we should focus.";
+  if (text.includes("what happened")) return "The session moved across several topics, and I noticed urgency when we had ten minutes left.";
+  if (text.includes("closing") || text.includes("ending")) return "We have about ten minutes left; what feels most important to carry forward today?";
+  if (text.includes("value")) return "Steadiness: I pause and respond thoughtfully; it does not require me to feel perfectly calm.";
+  if (text.includes("boundary")) return "I will begin landing at the ten-minute mark and finish at the scheduled time.";
+  if (text.includes("evidence")) return "I noticed the urge to rescue, paused, and chose one collaborative question instead.";
+  if (text.includes("30-day") || text.includes("weekly")) return "Once each week, I will use CLEAR on one de-identified moment and bring one question to consultation.";
+  return "A brief, specific response from one fictional or fully de-identified moment—enough to show your thinking, not an entire case history.";
+};
+
 const api = async (action, options = {}) => {
   const response = await fetch(`${API}?action=${encodeURIComponent(action)}`, {
     ...options,
@@ -87,6 +112,15 @@ const weekCompletion = (week) => {
       ? lessonWatched(item.contentId)
       : item.workbookPrompts?.length && state.workbookResponses.some((response) => response.contentId === item.contentId)).length;
     return Math.round((completed / Math.max(1, orientationItems.length)) * 100);
+  }
+  if (state.profile?.program === "Clinical Confidence Lab") {
+    const items = state.content.filter((item) => Number(item.week) === Number(week));
+    const videoItems = items.filter((item) => item.videoUrl);
+    const workbookItems = items.filter((item) => item.workbookPrompts?.length);
+    const completedVideos = videoItems.filter((item) => lessonWatched(item.contentId)).length;
+    const completedWorkbooks = workbookItems.filter((item) => state.workbookResponses.some((response) => response.contentId === item.contentId)).length;
+    const weeklyForm = state.formResponses.some((response) => Number(response.week) === Number(week) || response.formKey === `pulse-${week}`);
+    return Math.round(((completedVideos + completedWorkbooks + (weeklyForm ? 1 : 0)) / Math.max(1, videoItems.length + workbookItems.length + 1)) * 100);
   }
   const nonVideoTypes = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed");
   const videos = state.content.filter((item) => Number(item.week) === Number(week) && item.videoUrl);
@@ -295,13 +329,13 @@ const renderModule = (week) => {
             <small>${escapeHtml(item.contentType)}${item.videoUrl ? " · Video" : ""}</small>
             <strong>${escapeHtml(item.title)}</strong>
           </span>
-          <span class="lesson-step-state ${itemComplete ? "complete" : ""}">${itemComplete ? "Complete" : "Open"}</span>
+          ${itemComplete ? `<span class="lesson-step-state complete">Complete</span>` : ""}
         </summary>
         <div class="lesson-step-body">
           <div class="lesson-heading">
             ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ""}
           </div>
-          ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong><small>Tiffany will publish this lesson here.</small></div>` : ""}
+          ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong></div>` : ""}
           ${item.videoUrl ? `<label class="video-complete"><input type="checkbox" data-video-complete="${escapeHtml(item.contentId)}" data-video-week="${week.number}" ${lessonWatched(item.contentId) ? "checked" : ""}><span><strong>${lessonWatched(item.contentId) ? "Video complete" : "Mark video watched"}</strong><small>Check this after you finish this video.</small></span></label>` : ""}
           ${prompts.length ? `
           <form class="workbook-form" data-workbook-form="${escapeHtml(item.contentId)}" data-workbook-week="${week.number}">
@@ -322,7 +356,7 @@ const renderModule = (week) => {
                     <span class="workbook-section-count">${section.answered === section.prompts.length ? "Complete" : `${section.answered}/${section.prompts.length}`}</span>
                   </summary>
                   <div class="workbook-prompts">
-                    ${section.prompts.map(({ prompt, index: promptIndex }) => `<label>${escapeHtml(prompt)}<textarea name="response-${promptIndex}" data-workbook-response="${promptIndex}">${escapeHtml(saved?.responses?.[promptIndex] || "")}</textarea></label>`).join("")}
+                    ${section.prompts.map(({ prompt, index: promptIndex }) => `<label>${escapeHtml(prompt)}<span class="prompt-example"><strong>Example:</strong> ${escapeHtml(promptExample(prompt))}</span><textarea name="response-${promptIndex}" data-workbook-response="${promptIndex}">${escapeHtml(saved?.responses?.[promptIndex] || "")}</textarea></label>`).join("")}
                   </div>
                 </details>
               `).join("")}
@@ -398,7 +432,7 @@ const renderModule = (week) => {
     } finally { input.disabled = false; }
   }));
 
-  $("[data-activity-list]").innerHTML = isOrientation ? "" : window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").map((type) => {
+  $("[data-activity-list]").innerHTML = isOrientation || state.profile.program === "Clinical Confidence Lab" ? "" : window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").map((type) => {
     const done = activityDone(week.number, type);
     const descriptions = {
       "Tool completed": `Work through the ${week.tool}.`,
@@ -439,8 +473,9 @@ const renderModule = (week) => {
     : [];
   $("[data-week-form-list]").innerHTML = weekForms.length ? `
     <article class="card week-forms-card">
-      <p class="eyebrow">${isOrientation ? "Before Week 1" : `Assessment Steps for Week ${week.number}`}</p>
-      <h3>${isOrientation ? "Complete your starting steps." : "Go directly to what is due."}</h3>
+      <p class="eyebrow">${isOrientation ? "Before Week 1" : `Finish Week ${week.number}`}</p>
+      <h3>${isOrientation ? "Complete your starting steps." : `Complete your Week ${week.number} check-in.`}</h3>
+      ${isOrientation ? "" : `<p class="supporting">Take a minute to notice what changed, what still feels difficult, and what you want to practice next.</p>`}
       <div class="week-form-buttons">
         ${weekForms.map(([key, form]) => {
           const complete = state.formResponses.some((response) => response.formKey === key);
