@@ -29,7 +29,7 @@ const updateParticipant = async (recordId, fields) => {
 const ensureSupabaseUser = async ({ email, name }) => {
   const supabaseUrl = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const temporaryPassword = `${crypto.randomUUID()}-${crypto.randomUUID()}`;
+  const temporaryPassword = `${crypto.randomUUID()}-${crypto.randomUUID().slice(0, 24)}`;
   const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
     method: "POST",
     headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, "Content-Type": "application/json" },
