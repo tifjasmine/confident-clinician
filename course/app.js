@@ -169,6 +169,76 @@ const getVideoEmbed = (url) => {
   return null;
 };
 
+const workbookSectionPlan = {
+  1: [
+    ["Reset the definition", 3],
+    ["Name the real gap", 3],
+    ["Notice your activation pattern", 4],
+    ["Map one confidence loop", 12],
+    ["Practice: The Quiet Client", 7],
+    ["Choose one small experiment", 2],
+    ["Reflect, then stop", 7],
+  ],
+  2: [
+    ["C — Center", 4],
+    ["L — Listen", 5],
+    ["E — Evaluate", 4],
+    ["A — Act", 5],
+    ["R — Reflect", 5],
+    ["Use the CLEAR Decision Map", 6],
+    ["Practice: “I Don’t Know”", 6],
+    ["Try CLEAR in real work", 3],
+    ["Reflect, then stop", 6],
+  ],
+  3: [
+    ["Open with direction", 3],
+    ["Find and check the thread", 5],
+    ["Move beyond the details", 3],
+    ["Handle pressure points", 1],
+    ["Land the session cleanly", 5],
+    ["Make the language yours", 2],
+    ["Practice: The Session That Goes Everywhere", 8],
+    ["Try an opening, pivot, and close", 4],
+    ["Reflect, then stop", 8],
+  ],
+  4: [
+    ["Separate reflection from replaying", 4],
+    ["Clarify your responsibility", 6],
+    ["Catch the rescue trap", 4],
+    ["Choose the right support path", 3],
+    ["Prepare for repair", 7],
+    ["Use the seven-minute debrief", 6],
+    ["Define the clinician you trust", 2],
+    ["Practice: The Case That Is Not Progressing", 4],
+    ["Name your evidence of growth", 3],
+    ["Build your 30-day plan", 6],
+    ["Final reflection, then stop", 7],
+  ],
+};
+
+const buildWorkbookSections = (week, prompts, savedResponses = []) => {
+  const plan = workbookSectionPlan[Number(week)] || [["Workbook prompts", prompts.length]];
+  let start = 0;
+  const sections = plan.map(([title, size]) => {
+    const sectionPrompts = prompts.slice(start, start + size).map((prompt, offset) => ({
+      prompt,
+      index: start + offset,
+    }));
+    start += size;
+    return { title, prompts: sectionPrompts };
+  }).filter((section) => section.prompts.length);
+  if (start < prompts.length) {
+    sections.push({
+      title: "Finish this week",
+      prompts: prompts.slice(start).map((prompt, offset) => ({ prompt, index: start + offset })),
+    });
+  }
+  return sections.map((section) => ({
+    ...section,
+    answered: section.prompts.filter(({ index }) => String(savedResponses[index] || "").trim()).length,
+  }));
+};
+
 const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent[0];
@@ -180,6 +250,8 @@ const renderModule = (week) => {
     const video = getVideoEmbed(item.videoUrl);
     const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
     const prompts = item.workbookPrompts || [];
+    const workbookSections = buildWorkbookSections(week.number, prompts, saved?.responses || []);
+    const firstIncompleteSection = workbookSections.findIndex((section) => section.answered < section.prompts.length);
     return `
       <article class="lesson-card">
         <div class="lesson-heading">
@@ -196,11 +268,25 @@ const renderModule = (week) => {
               <h3>${escapeHtml(item.workbookTitle || item.title)}</h3>
               <p>Your answers save privately to your course account. Use fictional, composite, or fully de-identified examples only.</p>
             </div>
-            <div class="workbook-prompts">
-              ${prompts.map((prompt, promptIndex) => `<label>${escapeHtml(prompt)}<textarea name="response-${promptIndex}" data-workbook-response="${promptIndex}">${escapeHtml(saved?.responses?.[promptIndex] || "")}</textarea></label>`).join("")}
+            <div class="workbook-progress-copy">
+              <strong>Take this one section at a time.</strong>
+              <span>${prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length} of ${prompts.length} responses saved</span>
+            </div>
+            <div class="workbook-sections">
+              ${workbookSections.map((section, sectionIndex) => `
+                <details class="workbook-section" data-workbook-section ${sectionIndex === (firstIncompleteSection < 0 ? 0 : firstIncompleteSection) ? "open" : ""}>
+                  <summary>
+                    <span><small>Part ${sectionIndex + 1} of ${workbookSections.length}</small>${escapeHtml(section.title)}</span>
+                    <span class="workbook-section-count">${section.answered === section.prompts.length ? "Complete" : `${section.answered}/${section.prompts.length}`}</span>
+                  </summary>
+                  <div class="workbook-prompts">
+                    ${section.prompts.map(({ prompt, index: promptIndex }) => `<label>${escapeHtml(prompt)}<textarea name="response-${promptIndex}" data-workbook-response="${promptIndex}">${escapeHtml(saved?.responses?.[promptIndex] || "")}</textarea></label>`).join("")}
+                  </div>
+                </details>
+              `).join("")}
             </div>
             ${item.stoppingStatement ? `<blockquote>${escapeHtml(item.stoppingStatement)}</blockquote>` : ""}
-            <div class="form-actions"><button class="button" type="submit">Save My Answers</button><span class="workbook-status" data-workbook-status>${saved?.savedAt ? "Saved" : ""}</span></div>
+            <div class="form-actions workbook-save"><button class="button" type="submit">Save My Progress</button><span class="workbook-status" data-workbook-status>${saved?.savedAt ? "Progress saved" : ""}</span></div>
           </form>
         ` : ""}
       </article>
@@ -236,6 +322,12 @@ const renderModule = (week) => {
     } catch (error) {
       status.textContent = error.message;
     } finally { button.disabled = false; }
+  }));
+  $$("[data-workbook-section]").forEach((section) => section.addEventListener("toggle", () => {
+    if (!section.open) return;
+    $$("[data-workbook-section]", section.closest("[data-workbook-form]")).forEach((other) => {
+      if (other !== section) other.open = false;
+    });
   }));
   $$("[data-video-complete]").forEach((input) => input.addEventListener("change", async () => {
     input.disabled = true;

@@ -299,14 +299,26 @@ input:focus, textarea:focus, select:focus {
 .video-complete strong, .video-complete small { display: block; }
 .video-complete small { margin-top: 3px; color: var(--olive); font-size: 11px; font-weight: 400; letter-spacing: 0; text-transform: none; }
 .workbook-form { padding: clamp(26px,5vw,48px); border-top: 5px solid var(--terra); background: #fbf7f0; }
-.workbook-heading { max-width: 760px; margin-bottom: 30px; }
+.workbook-heading { max-width: 760px; margin-bottom: 22px; }
 .workbook-heading h3 { margin-bottom: 12px; font-size: clamp(30px,4vw,42px); }
 .workbook-heading > p:last-child { color: var(--olive); font-size: 13px; line-height: 1.65; }
-.workbook-prompts { display: grid; gap: 22px; }
+.workbook-progress-copy { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 18px; padding: 16px 18px; background: var(--sand); color: var(--forest); font-size: 12px; }
+.workbook-progress-copy span { color: var(--olive); white-space: nowrap; }
+.workbook-sections { display: grid; gap: 10px; }
+.workbook-section { border: 1px solid rgba(42,60,47,.14); background: var(--white); }
+.workbook-section summary { display: flex; justify-content: space-between; gap: 18px; align-items: center; min-height: 72px; padding: 16px 18px; color: var(--forest); font-family: "Cormorant Garamond",serif; font-size: 22px; font-weight: 600; line-height: 1.15; cursor: pointer; list-style: none; }
+.workbook-section summary::-webkit-details-marker { display: none; }
+.workbook-section summary > span:first-child { display: grid; gap: 4px; }
+.workbook-section summary small { color: var(--sage); font-family: "Montserrat",sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.workbook-section-count { flex: 0 0 auto; padding: 7px 9px; border-radius: 99px; background: var(--sand); color: var(--olive); font-family: "Montserrat",sans-serif; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.workbook-section[open] { border-color: rgba(197,106,77,.45); box-shadow: 0 12px 30px rgba(42,60,47,.06); }
+.workbook-section[open] summary { border-bottom: 1px solid rgba(42,60,47,.1); }
+.workbook-prompts { display: grid; gap: 22px; padding: 24px 20px 28px; }
 .workbook-prompts label { color: var(--forest); font-size: 13px; letter-spacing: 0; line-height: 1.5; text-transform: none; }
-.workbook-prompts textarea { min-height: 120px; background: var(--white); }
+.workbook-prompts textarea { min-height: 105px; background: #fbf7f0; }
 .workbook-form blockquote { margin: 28px 0 0; padding: 18px 20px; border-left: 4px solid var(--terra); color: var(--forest); font-family: "Cormorant Garamond",serif; font-size: 22px; line-height: 1.35; }
 .workbook-status { color: var(--sage); font-size: 12px; }
+.workbook-save { position: sticky; bottom: 12px; z-index: 3; margin-top: 22px; padding: 10px; background: rgba(251,247,240,.94); box-shadow: 0 8px 28px rgba(42,60,47,.12); backdrop-filter: blur(8px); }
 .week-form-list { display: grid; gap: 18px; }
 .week-forms-card { border-left: 5px solid var(--terra); box-shadow: none; }
 .week-form-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -454,6 +466,12 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
   .lesson-placeholder { min-height: 230px; padding: 24px 18px; }
   .lesson-video { width: 100%; }
   .workbook-form { padding: 26px 18px; }
+  .workbook-progress-copy { display: grid; gap: 5px; }
+  .workbook-progress-copy span { white-space: normal; }
+  .workbook-section summary { min-height: 68px; padding: 14px; font-size: 20px; }
+  .workbook-prompts { padding: 20px 14px 24px; }
+  .workbook-prompts textarea { min-height: 115px; }
+  .workbook-save { bottom: calc(78px + env(safe-area-inset-bottom)); }
   .progress-stats { grid-template-columns: 1fr 1fr; }
   .week-grid, .queue-grid { grid-template-columns: 1fr; }
   .week-card { min-height: 230px; width: 100%; text-align: left; }
