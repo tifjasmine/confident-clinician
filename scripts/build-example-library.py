@@ -14,7 +14,7 @@ SAND = "F1EADF"
 examples = [
     ("The fantasy version of a confident therapist", "Calm, articulate, certain, never awkward, and always able to say something meaningful right away."),
     ("The trustworthy version I want to become", "I want to notice when I’m activated, slow down enough to think, and respond honestly instead of performing."),
-    ("A confident clinician is not someone who…", "Never feels uncertain, always knows the perfect intervention, or makes every session feel profound."),
+    ("A confident clinician is not someone who…", "Never feels uncertain, always knows the perfect intervention, or makes every session feel like a breakthrough."),
     ("A confident clinician is someone who…", "Can pause, stay curious, make a thoughtful choice, repair when needed, and use support."),
     ("The moment I feel least confident", "When a client becomes quiet and I cannot tell whether they need space, a question, or a change in direction."),
     ("When that happens, I tend to…", "I ask too many questions, explain more than necessary, and replay the session afterward."),

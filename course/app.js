@@ -15,7 +15,7 @@ const promptExample = (prompt = "") => {
   const text = prompt.toLowerCase();
   if (text.includes("fantasy version")) return "Calm, articulate, certain, never awkward, and always able to say something meaningful right away.";
   if (text.includes("trustworthy version")) return "I want to notice when I’m activated, slow down enough to think, and respond honestly instead of performing.";
-  if (text.includes("not someone who")) return "Never feels uncertain, always knows the perfect intervention, or makes every session feel profound.";
+  if (text.includes("not someone who")) return "Never feels uncertain, always knows the perfect intervention, or makes every session feel like a breakthrough.";
   if (text.includes("is someone who")) return "Can pause, stay curious, make a thoughtful choice, repair when needed, and use support.";
   if (text.includes("least confident")) return "When a client becomes quiet and I cannot tell whether they need space, a question, or a change in direction.";
   if (text.includes("when that happens")) return "I ask too many questions, explain more than necessary, and replay the session afterward.";
@@ -176,7 +176,9 @@ const renderDashboard = () => {
   const completedActivities = state.activity.filter((item) => item.completed).length;
   const nonVideoTypeCount = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").length;
   const totalActivities = (window.TCC_COURSE.weeks.length * nonVideoTypeCount) + state.content.filter((item) => item.videoUrl).length;
-  const progress = Math.min(100, Math.round((completedActivities / Math.max(1, totalActivities)) * 100));
+  const progress = profile.program === "Clinical Confidence Lab"
+    ? Math.round(window.TCC_COURSE.weeks.reduce((sum, item) => sum + weekCompletion(item.number), 0) / window.TCC_COURSE.weeks.length)
+    : Math.min(100, Math.round((completedActivities / Math.max(1, totalActivities)) * 100));
   const opened = new Set(state.activity.filter((item) => item.activityType === "Lesson accessed" && item.completed).map((item) => item.response || `week-${item.week}`)).size;
 
   $("[data-first-name]").textContent = (profile.name || "clinician").split(" ")[0];
@@ -188,14 +190,6 @@ const renderDashboard = () => {
   $("[data-modules-count]").textContent = opened;
   $("[data-milestones-count]").textContent = state.submissions.length;
 
-  const weekVideos = state.content.filter((item) => Number(item.week) === Number(week.number) && item.videoUrl);
-  const remaining = [
-    ...(weekVideos.some((item) => !lessonWatched(item.contentId)) ? ["Watch the remaining lesson videos"] : []),
-    ...window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed" && !activityDone(week.number, type)),
-  ].slice(0, 3);
-  $("[data-next-steps]").innerHTML = (remaining.length ? remaining : ["Pause and notice what changed", "Prepare one mentorship question"]).map((step, index) => `
-    <li class="next-item"><span class="next-dot">${index + 1}</span><p>${escapeHtml(step)}</p></li>
-  `).join("");
 };
 
 const renderCurriculum = () => {
@@ -346,31 +340,23 @@ const renderModule = (week) => {
       <p>${escapeHtml(week.outcome)}</p>
     </article>
   ` : "";
-  const firstIncompleteLesson = weekContent.findIndex((item) => {
-    const hasVideo = Boolean(item.videoUrl);
-    const hasWorkbook = Boolean(item.workbookPrompts?.length);
-    const videoDone = !hasVideo || lessonWatched(item.contentId);
-    const workbookDone = !hasWorkbook || state.workbookResponses.some((response) =>
-      response.contentId === item.contentId && item.workbookPrompts.every((_, promptIndex) => String(response.responses?.[promptIndex] || "").trim()));
-    return !videoDone || !workbookDone;
-  });
   $("[data-lesson-list]").innerHTML = agenda + (weekContent.length ? weekContent.map((item, index) => {
     const video = getVideoEmbed(item.videoUrl);
     const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
     const prompts = item.workbookPrompts || [];
     const workbookSections = buildWorkbookSections(week.number, prompts, saved?.responses || []);
-    const firstIncompleteSection = workbookSections.findIndex((section) => section.answered < section.prompts.length);
     const answeredCount = prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length;
     const itemComplete = (!item.videoUrl || lessonWatched(item.contentId)) && (!prompts.length || answeredCount === prompts.length);
+    const itemInProgress = !itemComplete && (lessonWatched(item.contentId) || answeredCount > 0);
     return `
-      <details class="lesson-card lesson-step" data-lesson-step ${index === (firstIncompleteLesson < 0 ? 0 : firstIncompleteLesson) ? "open" : ""}>
+      <details class="lesson-card lesson-step" data-lesson-step>
         <summary class="lesson-step-summary">
           <span class="lesson-step-number">${isOrientation ? index + 1 : String(index + 1).padStart(2, "0")}</span>
           <span class="lesson-step-copy">
             <small>${escapeHtml(item.contentType)}${item.videoUrl ? " · Video" : ""}</small>
             <strong>${escapeHtml(item.title)}</strong>
           </span>
-          ${itemComplete ? `<span class="lesson-step-state complete">Complete</span>` : ""}
+          <span class="lesson-step-state ${itemComplete ? "complete" : itemInProgress ? "in-progress" : ""}">${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</span>
         </summary>
         <div class="lesson-step-body">
           <div class="lesson-heading">
@@ -391,7 +377,7 @@ const renderModule = (week) => {
             </div>
             <div class="workbook-sections">
               ${workbookSections.map((section, sectionIndex) => `
-                <details class="workbook-section" data-workbook-section ${sectionIndex === (firstIncompleteSection < 0 ? 0 : firstIncompleteSection) ? "open" : ""}>
+                <details class="workbook-section" data-workbook-section>
                   <summary>
                     <span><small>Part ${sectionIndex + 1} of ${workbookSections.length}</small>${escapeHtml(section.title)}</span>
                     <span class="workbook-section-count">${section.answered === section.prompts.length ? "Complete" : `${section.answered}/${section.prompts.length}`}</span>
@@ -602,6 +588,18 @@ const renderAssessments = () => {
 const renderCourseFormField = (field, value) => {
   if (field.type === "text") return `<label>${escapeHtml(field.label)}<textarea name="${escapeHtml(field.key)}" required>${escapeHtml(value || "")}</textarea></label>`;
   if (field.type === "acknowledgement") return `<label class="form-ack"><input type="checkbox" name="${escapeHtml(field.key)}" ${value === true ? "checked" : ""} required><span>${escapeHtml(field.label)}</span></label>`;
+  if (field.type !== "choice" && field.max - field.min > 5) {
+    const currentValue = value ?? Math.round((field.min + field.max) / 2);
+    return `
+      <fieldset class="course-rating course-slider">
+        <legend>${escapeHtml(field.label)}</legend>
+        ${field.help ? `<p>${escapeHtml(field.help)}</p>` : ""}
+        <div class="slider-value"><span>Current rating</span><output data-range-output>${escapeHtml(currentValue)}</output></div>
+        <input type="range" name="${escapeHtml(field.key)}" min="${field.min}" max="${field.max}" value="${escapeHtml(currentValue)}" required data-course-range>
+        <div class="slider-labels"><span>${field.min} · Not at all</span><span>${field.max} · Completely</span></div>
+      </fieldset>
+    `;
+  }
   const options = field.type === "choice" ? field.options : Array.from({ length: field.max - field.min + 1 }, (_, index) => field.min + index);
   return `
     <fieldset class="course-rating">
@@ -651,6 +649,9 @@ const openLabForm = (formKey) => {
       status.textContent = error.message;
     } finally { button.disabled = false; }
   });
+  $$("[data-course-range]").forEach((range) => range.addEventListener("input", () => {
+    $("[data-range-output]", range.closest(".course-slider")).textContent = range.value;
+  }));
 };
 
 const openAssessment = (kind) => {
