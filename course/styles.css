@@ -286,8 +286,10 @@ input:focus, textarea:focus, select:focus {
   align-items: center;
 }
 .activity-check { width: 24px; height: 24px; accent-color: var(--terra); }
-.activity strong { font-size: 14px; }
-.activity span { display: block; margin-top: 4px; color: var(--olive); font-size: 12px; }
+.activity > span:nth-child(2) { min-width: 0; }
+.activity strong { display: block; color: var(--forest); font-size: 14px; line-height: 1.35; }
+.activity > span:nth-child(2) > span { display: block; margin-top: 5px; color: var(--olive); font-size: 12px; font-weight: 400; letter-spacing: 0; line-height: 1.55; text-transform: none; }
+.activity > .pill { margin: 0; }
 .module-side { position: sticky; top: 24px; display: grid; gap: 16px; }
 .module-side .card { box-shadow: none; }
 .module-side ul { margin: 0; padding-left: 18px; color: var(--olive); line-height: 1.8; font-size: 13px; }
@@ -415,7 +417,9 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
 }
 @media (max-width: 480px) {
   .week-grid, .admin-metrics { grid-template-columns: 1fr; }
-  .activity { grid-template-columns: 28px minmax(0,1fr); }
+  .activity { grid-template-columns: 28px minmax(0,1fr); align-items: start; padding: 18px 16px; }
+  .activity-check { margin-top: 2px; }
+  .activity > .pill { grid-column: 2; width: max-content; max-width: 100%; margin-top: 10px; }
   .activity .button { grid-column: 2; }
   .dashboard-grid { gap: 16px; }
   .progress-ring { width: 128px; height: 128px; }
