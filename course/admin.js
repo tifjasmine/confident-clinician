@@ -6,7 +6,7 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character)
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
 }[character]));
 let token = "";
-let data = { participants: [], submissions: [], questions: [], content: [] };
+let data = { participants: [], submissions: [], questions: [], content: [], assessments: [] };
 
 try { token = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}").accessToken || ""; } catch {}
 if (!token) window.location.replace("/course/");
@@ -59,6 +59,16 @@ const render = () => {
       ${item.workbookPrompts?.length ? `<p class="supporting">${item.workbookPrompts.length} interactive workbook prompts</p>` : ""}
     </article>
   `).join("") : `<p class="supporting">No course content has been added yet.</p>`;
+
+  $("[data-assessment-records]").innerHTML = data.assessments.length ? data.assessments.map((item) => `
+    <article class="card queue-card">
+      <p class="eyebrow">${escapeHtml(item.formKey)}${item.week ? ` · Week ${item.week}` : ""}</p>
+      <h3>${escapeHtml(item.participantEmail)}</h3>
+      <p class="supporting">Submitted ${escapeHtml(item.submittedAt || "—")}</p>
+      ${item.scoreSummary?.clinicalConfidenceIndex != null ? `<p><strong>Clinical Confidence Index:</strong> ${item.scoreSummary.clinicalConfidenceIndex}</p>` : ""}
+      ${item.scoreSummary?.clinicalInterferenceIndex != null ? `<p><strong>Clinical Interference Index:</strong> ${item.scoreSummary.clinicalInterferenceIndex}</p>` : ""}
+    </article>
+  `).join("") : `<p class="supporting">No participant measurements have been submitted yet.</p>`;
 
   $("[data-submission-queue]").innerHTML = data.submissions.length ? data.submissions.map((item) => `
     <article class="card queue-card">

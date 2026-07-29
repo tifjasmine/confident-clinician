@@ -18,6 +18,7 @@
       <nav class="nav-list">
         <button class="nav-link active" data-admin-view="overview">Cohort</button>
         <button class="nav-link" data-admin-view="content">Course Content</button>
+        <button class="nav-link" data-admin-view="measurements">Measurements</button>
         <button class="nav-link" data-admin-view="submissions">Feedback</button>
         <button class="nav-link" data-admin-view="questions">Questions</button>
       </nav>
@@ -60,6 +61,10 @@
           </form>
         </article>
         <div class="admin-section"><h2>Published and draft content</h2><div class="queue-grid" data-content-list></div></div>
+      </section>
+      <section class="view" data-admin-panel="measurements">
+        <header class="page-heading"><p class="eyebrow">Participant Measurements</p><h1>Track change without weaponizing it.</h1><p>Scores support reflection and program improvement. They are not a competence determination.</p></header>
+        <div class="queue-grid" data-assessment-records></div>
       </section>
       <section class="view" data-admin-panel="submissions">
         <header class="page-heading"><p class="eyebrow">Feedback Queue</p><h1>Respond with focus.</h1><p>Brief, actionable feedback keeps the founding cohort personal without creating unlimited access.</p></header>

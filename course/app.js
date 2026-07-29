@@ -3,7 +3,7 @@ const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
 const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
-const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], selectedWeek: 1 };
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 1 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -288,6 +288,26 @@ const renderModule = (week) => {
     } finally { input.disabled = false; }
   }));
 
+  const weekForms = state.profile.program === "Clinical Confidence Lab"
+    ? Object.entries(window.TCC_LAB_FORMS || {}).filter(([, form]) => Number(form.week) === Number(week.number))
+    : [];
+  $("[data-week-form-list]").innerHTML = weekForms.length ? `
+    <article class="card week-forms-card">
+      <p class="eyebrow">This Week's Check-In</p>
+      <h3>Make your progress visible.</h3>
+      <div class="week-form-buttons">
+        ${weekForms.map(([key, form]) => {
+          const complete = state.formResponses.some((response) => response.formKey === key);
+          return `<button class="button ${complete ? "secondary" : ""}" data-open-course-form="${escapeHtml(key)}">${complete ? "Review" : "Complete"} ${escapeHtml(form.title)}</button>`;
+        }).join("")}
+      </div>
+    </article>
+  ` : "";
+  $$("[data-open-course-form]").forEach((button) => button.addEventListener("click", () => {
+    showView("assessments");
+    openLabForm(button.dataset.openCourseForm);
+  }));
+
   $("[data-milestone-card]").hidden = !week.milestone;
   if (week.milestone) {
     $("[data-milestone-title]").textContent = week.feedbackFocus;
@@ -319,6 +339,25 @@ const assessmentStatements = [
 
 const renderAssessments = () => {
   const isLab = state.profile.program === "Clinical Confidence Lab";
+  if (isLab) {
+    const currentWeek = Number(state.profile.currentWeek || 1);
+    const ordered = ["baseline", "success-plan", "pulse-1", "pulse-2", "pulse-3", "pulse-4", "post", "capstone", "call-prep"];
+    $("[data-assessment-list]").innerHTML = ordered.map((key) => {
+      const form = window.TCC_LAB_FORMS[key];
+      const available = !form.week || currentWeek >= form.week;
+      const complete = state.formResponses.some((response) => response.formKey === key);
+      return `
+        <article class="assessment-domain">
+          <p class="eyebrow">${complete ? "Saved" : available ? form.eyebrow : `Opens Week ${form.week}`}</p>
+          <h3>${escapeHtml(form.title)}</h3>
+          <p class="supporting">${escapeHtml(form.description)}</p>
+          <button class="button ${available ? "" : "secondary"}" data-lab-form="${escapeHtml(key)}" ${available ? "" : "disabled"}>${complete ? "Review / Update" : "Begin"}</button>
+        </article>
+      `;
+    }).join("");
+    $$("[data-lab-form]").forEach((button) => button.addEventListener("click", () => openLabForm(button.dataset.labForm)));
+    return;
+  }
   const cards = isLab ? [
     { key: "baseline", title: "Baseline Assessment", available: true, complete: state.profile.baselineComplete },
     { key: "final", title: "Final Assessment + 30-Day Plan", available: Number(state.profile.currentWeek) >= 4, complete: state.profile.finalComplete },
@@ -336,6 +375,60 @@ const renderAssessments = () => {
     </article>
   `).join("");
   $$("[data-assessment]").forEach((button) => button.addEventListener("click", () => openAssessment(button.dataset.assessment)));
+};
+
+const renderCourseFormField = (field, value) => {
+  if (field.type === "text") return `<label>${escapeHtml(field.label)}<textarea name="${escapeHtml(field.key)}" required>${escapeHtml(value || "")}</textarea></label>`;
+  if (field.type === "acknowledgement") return `<label class="form-ack"><input type="checkbox" name="${escapeHtml(field.key)}" ${value === true ? "checked" : ""} required><span>${escapeHtml(field.label)}</span></label>`;
+  const options = field.type === "choice" ? field.options : Array.from({ length: field.max - field.min + 1 }, (_, index) => field.min + index);
+  return `
+    <fieldset class="course-rating">
+      <legend>${escapeHtml(field.label)}</legend>
+      ${field.help ? `<p>${escapeHtml(field.help)}</p>` : ""}
+      <div class="course-rating-options">
+        ${options.map((option) => `<label><input type="radio" name="${escapeHtml(field.key)}" value="${escapeHtml(option)}" ${String(value ?? "") === String(option) ? "checked" : ""} required><span>${escapeHtml(option)}</span></label>`).join("")}
+      </div>
+    </fieldset>
+  `;
+};
+
+const openLabForm = (formKey) => {
+  const definition = window.TCC_LAB_FORMS?.[formKey];
+  if (!definition) return;
+  const saved = state.formResponses.find((response) => response.formKey === formKey);
+  const container = $("[data-assessment-list]");
+  container.innerHTML = `
+    <form class="course-form" data-course-form="${escapeHtml(formKey)}">
+      <section class="assessment-domain course-form-intro">
+        <p class="eyebrow">${escapeHtml(definition.eyebrow)}</p>
+        <h3>${escapeHtml(definition.title)}</h3>
+        <p class="supporting">${escapeHtml(definition.description)}</p>
+        <div class="warning">Use fictional, composite, or fully de-identified examples only. For risk, ethics, law, scope, competence, or workplace policy, use formal supervision and required procedures.</div>
+      </section>
+      ${definition.fields.map((field) => `<section class="assessment-domain">${renderCourseFormField(field, saved?.responses?.[field.key])}</section>`).join("")}
+      <section class="assessment-domain form-actions"><button class="button" type="submit">Save ${escapeHtml(definition.title)}</button><span data-course-form-status></span></section>
+    </form>
+  `;
+  $("[data-course-form]").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = $("button", form);
+    const status = $("[data-course-form-status]", form);
+    const formData = new FormData(form);
+    const responses = Object.fromEntries(definition.fields.map((field) => [field.key, field.type === "acknowledgement" ? formData.get(field.key) === "on" : formData.get(field.key)]));
+    button.disabled = true;
+    status.textContent = "Saving…";
+    try {
+      const result = await api("save-course-form", { method: "POST", body: JSON.stringify({ formKey, responses }) });
+      state.formResponses = result.formResponses || [];
+      state.profile = result.profile || state.profile;
+      status.textContent = "Saved";
+      renderDashboard();
+      renderCurriculum();
+    } catch (error) {
+      status.textContent = error.message;
+    } finally { button.disabled = false; }
+  });
 };
 
 const openAssessment = (kind) => {
@@ -396,6 +489,7 @@ const initializeApp = async () => {
   state.questions = result.questions || [];
   state.content = result.content || [];
   state.workbookResponses = result.workbookResponses || [];
+  state.formResponses = result.formResponses || [];
   setCourseForProfile();
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;
@@ -518,6 +612,7 @@ const initializePreview = () => {
   state.questions = [];
   state.content = [];
   state.workbookResponses = [];
+  state.formResponses = [];
   setCourseForProfile();
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;

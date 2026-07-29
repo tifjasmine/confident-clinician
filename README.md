@@ -64,6 +64,12 @@ Workbook prompts are entered one per line and render as private, saved answer
 boxes. Responses are stored in the `Workbook Responses` table by participant,
 program, week, and content ID.
 
+The Clinical Confidence Lab assessment flow is built into the same portal:
+baseline and success plan before Week 1, a pulse check in each program week,
+post-assessment and CLEAR capstone after Week 4, and one completion-session prep
+form. Participant responses and calculated CCI/CII summaries are stored in the
+`Assessments` table and surfaced in the admin **Measurements** panel.
+
 Add `https://theconfidentclinician.me/course/set-password.html` to the allowed
 redirect URLs in Supabase Auth URL Configuration so activation emails return
 members to the course password screen.

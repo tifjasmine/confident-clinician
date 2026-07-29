@@ -132,11 +132,27 @@ const mapWorkbookResponse = (record) => {
   try { responses = JSON.parse(record.fields["Responses JSON"] || "[]"); } catch {}
   return {
     id: record.id,
+    participantEmail: record.fields["Participant Email"] || "",
     responseId: record.fields["Response ID"] || "",
     contentId: record.fields["Content ID"] || "",
     week: Number(record.fields.Week || 0),
     responses: Array.isArray(responses) ? responses : [],
     savedAt: record.fields["Saved At"] || "",
+  };
+};
+const mapFormResponse = (record) => {
+  let responses = {};
+  let scoreSummary = {};
+  try { responses = JSON.parse(record.fields["Responses JSON"] || "{}"); } catch {}
+  try { scoreSummary = JSON.parse(record.fields["Score Summary JSON"] || "{}"); } catch {}
+  return {
+    id: record.id,
+    participantEmail: record.fields["Participant Email"] || "",
+    formKey: record.fields["Form Key"] || "",
+    week: Number(record.fields.Week || 0),
+    responses: responses && typeof responses === "object" ? responses : {},
+    scoreSummary,
+    submittedAt: record.fields["Submitted At"] || "",
   };
 };
 
@@ -174,10 +190,11 @@ exports.handler = async (event) => {
     if (action === "me") {
       await updateRecord(TABLES.participants, participantRecord.id, { "Supabase User ID": user.id, "Last Active": new Date().toISOString() });
       const contentFormula = `AND({Published}=1,{Program}='${formulaString(profile.program)}')`;
-      const [activityRecords, submissionRecords, questionRecords, contentRecords, workbookRecords] = await Promise.all([
+      const [activityRecords, submissionRecords, questionRecords, contentRecords, workbookRecords, formRecords] = await Promise.all([
         findByEmail(TABLES.activity, user.email), findByEmail(TABLES.submissions, user.email), findByEmail(TABLES.questions, user.email),
         listRecords(TABLES.content, contentFormula),
         findByEmail(TABLES.workbook, user.email),
+        findByEmail(TABLES.assessments, user.email),
       ]);
       return json(200, {
         ok: true,
@@ -187,6 +204,7 @@ exports.handler = async (event) => {
         questions: questionRecords.map(mapQuestion),
         content: contentRecords.map(mapContent).sort((a, b) => a.week - b.week || a.order - b.order),
         workbookResponses: workbookRecords.map(mapWorkbookResponse),
+        formResponses: formRecords.map(mapFormResponse),
       });
     }
 
@@ -215,6 +233,50 @@ exports.handler = async (event) => {
       else await createRecord(TABLES.workbook, fields);
       const workbookResponses = (await findByEmail(TABLES.workbook, user.email)).map(mapWorkbookResponse);
       return json(200, { ok: true, workbookResponses });
+    }
+
+    if (action === "save-course-form" && event.httpMethod === "POST") {
+      if (profile.program !== "Clinical Confidence Lab") return json(400, { message: "That form is not available for this program." });
+      const formKey = String(payload.formKey || "").trim();
+      const allowed = ["baseline", "success-plan", "pulse-1", "pulse-2", "pulse-3", "pulse-4", "post", "capstone", "call-prep"];
+      if (!allowed.includes(formKey) || !payload.responses || typeof payload.responses !== "object" || Array.isArray(payload.responses)) {
+        return json(400, { message: "That course form is not valid." });
+      }
+      const serialized = JSON.stringify(payload.responses);
+      if (serialized.length > 100000) return json(400, { message: "That response is too long to save." });
+      const values = Object.fromEntries(Object.entries(payload.responses).map(([key, value]) => [String(key).slice(0, 100), typeof value === "boolean" ? value : String(value || "").slice(0, 10000)]));
+      const confidence = Object.entries(values).filter(([key]) => /^(post-)?confidence-\d+$/.test(key)).map(([, value]) => Number(value)).filter(Number.isFinite);
+      const interference = Object.entries(values).filter(([key]) => /^(post-)?interference-\d+$/.test(key)).map(([, value]) => Number(value)).filter(Number.isFinite);
+      const scoreSummary = {
+        clinicalConfidenceIndex: confidence.length === 20 ? Math.round((confidence.reduce((sum, value) => sum + value, 0) / 20) * 10) : null,
+        clinicalInterferenceIndex: interference.length === 10 ? Number((interference.reduce((sum, value) => sum + value, 0) / 10).toFixed(2)) : null,
+      };
+      const week = formKey.startsWith("pulse-") ? Number(formKey.split("-")[1]) : ["post", "capstone", "call-prep"].includes(formKey) ? 4 : 0;
+      const assessmentId = `${user.email}|${profile.program}|${formKey}`;
+      const existing = await listRecords(TABLES.assessments, `{Assessment ID}='${formulaString(assessmentId)}'`, 1);
+      const assessmentType = formKey === "baseline" ? "Baseline" : ["post", "capstone"].includes(formKey) ? "Final" : "Midpoint";
+      const fields = {
+        "Assessment ID": assessmentId,
+        "Participant Email": user.email,
+        Program: profile.program,
+        Cohort: profile.cohort,
+        "Assessment Type": assessmentType,
+        "Form Key": formKey,
+        Week: week || null,
+        "Responses JSON": JSON.stringify(values),
+        "Ratings JSON": JSON.stringify(values),
+        "Score Summary JSON": JSON.stringify(scoreSummary),
+        "Goal / Reflection": String(values["desired-change"] || values["continue"] || values["next-behavior"] || "").slice(0, 10000),
+        "Submitted At": new Date().toISOString(),
+      };
+      if (existing[0]) await updateRecord(TABLES.assessments, existing[0].id, fields);
+      else await createRecord(TABLES.assessments, fields);
+      const participantFields = { "Last Active": new Date().toISOString() };
+      if (formKey === "baseline") participantFields["Baseline Complete"] = true;
+      if (formKey === "post") participantFields["Final Complete"] = true;
+      const updated = await updateRecord(TABLES.participants, participantRecord.id, participantFields);
+      const formResponses = (await findByEmail(TABLES.assessments, user.email)).map(mapFormResponse);
+      return json(200, { ok: true, formResponses, profile: mapProfile(updated, user), scoreSummary });
     }
 
     if (action === "save-activity" && event.httpMethod === "POST") {
@@ -328,8 +390,8 @@ exports.handler = async (event) => {
         if (existing[0]) await updateRecord(TABLES.content, existing[0].id, fields);
         else await createRecord(TABLES.content, fields);
       }
-      const [participants, submissions, questions, content] = await Promise.all([
-        listRecords(TABLES.participants), listRecords(TABLES.submissions), listRecords(TABLES.questions), listRecords(TABLES.content),
+      const [participants, submissions, questions, content, assessments] = await Promise.all([
+        listRecords(TABLES.participants), listRecords(TABLES.submissions), listRecords(TABLES.questions), listRecords(TABLES.content), listRecords(TABLES.assessments),
       ]);
       return json(200, {
         ok: true,
@@ -337,6 +399,7 @@ exports.handler = async (event) => {
         submissions: submissions.map(mapSubmission),
         questions: questions.map(mapQuestion),
         content: content.map(mapContent).sort((a, b) => a.program.localeCompare(b.program) || a.week - b.week || a.order - b.order),
+        assessments: assessments.map(mapFormResponse).filter((item) => item.formKey),
       });
     }
     return json(404, { message: "Course action not found." });
