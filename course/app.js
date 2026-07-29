@@ -289,12 +289,12 @@ const renderModule = (week) => {
   }));
 
   const weekForms = state.profile.program === "Clinical Confidence Lab"
-    ? Object.entries(window.TCC_LAB_FORMS || {}).filter(([, form]) => Number(form.week) === Number(week.number))
+    ? Object.entries(window.TCC_LAB_FORMS || {}).filter(([key, form]) => Number(form.week) === Number(week.number) || (week.number === 1 && ["baseline", "success-plan"].includes(key)))
     : [];
   $("[data-week-form-list]").innerHTML = weekForms.length ? `
     <article class="card week-forms-card">
-      <p class="eyebrow">This Week's Check-In</p>
-      <h3>Make your progress visible.</h3>
+      <p class="eyebrow">Assessment Steps for Week ${week.number}</p>
+      <h3>Go directly to what is due.</h3>
       <div class="week-form-buttons">
         ${weekForms.map(([key, form]) => {
           const complete = state.formResponses.some((response) => response.formKey === key);
@@ -527,6 +527,7 @@ $("[data-login-form]").addEventListener("submit", async (event) => {
 $$("[data-view-button]").forEach((button) => button.addEventListener("click", () => showView(button.dataset.viewButton)));
 $$("[data-access-tab]").forEach((button) => button.addEventListener("click", () => setAccessMode(button.dataset.accessTab)));
 $("[data-show-curriculum]").addEventListener("click", () => showView("curriculum"));
+$("[data-open-assessments]").addEventListener("click", () => showView("assessments"));
 $("[data-open-current]").addEventListener("click", () => openWeek(Number(state.profile.currentWeek || 1)));
 $("[data-sign-out]").addEventListener("click", signOut);
 
