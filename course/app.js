@@ -81,6 +81,13 @@ const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.
 const activityDone = (week, type) => activitiesForWeek(week).some((item) => item.activityType === type);
 const lessonWatched = (contentId) => state.activity.some((item) => item.completed && item.activityType === "Lesson accessed" && item.response === contentId);
 const weekCompletion = (week) => {
+  if (Number(week) === 0) {
+    const orientationItems = state.content.filter((item) => Number(item.week) === 0);
+    const completed = orientationItems.filter((item) => item.videoUrl
+      ? lessonWatched(item.contentId)
+      : item.workbookPrompts?.length && state.workbookResponses.some((response) => response.contentId === item.contentId)).length;
+    return Math.round((completed / Math.max(1, orientationItems.length)) * 100);
+  }
   const nonVideoTypes = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed");
   const videos = state.content.filter((item) => Number(item.week) === Number(week) && item.videoUrl);
   const done = nonVideoTypes.filter((type) => activityDone(week, type)).length + videos.filter((item) => lessonWatched(item.contentId)).length;
@@ -118,7 +125,17 @@ const renderDashboard = () => {
 
 const renderCurriculum = () => {
   const current = Number(state.profile.currentWeek || 1);
-  $("[data-week-grid]").innerHTML = window.TCC_COURSE.weeks.map((week) => {
+  const orientation = window.TCC_COURSE.orientation;
+  const orientationCard = orientation ? `
+    <button class="week-card orientation-card" data-open-week="0">
+      <span class="week-number">Before Week 1</span>
+      <h3>${escapeHtml(orientation.shortTitle)}</h3>
+      <p>${escapeHtml(orientation.description)}</p>
+      <span class="week-meta">${escapeHtml(orientation.tool)}</span>
+      <span class="week-state">${weekCompletion(0) ? `${weekCompletion(0)}% complete` : "Begin here"}</span>
+    </button>
+  ` : "";
+  $("[data-week-grid]").innerHTML = orientationCard + window.TCC_COURSE.weeks.map((week) => {
     const locked = week.number > current;
     const completion = weekCompletion(week.number);
     return `
@@ -217,7 +234,9 @@ const workbookSectionPlan = {
 };
 
 const buildWorkbookSections = (week, prompts, savedResponses = []) => {
-  const plan = workbookSectionPlan[Number(week)] || [["Workbook prompts", prompts.length]];
+  const plan = Number(week) <= 1
+    ? [["Complete this tool", prompts.length]]
+    : workbookSectionPlan[Number(week)] || [["Workbook prompts", prompts.length]];
   let start = 0;
   const sections = plan.map(([title, size]) => {
     const sectionPrompts = prompts.slice(start, start + size).map((prompt, offset) => ({
@@ -242,11 +261,24 @@ const buildWorkbookSections = (week, prompts, savedResponses = []) => {
 const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent[0];
-  $("[data-module-week]").textContent = `Week ${week.number}`;
-  $("[data-module-title]").textContent = primaryContent?.title || week.title;
-  $("[data-module-description]").textContent = primaryContent?.description || week.description;
+  const isOrientation = Number(week.number) === 0;
+  $("[data-module-week]").textContent = isOrientation ? "Start Here · Before Week 1" : `Week ${week.number}`;
+  $("[data-module-title]").textContent = week.title || primaryContent?.title;
+  $("[data-module-description]").textContent = week.description || primaryContent?.description;
   $("[data-module-tool]").textContent = week.tool;
-  $("[data-lesson-list]").innerHTML = weekContent.length ? weekContent.map((item, index) => {
+  const agenda = week.agenda?.length ? `
+    <article class="week-agenda">
+      <div class="week-agenda-intro">
+        <p class="eyebrow">Your Week ${week.number} Path</p>
+        <h2>Here’s what we’re doing.</h2>
+        ${week.outcome ? `<p><strong>Week ${week.number} outcome:</strong> ${escapeHtml(week.outcome)}</p>` : ""}
+      </div>
+      <ol>
+        ${week.agenda.map(([title, action]) => `<li><span>${escapeHtml(title)}</span><small>${escapeHtml(action)}</small></li>`).join("")}
+      </ol>
+    </article>
+  ` : "";
+  $("[data-lesson-list]").innerHTML = agenda + (weekContent.length ? weekContent.map((item, index) => {
     const video = getVideoEmbed(item.videoUrl);
     const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
     const prompts = item.workbookPrompts || [];
@@ -293,7 +325,7 @@ const renderModule = (week) => {
     `;
   }).join("") : `
     <div class="lesson-placeholder"><div><span>Weekly Teaching</span><strong>${escapeHtml(week.shortTitle)}</strong><div data-lesson-media><span>Lessons will appear here when Tiffany publishes them.</span></div></div></div>
-  `;
+  `);
   const resources = weekContent.flatMap((item) => {
     const rows = [];
     if (item.downloadUrl) rows.push({ label: item.title || "Download", url: item.downloadUrl });
@@ -346,7 +378,7 @@ const renderModule = (week) => {
     } finally { input.disabled = false; }
   }));
 
-  $("[data-activity-list]").innerHTML = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").map((type) => {
+  $("[data-activity-list]").innerHTML = isOrientation ? "" : window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").map((type) => {
     const done = activityDone(week.number, type);
     const descriptions = {
       "Tool completed": `Work through the ${week.tool}.`,
@@ -381,12 +413,14 @@ const renderModule = (week) => {
   }));
 
   const weekForms = state.profile.program === "Clinical Confidence Lab"
-    ? Object.entries(window.TCC_LAB_FORMS || {}).filter(([key, form]) => Number(form.week) === Number(week.number) || (week.number === 1 && ["baseline", "success-plan"].includes(key)))
+    ? Object.entries(window.TCC_LAB_FORMS || {}).filter(([key, form]) => isOrientation
+      ? ["baseline", "success-plan"].includes(key)
+      : Number(form.week) === Number(week.number) && !["baseline", "success-plan"].includes(key))
     : [];
   $("[data-week-form-list]").innerHTML = weekForms.length ? `
     <article class="card week-forms-card">
-      <p class="eyebrow">Assessment Steps for Week ${week.number}</p>
-      <h3>Go directly to what is due.</h3>
+      <p class="eyebrow">${isOrientation ? "Before Week 1" : `Assessment Steps for Week ${week.number}`}</p>
+      <h3>${isOrientation ? "Complete your starting steps." : "Go directly to what is due."}</h3>
       <div class="week-form-buttons">
         ${weekForms.map(([key, form]) => {
           const complete = state.formResponses.some((response) => response.formKey === key);
@@ -414,7 +448,7 @@ const openWeek = async (weekNumber) => {
   const current = Number(state.profile.currentWeek || 1);
   if (weekNumber > current) return;
   state.selectedWeek = weekNumber;
-  const week = window.TCC_COURSE.weeks[weekNumber - 1];
+  const week = weekNumber === 0 ? window.TCC_COURSE.orientation : window.TCC_COURSE.weeks[weekNumber - 1];
   renderModule(week);
   renderDashboard();
   renderCurriculum();

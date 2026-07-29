@@ -111,15 +111,34 @@ const intensiveCourse = {
 const labCourse = {
   title: "The Clinical Confidence Lab",
   program: "Clinical Confidence Lab",
+  orientation: {
+    number: 0,
+    title: "Welcome to the Clinical Confidence Lab",
+    shortTitle: "Start Here",
+    description: "Meet the Lab, complete your starting point, and take care of the few steps that come before Week 1.",
+    tool: "Orientation",
+    milestone: false,
+  },
   weeks: [
     {
       number: 1,
-      title: "Catch the Confidence Spiral",
-      shortTitle: "Notice What Happens",
-      description: "Spot what knocks you off center, recognize the pattern that follows, and choose one small interruption to practice.",
+      title: "Why Confidence Feels Shaky",
+      shortTitle: "Why Confidence Feels Shaky",
+      description: "Understand what disrupts your confidence, identify your protective response, and catch one confidence loop earlier.",
       tool: "Confidence Loop Map",
       milestone: true,
       feedbackFocus: "Confidence Loop Reflection",
+      outcome: "I know what happens when my confidence drops. I can tell the difference between needing more skill and needing to stop treating discomfort like evidence.",
+      agenda: [
+        ["You Are Not Behind", "Complete the “What I Thought Confidence Would Feel Like” reset."],
+        ["Confidence Is Built, Not Bestowed", "Define confidence as behavior, not permanent certainty."],
+        ["The Gaps Training Leaves", "Identify the specific gap—not just “I suck.”"],
+        ["Skill, Confidence, Context—or All Three?", "Use the gap sorter."],
+        ["Your Therapist Activation Pattern", "Complete your activation snapshot."],
+        ["The Confidence Loop", "Map one real loop."],
+        ["Case Lab: The Quiet Client", "Separate facts from story and choose a grounded response."],
+        ["Your Week 1 Experiment", "Choose one visible behavior to test."],
+      ],
     },
     {
       number: 2,

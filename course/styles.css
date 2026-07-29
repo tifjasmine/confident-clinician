@@ -320,6 +320,16 @@ input:focus, textarea:focus, select:focus {
 .workbook-status { color: var(--sage); font-size: 12px; }
 .workbook-save { position: sticky; bottom: 12px; z-index: 3; margin-top: 22px; padding: 10px; background: rgba(251,247,240,.94); box-shadow: 0 8px 28px rgba(42,60,47,.12); backdrop-filter: blur(8px); }
 .week-form-list { display: grid; gap: 18px; }
+.orientation-card { border-top-color: var(--sage); background: linear-gradient(150deg,#fff 0%,#f1eadf 100%); }
+.week-agenda { margin-bottom: 24px; border-top: 6px solid var(--terra); background: var(--white); box-shadow: 0 14px 38px rgba(42,60,47,.07); }
+.week-agenda-intro { padding: clamp(24px,4vw,38px); background: var(--sand); }
+.week-agenda-intro h2 { margin: 5px 0 12px; font-size: clamp(32px,4vw,46px); }
+.week-agenda-intro > p:last-child { max-width: 850px; margin: 0; color: var(--olive); line-height: 1.65; }
+.week-agenda ol { margin: 0; padding: 0; list-style: none; counter-reset: agenda; }
+.week-agenda li { display: grid; grid-template-columns: minmax(220px,.8fr) minmax(0,1.2fr); gap: 18px; padding: 16px clamp(20px,4vw,38px); border-top: 1px solid rgba(42,60,47,.1); counter-increment: agenda; }
+.week-agenda li span { color: var(--forest); font-weight: 700; }
+.week-agenda li span::before { content: counter(agenda) ". "; color: var(--terra); }
+.week-agenda li small { color: var(--olive); font-size: 12px; line-height: 1.55; }
 .week-forms-card { border-left: 5px solid var(--terra); box-shadow: none; }
 .week-form-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
 .course-form { display: grid; gap: 16px; }
@@ -472,6 +482,7 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
   .workbook-prompts { padding: 20px 14px 24px; }
   .workbook-prompts textarea { min-height: 115px; }
   .workbook-save { bottom: calc(78px + env(safe-area-inset-bottom)); }
+  .week-agenda li { grid-template-columns: 1fr; gap: 5px; }
   .progress-stats { grid-template-columns: 1fr 1fr; }
   .week-grid, .queue-grid { grid-template-columns: 1fr; }
   .week-card { min-height: 230px; width: 100%; text-align: left; }
