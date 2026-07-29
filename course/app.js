@@ -271,7 +271,7 @@ const renderModule = (week) => {
       <div class="week-agenda-intro">
         <p class="eyebrow">Your Week ${week.number} Path</p>
         <h2>Here’s what we’re doing.</h2>
-        ${week.outcome ? `<p><strong>Week ${week.number} outcome:</strong> ${escapeHtml(week.outcome)}</p>` : ""}
+        ${week.outcome ? `<div class="week-outcome"><span>Week ${week.number} outcome</span><p>${escapeHtml(week.outcome)}</p></div>` : ""}
       </div>
       <ol>
         ${week.agenda.map(([title, action]) => `<li><span>${escapeHtml(title)}</span><small>${escapeHtml(action)}</small></li>`).join("")}
@@ -351,9 +351,12 @@ const renderModule = (week) => {
     (item.files || []).forEach((file) => rows.push({ label: file.filename || item.title || "Course file", url: file.url }));
     return rows;
   });
-  $("[data-module-resources]").innerHTML = resources.length
-    ? resources.map((item) => `<a class="resource-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.label)}</a>`).join("")
-    : `<p class="supporting">Downloads and worksheets will appear here when Tiffany publishes them.</p>`;
+  const resourceList = $("[data-module-resources]");
+  if (resourceList) {
+    resourceList.innerHTML = resources.length
+      ? resources.map((item) => `<a class="resource-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.label)}</a>`).join("")
+      : "";
+  }
 
   $$("[data-workbook-form]").forEach((form) => form.addEventListener("submit", async (event) => {
     event.preventDefault();
