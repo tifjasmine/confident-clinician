@@ -266,16 +266,10 @@ const renderModule = (week) => {
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
   $("[data-module-description]").textContent = week.description || primaryContent?.description;
   $("[data-module-tool]").textContent = week.tool;
-  const agenda = week.agenda?.length ? `
-    <article class="week-agenda">
-      <div class="week-agenda-intro">
-        <p class="eyebrow">Your Week ${week.number} Path</p>
-        <h2>Here’s what we’re doing.</h2>
-        ${week.outcome ? `<div class="week-outcome"><span>Week ${week.number} outcome</span><p>${escapeHtml(week.outcome)}</p></div>` : ""}
-      </div>
-      <ol>
-        ${week.agenda.map(([title, action]) => `<li><span>${escapeHtml(title)}</span><small>${escapeHtml(action)}</small></li>`).join("")}
-      </ol>
+  const agenda = week.outcome ? `
+    <article class="week-focus">
+      <span>Week ${week.number} outcome</span>
+      <p>${escapeHtml(week.outcome)}</p>
     </article>
   ` : "";
   const firstIncompleteLesson = weekContent.findIndex((item) => {
@@ -308,7 +302,7 @@ const renderModule = (week) => {
           <div class="lesson-heading">
             ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ""}
           </div>
-          ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : ""}
+          ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong><small>Tiffany will publish this lesson here.</small></div>` : ""}
           ${item.videoUrl ? `<label class="video-complete"><input type="checkbox" data-video-complete="${escapeHtml(item.contentId)}" data-video-week="${week.number}" ${lessonWatched(item.contentId) ? "checked" : ""}><span><strong>${lessonWatched(item.contentId) ? "Video complete" : "Mark video watched"}</strong><small>Check this after you finish this video.</small></span></label>` : ""}
           ${prompts.length ? `
           <form class="workbook-form" data-workbook-form="${escapeHtml(item.contentId)}" data-workbook-week="${week.number}">
