@@ -135,6 +135,11 @@
     /* WORKSHOP BRIDGE */
     .bridge { background: var(--bg); padding: 56px 52px; border-bottom: 1px solid var(--line); }
     .bridge-inner { max-width: 1060px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 60px; }
+    .mid-cta { background: var(--dark); padding: 42px 52px; }
+    .mid-cta-inner { max-width: 1060px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+    .mid-cta-copy { max-width: 620px; }
+    .mid-cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 3vw, 38px); font-weight: 400; line-height: 1.12; color: var(--bg); margin-top: 8px; }
+    .mid-cta .waitlist-trigger { width: auto; min-width: 250px; flex: 0 0 auto; white-space: nowrap; }
 
     /* WAITLIST */
     .waitlist { display: grid; grid-template-columns: 55fr 45fr; min-height: 560px; }
@@ -189,6 +194,9 @@
       .for-grid, .phases-grid, .bonuses-grid, .notis-grid { margin-top: 34px; }
       .for-card, .phase-card, .notis-card { padding: 34px 26px; }
       .bridge-inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .mid-cta { padding: 38px 24px; }
+      .mid-cta-inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .mid-cta .waitlist-trigger { width: 100%; min-width: 0; }
       .waitlist { grid-template-columns: 1fr; }
       .waitlist-right { min-height: 300px; }
       .waitlist-left { padding: 52px 24px; }
@@ -298,13 +306,13 @@
   </div>
 </section>
 
-<section class="bridge" data-screen-label="Join the Founding Cohort">
-  <div class="bridge-inner">
-    <div>
-      <p class="eyebrow" style="margin-bottom: 10px;">January 2027 founding cohort</p>
-      <h2 class="section-h2" style="font-size: clamp(22px, 2.8vw, 34px); color: var(--dark);">Interested in the Intensive? Get the founding cohort details.</h2>
+<section class="mid-cta" data-screen-label="Join the Founding Cohort">
+  <div class="mid-cta-inner">
+    <div class="mid-cta-copy">
+      <p class="eyebrow eyebrow-light">January 2027 founding cohort</p>
+      <h2 class="mid-cta-title">Ready to hear more about the Intensive?</h2>
     </div>
-    <button type="button" class="btn btn-accent waitlist-trigger" data-open-waitlist style="flex-shrink: 0; white-space: nowrap;">Join the Founding Cohort</button>
+    <button type="button" class="btn btn-accent waitlist-trigger" data-open-waitlist>Get the Details</button>
   </div>
 </section>
 
