@@ -153,9 +153,8 @@
       .nav { padding: 18px 24px; }
       .nav { flex-direction: column; gap: 12px; padding: 16px 18px; }
       .nav-brand { text-align: center; font-size: 16px; line-height: 1.2; }
-      .nav-links { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); width: 100%; gap: 7px; }
-      .nav-links a { display: grid; min-height: 40px; place-items: center; background: rgba(255,255,255,0.45); border: 1px solid rgba(42,60,47,0.16); color: var(--dark); font-size: 10px; letter-spacing: 0.055em; line-height: 1.2; padding: 8px; text-align: center; }
-      .nav-links a[href="./"], .nav-links a[href="./about.html"] { display: none; }
+      .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .nav-links a { background: rgba(255,255,255,0.45); border: 1px solid rgba(42,60,47,0.16); border-radius: 999px; color: var(--dark); font-size: 11px; letter-spacing: 0.055em; line-height: 1.1; padding: 8px 11px; white-space: nowrap; }
       .nav-links a.nav-cta { background: var(--accent); border-color: var(--accent); color: #fff !important; }
       .hero { grid-template-columns: 1fr; min-height: auto; }
       .hero-right { min-height: 300px; }
@@ -175,7 +174,7 @@
       .footer-links { justify-content: flex-start; }
     }
   
-    @media (max-width: 560px) { .nav-links .nav-cta { grid-column: 1 / -1; } .outcomes-grid { grid-template-columns: 1fr; } .hero-h1 { font-size: clamp(40px, 13vw, 58px); } .hero-btns .btn, .footer-cta-btns .btn { width: 100%; text-align: center; } }
+    @media (max-width: 560px) { .outcomes-grid { grid-template-columns: 1fr; } .hero-h1 { font-size: clamp(40px, 13vw, 58px); } .hero-btns .btn, .footer-cta-btns .btn { width: 100%; text-align: center; } }
   </style>
 </head>
 <body>
