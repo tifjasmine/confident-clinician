@@ -342,11 +342,20 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
 }
 @media (max-width: 760px) {
   .login-page { grid-template-columns: 1fr; }
-  .login-story { min-height: auto; padding: 30px 22px 34px; gap: 28px; }
-  .login-story h1 { margin-bottom: 18px; font-size: clamp(43px, 13vw, 62px); }
-  .login-story p:not(.eyebrow) { font-size: 15px; line-height: 1.65; }
-  .login-form-wrap { padding: 34px 20px 48px; place-items: start center; }
-  .login-card h2 { font-size: 42px; }
+  .login-story {
+    min-height: auto;
+    padding: 22px 20px;
+    gap: 0;
+  }
+  .login-story .wordmark { font-size: 15px; }
+  .login-copy, .login-story > p:last-child { display: none; }
+  .login-form-wrap { padding: 26px 20px 42px; place-items: start center; }
+  .login-card > .eyebrow { margin-bottom: 10px; }
+  .login-card h2 { margin-bottom: 8px; font-size: 40px; }
+  .login-card > .supporting { margin: 0; font-size: 14px; line-height: 1.55; }
+  .access-tabs { margin-top: 20px; }
+  .form-grid { margin-top: 22px; }
+  .privacy-note { margin-top: 20px; padding-top: 18px; }
   .app-shell { display: block; }
   .sidebar {
     position: static;

@@ -57,10 +57,10 @@ const setAccessMode = (mode) => {
     button.setAttribute("aria-selected", String(active));
   });
   $$("[data-access-form]").forEach((form) => { form.hidden = form.dataset.accessForm !== mode; });
-  $("[data-access-heading]").textContent = mode === "login" ? "Welcome back." : "Activate your account.";
+  $("[data-access-heading]").textContent = mode === "login" ? "Welcome back." : "Set up your account.";
   $("[data-access-copy]").textContent = mode === "login"
-    ? "Use the email and password connected to your Confident Clinician course account."
-    : "Enter the same email Tiffany added to the course roster. We’ll send you a secure link to choose your password.";
+    ? "Already chose a password? Log in here."
+    : "First time here? Enter the email you gave Tiffany. We’ll send you a secure link to choose your password.";
   $("[data-login-status]").textContent = "";
 };
 
