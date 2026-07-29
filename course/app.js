@@ -265,7 +265,6 @@ const renderModule = (week) => {
   $("[data-module-week]").textContent = isOrientation ? "Start Here · Before Week 1" : `Week ${week.number}`;
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
   $("[data-module-description]").textContent = week.description || primaryContent?.description;
-  $("[data-module-tool]").textContent = week.tool;
   const agenda = week.outcome ? `
     <article class="week-focus">
       <span>Week ${week.number} outcome</span>
@@ -532,7 +531,7 @@ const renderCourseFormField = (field, value) => {
     <fieldset class="course-rating">
       <legend>${escapeHtml(field.label)}</legend>
       ${field.help ? `<p>${escapeHtml(field.help)}</p>` : ""}
-      <div class="course-rating-options">
+      <div class="course-rating-options ${field.type === "choice" ? "choice-options" : "scale-options"}">
         ${options.map((option) => `<label><input type="radio" name="${escapeHtml(field.key)}" value="${escapeHtml(option)}" ${String(value ?? "") === String(option) ? "checked" : ""} required><span>${escapeHtml(option)}</span></label>`).join("")}
       </div>
     </fieldset>

@@ -353,6 +353,9 @@ input:focus, textarea:focus, select:focus {
 .course-rating-options input { position: absolute; opacity: 0; pointer-events: none; }
 .course-rating-options span { display: grid; min-width: 42px; min-height: 42px; place-items: center; padding: 8px; border: 1px solid rgba(42,60,47,.2); background: var(--white); color: var(--forest); cursor: pointer; }
 .course-rating-options input:checked + span { border-color: var(--terra); background: var(--terra); color: white; }
+.choice-options { display: grid; grid-template-columns: 1fr; }
+.choice-options label, .choice-options span { width: 100%; }
+.choice-options span { justify-content: start; min-height: 48px; padding: 12px 14px; text-align: left; line-height: 1.4; }
 .form-ack { display: flex; grid-template-columns: none; gap: 12px; align-items: flex-start; color: var(--forest); font-size: 13px; font-weight: 500; letter-spacing: 0; line-height: 1.6; text-transform: none; }
 .form-ack input { width: 22px; height: 22px; min-height: 0; flex: 0 0 auto; accent-color: var(--terra); }
 .resource-list { display: grid; gap: 9px; margin-top: 18px; }
@@ -497,6 +500,18 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
   .lesson-step-summary { grid-template-columns: 40px minmax(0,1fr); gap: 12px; min-height: 74px; padding: 12px 14px; }
   .lesson-step-number { width: 38px; height: 38px; }
   .lesson-step-state { grid-column: 2; width: max-content; margin-top: -5px; }
+  .assessment-grid, .course-form { gap: 12px; }
+  .assessment-domain { padding: 20px 16px; }
+  .assessment-domain h3 { margin-bottom: 14px; font-size: 27px; }
+  .course-form-intro .warning { margin-top: 16px; padding: 13px 14px; font-size: 12px; }
+  .course-rating legend { font-size: 15px; line-height: 1.45; }
+  .scale-options { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; }
+  .scale-options label, .scale-options span { width: 100%; min-width: 0; }
+  .scale-options span { min-height: 46px; padding: 6px; }
+  .choice-options { display: grid; grid-template-columns: 1fr; }
+  .choice-options span { min-height: 50px; padding: 12px; font-size: 13px; }
+  .course-form textarea { min-height: 125px; }
+  .form-ack { gap: 10px; font-size: 13px; }
   .progress-stats { grid-template-columns: 1fr 1fr; }
   .week-grid, .queue-grid { grid-template-columns: 1fr; }
   .week-card { min-height: 230px; width: 100%; text-align: left; }
