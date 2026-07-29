@@ -172,7 +172,7 @@
       <a class="active" href="/clinical-confidence-lab">4-Week Lab</a>
       <a href="/program.html">Intensives</a>
       <a href="/course/">Course Login</a>
-      <a class="nav-cta" href="#signup">Get Details</a>
+      <a class="nav-cta" href="#signup">Join the Mailing List</a>
     </div>
   </nav>
 
@@ -259,12 +259,12 @@
     <section class="section signup" id="signup">
       <div class="inner">
         <p class="eyebrow" style="color:var(--tan)">September 2026</p>
-        <h2>Get details about the founding beta.</h2>
-        <p class="signup-copy">Join the interest list for exact dates, enrollment opening, and founding-beta details.</p>
+        <h2>Join the mailing list.</h2>
+        <p class="signup-copy">Get Clinical Confidence Lab updates, course dates, and enrollment news sent to your inbox.</p>
         <form class="signup-form" data-interest-form>
           <input type="text" name="name" autocomplete="name" placeholder="Your name">
           <input type="email" name="email" autocomplete="email" placeholder="Your email" required>
-          <button class="button" type="submit">Send Me Details</button>
+          <button class="button" type="submit">Join the Mailing List</button>
         </form>
         <p class="form-status" data-form-status role="status"></p>
       </div>
@@ -297,13 +297,13 @@
         });
         const result = await response.json();
         if (!response.ok || !result.ok) throw new Error(result.message || 'Something did not send.');
-        status.textContent = 'You are on the list. Watch your inbox for founding-beta details.';
+        status.textContent = 'You are on the mailing list. Watch your inbox for Clinical Confidence Lab updates.';
         form.reset();
       } catch (error) {
         status.textContent = error.message || 'Something did not send. Please email admin@theconfidentclinician.me.';
       } finally {
         button.disabled = false;
-        button.textContent = 'Send Me Details';
+        button.textContent = 'Join the Mailing List';
       }
     });
   </script>
