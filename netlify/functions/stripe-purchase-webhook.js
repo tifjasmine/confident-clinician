@@ -146,7 +146,8 @@ const getLineItemPriceIds = (lineItems) => {
 };
 
 const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
-  const labPriceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID || 'price_1TyEZCASlf43jszV2eZ2kNon';
+  const labPriceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID;
+  if (!labPriceId) return null;
   if (!getLineItemPriceIds(lineItems).includes(labPriceId)) return null;
 
   const token = process.env.AIRTABLE_ACCESS_TOKEN;

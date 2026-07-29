@@ -28,8 +28,7 @@ exports.handler = async (event) => {
   }
 
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID
-    || 'price_1TyEZCASlf43jszV2eZ2kNon';
+  const priceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID;
 
   if (!stripeSecretKey || !priceId) {
     return html(500, '<p>Checkout is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.</p>');
