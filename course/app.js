@@ -126,6 +126,41 @@ const renderCurriculum = () => {
   $$("[data-open-week]").forEach((button) => button.addEventListener("click", () => openWeek(Number(button.dataset.openWeek))));
 };
 
+const getVideoEmbed = (url) => {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    const pathParts = parsed.pathname.split("/").filter(Boolean);
+
+    if (host === "wistia.com" || host.endsWith(".wistia.com") || host === "wistia.net" || host.endsWith(".wistia.net")) {
+      const iframeIndex = pathParts.indexOf("iframe");
+      const mediaId = iframeIndex >= 0 ? pathParts[iframeIndex + 1] : pathParts[pathParts.length - 1];
+      if (mediaId && /^[a-z0-9]+$/i.test(mediaId)) {
+        return {
+          src: `https://fast.wistia.net/embed/iframe/${mediaId}?videoFoam=true&playerColor=c56a4d&seo=false`,
+          title: "Weekly teaching video",
+        };
+      }
+    }
+
+    if (host === "youtu.be" || host.endsWith("youtube.com")) {
+      const videoId = host === "youtu.be" ? pathParts[0] : parsed.searchParams.get("v") || pathParts[pathParts.length - 1];
+      if (videoId && /^[\w-]+$/.test(videoId)) {
+        return { src: `https://www.youtube-nocookie.com/embed/${videoId}`, title: "Weekly teaching video" };
+      }
+    }
+
+    if (host === "vimeo.com" || host.endsWith(".vimeo.com")) {
+      const videoId = [...pathParts].reverse().find((part) => /^\d+$/.test(part));
+      if (videoId) return { src: `https://player.vimeo.com/video/${videoId}`, title: "Weekly teaching video" };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+};
+
 const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent.find((item) => item.contentType === "Video") || weekContent[0];
@@ -136,7 +171,10 @@ const renderModule = (week) => {
   $("[data-module-tool]").textContent = week.tool;
   const media = $("[data-lesson-media]");
   if (primaryContent?.videoUrl) {
-    media.innerHTML = `<a class="button light" href="${escapeHtml(primaryContent.videoUrl)}" target="_blank" rel="noopener">Open Weekly Teaching</a>`;
+    const video = getVideoEmbed(primaryContent.videoUrl);
+    media.innerHTML = video
+      ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(primaryContent.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`
+      : `<a class="button light" href="${escapeHtml(primaryContent.videoUrl)}" target="_blank" rel="noopener">Open Weekly Teaching</a>`;
   } else {
     media.innerHTML = `<span>Weekly teaching will appear here when Tiffany publishes the video.</span>`;
   }
@@ -153,8 +191,9 @@ const renderModule = (week) => {
 
   $("[data-activity-list]").innerHTML = window.TCC_COURSE.activityTypes.map((type) => {
     const done = activityDone(week.number, type);
+    const displayType = type === "Lesson accessed" ? "Video watched" : type;
     const descriptions = {
-      "Lesson accessed": "Watch or listen to the weekly teaching.",
+      "Lesson accessed": "Check this only after you finish the weekly teaching.",
       "Tool completed": `Work through the ${week.tool}.`,
       "Case exercise completed": "Apply the week’s lens to the fictional scenario.",
       "Implementation completed": "Practice one small behavior in your real work.",
@@ -163,7 +202,7 @@ const renderModule = (week) => {
     return `
       <label class="activity">
         <input class="activity-check" type="checkbox" data-activity-type="${escapeHtml(type)}" ${done ? "checked" : ""}>
-        <span><strong>${escapeHtml(type)}</strong><span>${escapeHtml(descriptions[type])}</span></span>
+        <span><strong>${escapeHtml(displayType)}</strong><span>${escapeHtml(descriptions[type])}</span></span>
         <span class="pill">${done ? "Complete" : "Not started"}</span>
       </label>
     `;
@@ -201,13 +240,6 @@ const openWeek = async (weekNumber) => {
   if (weekNumber > current) return;
   state.selectedWeek = weekNumber;
   const week = window.TCC_COURSE.weeks[weekNumber - 1];
-  if (!activityDone(weekNumber, "Lesson accessed")) {
-    const result = await api("save-activity", {
-      method: "POST",
-      body: JSON.stringify({ week: weekNumber, activityType: "Lesson accessed", completed: true }),
-    });
-    state.activity = result.activity;
-  }
   renderModule(week);
   renderDashboard();
   renderCurriculum();
