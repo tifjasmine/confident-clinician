@@ -359,9 +359,6 @@ const renderModule = (week) => {
           <span class="lesson-step-state ${itemComplete ? "complete" : itemInProgress ? "in-progress" : ""}">${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</span>
         </summary>
         <div class="lesson-step-body">
-          <div class="lesson-heading">
-            ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ""}
-          </div>
           ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong></div>` : ""}
           ${item.videoUrl ? `<label class="video-complete"><input type="checkbox" data-video-complete="${escapeHtml(item.contentId)}" data-video-week="${week.number}" ${lessonWatched(item.contentId) ? "checked" : ""}><span><strong>${lessonWatched(item.contentId) ? "Video complete" : "Mark video watched"}</strong><small>Check this after you finish this video.</small></span></label>` : ""}
           ${prompts.length ? `
@@ -370,10 +367,6 @@ const renderModule = (week) => {
               <p class="eyebrow">Interactive Workbook</p>
               <h3>${escapeHtml(item.workbookTitle || item.title)}</h3>
               <p>Your answers save privately to your course account. Use fictional, composite, or fully de-identified examples only.</p>
-            </div>
-            <div class="workbook-progress-copy">
-              <strong>Take this one section at a time.</strong>
-              <span>${prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length} of ${prompts.length} responses saved</span>
             </div>
             <div class="workbook-sections">
               ${workbookSections.map((section, sectionIndex) => `
