@@ -3,7 +3,7 @@ const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
 const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
-const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 1 };
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 1, lessonPositions: {} };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -340,7 +340,22 @@ const renderModule = (week) => {
       <p>${escapeHtml(week.outcome)}</p>
     </article>
   ` : "";
-  $("[data-lesson-list]").innerHTML = agenda + (weekContent.length ? weekContent.map((item, index) => {
+  const lessonKey = String(week.number);
+  const completionFor = (item) => {
+    const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
+    const prompts = item.workbookPrompts || [];
+    const answeredCount = prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length;
+    return (!item.videoUrl || lessonWatched(item.contentId)) && (!prompts.length || answeredCount === prompts.length);
+  };
+  if (state.lessonPositions[lessonKey] == null) {
+    const firstIncomplete = weekContent.findIndex((item) => !completionFor(item));
+    state.lessonPositions[lessonKey] = firstIncomplete >= 0 ? firstIncomplete : Math.max(0, weekContent.length - 1);
+  }
+  const activeIndex = Math.min(Math.max(0, state.lessonPositions[lessonKey]), Math.max(0, weekContent.length - 1));
+  const activeItem = weekContent[activeIndex];
+  $("[data-lesson-list]").innerHTML = agenda + (activeItem ? (() => {
+    const item = activeItem;
+    const index = activeIndex;
     const video = getVideoEmbed(item.videoUrl);
     const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
     const prompts = item.workbookPrompts || [];
@@ -349,15 +364,19 @@ const renderModule = (week) => {
     const itemComplete = (!item.videoUrl || lessonWatched(item.contentId)) && (!prompts.length || answeredCount === prompts.length);
     const itemInProgress = !itemComplete && (lessonWatched(item.contentId) || answeredCount > 0);
     return `
-      <details class="lesson-card lesson-step" data-lesson-step>
-        <summary class="lesson-step-summary">
+      <div class="lesson-sequence-status">
+        <span>Lesson ${index + 1} of ${weekContent.length}</span>
+        <strong>${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</strong>
+      </div>
+      <article class="lesson-card lesson-step lesson-step-active">
+        <div class="lesson-step-summary">
           <span class="lesson-step-number">${isOrientation ? index + 1 : String(index + 1).padStart(2, "0")}</span>
           <span class="lesson-step-copy">
             <small>${escapeHtml(item.contentType)}${item.videoUrl ? " · Video" : ""}</small>
             <strong>${escapeHtml(item.title)}</strong>
           </span>
           <span class="lesson-step-state ${itemComplete ? "complete" : itemInProgress ? "in-progress" : ""}">${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</span>
-        </summary>
+        </div>
         <div class="lesson-step-body">
           ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong></div>` : ""}
           ${item.videoUrl ? `<label class="video-complete"><input type="checkbox" data-video-complete="${escapeHtml(item.contentId)}" data-video-week="${week.number}" ${lessonWatched(item.contentId) ? "checked" : ""}><span><strong>${lessonWatched(item.contentId) ? "Video complete" : "Mark video watched"}</strong><small>Check this after you finish this video.</small></span></label>` : ""}
@@ -386,9 +405,13 @@ const renderModule = (week) => {
           </form>
           ` : ""}
         </div>
-      </details>
+      </article>
+      <nav class="lesson-sequence-nav" aria-label="Lesson navigation">
+        <button class="button secondary" type="button" data-lesson-previous ${index === 0 ? "disabled" : ""}>Previous Lesson</button>
+        <button class="button" type="button" data-lesson-next ${!itemComplete || index === weekContent.length - 1 ? "disabled" : ""}>${index === weekContent.length - 1 ? (itemComplete ? "Week Complete" : "Complete This Lesson") : "Continue to Next Lesson"}</button>
+      </nav>
     `;
-  }).join("") : `
+  })() : `
     <div class="lesson-placeholder"><div><span>Weekly Teaching</span><strong>${escapeHtml(week.shortTitle)}</strong><div data-lesson-media><span>Lessons will appear here when Tiffany publishes them.</span></div></div></div>
   `);
   const resources = weekContent.flatMap((item) => {
@@ -418,7 +441,9 @@ const renderModule = (week) => {
         body: JSON.stringify({ contentId: form.dataset.workbookForm, week: Number(form.dataset.workbookWeek), responses }),
       });
       state.workbookResponses = result.workbookResponses || [];
-      status.textContent = "Saved";
+      renderModule(week);
+      renderDashboard();
+      renderCurriculum();
     } catch (error) {
       status.textContent = error.message;
     } finally { button.disabled = false; }
@@ -429,12 +454,17 @@ const renderModule = (week) => {
       if (other !== section) other.open = false;
     });
   }));
-  $$("[data-lesson-step]").forEach((step) => step.addEventListener("toggle", () => {
-    if (!step.open) return;
-    $$("[data-lesson-step]").forEach((other) => {
-      if (other !== step) other.open = false;
-    });
-  }));
+  $("[data-lesson-previous]")?.addEventListener("click", () => {
+    state.lessonPositions[lessonKey] = Math.max(0, activeIndex - 1);
+    renderModule(week);
+    $("[data-module-title]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  $("[data-lesson-next]")?.addEventListener("click", () => {
+    if (!completionFor(activeItem) || activeIndex >= weekContent.length - 1) return;
+    state.lessonPositions[lessonKey] = activeIndex + 1;
+    renderModule(week);
+    $("[data-module-title]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
   $$("[data-video-complete]").forEach((input) => input.addEventListener("change", async () => {
     input.disabled = true;
     try {
