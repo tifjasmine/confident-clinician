@@ -130,7 +130,7 @@ const labCourse = {
       feedbackFocus: "Confidence Loop Reflection",
       outcome: "I know what happens when my confidence drops. I can tell the difference between needing more skill and needing to stop treating discomfort like evidence.",
       agenda: [
-        ["You Are Not Behind", "Complete the “What I Thought Confidence Would Feel Like” reset."],
+        ["Why Confidence Feels Shaky", "Name the version of confidence you have been measuring yourself against."],
         ["Confidence Is Built, Not Bestowed", "Define confidence as behavior, not permanent certainty."],
         ["The Gaps Training Leaves", "Identify the specific gap—not just “I suck.”"],
         ["Skill, Confidence, Context—or All Three?", "Use the gap sorter."],
