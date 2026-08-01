@@ -124,9 +124,6 @@ const setAccessMode = (mode) => {
   });
   $$("[data-access-form]").forEach((form) => { form.hidden = form.dataset.accessForm !== mode; });
   $("[data-access-heading]").textContent = mode === "login" ? "Welcome back." : "Set up your account.";
-  $("[data-access-copy]").textContent = mode === "login"
-    ? "Already chose a password? Log in here."
-    : "First time here? Enter the email you gave Tiffany. We’ll send you a secure link to choose your password.";
   $("[data-login-status]").textContent = "";
 };
 
