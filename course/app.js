@@ -143,22 +143,23 @@ const setCourseForProfile = () => {
 const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.week) === Number(week) && item.completed);
 const activityDone = (week, type) => activitiesForWeek(week).some((item) => item.activityType === type);
 const lessonWatched = (contentId) => state.activity.some((item) => item.completed && item.activityType === "Lesson accessed" && item.response === contentId);
+const contentItemComplete = (item) => {
+  const prompts = item.workbookPrompts || [];
+  const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
+  const workbookComplete = !prompts.length || prompts.every((_, index) => String(saved?.responses?.[index] || "").trim());
+  return (!item.videoUrl || lessonWatched(item.contentId)) && workbookComplete;
+};
 const weekCompletion = (week) => {
   if (Number(week) === 0) {
     const orientationItems = state.content.filter((item) => Number(item.week) === 0);
-    const completed = orientationItems.filter((item) => item.videoUrl
-      ? lessonWatched(item.contentId)
-      : item.workbookPrompts?.length && state.workbookResponses.some((response) => response.contentId === item.contentId)).length;
+    const completed = orientationItems.filter((item) => contentItemComplete(item)).length;
     return Math.round((completed / Math.max(1, orientationItems.length)) * 100);
   }
   if (state.profile?.program === "Clinical Confidence Lab") {
     const items = state.content.filter((item) => Number(item.week) === Number(week));
-    const videoItems = items.filter((item) => item.videoUrl);
-    const workbookItems = items.filter((item) => item.workbookPrompts?.length);
-    const completedVideos = videoItems.filter((item) => lessonWatched(item.contentId)).length;
-    const completedWorkbooks = workbookItems.filter((item) => state.workbookResponses.some((response) => response.contentId === item.contentId)).length;
+    const completedLessons = items.filter((item) => contentItemComplete(item)).length;
     const weeklyForm = state.formResponses.some((response) => Number(response.week) === Number(week) || response.formKey === `pulse-${week}`);
-    return Math.round(((completedVideos + completedWorkbooks + (weeklyForm ? 1 : 0)) / Math.max(1, videoItems.length + workbookItems.length + 1)) * 100);
+    return Math.round(((completedLessons + (weeklyForm ? 1 : 0)) / Math.max(1, items.length + 1)) * 100);
   }
   const nonVideoTypes = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed");
   const videos = state.content.filter((item) => Number(item.week) === Number(week) && item.videoUrl);
@@ -176,7 +177,7 @@ const renderDashboard = () => {
   const progress = profile.program === "Clinical Confidence Lab"
     ? Math.round(window.TCC_COURSE.weeks.reduce((sum, item) => sum + weekCompletion(item.number), 0) / window.TCC_COURSE.weeks.length)
     : Math.min(100, Math.round((completedActivities / Math.max(1, totalActivities)) * 100));
-  const opened = new Set(state.activity.filter((item) => item.activityType === "Lesson accessed" && item.completed).map((item) => item.response || `week-${item.week}`)).size;
+  const completedLessons = state.content.filter((item) => Number(item.week) > 0 && contentItemComplete(item)).length;
 
   $("[data-first-name]").textContent = (profile.name || "clinician").split(" ")[0];
   $("[data-current-week-label]").textContent = `Week ${week.number} · ${week.tool}`;
@@ -184,7 +185,7 @@ const renderDashboard = () => {
   $("[data-current-week-description]").textContent = week.description;
   $("[data-progress-ring]").style.setProperty("--value", progress);
   $("[data-progress-percent]").textContent = `${progress}%`;
-  $("[data-modules-count]").textContent = opened;
+  $("[data-modules-count]").textContent = completedLessons;
   $("[data-milestones-count]").textContent = state.submissions.length;
 
 };
@@ -338,12 +339,7 @@ const renderModule = (week) => {
     </article>
   ` : "";
   const lessonKey = String(week.number);
-  const completionFor = (item) => {
-    const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
-    const prompts = item.workbookPrompts || [];
-    const answeredCount = prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length;
-    return (!item.videoUrl || lessonWatched(item.contentId)) && (!prompts.length || answeredCount === prompts.length);
-  };
+  const completionFor = (item) => contentItemComplete(item);
   if (state.lessonPositions[lessonKey] == null) {
     const firstIncomplete = weekContent.findIndex((item) => !completionFor(item));
     state.lessonPositions[lessonKey] = firstIncomplete >= 0 ? firstIncomplete : Math.max(0, weekContent.length - 1);
