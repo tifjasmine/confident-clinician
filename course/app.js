@@ -3,7 +3,7 @@ const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
 const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
-const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 1, lessonPositions: {} };
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 1, lessonPositions: {}, assessmentReturn: null };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -350,6 +350,7 @@ const renderModule = (week) => {
   }
   const activeIndex = Math.min(Math.max(0, state.lessonPositions[lessonKey]), Math.max(0, weekContent.length - 1));
   const activeItem = weekContent[activeIndex];
+  const allLessonsComplete = weekContent.length > 0 && weekContent.every((item) => completionFor(item));
   $("[data-lesson-list]").innerHTML = agenda + (activeItem ? (() => {
     const item = activeItem;
     const index = activeIndex;
@@ -358,8 +359,20 @@ const renderModule = (week) => {
     const prompts = item.workbookPrompts || [];
     const workbookSections = buildWorkbookSections(week.number, prompts, saved?.responses || []);
     const answeredCount = prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length;
+    const remainingAnswers = Math.max(0, prompts.length - answeredCount);
+    const videoComplete = !item.videoUrl || lessonWatched(item.contentId);
     const itemComplete = (!item.videoUrl || lessonWatched(item.contentId)) && (!prompts.length || answeredCount === prompts.length);
     const itemInProgress = !itemComplete && (lessonWatched(item.contentId) || answeredCount > 0);
+    const continueHelp = !videoComplete
+      ? "Watch the video and mark it complete to continue."
+      : remainingAnswers
+        ? `Answer and save ${remainingAnswers} more ${remainingAnswers === 1 ? "question" : "questions"} to continue.`
+        : "This lesson is ready to complete.";
+    const nextLabel = itemComplete
+      ? (index === weekContent.length - 1 ? "Continue to Week Check-In" : "Continue to Next Lesson")
+      : !videoComplete
+        ? "Mark Video Complete to Continue"
+        : `Save ${remainingAnswers} More ${remainingAnswers === 1 ? "Answer" : "Answers"}`;
     return `
       <div class="lesson-sequence-status">
         <span>Lesson ${index + 1} of ${weekContent.length}</span>
@@ -385,7 +398,11 @@ const renderModule = (week) => {
               <p>Your answers save privately to your course account. Use fictional, composite, or fully de-identified examples only.</p>
             </div>
             <div class="workbook-sections">
-              ${workbookSections.map((section, sectionIndex) => `
+              ${workbookSections.length === 1 ? `
+                <div class="workbook-prompts workbook-prompts-simple">
+                  ${workbookSections[0].prompts.map(({ prompt, index: promptIndex }) => `<label>${escapeHtml(prompt)}<span class="prompt-example"><strong>Example:</strong> ${escapeHtml(promptExample(prompt))}</span><textarea name="response-${promptIndex}" data-workbook-response="${promptIndex}">${escapeHtml(saved?.responses?.[promptIndex] || "")}</textarea></label>`).join("")}
+                </div>
+              ` : workbookSections.map((section, sectionIndex) => `
                 <details class="workbook-section" data-workbook-section>
                   <summary>
                     <span><small>Part ${sectionIndex + 1} of ${workbookSections.length}</small>${escapeHtml(section.title)}</span>
@@ -405,8 +422,9 @@ const renderModule = (week) => {
       </article>
       <nav class="lesson-sequence-nav" aria-label="Lesson navigation">
         <button class="button secondary" type="button" data-lesson-previous ${index === 0 ? "disabled" : ""}>Previous Lesson</button>
-        <button class="button" type="button" data-lesson-next ${!itemComplete || index === weekContent.length - 1 ? "disabled" : ""}>${index === weekContent.length - 1 ? (itemComplete ? "Week Complete" : "Complete This Lesson") : "Continue to Next Lesson"}</button>
+        <button class="button" type="button" data-lesson-next ${!itemComplete ? "disabled" : ""}>${escapeHtml(nextLabel)}</button>
       </nav>
+      ${itemComplete ? "" : `<p class="lesson-sequence-help">${escapeHtml(continueHelp)}</p>`}
     `;
   })() : `
     <div class="lesson-placeholder"><div><span>Weekly Teaching</span><strong>${escapeHtml(week.shortTitle)}</strong><div data-lesson-media><span>Lessons will appear here when Tiffany publishes them.</span></div></div></div>
@@ -457,7 +475,11 @@ const renderModule = (week) => {
     $("[data-module-title]")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
   $("[data-lesson-next]")?.addEventListener("click", () => {
-    if (!completionFor(activeItem) || activeIndex >= weekContent.length - 1) return;
+    if (!completionFor(activeItem)) return;
+    if (activeIndex >= weekContent.length - 1) {
+      $("[data-week-form-list]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     state.lessonPositions[lessonKey] = activeIndex + 1;
     renderModule(week);
     $("[data-module-title]")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -518,7 +540,7 @@ const renderModule = (week) => {
       ? ["baseline", "success-plan"].includes(key)
       : Number(form.week) === Number(week.number) && !["baseline", "success-plan"].includes(key))
     : [];
-  $("[data-week-form-list]").innerHTML = weekForms.length ? `
+  $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || allLessonsComplete) ? `
     <article class="card week-forms-card">
       <p class="eyebrow">${isOrientation ? "Before Week 1" : `Finish Week ${week.number}`}</p>
       <h3>${isOrientation ? "Complete your starting steps." : `Complete your Week ${week.number} check-in.`}</h3>
@@ -532,12 +554,13 @@ const renderModule = (week) => {
     </article>
   ` : "";
   $$("[data-open-course-form]").forEach((button) => button.addEventListener("click", () => {
+    state.assessmentReturn = { view: "module", week: week.number };
     showView("assessments");
     openLabForm(button.dataset.openCourseForm);
   }));
 
-  $("[data-milestone-card]").hidden = !week.milestone;
-  if (week.milestone) {
+  $("[data-milestone-card]").hidden = !week.milestone || !allLessonsComplete;
+  if (week.milestone && allLessonsComplete) {
     $("[data-milestone-title]").textContent = week.feedbackFocus;
     const existing = state.submissions.find((item) => Number(item.week) === week.number);
     const textarea = $("[data-milestone-form] textarea");
@@ -662,9 +685,16 @@ const openLabForm = (formKey) => {
       const result = await api("save-course-form", { method: "POST", body: JSON.stringify({ formKey, responses }) });
       state.formResponses = result.formResponses || [];
       state.profile = result.profile || state.profile;
-      status.textContent = "Saved";
       renderDashboard();
       renderCurriculum();
+      if (state.assessmentReturn?.view === "module") {
+        const returnWeek = Number(state.assessmentReturn.week);
+        state.assessmentReturn = null;
+        openWeek(returnWeek);
+      } else {
+        renderAssessments();
+        showView("assessments");
+      }
     } catch (error) {
       status.textContent = error.message;
     } finally { button.disabled = false; }
@@ -767,7 +797,10 @@ $("[data-login-form]").addEventListener("submit", async (event) => {
   finally { button.disabled = false; }
 });
 
-$$("[data-view-button]").forEach((button) => button.addEventListener("click", () => showView(button.dataset.viewButton)));
+$$("[data-view-button]").forEach((button) => button.addEventListener("click", () => {
+  if (button.dataset.viewButton === "assessments") state.assessmentReturn = null;
+  showView(button.dataset.viewButton);
+}));
 $$("[data-access-tab]").forEach((button) => button.addEventListener("click", () => setAccessMode(button.dataset.accessTab)));
 $("[data-show-curriculum]").addEventListener("click", () => showView("curriculum"));
 $("[data-open-assessments]").addEventListener("click", () => showView("assessments"));

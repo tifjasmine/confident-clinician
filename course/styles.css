@@ -314,6 +314,7 @@ input:focus, textarea:focus, select:focus {
 .workbook-section[open] { border-color: rgba(197,106,77,.45); box-shadow: 0 12px 30px rgba(42,60,47,.06); }
 .workbook-section[open] summary { border-bottom: 1px solid rgba(42,60,47,.1); }
 .workbook-prompts { display: grid; gap: 22px; padding: 24px 20px 28px; }
+.workbook-prompts-simple { padding: 8px 0 12px; }
 .workbook-prompts label { color: var(--forest); font-size: 13px; letter-spacing: 0; line-height: 1.5; text-transform: none; }
 .prompt-example { display: block; margin: 7px 0 10px; color: var(--olive); font-size: 11px; font-style: italic; font-weight: 400; line-height: 1.55; }
 .prompt-example strong { color: var(--terra); font-style: normal; }
@@ -345,7 +346,8 @@ input:focus, textarea:focus, select:focus {
 .lesson-step-body { background: var(--white); }
 .lesson-sequence-nav { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 12px; margin-top: 18px; }
 .lesson-sequence-nav .button { width: 100%; }
-.lesson-sequence-nav .button:disabled { cursor: not-allowed; opacity: .48; }
+.lesson-sequence-nav .button:disabled { cursor: not-allowed; opacity: .7; }
+.lesson-sequence-help { margin: 10px 0 0; color: var(--terra); font-size: 12px; font-weight: 700; text-align: right; }
 .mini-video-slot { display: grid; min-height: 220px; place-content: center; gap: 8px; padding: 30px; background: var(--forest); color: var(--white); text-align: center; }
 .mini-video-slot span { color: var(--clay); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .mini-video-slot strong { font-family: "Cormorant Garamond",serif; font-size: 32px; }
@@ -517,6 +519,7 @@ th { color: var(--olive); font-size: 10px; letter-spacing: .1em; text-transform:
   .lesson-step-number { width: 38px; height: 38px; }
   .lesson-step-state { grid-column: 2; width: max-content; margin-top: -5px; }
   .lesson-sequence-nav { grid-template-columns: 1fr; }
+  .lesson-sequence-help { text-align: left; }
   .assessment-grid, .course-form { gap: 12px; }
   .assessment-domain { padding: 20px 16px; }
   .assessment-domain h3 { margin-bottom: 14px; font-size: 27px; }
