@@ -425,6 +425,13 @@ const renderModule = (week) => {
         <button class="button" type="button" data-lesson-next ${!itemComplete ? "disabled" : ""}>${escapeHtml(nextLabel)}</button>
       </nav>
       ${itemComplete ? "" : `<p class="lesson-sequence-help">${escapeHtml(continueHelp)}</p>`}
+      ${!isOrientation && state.profile.program === "Clinical Confidence Lab" && !allLessonsComplete ? `
+        <aside class="week-checkpoint-preview">
+          <span>Final Step · After Lesson ${weekContent.length}</span>
+          <strong>Week ${week.number} Pulse Check</strong>
+          <small>Unlocks after all ${weekContent.length} lessons are complete.</small>
+        </aside>
+      ` : ""}
     `;
   })() : `
     <div class="lesson-placeholder"><div><span>Weekly Teaching</span><strong>${escapeHtml(week.shortTitle)}</strong><div data-lesson-media><span>Lessons will appear here when Tiffany publishes them.</span></div></div></div>

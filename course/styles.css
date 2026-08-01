@@ -349,6 +349,10 @@ input:focus, textarea:focus, select:focus {
 .lesson-sequence-nav .button { width: 100%; }
 .lesson-sequence-nav .button:disabled { cursor: not-allowed; opacity: .7; }
 .lesson-sequence-help { margin: 10px 0 0; color: var(--terra); font-size: 12px; font-weight: 700; text-align: right; }
+.week-checkpoint-preview { display: grid; gap: 5px; margin-top: 22px; padding: 18px 20px; border: 1px dashed rgba(42,60,47,.24); background: rgba(255,253,249,.55); color: var(--olive); }
+.week-checkpoint-preview span { color: var(--terra); font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.week-checkpoint-preview strong { color: var(--forest); font-family: "Cormorant Garamond",serif; font-size: 24px; }
+.week-checkpoint-preview small { font-size: 11px; }
 .mini-video-slot { display: grid; min-height: 220px; place-content: center; gap: 8px; padding: 30px; background: var(--forest); color: var(--white); text-align: center; }
 .mini-video-slot span { color: var(--clay); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .mini-video-slot strong { font-family: "Cormorant Garamond",serif; font-size: 32px; }
