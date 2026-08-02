@@ -191,13 +191,12 @@ const renderDashboard = () => {
   $("[data-dashboard-title]").textContent = needsOrientation
     ? `Welcome to the Lab, ${firstName}!`
     : `Welcome back, ${firstName}.`;
-  $("[data-dashboard-intro]").textContent = needsOrientation
-    ? "You’re in! Start with a quick welcome and your starting point, then you’ll be ready for Week 1."
-    : "Pick up right where you left off.";
+  $("[data-dashboard-intro]").hidden = needsOrientation;
+  $("[data-dashboard-intro]").textContent = needsOrientation ? "" : "Pick up right where you left off.";
   $("[data-current-week-label]").textContent = needsOrientation ? "Orientation · Start Here" : `Week ${week.number} · ${week.tool}`;
   $("[data-current-week-title]").textContent = needsOrientation ? orientation.title : week.title;
   $("[data-current-week-description]").textContent = needsOrientation
-    ? "I’m so glad you’re here. Take a few minutes to get settled, meet the Lab, and name what you want to build over the next four weeks."
+    ? "I’m so glad you’re here. I can’t wait for you to feel more confident in your practice, trust yourself more in the room, and spend less time feeling anxious about whether you’re doing it right."
     : week.description;
   $("[data-open-current]").textContent = needsOrientation ? "Start Orientation" : "Continue This Week";
   $("[data-dashboard-assessments]").hidden = needsOrientation;
@@ -794,6 +793,7 @@ const initializeApp = async () => {
   $("[data-user-name]").textContent = state.profile.name || "Course Member";
   $("[data-user-email]").textContent = state.profile.email;
   $("[data-admin-link]").hidden = state.profile.role !== "Admin";
+  $("[data-topbar]").hidden = state.profile.role !== "Admin";
   renderDashboard();
   renderCurriculum();
   renderAssessments();
@@ -921,6 +921,7 @@ const initializePreview = () => {
   $("[data-user-name]").textContent = state.profile.name;
   $("[data-user-email]").textContent = "Interactive preview";
   $("[data-admin-link]").hidden = true;
+  $("[data-topbar]").hidden = true;
   renderDashboard();
   renderCurriculum();
   renderAssessments();
