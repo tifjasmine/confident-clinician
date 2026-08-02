@@ -34,10 +34,17 @@ const interferenceItems = [
   "I leave a session without a clear idea of what I am tracking next.",
 ];
 
-const ratingFields = (prefix = "") => [
-  ...confidenceItems.map((label, index) => ({ key: `${prefix}confidence-${index + 1}`, label, type: "rating", min: 0, max: 10, help: "0 = not at all true · 10 = consistently true" })),
-  ...interferenceItems.map((label, index) => ({ key: `${prefix}interference-${index + 1}`, label, type: "rating", min: 1, max: 5, help: "1 = never · 5 = almost every session" })),
-];
+const confidenceDomains = ["Grounded Access", "Clinical Direction", "Intentional Action", "Reflective Recovery"];
+const ratingFields = (prefix = "", includeSections = false) => {
+  const fields = [];
+  confidenceItems.forEach((label, index) => {
+    if (includeSections && index % 5 === 0) fields.push({ type: "section", title: `Domain ${index / 5 + 1}: ${confidenceDomains[index / 5]}` });
+    fields.push({ key: `${prefix}confidence-${index + 1}`, label, type: "rating", min: 0, max: 10, help: "0 means not at all true. 10 means consistently true." });
+  });
+  if (includeSections) fields.push({ type: "section", title: "Clinical Interference Patterns", description: "Think about how often each pattern has happened in the last 30 days." });
+  interferenceItems.forEach((label, index) => fields.push({ key: `${prefix}interference-${index + 1}`, label, type: "rating", min: 1, max: 5, help: "1 means never. 5 means almost every session." }));
+  return fields;
+};
 
 const pulseCore = [
   { key: "grounded", label: "This week, I could access what I knew even when I felt activated.", type: "rating", min: 0, max: 10 },
@@ -61,23 +68,38 @@ const pulseSpecific = [
 window.TCC_LAB_FORMS = {
   baseline: {
     title: "Baseline Clinical Confidence Assessment",
-    eyebrow: "Before Week 1",
-    description: "Answer from how you have actually practiced during the last 30 days. This is for learning and program improvement—not a test of competence.",
+    eyebrow: "Orientation",
+    description: "Answer from how you have actually practiced during the last 30 days. This is for learning and program improvement. It is not a test of competence.",
     fields: [
-      ...ratingFields(),
-      { key: "quiet-scenario", label: "The quiet session: What do you notice, what might matter clinically, and what would you do or say next—and why?", type: "text" },
-      { key: "everything-scenario", label: "The everything session: What thread would you listen for, and how might you create focus without dismissing what the client brought?", type: "text" },
-      { key: "carry-home-scenario", label: "The session you carry home: What belongs to reflection, what belongs in consultation, and what would help you close the loop?", type: "text" },
+      { type: "section", title: "About Your Current Clinical Work", description: "Tell me a little about your work so I can understand the context you are practicing in." },
+      { key: "full-name", label: "Full name", type: "shortText" },
+      { key: "preferred-name", label: "Preferred name", type: "shortText" },
+      { key: "email", label: "Email", type: "shortText" },
+      { key: "role-credentials", label: "Role and credentials", type: "shortText" },
+      { key: "work-setting", label: "Work setting", type: "shortText" },
+      { key: "states-practice", label: "State or states of practice", type: "shortText" },
+      { key: "years-service", label: "Years in direct service", type: "shortText" },
+      { key: "caseload", label: "Approximate caseload", type: "shortText" },
+      { key: "populations", label: "Primary populations", type: "shortText" },
+      { key: "supervision", label: "Current supervision or consultation structure", type: "shortText" },
+      { type: "section", title: "Clinical Confidence Ratings", description: "Rate each statement based on your actual experience, including challenging sessions." },
+      ...ratingFields("", true),
+      { type: "section", title: "Real Life Clinical Situations", description: "There are no trick questions. Share what you would most likely do next using general clinical reasoning and no identifying client information." },
+      { key: "quiet-scenario", label: "Scenario 1: The quiet session", help: "A client answers several questions with ‘I don’t know,’ looks down, and becomes increasingly quiet. What do you notice? What might matter clinically? What would you do or say next, and why?", type: "text" },
+      { key: "everything-scenario", label: "Scenario 2: The everything session", help: "A client brings several important concerns in the first fifteen minutes. What thread would you listen for? How might you create focus without dismissing what they brought?", type: "text" },
+      { key: "carry-home-scenario", label: "Scenario 3: The session you carry home", help: "A client appears disappointed after you set a boundary. What belongs to reflection? What belongs in consultation? What would help you close the loop?", type: "text" },
+      { type: "section", title: "Your Current Confidence Goal" },
       { key: "confidence-drop", label: "What is the most common moment in session when your confidence drops?", type: "text" },
       { key: "usual-response", label: "What do you usually do when that happens?", type: "text" },
       { key: "desired-change", label: "What would you like to do differently by the end of four weeks?", type: "text" },
-      { key: "useful-proof", label: "How would you know this program was genuinely useful—not just interesting?", type: "text" },
+      { key: "useful-proof", label: "How would you know this program was genuinely useful and not just interesting?", type: "text" },
+      { key: "guidance-context", label: "Anything about your current role, training level, or support system Tiffany should know to guide you responsibly?", type: "text" },
     ],
   },
   "success-plan": {
     title: "Personal Clinical Confidence Success Plan",
-    eyebrow: "Before Week 1",
-    description: "Choose a few visible behaviors—not a total personality transformation.",
+    eyebrow: "Orientation",
+    description: "Choose a few visible behaviors. You do not need a total personality transformation.",
     fields: [
       { key: "drop-moment", label: "My main confidence-drop moment", type: "text" },
       { key: "interrupt-pattern", label: "The pattern I want to interrupt", type: "text" },
@@ -87,7 +109,7 @@ window.TCC_LAB_FORMS = {
       { key: "after-target", label: "After-session target: what I will do and how I will know", type: "text" },
       { key: "reminder", label: "When I am tempted to overcomplicate this program, I will remind myself…", type: "text" },
       { key: "formal-support", label: "The person or system I will use for required clinical supervision or consultation is…", type: "text" },
-      { key: "scope-ack", label: "I agree to use de-identified or fictional material and formal support for risk, ethics, law, scope, competence, or workplace policy.", type: "acknowledgement" },
+      { key: "scope-ack", label: "I agree to use deidentified or fictional material and formal support for risk, ethics, law, scope, competence, or workplace policy.", type: "acknowledgement" },
     ],
   },
   ...Object.fromEntries(pulseSpecific.map((specific, index) => [`pulse-${index + 1}`, {
@@ -100,7 +122,7 @@ window.TCC_LAB_FORMS = {
   post: {
     title: "Post-Program Clinical Confidence Assessment",
     eyebrow: "After Week 4",
-    description: "Repeat the same measures so you can compare your access to the process—not prove competence.",
+    description: "Repeat the same measures so you can compare your access to the process. This does not prove competence.",
     week: 4,
     fields: [
       ...ratingFields("post-"),
@@ -117,35 +139,35 @@ window.TCC_LAB_FORMS = {
   capstone: {
     title: "CLEAR Method Capstone",
     eyebrow: "After Week 4",
-    description: "Use one fictional or fully de-identified clinical situation. This shows how you think—not whether you found one perfect intervention.",
+    description: "Use one fictional or fully deidentified clinical situation. This shows how you think. It does not test whether you found one perfect intervention.",
     week: 4,
     fields: [
-      { key: "situation", label: "Brief description of the situation using only the minimum de-identified context", type: "text" },
-      { key: "center-notice", label: "C — What did you notice in your body, emotions, thoughts, or urges?", type: "text" },
-      { key: "center-return", label: "C — How did you, or how could you, return your attention to the client and the room?", type: "text" },
-      { key: "listen-thread", label: "L — What seemed most clinically important beneath the content?", type: "text" },
-      { key: "evaluate-need", label: "E — What did the client need most in that moment, and what factors shaped your decision?", type: "text" },
-      { key: "act", label: "A — What did you choose to do or say, and why was it more intentional than your automatic pattern?", type: "text" },
-      { key: "alternative", label: "A — What was another reasonable option, and why did you not choose it then?", type: "text" },
-      { key: "reflect", label: "R — What happened next, and what did you learn?", type: "text" },
-      { key: "follow-up", label: "R — What would you continue, adjust, document, or bring to supervision or consultation?", type: "text" },
-      { key: "release", label: "R — What can you intentionally stop carrying after this reflection?", type: "text" },
+      { key: "situation", label: "Brief description of the situation using only the minimum deidentified context", type: "text" },
+      { key: "center-notice", label: "C: What did you notice in your body, emotions, thoughts, or urges?", type: "text" },
+      { key: "center-return", label: "C: How did you, or how could you, return your attention to the client and the room?", type: "text" },
+      { key: "listen-thread", label: "L: What seemed most clinically important beneath the content?", type: "text" },
+      { key: "evaluate-need", label: "E: What did the client need most in that moment, and what factors shaped your decision?", type: "text" },
+      { key: "act", label: "A: What did you choose to do or say, and why was it more intentional than your automatic pattern?", type: "text" },
+      { key: "alternative", label: "A: What was another reasonable option, and why did you not choose it then?", type: "text" },
+      { key: "reflect", label: "R: What happened next, and what did you learn?", type: "text" },
+      { key: "follow-up", label: "R: What would you continue, adjust, document, or bring to supervision or consultation?", type: "text" },
+      { key: "release", label: "R: What can you intentionally stop carrying after this reflection?", type: "text" },
       { key: "deidentify-ack", label: "I confirm that this submission contains no identifying client information.", type: "acknowledgement" },
     ],
   },
   "call-prep": {
     title: "Private Completion Session Prep",
     eyebrow: "After Week 4",
-    description: "Bring one pattern, one question, and one useful next step—not an entire caseload.",
+    description: "Bring one pattern, one question, and one useful next step. You do not need to bring an entire caseload.",
     week: 4,
     fields: [
       { key: "skill-used", label: "What skill have you used most since the program began?", type: "text" },
-      { key: "situation", label: "Describe one fully de-identified situation where you used it.", type: "text" },
+      { key: "situation", label: "Describe one fully deidentified situation where you used it.", type: "text" },
       { key: "better", label: "What went better than your old pattern?", type: "text" },
       { key: "confusing", label: "What still felt confusing or uncomfortable?", type: "text" },
       { key: "support", label: "What feedback, role-play, or decision support would help?", type: "text" },
       { key: "next-behavior", label: "What repeatable behavior do you want to keep practicing?", type: "text" },
-      { key: "scope-ack", label: "I confirm that any client material is fully de-identified and this session is educational mentorship—not clinical supervision or emergency consultation.", type: "acknowledgement" },
+      { key: "scope-ack", label: "I confirm that any client material is fully deidentified and this session is educational mentorship. It is not clinical supervision or emergency consultation.", type: "acknowledgement" },
     ],
   },
 };

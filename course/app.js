@@ -22,7 +22,7 @@ const promptExample = (prompt = "") => {
   if (text.includes("clinical skill i most want")) return "Helping a client move from describing events into exploring the feeling or meaning underneath.";
   if (text.includes("observable confidence behavior")) return "Pause for one breath and reflect what I heard before asking another question.";
   if (text.includes("end of four weeks")) return "I can notice my urge to perform and choose one grounded next move instead.";
-  if (text.includes("type your name")) return "Tiffany Wright — I understand these commitments and agree to use de-identified material.";
+  if (text.includes("type your name")) return "Tiffany Wright. I understand these commitments and agree to use deidentified material.";
   if (text.includes("knowledge or skill")) return "I know the concept of emotional reflection, but I need clearer language for using it naturally in the room.";
   if (text.includes("practice or repetition")) return "I have tried collaborative focusing only a few times, so it disappears when I feel pressured.";
   if (text.includes("clinical judgment")) return "I can identify several possible directions but struggle to choose which matters most right now.";
@@ -31,9 +31,9 @@ const promptExample = (prompt = "") => {
   if (text.includes("personal support") || text.includes("sustainability")) return "I need a real transition after work instead of reviewing sessions throughout the evening.";
   if (text.includes("tempted to shame")) return "Needing more time to understand the thread when a client brings several concerns at once.";
   if (text.includes("more accurate description")) return "I am still building prioritization through repetition; this is a practice need, not proof that I am incapable.";
-  if (text.includes("responsible support or practice step")) return "Use CLEAR on one de-identified example and bring my reasoning to supervision.";
-  if (text.includes("pattern 1")) return "Overexplaining — trigger: silence; what I do: teach too quickly; cost: I stop listening for the client’s meaning.";
-  if (text.includes("pattern 2")) return "Disappearing — trigger: possible disagreement; what I do: avoid redirecting; cost: the session loses direction.";
+  if (text.includes("responsible support or practice step")) return "Use CLEAR on one deidentified example and bring my reasoning to supervision.";
+  if (text.includes("pattern 1")) return "Overexplaining. Trigger: silence. What I do: teach too quickly. Cost: I stop listening for the client’s meaning.";
+  if (text.includes("pattern 2")) return "Disappearing. Trigger: possible disagreement. What I do: avoid redirecting. Cost: the session loses direction.";
   if (text.includes("looks most") && text.includes("helpful")) return "Rescuing, because extra reassurance looks caring even when I am trying to make my own anxiety stop.";
   if (text.includes("earliest body cue")) return "My jaw tightens and I lean forward as if I need to make something happen immediately.";
   if (text.includes("pause i can practice")) return "Put both feet on the floor, exhale, and silently ask, “What do I actually know?”";
@@ -49,7 +49,7 @@ const promptExample = (prompt = "") => {
   if (text.includes("thread")) return "The details differ, but the repeating thread may be fear of disappointing other people.";
   if (text.includes("response") || text.includes("move") || text.includes("action")) return "Reflect what I notice, check whether it fits, and let the client correct me.";
   if (text.includes("priority") || text.includes("matters most")) return "Connection and clarification come first; advice can wait until I understand the need.";
-  if (text.includes("role")) return "My role is to assess, collaborate, document appropriately, and consult—not control the outcome.";
+  if (text.includes("role")) return "My role is to assess, collaborate, document appropriately, and consult. My role is not to control the outcome.";
   if (text.includes("release") || text.includes("put down")) return "I can release the demand to know exactly how the client experienced every moment.";
   if (text.includes("next time") || text.includes("differently")) return "I will slow down, summarize the two threads I hear, and ask where we should focus.";
   if (text.includes("what happened")) return "The session moved across several topics, and I noticed urgency when we had ten minutes left.";
@@ -57,11 +57,11 @@ const promptExample = (prompt = "") => {
   if (text.includes("value")) return "Steadiness: I pause and respond thoughtfully; it does not require me to feel perfectly calm.";
   if (text.includes("boundary")) return "I will begin landing at the ten-minute mark and finish at the scheduled time.";
   if (text.includes("evidence")) return "I noticed the urge to rescue, paused, and chose one collaborative question instead.";
-  if (text.includes("30-day") || text.includes("weekly")) return "Once each week, I will use CLEAR on one de-identified moment and bring one question to consultation.";
+  if (text.includes("30-day") || text.includes("weekly")) return "Once each week, I will use CLEAR on one deidentified moment and bring one question to consultation.";
   if (text.includes("immediate result")) return "The client became quieter, and I felt even more pressure to keep talking.";
   if (text.includes("proof")) return "I treated the client’s quietness as proof that I was boring or ineffective.";
   if (text.includes("might also be true")) return "The client may have been tired, ashamed, overwhelmed, or simply needing more time.";
-  if (text.includes("earliest point")) return "Right after I notice heat in my face—before I ask several questions in a row.";
+  if (text.includes("earliest point")) return "Right after I notice heat in my face, before I ask several questions in a row.";
   if (text.includes("sentence i want")) return "Feeling unsure is information, not a verdict. I can get curious before I get urgent.";
   if (text.includes("activated maya")) return "The sudden quiet may have activated fear of disappointing the client or wasting the session.";
   if (text.includes("affect the room")) return "The rapid questions increased pressure and left less room for Jordan to notice what was happening.";
@@ -74,7 +74,7 @@ const promptExample = (prompt = "") => {
   if (text.includes("grounded or responsible")) return "I noticed my urgency, slowed down, and checked my interpretation instead of presenting it as fact.";
   if (text.includes("learn, clarify, document")) return "Clarify the client’s experience next session and consult if the uncertainty involves scope or safety.";
   if (text.includes("one next action")) return "Write one follow-up question for the next session, then stop reviewing.";
-  return "I would answer with one brief, concrete example from a fictional or fully de-identified moment and name the specific behavior I noticed.";
+  return "I would answer with one brief, concrete example from a fictional or fully deidentified moment and name the specific behavior I noticed.";
 };
 
 const api = async (action, options = {}) => {
@@ -212,7 +212,7 @@ const renderCurriculum = () => {
   const orientation = window.TCC_COURSE.orientation;
   const orientationCard = orientation ? `
     <button class="week-card orientation-card" data-open-week="0">
-      <span class="week-number">Before Week 1</span>
+      <span class="week-number">Orientation</span>
       <h3>${escapeHtml(orientation.shortTitle)}</h3>
       <p>${escapeHtml(orientation.description)}</p>
       <span class="week-meta">${escapeHtml(orientation.tool)}</span>
@@ -282,11 +282,11 @@ const workbookSectionPlan = {
     ["Reflect, then stop", 7],
   ],
   2: [
-    ["C — Center", 4],
-    ["L — Listen", 5],
-    ["E — Evaluate", 4],
-    ["A — Act", 5],
-    ["R — Reflect", 5],
+    ["C: Center", 4],
+    ["L: Listen", 5],
+    ["E: Evaluate", 4],
+    ["A: Act", 5],
+    ["R: Reflect", 5],
     ["Use the CLEAR Decision Map", 6],
     ["Practice: “I Don’t Know”", 6],
     ["Try CLEAR in real work", 3],
@@ -347,7 +347,7 @@ const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent[0];
   const isOrientation = Number(week.number) === 0;
-  $("[data-module-week]").textContent = isOrientation ? "Start Here · Before Week 1" : `Week ${week.number}`;
+  $("[data-module-week]").textContent = isOrientation ? "Orientation" : `Week ${week.number}`;
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
   $("[data-module-description]").textContent = week.description || primaryContent?.description;
   const agenda = week.outcome ? `
@@ -396,7 +396,7 @@ const renderModule = (week) => {
         <div class="lesson-step-summary">
           <span class="lesson-step-number">${isOrientation ? index + 1 : String(index + 1).padStart(2, "0")}</span>
           <span class="lesson-step-copy">
-            <small>${escapeHtml(item.contentType)}${item.videoUrl ? " · Video" : ""}</small>
+            <small>${escapeHtml(item.contentType === "Video" ? "Video" : item.videoUrl ? `${item.contentType} · Video` : item.contentType)}</small>
             <strong>${escapeHtml(item.title)}</strong>
           </span>
           <span class="lesson-step-state ${itemComplete ? "complete" : itemInProgress ? "in-progress" : ""}">${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</span>
@@ -409,7 +409,7 @@ const renderModule = (week) => {
             <div class="workbook-heading">
               <p class="eyebrow">Interactive Workbook</p>
               <h3>${escapeHtml(item.workbookTitle || item.title)}</h3>
-              <p>Your answers save privately to your course account. Use fictional, composite, or fully de-identified examples only.</p>
+              <p>Your answers save privately to your course account. Use fictional, composite, or fully deidentified examples only.</p>
             </div>
             <div class="workbook-sections">
               ${workbookSections.length === 1 ? `
@@ -563,7 +563,7 @@ const renderModule = (week) => {
     : [];
   $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || allLessonsComplete) ? `
     <article class="card week-forms-card">
-      <p class="eyebrow">${isOrientation ? "Before Week 1" : `Finish Week ${week.number}`}</p>
+      <p class="eyebrow">${isOrientation ? "Orientation" : `Finish Week ${week.number}`}</p>
       <h3>${isOrientation ? "Complete your starting steps." : `Complete your Week ${week.number} check-in.`}</h3>
       ${isOrientation ? "" : `<p class="supporting">Take a minute to notice what changed, what still feels difficult, and what you want to practice next.</p>`}
       <div class="week-form-buttons">
@@ -653,7 +653,8 @@ const renderAssessments = () => {
 };
 
 const renderCourseFormField = (field, value) => {
-  if (field.type === "text") return `<label>${escapeHtml(field.label)}<textarea name="${escapeHtml(field.key)}" required>${escapeHtml(value || "")}</textarea></label>`;
+  if (field.type === "shortText") return `<label>${escapeHtml(field.label)}${field.help ? `<span class="field-help">${escapeHtml(field.help)}</span>` : ""}<input name="${escapeHtml(field.key)}" value="${escapeHtml(value || "")}" required></label>`;
+  if (field.type === "text") return `<label>${escapeHtml(field.label)}${field.help ? `<span class="field-help">${escapeHtml(field.help)}</span>` : ""}<textarea name="${escapeHtml(field.key)}" required>${escapeHtml(value || "")}</textarea></label>`;
   if (field.type === "acknowledgement") return `<label class="form-ack"><input type="checkbox" name="${escapeHtml(field.key)}" ${value === true ? "checked" : ""} required><span>${escapeHtml(field.label)}</span></label>`;
   if (field.type !== "choice" && field.max - field.min > 5) {
     const currentValue = value ?? Math.round((field.min + field.max) / 2);
@@ -690,9 +691,13 @@ const openLabForm = (formKey) => {
         <p class="eyebrow">${escapeHtml(definition.eyebrow)}</p>
         <h3>${escapeHtml(definition.title)}</h3>
         <p class="supporting">${escapeHtml(definition.description)}</p>
-        <div class="warning">Use fictional, composite, or fully de-identified examples only. For risk, ethics, law, scope, competence, or workplace policy, use formal supervision and required procedures.</div>
+        <div class="warning">Use fictional, composite, or fully deidentified examples only. For risk, ethics, law, scope, competence, or workplace policy, use formal supervision and required procedures.</div>
       </section>
-      ${definition.fields.map((field) => `<section class="assessment-domain">${renderCourseFormField(field, saved?.responses?.[field.key])}</section>`).join("")}
+      ${definition.fields.map((field) => {
+        if (field.type === "section") return `<header class="assessment-part-heading"><p class="eyebrow">${escapeHtml(field.title)}</p>${field.description ? `<p>${escapeHtml(field.description)}</p>` : ""}</header>`;
+        const profileDefault = field.key === "full-name" ? state.profile.name : field.key === "preferred-name" ? (state.profile.name || "").split(" ")[0] : field.key === "email" ? state.profile.email : "";
+        return `<section class="assessment-domain">${renderCourseFormField(field, saved?.responses?.[field.key] ?? profileDefault)}</section>`;
+      }).join("")}
       <section class="assessment-domain form-actions"><button class="button" type="submit">Save ${escapeHtml(definition.title)}</button><span data-course-form-status></span></section>
     </form>
   `;
@@ -702,7 +707,9 @@ const openLabForm = (formKey) => {
     const button = $("button", form);
     const status = $("[data-course-form-status]", form);
     const formData = new FormData(form);
-    const responses = Object.fromEntries(definition.fields.map((field) => [field.key, field.type === "acknowledgement" ? formData.get(field.key) === "on" : formData.get(field.key)]));
+    const responses = Object.fromEntries(definition.fields
+      .filter((field) => field.key)
+      .map((field) => [field.key, field.type === "acknowledgement" ? formData.get(field.key) === "on" : formData.get(field.key)]));
     button.disabled = true;
     status.textContent = "Saving…";
     try {
