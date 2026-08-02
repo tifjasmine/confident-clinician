@@ -214,7 +214,6 @@ const renderCurriculum = () => {
     <button class="week-card orientation-card" data-open-week="0">
       <span class="week-number">Orientation</span>
       <h3>${escapeHtml(orientation.shortTitle)}</h3>
-      <p>${escapeHtml(orientation.description)}</p>
       <span class="week-meta">${escapeHtml(orientation.tool)}</span>
       <span class="week-state">${weekCompletion(0) ? `${weekCompletion(0)}% complete` : "Begin here"}</span>
     </button>
@@ -349,7 +348,8 @@ const renderModule = (week) => {
   const isOrientation = Number(week.number) === 0;
   $("[data-module-week]").textContent = isOrientation ? "Orientation" : `Week ${week.number}`;
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
-  $("[data-module-description]").textContent = week.description || primaryContent?.description;
+  $("[data-module-description]").hidden = isOrientation;
+  $("[data-module-description]").textContent = isOrientation ? "" : week.description || primaryContent?.description;
   const agenda = week.outcome ? `
     <article class="week-focus">
       <span>Week ${week.number} outcome</span>

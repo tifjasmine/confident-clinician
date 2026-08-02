@@ -115,7 +115,7 @@ const labCourse = {
     number: 0,
     title: "Let’s Get Started",
     shortTitle: "Start Here",
-    description: "Begin with a short welcome and your starting point.",
+    description: "",
     tool: "Orientation",
     milestone: false,
   },
