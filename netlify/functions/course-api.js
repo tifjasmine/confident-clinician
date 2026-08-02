@@ -214,7 +214,8 @@ exports.handler = async (event) => {
       const responses = Array.isArray(payload.responses) ? payload.responses.map((value) => String(value || "").slice(0, 10000)) : [];
       const content = await listRecords(TABLES.content, `AND({Content ID}='${formulaString(contentId)}',{Program}='${formulaString(profile.program)}',{Published}=1)`, 1);
       const prompts = content[0] ? mapContent(content[0]).workbookPrompts : [];
-      if (!contentId || !Number.isInteger(week) || week < 1 || week > profile.programWeeks || !prompts.length || responses.length !== prompts.length) {
+      const minimumWeek = profile.program === "Clinical Confidence Lab" ? 0 : 1;
+      if (!contentId || !Number.isInteger(week) || week < minimumWeek || week > profile.programWeeks || !prompts.length || responses.length !== prompts.length) {
         return json(400, { message: "That workbook section is not available." });
       }
       const responseId = `${user.email}|${profile.program}|${contentId}`;

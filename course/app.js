@@ -3,7 +3,7 @@ const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
 const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
-const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 1, lessonPositions: {}, assessmentReturn: null };
+const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 0, lessonPositions: {}, assessmentReturn: null };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -145,9 +145,15 @@ const activityDone = (week, type) => activitiesForWeek(week).some((item) => item
 const lessonWatched = (contentId) => state.activity.some((item) => item.completed && item.activityType === "Lesson accessed" && item.response === contentId);
 const contentItemComplete = (item) => {
   const prompts = item.workbookPrompts || [];
+  // A published placeholder is upcoming content, not a completed lesson.
+  if (!item.videoUrl && !prompts.length) return false;
   const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
   const workbookComplete = !prompts.length || prompts.every((_, index) => String(saved?.responses?.[index] || "").trim());
   return (!item.videoUrl || lessonWatched(item.contentId)) && workbookComplete;
+};
+const orientationComplete = () => {
+  const items = state.content.filter((item) => Number(item.week) === 0);
+  return !window.TCC_COURSE.orientation || (items.length > 0 && items.every((item) => contentItemComplete(item)));
 };
 const weekCompletion = (week) => {
   if (Number(week) === 0) {
@@ -203,7 +209,8 @@ const renderCurriculum = () => {
     </button>
   ` : "";
   $("[data-week-grid]").innerHTML = orientationCard + window.TCC_COURSE.weeks.map((week) => {
-    const locked = week.number > current;
+    const needsOrientation = week.number === 1 && !orientationComplete();
+    const locked = week.number > current || needsOrientation;
     const completion = weekCompletion(week.number);
     return `
       <button class="week-card ${locked ? "locked" : ""}" data-open-week="${week.number}" ${locked ? "disabled" : ""}>
@@ -211,7 +218,7 @@ const renderCurriculum = () => {
         <h3>${escapeHtml(week.shortTitle)}</h3>
         <p>${escapeHtml(week.description)}</p>
         <span class="week-meta">${escapeHtml(week.tool)}</span>
-        <span class="week-state">${locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
+        <span class="week-state">${needsOrientation ? "Complete Orientation first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
       </button>
     `;
   }).join("");
@@ -575,6 +582,9 @@ const renderModule = (week) => {
 const openWeek = async (weekNumber) => {
   const current = Number(state.profile.currentWeek || 1);
   if (weekNumber > current) return;
+  if (weekNumber === 1 && !orientationComplete()) {
+    weekNumber = 0;
+  }
   state.selectedWeek = weekNumber;
   const week = weekNumber === 0 ? window.TCC_COURSE.orientation : window.TCC_COURSE.weeks[weekNumber - 1];
   renderModule(week);
@@ -807,7 +817,7 @@ $$("[data-view-button]").forEach((button) => button.addEventListener("click", ()
 $$("[data-access-tab]").forEach((button) => button.addEventListener("click", () => setAccessMode(button.dataset.accessTab)));
 $("[data-show-curriculum]").addEventListener("click", () => showView("curriculum"));
 $("[data-open-assessments]").addEventListener("click", () => showView("assessments"));
-$("[data-open-current]").addEventListener("click", () => openWeek(Number(state.profile.currentWeek || 1)));
+$("[data-open-current]").addEventListener("click", () => openWeek(orientationComplete() ? Number(state.profile.currentWeek || 1) : 0));
 $("[data-sign-out]").addEventListener("click", signOut);
 
 $("[data-milestone-form]").addEventListener("submit", async (event) => {
