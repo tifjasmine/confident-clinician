@@ -68,8 +68,8 @@
       <section class="view active" data-view="dashboard">
         <header class="page-heading">
           <p class="eyebrow">Your Learning Space</p>
-          <h1>Welcome back, <span data-first-name>clinician</span>.</h1>
-          <p>Pick up where you left off.</p>
+          <h1 data-dashboard-title>Welcome, clinician.</h1>
+          <p data-dashboard-intro>Your course is ready.</p>
         </header>
         <div class="dashboard-grid">
           <article class="card current-card">
@@ -77,9 +77,9 @@
             <h2 data-current-week-title></h2>
             <p class="week-description" data-current-week-description></p>
             <div class="card-actions">
-              <button class="button" data-open-current>Continue This Week</button>
+              <button class="button" data-open-current>Start Orientation</button>
               <button class="button secondary" data-show-curriculum>View All Weeks</button>
-              <button class="button secondary" data-open-assessments>Go to Assessments</button>
+              <button class="button secondary" data-open-assessments data-dashboard-assessments>Go to Assessments</button>
             </div>
           </article>
           <article class="card progress-card">

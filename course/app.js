@@ -175,8 +175,10 @@ const weekCompletion = (week) => {
 
 const renderDashboard = () => {
   const profile = state.profile;
+  const needsOrientation = !orientationComplete();
   const currentWeekNumber = Math.min(window.TCC_COURSE.weeks.length, Math.max(1, Number(profile.currentWeek || 1)));
   const week = window.TCC_COURSE.weeks[currentWeekNumber - 1];
+  const orientation = window.TCC_COURSE.orientation;
   const completedActivities = state.activity.filter((item) => item.completed).length;
   const nonVideoTypeCount = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").length;
   const totalActivities = (window.TCC_COURSE.weeks.length * nonVideoTypeCount) + state.content.filter((item) => item.videoUrl).length;
@@ -185,10 +187,20 @@ const renderDashboard = () => {
     : Math.min(100, Math.round((completedActivities / Math.max(1, totalActivities)) * 100));
   const completedLessons = state.content.filter((item) => Number(item.week) > 0 && contentItemComplete(item)).length;
 
-  $("[data-first-name]").textContent = (profile.name || "clinician").split(" ")[0];
-  $("[data-current-week-label]").textContent = `Week ${week.number} · ${week.tool}`;
-  $("[data-current-week-title]").textContent = week.title;
-  $("[data-current-week-description]").textContent = week.description;
+  const firstName = (profile.name || "clinician").split(" ")[0];
+  $("[data-dashboard-title]").textContent = needsOrientation
+    ? `Welcome to the Lab, ${firstName}!`
+    : `Welcome back, ${firstName}.`;
+  $("[data-dashboard-intro]").textContent = needsOrientation
+    ? "You’re in! Start with a quick welcome and your starting point, then you’ll be ready for Week 1."
+    : "Pick up right where you left off.";
+  $("[data-current-week-label]").textContent = needsOrientation ? "Orientation · Start Here" : `Week ${week.number} · ${week.tool}`;
+  $("[data-current-week-title]").textContent = needsOrientation ? orientation.title : week.title;
+  $("[data-current-week-description]").textContent = needsOrientation
+    ? "I’m so glad you’re here. Take a few minutes to get settled, meet the Lab, and name what you want to build over the next four weeks."
+    : week.description;
+  $("[data-open-current]").textContent = needsOrientation ? "Start Orientation" : "Continue This Week";
+  $("[data-dashboard-assessments]").hidden = needsOrientation;
   $("[data-progress-ring]").style.setProperty("--value", progress);
   $("[data-progress-percent]").textContent = `${progress}%`;
   $("[data-modules-count]").textContent = completedLessons;
