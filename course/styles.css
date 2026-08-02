@@ -371,6 +371,9 @@ input:focus, textarea:focus, select:focus {
 .assessment-category[open] summary small::after { content: "Close"; font-size: 10px; }
 .assessment-category-description { margin: -7px 24px 20px; color: var(--olive); font-size: 13px; line-height: 1.6; }
 .assessment-category-fields { display: grid; min-width: 0; gap: 16px; padding: 0 24px 24px; }
+.assessment-section-title { padding: 28px 4px 10px; border-bottom: 2px solid var(--terra); }
+.assessment-section-title h3 { margin: 0; color: var(--forest); font-family: "Cormorant Garamond", serif; font-size: 34px; }
+.assessment-section-title p { max-width: 760px; margin: 8px 0 0; color: var(--olive); font-size: 13px; line-height: 1.6; }
 .field-help { color: var(--olive); font-size: 12px; font-style: italic; font-weight: 400; letter-spacing: 0; line-height: 1.55; text-transform: none; }
 .course-form-intro { border-top: 5px solid var(--terra); }
 .course-rating { margin: 0; padding: 0; border: 0; }

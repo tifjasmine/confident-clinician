@@ -38,7 +38,7 @@ const confidenceDomains = ["Grounded Access", "Clinical Direction", "Intentional
 const ratingFields = (prefix = "", includeSections = false) => {
   const fields = [];
   confidenceItems.forEach((label, index) => {
-    if (includeSections && index % 5 === 0) fields.push({ type: "section", title: `Domain ${index / 5 + 1}: ${confidenceDomains[index / 5]}` });
+    if (includeSections && index % 5 === 0) fields.push({ type: "section", title: confidenceDomains[index / 5] });
     fields.push({ key: `${prefix}confidence-${index + 1}`, label, type: "rating", min: 0, max: 10, help: "0 means not at all true. 10 means consistently true." });
   });
   if (includeSections) fields.push({ type: "section", title: "Clinical Interference Patterns", description: "Think about how often each pattern has happened in the last 30 days." });
@@ -82,7 +82,7 @@ window.TCC_LAB_FORMS = {
       { key: "caseload", label: "Approximate caseload", type: "shortText" },
       { key: "populations", label: "Primary populations", type: "shortText" },
       { key: "supervision", label: "Current supervision or consultation structure", type: "shortText" },
-      { type: "section", title: "Clinical Confidence Ratings", description: "Rate each statement based on your actual experience, including challenging sessions." },
+      { type: "sectionTitle", title: "Clinical Confidence Ratings", description: "Rate each statement based on your actual experience, including challenging sessions." },
       ...ratingFields("", true),
       { type: "section", title: "Real Life Clinical Situations", description: "There are no trick questions. Share what you would most likely do next using general clinical reasoning and no identifying client information." },
       { key: "quiet-scenario", label: "Scenario 1: The quiet session", help: "A client answers several questions with ‘I don’t know,’ looks down, and becomes increasingly quiet. What do you notice? What might matter clinically? What would you do or say next, and why?", type: "text" },

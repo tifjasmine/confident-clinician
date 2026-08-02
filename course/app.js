@@ -489,6 +489,7 @@ const renderModule = (week) => {
     $$("[data-workbook-section]", section.closest("[data-workbook-form]")).forEach((other) => {
       if (other !== section) other.open = false;
     });
+    requestAnimationFrame(() => section.scrollIntoView({ behavior: "smooth", block: "start" }));
   }));
   $("[data-lesson-previous]")?.addEventListener("click", () => {
     state.lessonPositions[lessonKey] = Math.max(0, activeIndex - 1);
@@ -688,6 +689,24 @@ const openLabForm = (formKey) => {
   if (!definition) return;
   const saved = state.formResponses.find((response) => response.formKey === formKey);
   const container = $("[data-assessment-list]");
+  let categoryOpen = false;
+  let formFieldsHtml = "";
+  definition.fields.forEach((field) => {
+    if (field.type === "section" || field.type === "sectionTitle") {
+      if (categoryOpen) formFieldsHtml += `</div></details>`;
+      categoryOpen = false;
+      if (field.type === "sectionTitle") {
+        formFieldsHtml += `<header class="assessment-section-title"><h3>${escapeHtml(field.title)}</h3>${field.description ? `<p>${escapeHtml(field.description)}</p>` : ""}</header>`;
+      } else {
+        formFieldsHtml += `<details class="assessment-category"><summary><span>${escapeHtml(field.title)}</span><small>Open</small></summary>${field.description ? `<p class="assessment-category-description">${escapeHtml(field.description)}</p>` : ""}<div class="assessment-category-fields">`;
+        categoryOpen = true;
+      }
+      return;
+    }
+    const profileDefault = field.key === "full-name" ? state.profile.name : field.key === "preferred-name" ? (state.profile.name || "").split(" ")[0] : field.key === "email" ? state.profile.email : "";
+    formFieldsHtml += `<section class="assessment-domain">${renderCourseFormField(field, saved?.responses?.[field.key] ?? profileDefault)}</section>`;
+  });
+  if (categoryOpen) formFieldsHtml += `</div></details>`;
   container.innerHTML = `
     <form class="course-form" data-course-form="${escapeHtml(formKey)}" novalidate>
       <section class="assessment-domain course-form-intro">
@@ -696,17 +715,11 @@ const openLabForm = (formKey) => {
         <p class="supporting">${escapeHtml(definition.description)}</p>
         <div class="warning">Use fictional, composite, or fully deidentified examples only. For risk, ethics, law, scope, competence, or workplace policy, use formal supervision and required procedures.</div>
       </section>
-      ${definition.fields.map((field, index) => {
-        if (field.type === "section") {
-          const closePrevious = index > 0 ? `</div></details>` : "";
-          return `${closePrevious}<details class="assessment-category"><summary><span>${escapeHtml(field.title)}</span><small>Open</small></summary>${field.description ? `<p class="assessment-category-description">${escapeHtml(field.description)}</p>` : ""}<div class="assessment-category-fields">`;
-        }
-        const profileDefault = field.key === "full-name" ? state.profile.name : field.key === "preferred-name" ? (state.profile.name || "").split(" ")[0] : field.key === "email" ? state.profile.email : "";
-        return `<section class="assessment-domain">${renderCourseFormField(field, saved?.responses?.[field.key] ?? profileDefault)}</section>`;
-      }).join("")}${definition.fields.some((field) => field.type === "section") ? `</div></details>` : ""}
+      ${formFieldsHtml}
       <section class="assessment-domain form-actions"><button class="button" type="submit">Save ${escapeHtml(definition.title)}</button><span data-course-form-status></span></section>
     </form>
   `;
+  requestAnimationFrame(() => container.scrollIntoView({ behavior: "smooth", block: "start" }));
   $("[data-course-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -757,6 +770,7 @@ const openLabForm = (formKey) => {
     $$("[data-course-form] .assessment-category").forEach((other) => {
       if (other !== category) other.open = false;
     });
+    requestAnimationFrame(() => category.scrollIntoView({ behavior: "smooth", block: "start" }));
   }));
 };
 
