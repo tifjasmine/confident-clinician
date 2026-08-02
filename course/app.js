@@ -508,11 +508,14 @@ const renderModule = (week) => {
   $$("[data-video-complete]").forEach((input) => input.addEventListener("change", async () => {
     input.disabled = true;
     try {
-      const result = await api("save-activity", {
-        method: "POST",
-        body: JSON.stringify({ week: Number(input.dataset.videoWeek), activityType: "Lesson accessed", contentId: input.dataset.videoComplete, completed: input.checked }),
-      });
-      state.activity = result.activity;
+      const activityUpdate = { week: Number(input.dataset.videoWeek), activityType: "Lesson accessed", contentId: input.dataset.videoComplete, completed: input.checked };
+      if (isPreview) {
+        state.activity = state.activity.filter((item) => !(Number(item.week) === activityUpdate.week && item.activityType === activityUpdate.activityType && item.contentId === activityUpdate.contentId));
+        state.activity.push({ ...activityUpdate, id: `preview-${activityUpdate.week}-${activityUpdate.contentId}` });
+      } else {
+        const result = await api("save-activity", { method: "POST", body: JSON.stringify(activityUpdate) });
+        state.activity = result.activity;
+      }
       renderModule(week);
       renderDashboard();
       renderCurriculum();
@@ -686,24 +689,34 @@ const openLabForm = (formKey) => {
   const saved = state.formResponses.find((response) => response.formKey === formKey);
   const container = $("[data-assessment-list]");
   container.innerHTML = `
-    <form class="course-form" data-course-form="${escapeHtml(formKey)}">
+    <form class="course-form" data-course-form="${escapeHtml(formKey)}" novalidate>
       <section class="assessment-domain course-form-intro">
         <p class="eyebrow">${escapeHtml(definition.eyebrow)}</p>
         <h3>${escapeHtml(definition.title)}</h3>
         <p class="supporting">${escapeHtml(definition.description)}</p>
         <div class="warning">Use fictional, composite, or fully deidentified examples only. For risk, ethics, law, scope, competence, or workplace policy, use formal supervision and required procedures.</div>
       </section>
-      ${definition.fields.map((field) => {
-        if (field.type === "section") return `<header class="assessment-part-heading"><p class="eyebrow">${escapeHtml(field.title)}</p>${field.description ? `<p>${escapeHtml(field.description)}</p>` : ""}</header>`;
+      ${definition.fields.map((field, index) => {
+        if (field.type === "section") {
+          const closePrevious = index > 0 ? `</div></details>` : "";
+          return `${closePrevious}<details class="assessment-category"><summary><span>${escapeHtml(field.title)}</span><small>Open</small></summary>${field.description ? `<p class="assessment-category-description">${escapeHtml(field.description)}</p>` : ""}<div class="assessment-category-fields">`;
+        }
         const profileDefault = field.key === "full-name" ? state.profile.name : field.key === "preferred-name" ? (state.profile.name || "").split(" ")[0] : field.key === "email" ? state.profile.email : "";
         return `<section class="assessment-domain">${renderCourseFormField(field, saved?.responses?.[field.key] ?? profileDefault)}</section>`;
-      }).join("")}
+      }).join("")}${definition.fields.some((field) => field.type === "section") ? `</div></details>` : ""}
       <section class="assessment-domain form-actions"><button class="button" type="submit">Save ${escapeHtml(definition.title)}</button><span data-course-form-status></span></section>
     </form>
   `;
   $("[data-course-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
+    const invalid = form.querySelector(":invalid");
+    if (invalid) {
+      const category = invalid.closest("details");
+      if (category) category.open = true;
+      invalid.reportValidity();
+      return;
+    }
     const button = $("button", form);
     const status = $("[data-course-form-status]", form);
     const formData = new FormData(form);
@@ -713,9 +726,15 @@ const openLabForm = (formKey) => {
     button.disabled = true;
     status.textContent = "Saving…";
     try {
-      const result = await api("save-course-form", { method: "POST", body: JSON.stringify({ formKey, responses }) });
-      state.formResponses = result.formResponses || [];
-      state.profile = result.profile || state.profile;
+      if (isPreview) {
+        state.formResponses = state.formResponses.filter((response) => response.formKey !== formKey);
+        state.formResponses.push({ formKey, responses, submittedAt: new Date().toISOString() });
+        if (formKey === "baseline") state.profile.baselineComplete = true;
+      } else {
+        const result = await api("save-course-form", { method: "POST", body: JSON.stringify({ formKey, responses }) });
+        state.formResponses = result.formResponses || [];
+        state.profile = result.profile || state.profile;
+      }
       renderDashboard();
       renderCurriculum();
       if (state.assessmentReturn?.view === "module") {
@@ -732,6 +751,12 @@ const openLabForm = (formKey) => {
   });
   $$("[data-course-range]").forEach((range) => range.addEventListener("input", () => {
     $("[data-range-output]", range.closest(".course-slider")).textContent = range.value;
+  }));
+  $$("[data-course-form] .assessment-category").forEach((category) => category.addEventListener("toggle", () => {
+    if (!category.open) return;
+    $$("[data-course-form] .assessment-category").forEach((other) => {
+      if (other !== category) other.open = false;
+    });
   }));
 };
 

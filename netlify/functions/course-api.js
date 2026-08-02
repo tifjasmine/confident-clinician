@@ -283,7 +283,8 @@ exports.handler = async (event) => {
     if (action === "save-activity" && event.httpMethod === "POST") {
       const week = Number(payload.week);
       const allowed = ["Lesson accessed", "Tool completed", "Case exercise completed", "Implementation completed", "Reflection completed", "Assessment completed", "Mentorship attended"];
-      if (!Number.isInteger(week) || week < 1 || week > profile.programWeeks || !allowed.includes(payload.activityType)) return json(400, { message: "That course activity is not valid." });
+      const minimumWeek = profile.program === "Clinical Confidence Lab" ? 0 : 1;
+      if (!Number.isInteger(week) || week < minimumWeek || week > profile.programWeeks || !allowed.includes(payload.activityType)) return json(400, { message: "That course activity is not valid." });
       const contentId = payload.activityType === "Lesson accessed" ? String(payload.contentId || "").trim() : "";
       if (payload.activityType === "Lesson accessed") {
         const content = await listRecords(TABLES.content, `AND({Content ID}='${formulaString(contentId)}',{Program}='${formulaString(profile.program)}',{Published}=1)`, 1);
