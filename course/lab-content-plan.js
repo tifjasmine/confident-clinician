@@ -42,20 +42,20 @@ window.TCC_LAB_ORIENTATION_PLAN = [
 ];
 
 window.TCC_LAB_CONTENT_PLAN = [
-  lesson(1, 1, "You Are Not Behind", "The Role Identity Check", [
+  lesson(1, 1, "You Are Not Behind", "Role–Identity Check", [
     "Choose one part of being a therapist that still feels unfamiliar.",
     "What does your role actually require in this situation?",
     "What are you expecting yourself to already feel or know?",
     "What evidence shows that you are already growing into this role?",
   ]),
-  lesson(1, 2, "Confidence Is Built, Not Bestowed", "Build Your Confidence Ladder", [
+  lesson(1, 2, "Confidence Is Built, Not Bestowed", "Confidence Ladder", [
     "What clinical behavior do you want to become more confident doing?",
     "What are you waiting to feel before you do it?",
     "What is the smallest responsible version you can practice now?",
     "What do you predict may happen?",
     "What evidence will you collect afterward?",
   ]),
-  lesson(1, 3, "Why Graduate School Could Not Finish the Job", "Clinical Integration Audit", [
+  lesson(1, 3, "Why Graduate School Couldn’t Finish the Job", "Clinical Integration Audit", [
     "What clinical skill do you want to examine?",
     "Can you explain the skill and its clinical purpose?",
     "Can you recognize when it is needed during or after a session?",
@@ -64,14 +64,14 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Can you adapt it to the client, context, culture, relationship, and response?",
     "What is the next developmental step for this skill?",
   ]),
-  lesson(1, 4, "What Kind of Problem Are You Actually Having?", "What Kind of Problem Is This?", [
+  lesson(1, 4, "Why ‘I Have No Idea What I’m Doing’ Is Usually the Wrong Diagnosis", "Differential Confidence Check", [
     "Describe one recent moment when you thought you had no idea what you were doing.",
     "What did you initially assume the problem was?",
     "Which factors may actually be present: knowledge, practice, judgment, confidence, activation, context, or support?",
     "What evidence supports your assessment?",
     "What is the next responsible step?",
   ]),
-  lesson(1, 5, "Your Personal Patterns Enter the Therapy Room", "Personal Pattern to Clinical Pattern Map", [
+  lesson(1, 5, "Your Personal Patterns Do Not Stay Outside the Therapy Room", "Personal Pattern–Clinical Pattern Map", [
     "What personal pattern do you want to observe?",
     "What tends to trigger it in clinical work?",
     "What does it make you want to do or avoid doing?",
@@ -79,7 +79,7 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What impact could it have on the client, relationship, session, or you?",
     "What clinician quality do you want to practice instead?",
   ]),
-  lesson(1, 6, "What Happens When You Feel Evaluated", "Therapist Activation Snapshot", [
+  lesson(1, 6, "What Happens to Your Brain When You Feel Evaluated", "Therapist Activation Snapshot", [
     "Describe the moment that activated you.",
     "What happened in your body first?",
     "What did you immediately make the moment mean?",
@@ -97,7 +97,7 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What information or possibility did you lose sight of?",
     "Where could you interrupt the loop next time?",
   ]),
-  lesson(1, 8, "Becoming the Therapist You Want to Be", "The Emerging Clinician Identity Plan", [
+  lesson(1, 8, "Becoming the Therapist You Want to Be", "Emerging Clinician Identity Plan", [
     "What three qualities do you want clients to consistently experience from you?",
     "What observable behavior would express the first quality?",
     "What observable behavior would express the second quality?",
@@ -106,21 +106,21 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What evidence will show that this identity is becoming more established?",
   ]),
 
-  lesson(2, 1, "Urgency Is Not Clinical Clarity", "The Five Second Clinical Pause", [
+  lesson(2, 1, "Why Your Brain Goes Blank", "The Five-Second Clinical Pause", [
     "Describe one moment when you felt pressured to respond immediately.",
     "What felt urgent to you?",
     "Was the urgency clinical, emotional, relational, contextual, or a mix?",
     "What did you know and what was still unclear?",
     "What could you notice before choosing a response?",
   ]),
-  lesson(2, 2, "Center Before You Decide", "Centering Return Path", [
+  lesson(2, 2, "Center Before You Decide", "The Discreet Centering Sequence", [
     "What are your earliest signs that urgency is narrowing your attention?",
     "What physical action helps you recover enough attention to think?",
     "What role are you returning to in that moment?",
     "What client information needs your attention next?",
     "Write one brief internal reminder you can use in session.",
   ]),
-  lesson(2, 3, "Listen for the Thread, Not Just the Story", "Thread Finder Practice", [
+  lesson(2, 3, "Listen for the Thread, Not Just the Story", "Content-to-Thread Translator", [
     "What happened in the session content?",
     "What emotion seemed strongest?",
     "What meaning was the client making?",
@@ -128,7 +128,7 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What relational information did you notice?",
     "What need or clinical thread deserves attention?",
   ]),
-  lesson(2, 4, "Not Everything Important Is Most Important Right Now", "The Moment Priority Map", [
+  lesson(2, 4, "Not Everything Important Is Most Important Right Now", "The Moment Priority Matrix", [
     "What threads or concerns were present?",
     "Was there a safety, scope, competence, or level of care concern?",
     "Did the client need stabilization or containment before deeper work?",
@@ -136,14 +136,14 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What felt most important right now, and why?",
     "What could responsibly wait?",
   ]),
-  lesson(2, 5, "Choose the Intervention by Its Job", "Intervention Purpose Map", [
+  lesson(2, 5, "Choose the Intervention by Its Job", "Intervention Purpose Menu", [
     "What was happening in the clinical moment?",
     "What did the client appear to need?",
     "What clinical function best fit: clarify, reflect, deepen, regulate, practice, challenge, contain, repair, consult, or refer?",
     "What is one proportionate action that serves that function?",
     "What are you hoping the action makes more possible?",
   ]),
-  lesson(2, 6, "An Intervention Is a Hypothesis", "The Impact Check", [
+  lesson(2, 6, "An Intervention Is a Hypothesis", "Impact Check", [
     "What did you intend the intervention to do?",
     "What did you say or do?",
     "What happened next?",
@@ -160,18 +160,16 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Which move would you choose with the information available now, and why?",
     "What new information would change your direction?",
   ]),
-  lesson(2, 8, "Thinking Like a Confident Clinician", "Think Like a Clinician", [
-    "What did you notice?",
-    "What did you wonder?",
-    "What did you know?",
-    "What did you not know?",
-    "What possible threads did you hear?",
-    "What felt most important?",
-    "What were two responsible options?",
-    "What would you choose, watch for, and revisit?",
+  lesson(2, 8, "Thinking Like a Confident Clinician", "CLEAR Case Reasoning Map", [
+    "Center: What is happening in you, and what helps you return?",
+    "Listen: What possible threads do you hear?",
+    "Evaluate: What matters most now, and what information is missing?",
+    "Act: What options could fit? Which move are you choosing, and what is its purpose?",
+    "Reflect: What happened? What changed? What do you now understand differently?",
+    "Consultation threshold: What information would tell you not to proceed alone?",
   ]),
 
-  lesson(3, 1, "Structure Is Not Control", "Leadership Style Check", [
+  lesson(3, 1, "Structure Is Not Control", "Leadership Reflection", [
     "Describe one session where leadership felt difficult.",
     "Where did you become passive, controlling, or unclear?",
     "What were you afraid might happen if you led more directly?",
@@ -200,7 +198,7 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Invite: How could you offer the focus without imposing it?",
     "What client response would tell you to continue, clarify, or change direction?",
   ]),
-  lesson(3, 5, "Stop Performing Therapist", "The Therapist Language Translator", [
+  lesson(3, 5, "Stop Performing ‘Therapist’", "Therapist Language Translator", [
     "What borrowed or overly clinical phrase do you use?",
     "What is its clinical purpose?",
     "How would you say it more naturally?",
@@ -208,7 +206,7 @@ window.TCC_LAB_CONTENT_PLAN = [
     "How can you offer it with humility without burying it in disclaimers?",
     "What response would tell you it fit, missed, or needs clarification?",
   ]),
-  lesson(3, 6, "Redirect Without the Apology Tour", "The Redirection Builder", [
+  lesson(3, 6, "Redirect Without the Apology Tour", "Redirection Builder", [
     "Describe a recent or anticipated redirection moment.",
     "Why might redirection be clinically useful?",
     "Are you redirecting for the client or mainly to reduce your discomfort?",
@@ -216,7 +214,7 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Orient: What are you protecting or returning to?",
     "Invite: How will you involve the client in the shift?",
   ]),
-  lesson(3, 7, "Create Movement Without Forcing a Breakthrough", "The Clinical Movement Map", [
+  lesson(3, 7, "Create Movement Without Forcing a Breakthrough", "Clinical Movement Map", [
     "What was happening when the session began?",
     "What form of movement fit: clarity, emotional contact, pattern recognition, relational movement, practice, decision, containment, or integration?",
     "What did you do to support that movement?",
@@ -232,13 +230,13 @@ window.TCC_LAB_CONTENT_PLAN = [
     "If you ran over, what were you trying to solve or avoid?",
   ]),
 
-  lesson(4, 1, "Reflection Is Supposed to End", "Reflection or Rumination?", [
-    "What objectively happened?",
-    "What clinically relevant information emerged?",
-    "What meaning does the available evidence support?",
-    "What, if anything, needs action?",
-    "What is your next responsible step?",
-    "What endpoint tells you the review is complete for now?",
+  lesson(4, 1, "Reflection Is Supposed to End", "Reflection or Rumination Check", [
+    "Are you gaining new information?",
+    "Is the question becoming more specific?",
+    "Is there an actionable next step?",
+    "Are you seeking clarity or emotional certainty?",
+    "Have you already identified what needs to happen?",
+    "What would allow this reflection to end?",
   ]),
   lesson(4, 2, "Responsibility Is Not Total Control", "Circle of Clinical Responsibility", [
     "Describe the case, concern, or outcome you feel responsible for.",
@@ -270,13 +268,14 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Repair: What acknowledgment, apology, clarification, or changed behavior may be needed?",
     "Learn: How will this change your practice?",
   ]),
-  lesson(4, 6, "The Seven Minute Post Session Debrief", "The Seven Minute Post Session Debrief", [
-    "Capture: What was most clinically relevant?",
-    "Clarify: What do you understand more clearly now?",
-    "Continue: What should you return to next time?",
-    "Consult: What requires support, documentation, coordination, or follow up?",
-    "Close: What can you release for now?",
-    "Complete the sentence: I have done enough with this session for now because...",
+  lesson(4, 6, "The Seven-Minute Post-Session Debrief", "The Seven-Minute Debrief", [
+    "What happened that was clinically relevant?",
+    "What did you notice in the client?",
+    "What did you notice in yourself?",
+    "What shifted, or did not shift?",
+    "What is the next responsible step?",
+    "Is documentation, consultation, or follow up needed?",
+    "What can you release until you have new information?",
   ]),
   lesson(4, 7, "The Clinician You Can Trust", "Trustworthiness Evidence Inventory", [
     "Judgment: When did you gather information or reason carefully before acting?",
@@ -286,16 +285,14 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Restraint: When did you choose not to rescue, force, explain, or act beyond what you knew?",
     "Support: When did you consult, coordinate, document, or refer appropriately?",
   ]),
-  lesson(4, 8, "Becoming the Clinician You Want to Be", "My 30 Day Clinician Growth Plan", [
-    "Who is the clinician you want to keep becoming?",
-    "Why does this matter to you?",
-    "What two observable behaviors will you practice?",
-    "What personal pattern will you monitor?",
-    "Which CLEAR step needs continued practice?",
-    "What session leadership behavior will you strengthen?",
-    "What responsibility or boundary pattern will you work on?",
-    "What support pathway will you use?",
-    "What evidence will you collect over the next 30 days?",
+  lesson(4, 8, "Your Next 30 Days", "The 30-Day Clinician Development Plan", [
+    "What is one session leadership behavior you will practice?",
+    "What is one CLEAR reasoning practice you will strengthen?",
+    "What is one personal or activation pattern you will monitor?",
+    "What is one boundary or responsibility practice you will use?",
+    "What is one consultation or support commitment you will make?",
+    "What is one weekly review ritual you will keep?",
+    "How will you measure your growth?",
   ]),
 
   lesson(5, 1, "When the Client Says ‘I Don’t Know’", "The I Don’t Know Detective Sheet", [
