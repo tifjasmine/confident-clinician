@@ -71,8 +71,8 @@ After changing that plan, sync its 32 lessons to Airtable with:
 npx netlify dev:exec node scripts/sync-lab-content-to-airtable.mjs
 ```
 
-The sync preserves matching video and download links, leaves lessons without
-videos as drafts, and unpublishes retired Lab content without deleting it.
+The sync preserves matching video and download links, publishes the current
+curriculum, and unpublishes retired Lab content without deleting it.
 
 The Clinical Confidence Lab assessment flow is built into the same portal:
 baseline and success plan before Week 1, a pulse check in each program week,

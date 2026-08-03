@@ -136,7 +136,7 @@ const showView = (name) => {
 const setCourseForProfile = () => {
   window.TCC_COURSE = window.TCC_COURSES[state.profile?.program]
     || window.TCC_COURSES["Confident Clinician Intensive"];
-  $("[data-program-name]").textContent = window.TCC_COURSE.title;
+  $("[data-program-name]").textContent = state.profile?.program === "Clinical Confidence Lab" ? "4 Week Lab" : "Intensive";
   $("[data-roadmap-label]").textContent = `${window.TCC_COURSE.weeks.length}-Week Roadmap`;
 };
 

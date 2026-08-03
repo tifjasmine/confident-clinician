@@ -50,7 +50,7 @@ const fieldsFor = (item, existing) => ({
   "Workbook Title": item.workbookTitle || null,
   "Workbook Prompts": item.workbookPrompts.join("\n") || null,
   "Stopping Statement": item.stoppingStatement || null,
-  Published: item.published || Boolean(existing?.fields?.Published && existing?.fields?.["Video URL"]),
+  Published: true,
 });
 
 const chunks = (values, size = 10) => Array.from({ length: Math.ceil(values.length / size) }, (_, index) => values.slice(index * size, (index + 1) * size));
