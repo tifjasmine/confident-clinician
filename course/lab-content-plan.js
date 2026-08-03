@@ -30,7 +30,7 @@ window.TCC_LAB_ORIENTATION_PLAN = [
     contentType: "Video",
     title: "A Warm Welcome from Tiffany",
     description: "Start here for a warm welcome and a quick look at what you can expect over the next four weeks.",
-    videoUrl: "",
+    videoUrl: "https://fast.wistia.net/embed/iframe/rgr79fxdd4",
     downloadUrl: "",
     transcriptUrl: "",
     workbookTitle: "",

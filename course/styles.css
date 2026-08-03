@@ -382,6 +382,13 @@ input:focus, textarea:focus, select:focus {
 .mini-video-slot small { color: rgba(255,255,255,.7); }
 .week-forms-card { border-left: 5px solid var(--terra); box-shadow: none; }
 .week-form-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.welcome-assessment { appearance: none; width: 100%; display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid rgba(38,63,48,.18); background: #fffdfa; color: var(--forest); text-align: left; cursor: pointer; }
+.welcome-assessment-check { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border: 2px solid rgba(38,63,48,.35); border-radius: 50%; color: white; font-weight: 800; }
+.welcome-assessment.complete .welcome-assessment-check { border-color: var(--sage); background: var(--sage); }
+.welcome-assessment strong, .welcome-assessment small { display: block; }
+.welcome-assessment strong { font-size: 14px; }
+.welcome-assessment small { margin-top: 3px; color: var(--olive); }
+.welcome-sequence-nav { margin-top: 0; }
 .course-form { display: grid; min-width: 0; max-width: 100%; gap: 16px; overflow-x: hidden; }
 .assessment-category { min-width: 0; border: 1px solid rgba(42,60,47,.15); background: var(--white); }
 .assessment-category summary { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 24px; color: var(--forest); cursor: pointer; list-style: none; font-family: "Cormorant Garamond", serif; font-size: 27px; font-weight: 600; }

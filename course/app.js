@@ -154,13 +154,16 @@ const contentItemComplete = (item) => {
 };
 const orientationComplete = () => {
   const items = state.content.filter((item) => Number(item.week) === 0);
-  return !window.TCC_COURSE.orientation || (items.length > 0 && items.every((item) => contentItemComplete(item)));
+  const requiredForms = ["baseline", "success-plan"];
+  const formsComplete = requiredForms.every((formKey) => state.formResponses.some((response) => response.formKey === formKey));
+  return !window.TCC_COURSE.orientation || (items.length > 0 && items.every((item) => contentItemComplete(item)) && formsComplete);
 };
 const weekCompletion = (week) => {
   if (Number(week) === 0) {
     const orientationItems = state.content.filter((item) => Number(item.week) === 0);
     const completed = orientationItems.filter((item) => contentItemComplete(item)).length;
-    return Math.round((completed / Math.max(1, orientationItems.length)) * 100);
+    const completedForms = ["baseline", "success-plan"].filter((formKey) => state.formResponses.some((response) => response.formKey === formKey)).length;
+    return Math.round(((completed + completedForms) / Math.max(1, orientationItems.length + 2)) * 100);
   }
   if (state.profile?.program === "Clinical Confidence Lab") {
     const items = state.content.filter((item) => Number(item.week) === Number(week));
@@ -381,7 +384,7 @@ const renderModule = (week) => {
     const answeredCount = prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length;
     const remainingAnswers = Math.max(0, prompts.length - answeredCount);
     const videoComplete = !item.videoUrl || lessonWatched(item.contentId);
-    const itemComplete = (!item.videoUrl || lessonWatched(item.contentId)) && (!prompts.length || answeredCount === prompts.length);
+    const itemComplete = completionFor(item);
     const itemInProgress = !itemComplete && (lessonWatched(item.contentId) || answeredCount > 0);
     const continueHelp = !videoComplete
       ? "Watch the video and mark it complete to continue."
@@ -394,10 +397,10 @@ const renderModule = (week) => {
         ? "Mark Video Complete to Continue"
         : `Save ${remainingAnswers} More ${remainingAnswers === 1 ? "Answer" : "Answers"}`;
     return `
-      <div class="lesson-sequence-status">
+      ${isOrientation ? "" : `<div class="lesson-sequence-status">
         <span>Lesson ${index + 1} of ${weekContent.length}</span>
         <strong>${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</strong>
-      </div>
+      </div>`}
       <article class="lesson-card lesson-step lesson-step-active">
         <div class="lesson-step-summary">
           <span class="lesson-step-number">${isOrientation ? index + 1 : String(index + 1).padStart(2, "0")}</span>
@@ -405,7 +408,6 @@ const renderModule = (week) => {
             <small>${escapeHtml(item.contentType === "Video" ? "Video" : item.videoUrl ? `${item.contentType} · Video` : item.contentType)}</small>
             <strong>${escapeHtml(item.title)}</strong>
           </span>
-          <span class="lesson-step-state ${itemComplete ? "complete" : itemInProgress ? "in-progress" : ""}">${itemComplete ? "Complete" : itemInProgress ? "In progress" : "Not started"}</span>
         </div>
         <div class="lesson-step-body">
           ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong></div>` : ""}
@@ -440,11 +442,11 @@ const renderModule = (week) => {
           ` : ""}
         </div>
       </article>
-      <nav class="lesson-sequence-nav" aria-label="Lesson navigation">
+      ${isOrientation ? "" : `<nav class="lesson-sequence-nav" aria-label="Lesson navigation">
         <button class="button secondary" type="button" data-lesson-previous ${index === 0 ? "disabled" : ""}>Previous Lesson</button>
         <button class="button" type="button" data-lesson-next ${!itemComplete ? "disabled" : ""}>${escapeHtml(nextLabel)}</button>
-      </nav>
-      ${itemComplete ? "" : `<p class="lesson-sequence-help">${escapeHtml(continueHelp)}</p>`}
+      </nav>`}
+      ${isOrientation || itemComplete ? "" : `<p class="lesson-sequence-help">${escapeHtml(continueHelp)}</p>`}
       ${!isOrientation && state.profile.program === "Clinical Confidence Lab" && !allLessonsComplete ? `
         <aside class="week-checkpoint-preview">
           <span>Final Step · After Lesson ${weekContent.length}</span>
@@ -571,6 +573,7 @@ const renderModule = (week) => {
       ? ["baseline", "success-plan"].includes(key)
       : Number(form.week) === Number(week.number) && !["baseline", "success-plan"].includes(key))
     : [];
+  const orientationFormsComplete = ["baseline", "success-plan"].every((formKey) => state.formResponses.some((response) => response.formKey === formKey));
   $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || allLessonsComplete) ? `
     <article class="card week-forms-card">
       <p class="eyebrow">${isOrientation ? "Before You Begin" : `Finish Week ${week.number}`}</p>
@@ -579,16 +582,21 @@ const renderModule = (week) => {
       <div class="week-form-buttons">
         ${weekForms.map(([key, form]) => {
           const complete = state.formResponses.some((response) => response.formKey === key);
-          return `<button class="button ${complete ? "secondary" : ""}" data-open-course-form="${escapeHtml(key)}">${complete ? "Review" : "Complete"} ${escapeHtml(form.title)}</button>`;
+          return `<button class="welcome-assessment ${complete ? "complete" : ""}" data-open-course-form="${escapeHtml(key)}"><span class="welcome-assessment-check" aria-hidden="true">${complete ? "✓" : ""}</span><span><strong>${escapeHtml(form.title)}</strong><small>${complete ? "Saved" : "Complete this assessment"}</small></span></button>`;
         }).join("")}
       </div>
     </article>
+    ${isOrientation ? `<nav class="lesson-sequence-nav welcome-sequence-nav" aria-label="Start Here navigation">
+      <button class="button secondary" type="button" disabled>Previous Lesson</button>
+      <button class="button" type="button" data-continue-week-one ${!allLessonsComplete || !orientationFormsComplete ? "disabled" : ""}>Continue to Week 1</button>
+    </nav>${!orientationFormsComplete ? `<p class="lesson-sequence-help">Complete both assessments to continue.</p>` : ""}` : ""}
   ` : "";
   $$("[data-open-course-form]").forEach((button) => button.addEventListener("click", () => {
     state.assessmentReturn = { view: "module", week: week.number };
     showView("assessments");
     openLabForm(button.dataset.openCourseForm);
   }));
+  $("[data-continue-week-one]")?.addEventListener("click", () => openWeek(1));
 
   $("[data-milestone-card]").hidden = !week.milestone || !allLessonsComplete;
   if (week.milestone && allLessonsComplete) {
@@ -723,7 +731,7 @@ const openLabForm = (formKey) => {
         <div class="warning">Use fictional, composite, or fully deidentified examples only. For risk, ethics, law, scope, competence, or workplace policy, use formal supervision and required procedures.</div>
       </section>
       ${formFieldsHtml}
-      <section class="assessment-domain form-actions"><button class="button" type="submit">Save ${escapeHtml(definition.title)}</button><span data-course-form-status></span></section>
+      <section class="assessment-domain form-actions"><button class="button" type="submit">Save ${escapeHtml(definition.title)}</button><button class="button secondary" type="button" data-return-to-course hidden>Return to Course</button><span data-course-form-status></span></section>
     </form>
   `;
   requestAnimationFrame(() => container.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -758,9 +766,9 @@ const openLabForm = (formKey) => {
       renderDashboard();
       renderCurriculum();
       if (state.assessmentReturn?.view === "module") {
-        const returnWeek = Number(state.assessmentReturn.week);
-        state.assessmentReturn = null;
-        openWeek(returnWeek);
+        status.textContent = "Saved";
+        $("[data-return-to-course]", form).hidden = false;
+        button.textContent = "Saved";
       } else {
         renderAssessments();
         showView("assessments");
@@ -768,6 +776,11 @@ const openLabForm = (formKey) => {
     } catch (error) {
       status.textContent = error.message;
     } finally { button.disabled = false; }
+  });
+  $("[data-return-to-course]")?.addEventListener("click", () => {
+    const returnWeek = Number(state.assessmentReturn?.week ?? 0);
+    state.assessmentReturn = null;
+    openWeek(returnWeek);
   });
   $$("[data-course-range]").forEach((range) => range.addEventListener("input", () => {
     $("[data-range-output]", range.closest(".course-slider")).textContent = range.value;
