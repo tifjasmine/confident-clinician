@@ -192,11 +192,11 @@ const renderDashboard = () => {
 
   const firstName = (profile.name || "clinician").split(" ")[0];
   $("[data-dashboard-title]").textContent = needsOrientation
-    ? `Welcome to the Lab, ${firstName}!`
+    ? `Hi, ${firstName}! Let’s get started.`
     : `Welcome back, ${firstName}.`;
   $("[data-dashboard-intro]").hidden = needsOrientation;
   $("[data-dashboard-intro]").textContent = needsOrientation ? "" : "Pick up right where you left off.";
-  $("[data-current-week-label]").textContent = needsOrientation ? "Welcome · Start Here" : `Week ${week.number} · ${week.tool}`;
+  $("[data-current-week-label]").textContent = needsOrientation ? "Start Here" : `Week ${week.number} · ${week.tool}`;
   $("[data-current-week-title]").textContent = needsOrientation ? orientation.title : week.title;
   $("[data-current-week-description]").textContent = needsOrientation
     ? "I’m so glad you’re here. I can’t wait for you to feel more confident in your practice, trust yourself more in the room, and spend less time feeling anxious about whether you’re doing it right."
@@ -215,7 +215,7 @@ const renderCurriculum = () => {
   const orientation = window.TCC_COURSE.orientation;
   const orientationCard = orientation ? `
     <button class="week-card orientation-card" data-open-week="0">
-      <span class="week-number">Welcome</span>
+      <span class="week-number">Start Here</span>
       <h3>${escapeHtml(orientation.shortTitle)}</h3>
       <span class="week-meta">${escapeHtml(orientation.tool)}</span>
       <span class="week-state">${weekCompletion(0) ? `${weekCompletion(0)}% complete` : "Start here"}</span>
@@ -234,7 +234,7 @@ const renderCurriculum = () => {
         <ol class="curriculum-lesson-list">
           ${week.agenda.map(([title]) => `<li>${escapeHtml(title)}</li>`).join("")}
         </ol>
-        <span class="week-state">${week.isBonus && locked ? "Unlocks after Week 4" : needsOrientation ? "Complete Welcome first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
+        <span class="week-state">${week.isBonus && locked ? "Unlocks after Week 4" : needsOrientation ? "Complete Start Here first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
       </button>
     `;
   }).join("");
@@ -352,7 +352,7 @@ const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent[0];
   const isOrientation = Number(week.number) === 0;
-  $("[data-module-week]").textContent = isOrientation ? "Welcome" : week.isBonus ? "Bonus Clinical Lab" : `Week ${week.number}`;
+  $("[data-module-week]").textContent = isOrientation ? "Start Here" : week.isBonus ? "Bonus Clinical Lab" : `Week ${week.number}`;
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
   $("[data-module-description]").hidden = isOrientation;
   $("[data-module-description]").textContent = isOrientation ? "" : week.description || primaryContent?.description;
@@ -573,7 +573,7 @@ const renderModule = (week) => {
     : [];
   $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || allLessonsComplete) ? `
     <article class="card week-forms-card">
-      <p class="eyebrow">${isOrientation ? "Welcome" : `Finish Week ${week.number}`}</p>
+      <p class="eyebrow">${isOrientation ? "Before You Begin" : `Finish Week ${week.number}`}</p>
       <h3>${isOrientation ? "Tell me a little about you." : `Complete your Week ${week.number} check-in.`}</h3>
       ${isOrientation ? "" : `<p class="supporting">Take a minute to notice what changed, what still feels difficult, and what you want to practice next.</p>`}
       <div class="week-form-buttons">

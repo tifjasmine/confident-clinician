@@ -113,10 +113,10 @@ const labCourse = {
   program: "Clinical Confidence Lab",
   orientation: {
     number: 0,
-    title: "Welcome!",
-    shortTitle: "Welcome",
+    title: "Before You Begin",
+    shortTitle: "Start Here",
     description: "",
-    tool: "Start Here",
+    tool: "Video and starting check-in",
     milestone: false,
   },
   weeks: [
