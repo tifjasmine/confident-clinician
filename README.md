@@ -64,6 +64,16 @@ Workbook prompts are entered one per line and render as private, saved answer
 boxes. Responses are stored in the `Workbook Responses` table by participant,
 program, week, and content ID.
 
+The four week Lab master curriculum lives in `course/lab-content-plan.js`.
+After changing that plan, sync its 32 lessons to Airtable with:
+
+```bash
+npx netlify dev:exec node scripts/sync-lab-content-to-airtable.mjs
+```
+
+The sync preserves matching video and download links, leaves lessons without
+videos as drafts, and unpublishes retired Lab content without deleting it.
+
 The Clinical Confidence Lab assessment flow is built into the same portal:
 baseline and success plan before Week 1, a pulse check in each program week,
 post-assessment and CLEAR capstone after Week 4, and one completion-session prep

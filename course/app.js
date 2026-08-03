@@ -57,7 +57,7 @@ const promptExample = (prompt = "") => {
   if (text.includes("value")) return "Steadiness: I pause and respond thoughtfully; it does not require me to feel perfectly calm.";
   if (text.includes("boundary")) return "I will begin landing at the ten-minute mark and finish at the scheduled time.";
   if (text.includes("evidence")) return "I noticed the urge to rescue, paused, and chose one collaborative question instead.";
-  if (text.includes("30-day") || text.includes("weekly")) return "Once each week, I will use CLEAR on one deidentified moment and bring one question to consultation.";
+  if (text.includes("30 day") || text.includes("weekly")) return "Once each week, I will use CLEAR on one deidentified moment and bring one question to consultation.";
   if (text.includes("immediate result")) return "The client became quieter, and I felt even more pressure to keep talking.";
   if (text.includes("proof")) return "I treated the client’s quietness as proof that I was boring or ineffective.";
   if (text.includes("might also be true")) return "The client may have been tired, ashamed, overwhelmed, or simply needing more time.";
@@ -312,7 +312,7 @@ const workbookSectionPlan = {
     ["Define the clinician you trust", 2],
     ["Practice: The Case That Is Not Progressing", 4],
     ["Name your evidence of growth", 3],
-    ["Build your 30-day plan", 6],
+    ["Build your 30 day plan", 6],
     ["Final reflection, then stop", 7],
   ],
 };
@@ -943,22 +943,15 @@ const initializePreview = () => {
     programWeeks: 4,
     cohort: "Founding Beta · September 2026",
     enrollmentStatus: "Active",
-    currentWeek: 3,
-    baselineComplete: true,
+    currentWeek: 1,
+    baselineComplete: false,
     midpointComplete: false,
     finalComplete: false,
   };
-  state.activity = [
-    ...window.TCC_COURSE.activityTypes.map((activityType, index) => ({ week: 1, activityType, completed: true, id: `preview-1-${index}` })),
-    ...window.TCC_COURSE.activityTypes.map((activityType, index) => ({ week: 2, activityType, completed: true, id: `preview-2-${index}` })),
-    { week: 3, activityType: "Lesson accessed", completed: true, id: "preview-3-1" },
-    { week: 3, activityType: "Tool completed", completed: true, id: "preview-3-2" },
-  ];
-  state.submissions = [
-    { week: 1, milestone: "Confidence Block Inventory", submission: "Preview submission", status: "Feedback returned", feedback: "You identified the pattern clearly. Keep the experiment small and observable." },
-  ];
+  state.activity = [];
+  state.submissions = [];
   state.questions = [];
-  state.content = [];
+  state.content = [...(window.TCC_LAB_ORIENTATION_PLAN || []), ...(window.TCC_LAB_CONTENT_PLAN || [])];
   state.workbookResponses = [];
   state.formResponses = [];
   setCourseForProfile();
