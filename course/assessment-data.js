@@ -68,7 +68,7 @@ const pulseSpecific = [
 window.TCC_LAB_FORMS = {
   baseline: {
     title: "Baseline Clinical Confidence Assessment",
-    eyebrow: "Orientation",
+    eyebrow: "Welcome",
     description: "Answer from how you have actually practiced during the last 30 days. This is for learning and program improvement. It is not a test of competence.",
     fields: [
       { type: "section", title: "About Your Current Clinical Work", description: "Tell me a little about your work so I can understand the context you are practicing in." },
@@ -98,7 +98,7 @@ window.TCC_LAB_FORMS = {
   },
   "success-plan": {
     title: "Emerging Clinician Starting Plan",
-    eyebrow: "Orientation",
+    eyebrow: "Welcome",
     description: "Choose the clinician qualities and visible behaviors you want to practice during the Lab.",
     fields: [
       { key: "qualities", label: "What three qualities do I want clients to consistently experience from me?", type: "text" },

@@ -21,7 +21,25 @@ const lesson = (week, number, title, workbookTitle, prompts, contentType = "Vide
   published: false,
 });
 
-window.TCC_LAB_ORIENTATION_PLAN = [];
+window.TCC_LAB_ORIENTATION_PLAN = [
+  {
+    contentId: "lab-welcome-video",
+    program: "Clinical Confidence Lab",
+    week: 0,
+    order: 10,
+    contentType: "Video",
+    title: "A Warm Welcome from Tiffany",
+    description: "Start here for a warm welcome and a quick look at what you can expect over the next four weeks.",
+    videoUrl: "",
+    downloadUrl: "",
+    transcriptUrl: "",
+    workbookTitle: "",
+    workbookPrompts: [],
+    stoppingStatement: "",
+    files: [],
+    published: false,
+  },
+];
 
 window.TCC_LAB_CONTENT_PLAN = [
   lesson(1, 1, "You Are Not Behind", "The Role Identity Check", [

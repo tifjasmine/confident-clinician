@@ -196,12 +196,12 @@ const renderDashboard = () => {
     : `Welcome back, ${firstName}.`;
   $("[data-dashboard-intro]").hidden = needsOrientation;
   $("[data-dashboard-intro]").textContent = needsOrientation ? "" : "Pick up right where you left off.";
-  $("[data-current-week-label]").textContent = needsOrientation ? "Orientation · Start Here" : `Week ${week.number} · ${week.tool}`;
+  $("[data-current-week-label]").textContent = needsOrientation ? "Welcome · Start Here" : `Week ${week.number} · ${week.tool}`;
   $("[data-current-week-title]").textContent = needsOrientation ? orientation.title : week.title;
   $("[data-current-week-description]").textContent = needsOrientation
     ? "I’m so glad you’re here. I can’t wait for you to feel more confident in your practice, trust yourself more in the room, and spend less time feeling anxious about whether you’re doing it right."
     : week.description;
-  $("[data-open-current]").textContent = needsOrientation ? "Start Orientation" : "Continue This Week";
+  $("[data-open-current]").textContent = needsOrientation ? "Start Here" : "Continue This Week";
   $("[data-dashboard-assessments]").hidden = needsOrientation;
   $("[data-progress-ring]").style.setProperty("--value", progress);
   $("[data-progress-percent]").textContent = `${progress}%`;
@@ -215,10 +215,10 @@ const renderCurriculum = () => {
   const orientation = window.TCC_COURSE.orientation;
   const orientationCard = orientation ? `
     <button class="week-card orientation-card" data-open-week="0">
-      <span class="week-number">Orientation</span>
+      <span class="week-number">Welcome</span>
       <h3>${escapeHtml(orientation.shortTitle)}</h3>
       <span class="week-meta">${escapeHtml(orientation.tool)}</span>
-      <span class="week-state">${weekCompletion(0) ? `${weekCompletion(0)}% complete` : "Begin here"}</span>
+      <span class="week-state">${weekCompletion(0) ? `${weekCompletion(0)}% complete` : "Start here"}</span>
     </button>
   ` : "";
   $("[data-week-grid]").innerHTML = orientationCard + window.TCC_COURSE.weeks.map((week) => {
@@ -234,7 +234,7 @@ const renderCurriculum = () => {
         <ol class="curriculum-lesson-list">
           ${week.agenda.map(([title]) => `<li>${escapeHtml(title)}</li>`).join("")}
         </ol>
-        <span class="week-state">${week.isBonus && locked ? "Unlocks after Week 4" : needsOrientation ? "Complete Orientation first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
+        <span class="week-state">${week.isBonus && locked ? "Unlocks after Week 4" : needsOrientation ? "Complete Welcome first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
       </button>
     `;
   }).join("");
@@ -352,7 +352,7 @@ const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent[0];
   const isOrientation = Number(week.number) === 0;
-  $("[data-module-week]").textContent = isOrientation ? "Orientation" : week.isBonus ? "Bonus Clinical Lab" : `Week ${week.number}`;
+  $("[data-module-week]").textContent = isOrientation ? "Welcome" : week.isBonus ? "Bonus Clinical Lab" : `Week ${week.number}`;
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
   $("[data-module-description]").hidden = isOrientation;
   $("[data-module-description]").textContent = isOrientation ? "" : week.description || primaryContent?.description;
@@ -573,8 +573,8 @@ const renderModule = (week) => {
     : [];
   $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || allLessonsComplete) ? `
     <article class="card week-forms-card">
-      <p class="eyebrow">${isOrientation ? "Orientation" : `Finish Week ${week.number}`}</p>
-      <h3>${isOrientation ? "Complete your starting steps." : `Complete your Week ${week.number} check-in.`}</h3>
+      <p class="eyebrow">${isOrientation ? "Welcome" : `Finish Week ${week.number}`}</p>
+      <h3>${isOrientation ? "Tell me a little about you." : `Complete your Week ${week.number} check-in.`}</h3>
       ${isOrientation ? "" : `<p class="supporting">Take a minute to notice what changed, what still feels difficult, and what you want to practice next.</p>`}
       <div class="week-form-buttons">
         ${weekForms.map(([key, form]) => {
