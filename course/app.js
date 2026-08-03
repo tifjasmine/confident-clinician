@@ -137,7 +137,8 @@ const setCourseForProfile = () => {
   window.TCC_COURSE = window.TCC_COURSES[state.profile?.program]
     || window.TCC_COURSES["Confident Clinician Intensive"];
   $("[data-program-name]").textContent = state.profile?.program === "Clinical Confidence Lab" ? "4 Week Lab" : "Intensive";
-  $("[data-roadmap-label]").textContent = `${window.TCC_COURSE.weeks.length}-Week Roadmap`;
+  const coreWeekCount = window.TCC_COURSE.weeks.filter((week) => !week.isBonus).length;
+  $("[data-roadmap-label]").textContent = `${coreWeekCount}-Week Roadmap + Bonus`;
 };
 
 const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.week) === Number(week) && item.completed);
@@ -164,8 +165,9 @@ const weekCompletion = (week) => {
   if (state.profile?.program === "Clinical Confidence Lab") {
     const items = state.content.filter((item) => Number(item.week) === Number(week));
     const completedLessons = items.filter((item) => contentItemComplete(item)).length;
+    const requiresWeeklyForm = Number(week) <= 4;
     const weeklyForm = state.formResponses.some((response) => Number(response.week) === Number(week) || response.formKey === `pulse-${week}`);
-    return Math.round(((completedLessons + (weeklyForm ? 1 : 0)) / Math.max(1, items.length + 1)) * 100);
+    return Math.round(((completedLessons + (requiresWeeklyForm && weeklyForm ? 1 : 0)) / Math.max(1, items.length + (requiresWeeklyForm ? 1 : 0))) * 100);
   }
   const nonVideoTypes = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed");
   const videos = state.content.filter((item) => Number(item.week) === Number(week) && item.videoUrl);
@@ -182,8 +184,9 @@ const renderDashboard = () => {
   const completedActivities = state.activity.filter((item) => item.completed).length;
   const nonVideoTypeCount = window.TCC_COURSE.activityTypes.filter((type) => type !== "Lesson accessed").length;
   const totalActivities = (window.TCC_COURSE.weeks.length * nonVideoTypeCount) + state.content.filter((item) => item.videoUrl).length;
+  const coreWeeks = window.TCC_COURSE.weeks.filter((item) => !item.isBonus);
   const progress = profile.program === "Clinical Confidence Lab"
-    ? Math.round(window.TCC_COURSE.weeks.reduce((sum, item) => sum + weekCompletion(item.number), 0) / window.TCC_COURSE.weeks.length)
+    ? Math.round(coreWeeks.reduce((sum, item) => sum + weekCompletion(item.number), 0) / coreWeeks.length)
     : Math.min(100, Math.round((completedActivities / Math.max(1, totalActivities)) * 100));
   const completedLessons = state.content.filter((item) => Number(item.week) > 0 && contentItemComplete(item)).length;
 
@@ -220,17 +223,18 @@ const renderCurriculum = () => {
   ` : "";
   $("[data-week-grid]").innerHTML = orientationCard + window.TCC_COURSE.weeks.map((week) => {
     const needsOrientation = week.number === 1 && !orientationComplete();
-    const locked = week.number > current || needsOrientation;
+    const bonusUnlocked = week.isBonus && weekCompletion(4) === 100;
+    const locked = week.isBonus ? !bonusUnlocked : week.number > current || needsOrientation;
     const completion = weekCompletion(week.number);
     return `
       <button class="week-card ${locked ? "locked" : ""}" data-open-week="${week.number}" ${locked ? "disabled" : ""}>
-        <span class="week-number">Week ${week.number} · 8 mini lessons</span>
+        <span class="week-number">${week.isBonus ? "Bonus Clinical Lab · 6 videos + 4 resources" : `Week ${week.number} · 8 mini lessons`}</span>
         <h3>${escapeHtml(week.title)}</h3>
         <p>${escapeHtml(week.description)}</p>
         <ol class="curriculum-lesson-list">
           ${week.agenda.map(([title]) => `<li>${escapeHtml(title)}</li>`).join("")}
         </ol>
-        <span class="week-state">${needsOrientation ? "Complete Orientation first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
+        <span class="week-state">${week.isBonus && locked ? "Unlocks after Week 4" : needsOrientation ? "Complete Orientation first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
       </button>
     `;
   }).join("");
@@ -348,13 +352,13 @@ const renderModule = (week) => {
   const weekContent = state.content.filter((item) => Number(item.week) === Number(week.number));
   const primaryContent = weekContent[0];
   const isOrientation = Number(week.number) === 0;
-  $("[data-module-week]").textContent = isOrientation ? "Orientation" : `Week ${week.number}`;
+  $("[data-module-week]").textContent = isOrientation ? "Orientation" : week.isBonus ? "Bonus Clinical Lab" : `Week ${week.number}`;
   $("[data-module-title]").textContent = week.title || primaryContent?.title;
   $("[data-module-description]").hidden = isOrientation;
   $("[data-module-description]").textContent = isOrientation ? "" : week.description || primaryContent?.description;
   const agenda = week.outcome ? `
     <article class="week-focus">
-      <span>Week ${week.number} outcome</span>
+      <span>${week.isBonus ? "Bonus outcome" : `Week ${week.number} outcome`}</span>
       <p>${escapeHtml(week.outcome)}</p>
     </article>
   ` : "";
@@ -598,12 +602,13 @@ const renderModule = (week) => {
 
 const openWeek = async (weekNumber) => {
   const current = Number(state.profile.currentWeek || 1);
-  if (weekNumber > current) return;
+  const requestedWeek = window.TCC_COURSE.weeks.find((item) => item.number === weekNumber);
+  if (weekNumber > current && !(requestedWeek?.isBonus && weekCompletion(4) === 100)) return;
   if (weekNumber === 1 && !orientationComplete()) {
     weekNumber = 0;
   }
   state.selectedWeek = weekNumber;
-  const week = weekNumber === 0 ? window.TCC_COURSE.orientation : window.TCC_COURSE.weeks[weekNumber - 1];
+  const week = weekNumber === 0 ? window.TCC_COURSE.orientation : requestedWeek;
   renderModule(week);
   renderDashboard();
   renderCurriculum();

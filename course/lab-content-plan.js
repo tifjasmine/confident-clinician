@@ -3,12 +3,12 @@ const lessonDescription = (week, title) => {
   return weekPlan?.agenda?.find(([lessonTitle]) => lessonTitle === title)?.[1] || "";
 };
 
-const lesson = (week, number, title, workbookTitle, prompts) => ({
+const lesson = (week, number, title, workbookTitle, prompts, contentType = "Video") => ({
   contentId: `lab-week-${week}-lesson-${number}`,
   program: "Clinical Confidence Lab",
   week,
   order: number * 10,
-  contentType: "Video",
+  contentType,
   title,
   description: lessonDescription(week, title),
   videoUrl: "",
@@ -279,4 +279,77 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What support pathway will you use?",
     "What evidence will you collect over the next 30 days?",
   ]),
+
+  lesson(5, 1, "When the Client Says ‘I Don’t Know’", "The I Don’t Know Detective Sheet", [
+    "What did you immediately assume when the client said ‘I don’t know’ or gave a short answer?",
+    "What are three other possible explanations?",
+    "What did you observe in the client?",
+    "What did you notice in yourself?",
+    "Which response fits now: stay, soften, specify, shift, ask about the silence, or gather more information?",
+  ]),
+  lesson(5, 2, "The Client Went Silent... Now What?", "The Five Second Experiment", [
+    "What did you assume the silence meant?",
+    "What did you observe instead of rescuing?",
+    "What actually happened after you waited?",
+    "What kind of silence might this have been?",
+    "What did you learn about yourself?",
+  ]),
+  lesson(5, 3, "When the Emotion Gets Big", "The Emotional Capacity Check", [
+    "What emotion was present?",
+    "What did you observe about the client’s capacity to remain engaged?",
+    "What did you feel pulled to do?",
+    "What may the moment have needed?",
+    "What natural response could you use?",
+    "What information would make you change direction?",
+  ]),
+  lesson(5, 4, "When the Client Wants You to Decide", "Help Without Taking Over", [
+    "What did the client appear to want from you?",
+    "What function might the request or lack of follow through be serving?",
+    "What support can you offer without taking ownership of the decision?",
+    "How will you return choice and responsibility to the client?",
+    "What collaborative question could you ask?",
+  ]),
+  lesson(5, 5, "When the Client Questions You or the Therapy", "Ask One More Question Before Reassuring", [
+    "What did the client say or ask?",
+    "What did you immediately feel pulled to reassure, defend, persuade, or explain?",
+    "What genuine question could help you understand what prompted the concern?",
+    "What belongs in your response: clarification, acknowledgment, repair, honesty, or holding the frame?",
+    "What does this information mean for the relationship, treatment, fit, or next step?",
+  ]),
+  lesson(5, 6, "When the Client Wants More of You", "Pause Before the Personal Answer", [
+    "What did the client ask for or want to know?",
+    "What might the request mean?",
+    "What purpose would your response serve?",
+    "What impact could the response create now and later?",
+    "Does it fit the role, relationship, setting, policy, and your consistent boundaries?",
+    "What bounded response will you choose?",
+  ]),
+  lesson(5, 7, "Personal Panic Pattern Inventory", "Personal Panic Pattern Inventory", [
+    "Which clinical moment activates you most strongly?",
+    "What is your default protective response?",
+    "What does that response protect you from feeling?",
+    "What cost can that response create?",
+    "What behavior will you practice instead?",
+  ], "Worksheet"),
+  lesson(5, 8, "Panic to Process Case Lab", "Panic to Process Case Lab", [
+    "What did you observe in the fictional case, separate from interpretation?",
+    "What did you immediately assume?",
+    "What else might the moment mean?",
+    "What are two defensible responses?",
+    "What information would change the plan?",
+    "What is the threshold for supervision, consultation, policy review, referral, or urgent action?",
+  ], "Case Lab"),
+  lesson(5, 9, "The Natural Language Bank", "Natural Language Practice", [
+    "Which clinical function are you trying to serve?",
+    "Which phrase feels natural enough to adapt to your voice?",
+    "How could you say it with fewer words?",
+    "What will you watch for after you say it?",
+  ], "Resource"),
+  lesson(5, 10, "The Common Clinical Moments Field Guide", "Common Moments Reflection", [
+    "Which of the fourteen common moments do you most want to prepare for?",
+    "What do you tend to assume in that moment?",
+    "What should you notice or consider before responding?",
+    "What is one proportionate response you could adapt?",
+    "When would you pause and seek support?",
+  ], "Resource"),
 ];
