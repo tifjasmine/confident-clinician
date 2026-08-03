@@ -10,6 +10,7 @@ if (!TOKEN) throw new Error("Set AIRTABLE_ACCESS_TOKEN or AIRTABLE_TOKEN before 
 
 const context = { window: {} };
 vm.createContext(context);
+vm.runInContext(fs.readFileSync(new URL("../course/course-data.js", import.meta.url), "utf8"), context);
 vm.runInContext(fs.readFileSync(new URL("../course/lab-content-plan.js", import.meta.url), "utf8"), context);
 const plan = [...context.window.TCC_LAB_ORIENTATION_PLAN, ...context.window.TCC_LAB_CONTENT_PLAN];
 

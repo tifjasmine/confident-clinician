@@ -224,10 +224,12 @@ const renderCurriculum = () => {
     const completion = weekCompletion(week.number);
     return `
       <button class="week-card ${locked ? "locked" : ""}" data-open-week="${week.number}" ${locked ? "disabled" : ""}>
-        <span class="week-number">Week ${week.number}${week.milestone ? " · Feedback milestone" : ""}</span>
-        <h3>${escapeHtml(week.shortTitle)}</h3>
+        <span class="week-number">Week ${week.number} · 8 mini lessons</span>
+        <h3>${escapeHtml(week.title)}</h3>
         <p>${escapeHtml(week.description)}</p>
-        <span class="week-meta">${escapeHtml(week.tool)}</span>
+        <ol class="curriculum-lesson-list">
+          ${week.agenda.map(([title]) => `<li>${escapeHtml(title)}</li>`).join("")}
+        </ol>
         <span class="week-state">${needsOrientation ? "Complete Orientation first" : locked ? "Opens later" : completion ? `${completion}% complete` : "Ready to begin"}</span>
       </button>
     `;

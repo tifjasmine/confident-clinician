@@ -1,3 +1,8 @@
+const lessonDescription = (week, title) => {
+  const weekPlan = window.TCC_COURSES?.["Clinical Confidence Lab"]?.weeks?.find((item) => item.number === week);
+  return weekPlan?.agenda?.find(([lessonTitle]) => lessonTitle === title)?.[1] || "";
+};
+
 const lesson = (week, number, title, workbookTitle, prompts) => ({
   contentId: `lab-week-${week}-lesson-${number}`,
   program: "Clinical Confidence Lab",
@@ -5,7 +10,7 @@ const lesson = (week, number, title, workbookTitle, prompts) => ({
   order: number * 10,
   contentType: "Video",
   title,
-  description: "",
+  description: lessonDescription(week, title),
   videoUrl: "",
   downloadUrl: "",
   transcriptUrl: "",

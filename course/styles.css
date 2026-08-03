@@ -255,6 +255,16 @@ input:focus, textarea:focus, select:focus {
 .week-number { color: var(--terra); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .week-card h3 { margin: 14px 0 12px; font-size: 27px; }
 .week-card p { margin: 0; color: var(--olive); font-size: 14px; line-height: 1.6; }
+.curriculum-lesson-list {
+  margin: 22px 0 0;
+  padding: 18px 0 0 20px;
+  border-top: 1px solid rgba(42,60,47,.13);
+  color: var(--olive);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+}
+.curriculum-lesson-list li + li { margin-top: 7px; }
 .week-meta { margin-top: auto; padding-top: 20px; color: var(--forest); font-size: 11px; font-weight: 600; }
 .week-state { margin-top: 14px; display: flex; align-items: center; gap: 7px; color: var(--sage); font-size: 11px; }
 .week-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }

@@ -123,7 +123,7 @@ const labCourse = {
     {
       number: 1,
       title: "Understand Yourself",
-      shortTitle: "Build the Therapist",
+      shortTitle: "Understand Yourself",
       description: "Understand why confidence feels shaky, identify what is actually getting in the way, and begin practicing like the clinician you want to become.",
       tool: "Emerging Clinician Identity Plan",
       milestone: true,
@@ -142,8 +142,8 @@ const labCourse = {
     },
     {
       number: 2,
-      title: "Think Like a Clinician",
-      shortTitle: "Use the CLEAR Method™",
+      title: "Getting Unstuck in the Room",
+      shortTitle: "Think While Uncertain",
       description: "Slow the urgency, listen beneath the content, prioritize what matters, choose a purposeful response, and adjust using new information.",
       tool: "CLEAR Decision Map",
       milestone: true,
@@ -162,8 +162,8 @@ const labCourse = {
     },
     {
       number: 3,
-      title: "Lead the Session",
-      shortTitle: "Give Sessions a Spine",
+      title: "From Conversation to Clinical Movement",
+      shortTitle: "Lead the Session",
       description: "Create direction without control, move from conversation into clinical work, use your natural voice, and close with intention.",
       tool: "Flexible Session Flow Map",
       milestone: true,
@@ -182,8 +182,8 @@ const labCourse = {
     },
     {
       number: 4,
-      title: "Lead Yourself",
-      shortTitle: "Become a Clinician You Can Trust",
+      title: "Become a Clinician You Can Trust",
+      shortTitle: "Lead Yourself",
       description: "Reflect without punishment, hold responsibility wisely, repair when needed, use support, and build professional self trust through repeated behavior.",
       tool: "30 Day Clinician Growth Plan",
       milestone: true,
