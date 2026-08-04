@@ -42,51 +42,45 @@ window.TCC_LAB_ORIENTATION_PLAN = [
 ];
 
 window.TCC_LAB_CONTENT_PLAN = [
-  lesson(1, 1, "You Are Not Behind", "Role–Identity Check", [
-    "Choose one part of being a therapist that still feels unfamiliar.",
-    "What does your role actually require in this situation?",
-    "What are you expecting yourself to already feel or know?",
+  lesson(1, 1, "Role–Identity Lag", "Role–Identity Check", [
+    "What does your role actually require?",
+    "What part of the role still feels unfamiliar?",
+    "What are you expecting yourself to already feel?",
     "What evidence shows that you are already growing into this role?",
   ]),
-  lesson(1, 2, "Confidence Is Built, Not Bestowed", "Confidence Ladder", [
-    "What clinical behavior do you want to become more confident doing?",
-    "What are you waiting to feel before you do it?",
-    "What is the smallest responsible version you can practice now?",
-    "What do you predict may happen?",
-    "What evidence will you collect afterward?",
+  lesson(1, 2, "Confidence Evidence Loop", "Confidence Ladder", [
+    "What intimidating clinical behavior do you want to practice?",
+    "Rung 1: What is the smallest responsible step?",
+    "Rung 2: What is the next increasingly challenging step?",
+    "Rung 3: What is the next increasingly challenging step?",
+    "Rung 4: What is the next increasingly challenging step?",
+    "Rung 5: What is the next increasingly challenging step?",
+    "What evidence did you collect at each rung?",
   ]),
-  lesson(1, 3, "Why Graduate School Couldn’t Finish the Job", "Clinical Integration Audit", [
+  lesson(1, 3, "Five Stages of Clinical Integration", "Clinical Integration Audit", [
     "What clinical skill do you want to examine?",
-    "Can you explain the skill and its clinical purpose?",
-    "Can you recognize when it is needed during or after a session?",
-    "Can you access it while the session is happening?",
-    "Can you apply it intentionally?",
-    "Can you adapt it to the client, context, culture, relationship, and response?",
-    "What is the next developmental step for this skill?",
+    "What is your current stage: Know it, Recognize it, Access it, Apply it, or Adapt it?",
+    "What is the next appropriate form of practice?",
   ]),
-  lesson(1, 4, "Why ‘I Have No Idea What I’m Doing’ Is Usually the Wrong Diagnosis", "Differential Confidence Check", [
-    "Describe one recent moment when you thought you had no idea what you were doing.",
-    "What did you initially assume the problem was?",
-    "Which factors may actually be present: knowledge, practice, judgment, confidence, activation, context, or support?",
-    "What evidence supports your assessment?",
-    "What is the next responsible step?",
+  lesson(1, 4, "Differential Confidence Check", "What Kind of Problem Is This?", [
+    "Describe one recent moment of ‘I have no idea what I’m doing.’",
+    "What kind of problem might this actually be: knowledge or skill, practice or repetition, confidence or uncertainty tolerance, therapist activation, system, boundary or responsibility, or scope or competence?",
+    "What evidence supports that?",
+    "What response actually matches the need?",
   ]),
-  lesson(1, 5, "Your Personal Patterns Do Not Stay Outside the Therapy Room", "Personal Pattern–Clinical Pattern Map", [
+  lesson(1, 5, "Personal Pattern → Clinical Expression", "Personal Pattern–Clinical Pattern Map", [
     "What personal pattern do you want to observe?",
-    "What tends to trigger it in clinical work?",
-    "What does it make you want to do or avoid doing?",
     "How does it show up as a clinical behavior?",
-    "What impact could it have on the client, relationship, session, or you?",
-    "What clinician quality do you want to practice instead?",
+    "What is its possible impact?",
+    "What developmental practice would help?",
   ]),
-  lesson(1, 6, "What Happens to Your Brain When You Feel Evaluated", "Therapist Activation Snapshot", [
-    "Describe the moment that activated you.",
-    "What happened in your body first?",
-    "What did you immediately make the moment mean?",
-    "What did you feel pulled to do?",
-    "What information or possibility became harder to see?",
-    "What helps your body return?",
-    "What is your role and what information do you need now?",
+  lesson(1, 6, "Notice → Name → Return", "Therapist Activation Snapshot", [
+    "What was the moment that activated you?",
+    "What was your body signal?",
+    "What immediate meaning did you make?",
+    "What was your protective impulse?",
+    "What became harder to notice?",
+    "What is your return action for body, role, client, and information?",
   ]),
   lesson(1, 7, "The Confidence Loop", "Confidence Loop Map", [
     "Trigger: What objectively happened?",
@@ -97,60 +91,59 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What information or possibility did you lose sight of?",
     "Where could you interrupt the loop next time?",
   ]),
-  lesson(1, 8, "Becoming the Therapist You Want to Be", "Emerging Clinician Identity Plan", [
+  lesson(1, 8, "Quality → Behavior → Evidence → Identity", "Emerging Clinician Identity Plan", [
     "What three qualities do you want clients to consistently experience from you?",
     "What observable behavior would express the first quality?",
     "What observable behavior would express the second quality?",
     "What observable behavior would express the third quality?",
-    "Where can you practice one of these behaviors this week?",
-    "What evidence will show that this identity is becoming more established?",
+    "What evidence of growth will you collect for each quality?",
+    "What pattern may interfere with each quality?",
+    "What support will help you continue?",
   ]),
 
-  lesson(2, 1, "Why Your Brain Goes Blank", "The Five-Second Clinical Pause", [
-    "Describe one moment when you felt pressured to respond immediately.",
-    "What felt urgent to you?",
-    "Was the urgency clinical, emotional, relational, contextual, or a mix?",
-    "What did you know and what was still unclear?",
-    "What could you notice before choosing a response?",
+  lesson(2, 1, "Urgency Is Not Clinical Clarity", "The Five-Second Clinical Pause", [
+    "Exhale.",
+    "Notice the urge.",
+    "Return attention to the client.",
+    "Identify one piece of information.",
+    "Ask one question or make one observation that helps you understand more.",
   ]),
-  lesson(2, 2, "Center Before You Decide", "The Discreet Centering Sequence", [
-    "What are your earliest signs that urgency is narrowing your attention?",
-    "What physical action helps you recover enough attention to think?",
-    "What role are you returning to in that moment?",
-    "What client information needs your attention next?",
-    "Write one brief internal reminder you can use in session.",
+  lesson(2, 2, "C — Center", "The Discreet Centering Sequence", [
+    "What is your point of contact or exhale cue?",
+    "What is your role reminder?",
+    "What was the last clinically relevant piece of information you noticed?",
   ]),
-  lesson(2, 3, "Listen for the Thread, Not Just the Story", "Content-to-Thread Translator", [
-    "What happened in the session content?",
-    "What emotion seemed strongest?",
+  lesson(2, 3, "L — Listen", "Content-to-Thread Translator", [
+    "What facts are you hearing?",
+    "What emotion may be present?",
     "What meaning was the client making?",
-    "What pattern or protection may have been present?",
-    "What relational information did you notice?",
-    "What need or clinical thread deserves attention?",
+    "What pattern is repeating?",
+    "What may the client be protecting?",
+    "What may the client need right now?",
   ]),
-  lesson(2, 4, "Not Everything Important Is Most Important Right Now", "The Moment Priority Matrix", [
-    "What threads or concerns were present?",
-    "Was there a safety, scope, competence, or level of care concern?",
-    "Did the client need stabilization or containment before deeper work?",
-    "What information was missing?",
-    "What felt most important right now, and why?",
-    "What could responsibly wait?",
+  lesson(2, 4, "E — Evaluate", "The Moment Priority Matrix", [
+    "Safety and risk: Is this a possible priority? Add notes.",
+    "Stabilization and regulation: Is this a possible priority? Add notes.",
+    "Connection and alliance: Is this a possible priority? Add notes.",
+    "Clarification and assessment: Is this a possible priority? Add notes.",
+    "Emotional processing: Is this a possible priority? Add notes.",
+    "Pattern recognition: Is this a possible priority? Add notes.",
+    "Boundary or frame: Is this a possible priority? Add notes.",
+    "Consultation, referral, or escalation: Is this a possible priority? Add notes.",
+    "What matters most right now, and what can wait?",
   ]),
-  lesson(2, 5, "Choose the Intervention by Its Job", "Intervention Purpose Menu", [
-    "What was happening in the clinical moment?",
-    "What did the client appear to need?",
-    "What clinical function best fit: clarify, reflect, deepen, regulate, practice, challenge, contain, repair, consult, or refer?",
-    "What is one proportionate action that serves that function?",
-    "What are you hoping the action makes more possible?",
+  lesson(2, 5, "A — Act With Intention", "Intervention Purpose Menu", [
+    "What does the moment need?",
+    "What function would serve that need: clarify, deepen, reflect, connect, regulate, assess, teach, practice, reframe, challenge, structure, boundary, consult, or refer?",
+    "What is one proportionate move?",
+    "How will you know whether it helped?",
   ]),
-  lesson(2, 6, "An Intervention Is a Hypothesis", "Impact Check", [
-    "What did you intend the intervention to do?",
-    "What did you say or do?",
-    "What happened next?",
-    "What did the client communicate verbally and nonverbally?",
-    "What did you immediately assume the response meant?",
-    "What else might the response mean?",
-    "What would you continue, clarify, or change?",
+  lesson(2, 6, "R — Reflect and Recalibrate", "Impact Check", [
+    "What did you intend?",
+    "What happened?",
+    "What did the client communicate?",
+    "What remains uncertain?",
+    "What should you repeat, adjust, stop, or consult about?",
   ]),
   lesson(2, 7, "There Is Rarely One Right Answer", "Three Reasonable Moves", [
     "Describe the clinical moment.",
@@ -160,13 +153,13 @@ window.TCC_LAB_CONTENT_PLAN = [
     "Which move would you choose with the information available now, and why?",
     "What new information would change your direction?",
   ]),
-  lesson(2, 8, "Thinking Like a Confident Clinician", "CLEAR Case Reasoning Map", [
-    "Center: What is happening in you, and what helps you return?",
-    "Listen: What possible threads do you hear?",
-    "Evaluate: What matters most now, and what information is missing?",
-    "Act: What options could fit? Which move are you choosing, and what is its purpose?",
-    "Reflect: What happened? What changed? What do you now understand differently?",
-    "Consultation threshold: What information would tell you not to proceed alone?",
+  lesson(2, 8, "Full CLEAR Case Walkthrough", "Full CLEAR Case Map", [
+    "Describe one brief, de-identified situation.",
+    "C — Center: What are you noticing in yourself? What is your role right now?",
+    "L — Listen: What possible threads do you hear as hypotheses?",
+    "E — Evaluate: What matters most right now?",
+    "A — Act: What is your one intentional move, and what job is it doing?",
+    "R — Reflect: How would your next step branch depending on the client’s response?",
   ]),
 
   lesson(3, 1, "Structure Is Not Control", "Leadership Reflection", [
@@ -177,115 +170,94 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What might the client have needed from you?",
     "What would flexible structure have looked like?",
   ]),
-  lesson(3, 2, "The First Ten Minutes Matter", "The First Ten Minutes Map", [
-    "How did the client appear to be arriving?",
-    "What did you notice relationally, emotionally, or physically?",
-    "What had changed or remained important since the previous session?",
-    "What question could gather a meaningful update without reviewing every event?",
-    "How could you collaboratively identify today's focus?",
+  lesson(3, 2, "Connect → Update → Orient → Focus", "The First Ten Minutes Map", [
+    "Connect: How is the client arriving? Write language in your own voice.",
+    "Update: What changed? Write language in your own voice.",
+    "Orient: Is anything urgent? Write language in your own voice.",
+    "Focus: What would make today useful? Write language in your own voice.",
   ]),
-  lesson(3, 3, "Give the Session a Destination", "The Session Destination Planner", [
-    "What topic did the client bring into the room?",
-    "What thread seemed important underneath or across the topic?",
-    "What could the treatment target be today?",
-    "What are therapist and client doing with that target in this session?",
-    "How does the work connect to the larger treatment direction?",
+  lesson(3, 3, "Topic → Thread → Target → Treatment", "Session Destination Planner", [
+    "What is today’s topic?",
+    "What is the underlying thread?",
+    "What is today’s target?",
+    "How does this connect to the larger treatment direction?",
   ]),
-  lesson(3, 4, "Move From Talking About Life to Doing Therapy", "The Clinical Pivot Builder", [
-    "Honor: How would you summarize what the client shared?",
-    "Organize: What patterns or themes are emerging?",
-    "Name: What might be clinically important?",
-    "Invite: How could you offer the focus without imposing it?",
-    "What client response would tell you to continue, clarify, or change direction?",
+  lesson(3, 4, "The Clinical Pivot", "Clinical Pivot Builder", [
+    "What did you hear?",
+    "What opportunity exists?",
+    "Why is it clinically useful?",
+    "How can you invite the client toward it?",
   ]),
-  lesson(3, 5, "Stop Performing ‘Therapist’", "Therapist Language Translator", [
-    "What borrowed or overly clinical phrase do you use?",
-    "What is its clinical purpose?",
-    "How would you say it more naturally?",
-    "Is there a simpler version?",
-    "How can you offer it with humility without burying it in disclaimers?",
-    "What response would tell you it fit, missed, or needs clarification?",
+  lesson(3, 5, "Purpose → Plain Language → Pause", "Therapist Language Translator", [
+    "What overly clinical line do you want to translate?",
+    "What is the plain, intentional version?",
   ]),
-  lesson(3, 6, "Redirect Without the Apology Tour", "Redirection Builder", [
-    "Describe a recent or anticipated redirection moment.",
-    "Why might redirection be clinically useful?",
-    "Are you redirecting for the client or mainly to reduce your discomfort?",
-    "Acknowledge: What have you heard?",
-    "Orient: What are you protecting or returning to?",
-    "Invite: How will you involve the client in the shift?",
+  lesson(3, 6, "Acknowledge → Reason → Redirect → Collaborate", "Redirection Builder", [
+    "Write your redirect for excessive detail.",
+    "Write your redirect for multiple topics.",
+    "Write your redirect for intellectualizing.",
+    "Write your redirect for a circular conversation.",
+    "Write your redirect when time is limited.",
+    "Write your redirect for emotional avoidance.",
   ]),
-  lesson(3, 7, "Create Movement Without Forcing a Breakthrough", "Clinical Movement Map", [
-    "What was happening when the session began?",
-    "What form of movement fit: clarity, emotional contact, pattern recognition, relational movement, practice, decision, containment, or integration?",
-    "What did you do to support that movement?",
-    "How did the client respond?",
-    "What is the next small movement rather than the perfect breakthrough?",
+  lesson(3, 7, "Stay → Deepen → Practice → Integrate", "Clinical Movement Map", [
+    "What kind of movement happened today: clarification, emotional contact, pattern recognition, relational movement, behavioral practice, decision movement, containment, or integration?",
+    "Do you stay, deepen, practice, or integrate next time?",
   ]),
-  lesson(3, 8, "End the Session Like the Frame Matters", "The Ten Minute Landing Plan", [
-    "Signal: When will you acknowledge the remaining time?",
-    "Select: What can responsibly happen with the time left?",
-    "Integrate: What became clearer or mattered today?",
-    "Continue: What belongs in the next session or between sessions?",
-    "Close: What clear language will you use to end?",
-    "If you ran over, what were you trying to solve or avoid?",
+  lesson(3, 8, "Signal → Select → Integrate → Continue → Close", "The Ten-Minute Landing Plan", [
+    "What is your signal that it is time to begin landing?",
+    "What can realistically happen in the time left?",
+    "What is your integration question?",
+    "What continues next time?",
+    "What is your clear closing sentence?",
   ]),
 
-  lesson(4, 1, "Reflection Is Supposed to End", "Reflection or Rumination Check", [
+  lesson(4, 1, "Information → Meaning → Next Step → Endpoint", "Reflection or Rumination Check", [
     "Are you gaining new information?",
     "Is the question becoming more specific?",
     "Is there an actionable next step?",
     "Are you seeking clarity or emotional certainty?",
-    "Have you already identified what needs to happen?",
     "What would allow this reflection to end?",
   ]),
-  lesson(4, 2, "Responsibility Is Not Total Control", "Circle of Clinical Responsibility", [
-    "Describe the case, concern, or outcome you feel responsible for.",
-    "Mine to do: What are you directly accountable for?",
-    "Mine to influence: What can your work support or make more possible?",
-    "Not mine to control: What cannot you determine?",
-    "Shared support: What belongs in supervision, consultation, coordination, referral, or workplace procedure?",
+  lesson(4, 2, "Responsibility → Influence → Control", "Circle of Clinical Responsibility", [
+    "What is yours to do?",
+    "What is yours to influence?",
+    "What is not yours to control?",
+    "What requires shared support?",
   ]),
-  lesson(4, 3, "The Rescue Trap", "Rescue Pattern Audit", [
-    "Describe one situation where you feel pulled to do more.",
-    "Care: What care or support are you trying to provide?",
-    "Control: What outcome are you trying to produce, prevent, or guarantee?",
+  lesson(4, 3, "Care → Control → Cost", "Rescue Pattern Audit", [
+    "What are you doing more of?",
     "What feeling are you trying to prevent for the client or yourself?",
-    "Cost: What may this create for client agency, treatment, the frame, or you?",
-    "What supportive action would strengthen the client without replacing them?",
+    "What responsibility has shifted from the client to you?",
+    "What would supportive collaboration look like instead?",
   ]),
-  lesson(4, 4, "When You Are Not Sure What to Do Next", "The Clinical Decision Map", [
+  lesson(4, 4, "Concern → Missing Information → Next Step → Support", "Clinical Decision Map", [
     "What exactly is the concern?",
-    "What do you know and what information is still missing?",
-    "What are the responsible options available within your role and competence?",
-    "What is the next proportionate decision?",
-    "What would require consultation, documentation, coordination, referral, or established procedure?",
+    "What are the known facts, and what are your assumptions?",
+    "What information is still missing?",
+    "What is the next responsible action?",
+    "Should you be holding this alone?",
   ]),
-  lesson(4, 5, "Confidence Includes Repair", "Repair Preparation Guide", [
-    "Notice: What happened and what did you observe?",
-    "Own: What behavior, assumption, timing choice, or response belongs to you?",
-    "What does not belong to you?",
-    "Understand: What might the client have experienced, and what could you ask?",
-    "Repair: What acknowledgment, apology, clarification, or changed behavior may be needed?",
-    "Learn: How will this change your practice?",
+  lesson(4, 5, "Notice → Own → Understand → Repair → Learn", "Repair Preparation Guide", [
+    "What happened?",
+    "What part can you own clearly?",
+    "What does the client need space to say?",
+    "What behavior needs to change?",
   ]),
-  lesson(4, 6, "The Seven-Minute Post-Session Debrief", "The Seven-Minute Debrief", [
+  lesson(4, 6, "Capture → Clarify → Continue → Consult → Close", "The Seven-Minute Debrief", [
     "What happened that was clinically relevant?",
-    "What did you notice in the client?",
-    "What did you notice in yourself?",
+    "What did you notice in the client and in yourself?",
     "What shifted, or did not shift?",
     "What is the next responsible step?",
-    "Is documentation, consultation, or follow up needed?",
     "What can you release until you have new information?",
   ]),
-  lesson(4, 7, "The Clinician You Can Trust", "Trustworthiness Evidence Inventory", [
-    "Judgment: When did you gather information or reason carefully before acting?",
-    "Boundaries: When did you protect the frame, role, time, communication, or competence?",
-    "Responsiveness: When did you notice impact and adjust?",
-    "Repair: When did you acknowledge a miss and return to it?",
-    "Restraint: When did you choose not to rescue, force, explain, or act beyond what you knew?",
-    "Support: When did you consult, coordinate, document, or refer appropriately?",
+  lesson(4, 7, "Notice → Reason → Act → Review → Support", "Trustworthiness Evidence Inventory", [
+    "What evidence do you have of sound judgment?",
+    "What evidence do you have of boundaries held?",
+    "What evidence do you have of consultation used well?",
+    "What evidence do you have of repair or follow through?",
   ]),
-  lesson(4, 8, "Your Next 30 Days", "The 30-Day Clinician Development Plan", [
+  lesson(4, 8, "Notice → Choose → Practice → Review → Continue", "The 30-Day Clinician Development Plan", [
     "What is one session leadership behavior you will practice?",
     "What is one CLEAR reasoning practice you will strengthen?",
     "What is one personal or activation pattern you will monitor?",
@@ -368,3 +340,16 @@ window.TCC_LAB_CONTENT_PLAN = [
     "When would you pause and seek support?",
   ], "Resource"),
 ];
+
+const labWeekStoppingStatements = {
+  1: "The role can become yours before it feels familiar. You become trustworthy by repeatedly practicing the behaviors that make you trustworthy.",
+  2: "The goal is not the perfect response. It’s a responsible move you can reason through and adjust.",
+  3: "A good ending doesn’t resolve everything. It helps the client leave with the work contained.",
+  4: "You do not need to fix yourself. You need a clear next practice and a process you can trust.",
+};
+
+window.TCC_LAB_CONTENT_PLAN.forEach((item) => {
+  if (item.order === 80 && labWeekStoppingStatements[item.week]) {
+    item.stoppingStatement = labWeekStoppingStatements[item.week];
+  }
+});
