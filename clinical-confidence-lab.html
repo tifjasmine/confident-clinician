@@ -37,7 +37,7 @@
       "@type": "CourseInstance",
       "courseMode": "online",
       "courseWorkload": "PT60M",
-      "startDate": "2026-09"
+      "startDate": "2026-09-15"
     }
   }
   </script>
@@ -69,6 +69,9 @@
     .hero h1 em{color:var(--terra);font-weight:400}
     .hero-lede{max-width:610px;color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
     .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+    .promo-note{margin-top:14px;color:var(--terra-dark);font-size:13px;font-weight:600;line-height:1.6}
+    .hero .promo-note{max-width:610px}
+    .promo-code{font-weight:700;letter-spacing:.08em}
     .hero-image{position:relative;overflow:hidden;background:var(--tan)}
     .hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
     .hero-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(42,60,47,.18),transparent 45%)}
@@ -156,12 +159,13 @@
   <main>
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Founding Beta · September 2026</p>
+        <p class="eyebrow">Releases September 15, 2026</p>
         <h1>You learned how to be a therapist. Now learn how to <em>think like one.</em></h1>
         <p class="hero-lede">A four week clinical practice lab for newer therapists who want to understand what gets in their way, think more clearly under pressure, lead sessions with intention, and stop treating uncertainty like proof they are failing.</p>
         <div class="hero-actions">
-          <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Purchase the Lab for $397</a>
+          <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll in the Lab</a>
         </div>
+        <p class="promo-note">Save $100 through September 1. Use code <span class="promo-code">LABLAUNCH100</span> at checkout.</p>
       </div>
       <div class="hero-image">
         <img src="/office-self.png" alt="Tiffany McGilloway, LPC, smiling in her office">
@@ -222,22 +226,22 @@
     <section class="section offer">
       <div class="inner offer-grid">
         <div>
-          <p class="eyebrow" style="color:var(--tan)">Founding Beta · September 2026</p>
-          <h2>Join the Lab.</h2>
+          <p class="eyebrow" style="color:var(--tan)">Releases September 15, 2026</p>
+          <h2>Start building confidence this September.</h2>
         </div>
         <aside class="price-card">
-          <p class="eyebrow">Founding Rate</p>
-          <div class="price">$397</div>
+          <p class="eyebrow">Early Bird</p>
+          <div class="price">$297</div>
           <p>Four guided weeks · practical tools · one private completion session · 90-day access</p>
-          <p style="margin-top:12px;color:var(--terra-dark);font-weight:600">Founding price available through August 15. Price increases afterward.</p>
-          <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll for $397</a>
+          <p class="promo-note">Regular price $397. Save $100 through September 1 with code <span class="promo-code">LABLAUNCH100</span>.</p>
+          <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll and Use Code</a>
         </aside>
       </div>
     </section>
 
     <section class="section signup" id="signup">
       <div class="inner">
-        <p class="eyebrow" style="color:var(--tan)">September 2026</p>
+        <p class="eyebrow" style="color:var(--tan)">Releases September 15, 2026</p>
         <h2>Join the mailing list.</h2>
         <p class="signup-copy">Get Clinical Confidence Lab updates, course dates, and enrollment news sent to your inbox.</p>
         <form class="signup-form" data-interest-form>
@@ -272,7 +276,7 @@
         const response = await fetch('/.netlify/functions/workshop-subscription', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({name:data.get('name'),email:data.get('email'),source:'Clinical Confidence Lab - September 2026'})
+          body: JSON.stringify({name:data.get('name'),email:data.get('email'),source:'Clinical Confidence Lab - September 15, 2026'})
         });
         const result = await response.json();
         if (!response.ok || !result.ok) throw new Error(result.message || 'Something did not send.');

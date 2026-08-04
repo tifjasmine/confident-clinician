@@ -171,7 +171,7 @@ const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
     Program: 'Clinical Confidence Lab',
     'Program Version': 'CCL-2026-v1',
     'Program Weeks': 4,
-    Cohort: 'Founding Beta · September 2026',
+    Cohort: 'Founding Beta · September 15, 2026',
     'Payment Status': 'Paid',
     'Onboarding Status': 'Onboarding incomplete',
     'Current Week': 1,

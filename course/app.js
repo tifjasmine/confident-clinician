@@ -1000,7 +1000,7 @@ const initializePreview = () => {
     role: "Admin",
     program: "Clinical Confidence Lab",
     programWeeks: 4,
-    cohort: "Founding Beta · September 2026",
+    cohort: "Founding Beta · September 15, 2026",
     enrollmentStatus: "Active",
     currentWeek: isReviewMode ? 4 : 1,
     baselineComplete: false,
