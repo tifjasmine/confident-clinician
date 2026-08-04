@@ -2,7 +2,9 @@ const API = "/.netlify/functions/course-api";
 const AUTH = "/.netlify/functions/course-auth";
 const ACTIVATE = "/.netlify/functions/course-activate";
 const SESSION_KEY = "tccCourseSession";
-const isPreview = new URLSearchParams(window.location.search).get("preview") === "1";
+const previewParams = new URLSearchParams(window.location.search);
+const isPreview = previewParams.get("preview") === "1";
+const isReviewMode = isPreview && previewParams.get("review") === "all";
 const state = { token: "", profile: null, activity: [], submissions: [], questions: [], content: [], workbookResponses: [], formResponses: [], selectedWeek: 0, lessonPositions: {}, assessmentReturn: null };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -146,6 +148,7 @@ const activitiesForWeek = (week) => state.activity.filter((item) => Number(item.
 const activityDone = (week, type) => activitiesForWeek(week).some((item) => item.activityType === type);
 const lessonWatched = (contentId) => state.activity.some((item) => item.completed && item.activityType === "Lesson accessed" && item.response === contentId);
 const contentItemComplete = (item) => {
+  if (isReviewMode) return true;
   const prompts = item.workbookPrompts || [];
   // A published placeholder is upcoming content, not a completed lesson.
   if (!item.videoUrl && !prompts.length) return false;
@@ -154,6 +157,7 @@ const contentItemComplete = (item) => {
   return (!item.videoUrl || lessonWatched(item.contentId)) && workbookComplete;
 };
 const orientationComplete = () => {
+  if (isReviewMode) return true;
   const items = state.content.filter((item) => Number(item.week) === 0);
   const requiredForms = ["baseline", "success-plan"];
   const formsComplete = requiredForms.every((formKey) => state.formResponses.some((response) => response.formKey === formKey));
@@ -182,7 +186,7 @@ const weekCompletion = (week) => {
 const renderDashboard = () => {
   const profile = state.profile;
   const needsOrientation = !orientationComplete();
-  const currentWeekNumber = Math.min(window.TCC_COURSE.weeks.length, Math.max(1, Number(profile.currentWeek || 1)));
+  const currentWeekNumber = isReviewMode ? 1 : Math.min(window.TCC_COURSE.weeks.length, Math.max(1, Number(profile.currentWeek || 1)));
   const week = window.TCC_COURSE.weeks[currentWeekNumber - 1];
   const orientation = window.TCC_COURSE.orientation;
   const completedActivities = state.activity.filter((item) => item.completed).length;
@@ -228,7 +232,7 @@ const renderCurriculum = () => {
   $("[data-week-grid]").innerHTML = orientationCard + window.TCC_COURSE.weeks.map((week) => {
     const needsOrientation = week.number === 1 && !orientationComplete();
     const bonusUnlocked = week.isBonus && weekCompletion(4) === 100;
-    const locked = week.isBonus ? !bonusUnlocked : week.number > current || needsOrientation;
+    const locked = isReviewMode ? false : week.isBonus ? !bonusUnlocked : week.number > current || needsOrientation;
     const completion = weekCompletion(week.number);
     return `
       <button class="week-card ${locked ? "locked" : ""}" data-open-week="${week.number}" ${locked ? "disabled" : ""}>
@@ -372,7 +376,7 @@ const renderModule = (week) => {
   const completionFor = (item) => contentItemComplete(item);
   if (state.lessonPositions[lessonKey] == null) {
     const firstIncomplete = weekContent.findIndex((item) => !completionFor(item));
-    state.lessonPositions[lessonKey] = firstIncomplete >= 0 ? firstIncomplete : Math.max(0, weekContent.length - 1);
+    state.lessonPositions[lessonKey] = isReviewMode ? 0 : firstIncomplete >= 0 ? firstIncomplete : Math.max(0, weekContent.length - 1);
   }
   const activeIndex = Math.min(Math.max(0, state.lessonPositions[lessonKey]), Math.max(0, weekContent.length - 1));
   const activeItem = weekContent[activeIndex];
@@ -614,8 +618,8 @@ const renderModule = (week) => {
 const openWeek = async (weekNumber) => {
   const current = Number(state.profile.currentWeek || 1);
   const requestedWeek = window.TCC_COURSE.weeks.find((item) => item.number === weekNumber);
-  if (weekNumber > current && !(requestedWeek?.isBonus && weekCompletion(4) === 100)) return;
-  if (weekNumber === 1 && !orientationComplete()) {
+  if (!isReviewMode && weekNumber > current && !(requestedWeek?.isBonus && weekCompletion(4) === 100)) return;
+  if (!isReviewMode && weekNumber === 1 && !orientationComplete()) {
     weekNumber = 0;
   }
   state.selectedWeek = weekNumber;
@@ -641,7 +645,7 @@ const renderAssessments = () => {
     const ordered = ["baseline", "success-plan", "pulse-1", "pulse-2", "pulse-3", "pulse-4", "post", "capstone", "call-prep"];
     $("[data-assessment-list]").innerHTML = ordered.map((key) => {
       const form = window.TCC_LAB_FORMS[key];
-      const available = !form.week || currentWeek >= form.week;
+      const available = isReviewMode || !form.week || currentWeek >= form.week;
       const complete = state.formResponses.some((response) => response.formKey === key);
       return `
         <article class="assessment-domain">
@@ -966,7 +970,7 @@ const initializePreview = () => {
     programWeeks: 4,
     cohort: "Founding Beta · September 2026",
     enrollmentStatus: "Active",
-    currentWeek: 1,
+    currentWeek: isReviewMode ? 4 : 1,
     baselineComplete: false,
     midpointComplete: false,
     finalComplete: false,
@@ -981,7 +985,7 @@ const initializePreview = () => {
   $("[data-login-view]").hidden = true;
   $("[data-app]").hidden = false;
   $("[data-user-name]").textContent = state.profile.name;
-  $("[data-user-email]").textContent = "Interactive preview";
+  $("[data-user-email]").textContent = isReviewMode ? "Full course review mode" : "Interactive preview";
   $("[data-admin-link]").hidden = true;
   $("[data-topbar]").hidden = true;
   renderDashboard();
