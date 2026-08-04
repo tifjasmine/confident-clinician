@@ -13,6 +13,7 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character)
 
 const promptExample = (prompt = "") => {
   const text = prompt.toLowerCase();
+  if (text.includes("choose one part of being a therapist")) return "Maybe it is setting a boundary, being trusted with someone’s pain, challenging a client, naming a pattern, ending the session, tolerating disagreement, speaking in consultation, making a recommendation, allowing your personality to exist in the room, or accepting that you are no longer only practicing how to be a therapist.";
   if (text.includes("fantasy version")) return "Calm, articulate, certain, never awkward, and always able to say something meaningful right away.";
   if (text.includes("trustworthy version")) return "I want to notice when I’m activated, slow down enough to think, and respond honestly instead of performing.";
   if (text.includes("not someone who")) return "Never feels uncertain, always knows the perfect intervention, or makes every session feel like a breakthrough.";
@@ -199,7 +200,7 @@ const renderDashboard = () => {
     : `Welcome back, ${firstName}.`;
   $("[data-dashboard-intro]").hidden = needsOrientation;
   $("[data-dashboard-intro]").textContent = needsOrientation ? "" : "Pick up right where you left off.";
-  $("[data-current-week-label]").textContent = needsOrientation ? "Start Here" : `Week ${week.number} · ${week.tool}`;
+  $("[data-current-week-label]").textContent = needsOrientation ? "Start Here" : `Week ${week.number}`;
   $("[data-current-week-title]").textContent = needsOrientation ? orientation.title : week.title;
   $("[data-current-week-description]").textContent = needsOrientation
     ? "I’m so glad you’re here. I can’t wait for you to feel more confident in your practice, trust yourself more in the room, and spend less time feeling anxious about whether you’re doing it right."
@@ -326,8 +327,10 @@ const workbookSectionPlan = {
   ],
 };
 
-const buildWorkbookSections = (week, prompts, savedResponses = []) => {
-  const plan = Number(week) <= 1
+const buildWorkbookSections = (week, prompts, savedResponses = [], contentId = "") => {
+  const plan = contentId === "lab-week-1-lesson-1"
+    ? [["Role–Identity Check", 5], ["Extra Reflection", 2]]
+    : Number(week) <= 1
     ? [["Complete this tool", prompts.length]]
     : workbookSectionPlan[Number(week)] || [["Workbook prompts", prompts.length]];
   let start = 0;
@@ -380,7 +383,7 @@ const renderModule = (week) => {
     const video = getVideoEmbed(item.videoUrl);
     const saved = state.workbookResponses.find((response) => response.contentId === item.contentId);
     const prompts = item.workbookPrompts || [];
-    const workbookSections = buildWorkbookSections(week.number, prompts, saved?.responses || []);
+    const workbookSections = buildWorkbookSections(week.number, prompts, saved?.responses || [], item.contentId);
     const answeredCount = prompts.filter((_, promptIndex) => String(saved?.responses?.[promptIndex] || "").trim()).length;
     const remainingAnswers = Math.max(0, prompts.length - answeredCount);
     const videoComplete = !item.videoUrl || lessonWatched(item.contentId);

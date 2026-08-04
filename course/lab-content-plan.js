@@ -43,10 +43,13 @@ window.TCC_LAB_ORIENTATION_PLAN = [
 
 window.TCC_LAB_CONTENT_PLAN = [
   lesson(1, 1, "Role–Identity Lag", "Role–Identity Check", [
+    "Choose one part of being a therapist that still feels unfamiliar.",
     "What does your role actually require?",
     "What part of the role still feels unfamiliar?",
     "What are you expecting yourself to already feel?",
     "What evidence shows that you are already growing into this role?",
+    "One quality I want to practice as I inhabit this role:",
+    "One observable behavior that would represent that quality:",
   ]),
   lesson(1, 2, "Confidence Evidence Loop", "Confidence Ladder", [
     "What intimidating clinical behavior do you want to practice?",
