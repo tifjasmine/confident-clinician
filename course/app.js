@@ -712,6 +712,18 @@ const renderCourseFormField = (field, value) => {
   `;
 };
 
+const closeAssessment = () => {
+  const returnTarget = state.assessmentReturn;
+  state.assessmentReturn = null;
+  if (returnTarget?.view === "module") {
+    openWeek(Number(returnTarget.week || 0));
+    return;
+  }
+  renderAssessments();
+  showView("assessments");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 const openLabForm = (formKey) => {
   const definition = window.TCC_LAB_FORMS?.[formKey];
   if (!definition) return;
@@ -737,6 +749,7 @@ const openLabForm = (formKey) => {
   if (categoryOpen) formFieldsHtml += `</div></details>`;
   container.innerHTML = `
     <form class="course-form" data-course-form="${escapeHtml(formKey)}" novalidate>
+      <div class="assessment-back-row"><button class="button secondary" type="button" data-assessment-back>← Back</button></div>
       <section class="assessment-domain course-form-intro">
         <p class="eyebrow">${escapeHtml(definition.eyebrow)}</p>
         <h3>${escapeHtml(definition.title)}</h3>
@@ -748,6 +761,7 @@ const openLabForm = (formKey) => {
     </form>
   `;
   requestAnimationFrame(() => container.scrollIntoView({ behavior: "smooth", block: "start" }));
+  $("[data-assessment-back]")?.addEventListener("click", closeAssessment);
   $("[data-course-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -811,6 +825,7 @@ const openAssessment = (kind) => {
   const container = $("[data-assessment-list]");
   container.innerHTML = `
     <form data-assessment-form>
+      <div class="assessment-back-row"><button class="button secondary" type="button" data-assessment-back>← Back</button></div>
       ${assessmentStatements.map((domain, domainIndex) => `
         <section class="assessment-domain">
           <h3>${escapeHtml(domain[0])}</h3>
@@ -828,6 +843,7 @@ const openAssessment = (kind) => {
       </section>
     </form>
   `;
+  $("[data-assessment-back]")?.addEventListener("click", closeAssessment);
   $("[data-assessment-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
