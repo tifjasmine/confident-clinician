@@ -104,6 +104,16 @@
     .included-card{border-left:4px solid var(--terra);background:var(--cream);padding:28px 30px}
     .included-card h3{margin-bottom:10px;font-size:26px}
     .included-card p{color:var(--olive);font-size:14px;line-height:1.65}
+    .bonus{background:var(--forest);color:white}
+    .bonus-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr);gap:60px;align-items:center}
+    .bonus h2{margin:14px 0 20px;color:white;font-size:clamp(38px,5vw,60px)}
+    .bonus-copy{color:rgba(246,242,235,.7);font-size:15px;font-weight:300;line-height:1.75}
+    .bonus-promise{margin-top:22px;border-left:4px solid var(--terra);padding:4px 0 4px 18px;color:var(--tan);font:italic 24px/1.35 "Cormorant Garamond",serif}
+    .bonus-box{background:var(--cream);color:var(--forest);padding:34px}
+    .bonus-box h3{margin-bottom:18px;font-size:30px}
+    .bonus-list{display:grid;gap:0;list-style:none}
+    .bonus-list li{border-top:1px solid var(--line);padding:15px 0;color:var(--olive);font-size:14px;line-height:1.55}
+    .bonus-list strong{display:block;margin-bottom:3px;color:var(--forest)}
     .offer{background:var(--sage);color:white}
     .offer-grid{display:grid;grid-template-columns:1fr 360px;gap:60px;align-items:center}
     .offer h2{margin:14px 0 20px;font-size:clamp(40px,5vw,64px)}
@@ -133,7 +143,7 @@
       .hero{grid-template-columns:1fr;height:auto}.hero-copy{padding:56px 24px}.hero-image{height:430px;min-height:0}
       .section{padding:56px 24px}
       .outcomes-wrap{grid-template-columns:1fr;gap:32px}.curriculum-grid{grid-template-columns:1fr 1fr}.included-grid{grid-template-columns:1fr}
-      .offer-grid{grid-template-columns:1fr}.price-card{max-width:480px}
+      .bonus-grid,.offer-grid{grid-template-columns:1fr}.price-card{max-width:480px}
       .signup-form{grid-template-columns:1fr}.signup-form .button{width:100%}.footer-inner{flex-direction:column;align-items:flex-start}
     }
     @media(max-width:560px){
@@ -210,16 +220,37 @@
       <div class="inner">
         <div class="section-heading">
           <p class="eyebrow">Included</p>
-          <h2>What comes with the Lab.</h2>
+          <h2>Everything included in your enrollment.</h2>
+          <p>One clear four week experience with the teaching, practice, feedback space, and support built in.</p>
         </div>
         <div class="included-grid">
-          <article class="included-card"><h3>Thirty two focused mini lessons</h3><p>Short teaching that follows one developmental path instead of giving you disconnected tips.</p></article>
-          <article class="included-card"><h3>Interactive clinical tools</h3><p>Practice role identity, confidence building, CLEAR reasoning, session leadership, responsibility, repair, reflection, and professional growth.</p></article>
-          <article class="included-card"><h3>Weekly integration checks</h3><p>Share questions, feedback, highlights, and the hard parts of putting each week into practice.</p></article>
-          <article class="included-card"><h3>Bonus clinical moments library</h3><p>Work through silence, strong emotion, advice requests, treatment concerns, personal questions, boundaries, and the moments that can make therapists panic.</p></article>
-          <article class="included-card"><h3>Your private integration session</h3><p>One session with Tiffany for questions, course integration, and deidentified educational case discussion.</p></article>
-          <article class="included-card"><h3>Room to revisit it</h3><p>Keep access for 90 days after the four week course ends.</p></article>
+          <article class="included-card"><h3>32 bite sized video lessons</h3><p>Eight short lessons each week, organized in a clear order so you always know what to work on next.</p></article>
+          <article class="included-card"><h3>Interactive workbook and tools</h3><p>Complete your reflections, reasoning maps, practice plans, and weekly tools inside your private course portal.</p></article>
+          <article class="included-card"><h3>Weekly check ins</h3><p>Share questions, feedback, highlights, and the hard parts of putting each week into practice.</p></article>
+          <article class="included-card"><h3>One private session with Tiffany</h3><p>Use your completion session for questions, course integration, or a deidentified educational case discussion.</p></article>
+          <article class="included-card"><h3>90 days of course access</h3><p>Revisit the lessons, workbook, and tools after the four guided weeks end.</p></article>
         </div>
+      </div>
+    </section>
+
+    <section class="section bonus">
+      <div class="inner bonus-grid">
+        <div>
+          <p class="eyebrow" style="color:var(--tan)">Included Bonus</p>
+          <h2>Common Clinical Moments That Make Therapists Panic</h2>
+          <p class="bonus-copy">A practical mini library for the moments nobody prepares you for: when a client goes silent, asks for advice, gets angry, questions whether therapy is helping, asks about your personal life, requests a hug, or looks at you and says, “What would you do?”</p>
+          <p class="bonus-promise">Learn what to notice, what not to assume, and how to respond without freezing, rescuing, overexplaining, or reaching for a canned therapist line.</p>
+        </div>
+        <aside class="bonus-box">
+          <h3>Your bonus includes:</h3>
+          <ul class="bonus-list">
+            <li><strong>Common Clinical Moments mini library</strong>Walk through the high pressure situations newer therapists often replay after sessions.</li>
+            <li><strong>Common Moments Field Guide</strong>Review what to notice, what to consider, and what might fit across fourteen common moments.</li>
+            <li><strong>Natural Language Bank</strong>Use flexible language organized by clinical purpose, not scripts to memorize.</li>
+            <li><strong>Personal Panic Pattern Inventory</strong>Identify which moments activate you and the protective response you tend to reach for.</li>
+            <li><strong>Panic to Process Case Lab</strong>Practice thoughtful responses using four fictional clinical moments.</li>
+          </ul>
+        </aside>
       </div>
     </section>
 
