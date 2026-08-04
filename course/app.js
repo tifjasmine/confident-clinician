@@ -15,7 +15,13 @@ const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character)
 
 const promptExample = (prompt = "") => {
   const text = prompt.toLowerCase();
-  if (text.includes("choose one part of being a therapist")) return "Maybe it is setting a boundary, being trusted with someone’s pain, challenging a client, naming a pattern, ending the session, tolerating disagreement, speaking in consultation, making a recommendation, allowing your personality to exist in the room, or accepting that you are no longer only practicing how to be a therapist.";
+  if (text.includes("choose one part of being a therapist")) return "Setting a boundary; naming a pattern; speaking in consultation.";
+  if (text.includes("what does my role require here")) return "Staying present and asking an honest question; holding a clear boundary; slowing down and seeking consultation.";
+  if (text.includes("what part of the role still feels unfamiliar")) return "Being the person who redirects; trusting my own observation; staying grounded when someone disagrees with me.";
+  if (text.includes("what am i expecting myself to already feel")) return "Completely natural; certain; like I have been doing this for fifteen years.";
+  if (text.includes("what evidence shows that i am already growing")) return "I noticed the moment sooner; I asked for consultation; I held the boundary even though my voice shook.";
+  if (text.includes("one quality i want to practice")) return "Steadiness; honesty; curiosity.";
+  if (text.includes("one observable behavior that would represent")) return "Pause before responding; name an observation and check whether it fits; bring one focused question to consultation.";
   if (text.includes("fantasy version")) return "Calm, articulate, certain, never awkward, and always able to say something meaningful right away.";
   if (text.includes("trustworthy version")) return "I want to notice when I’m activated, slow down enough to think, and respond honestly instead of performing.";
   if (text.includes("not someone who")) return "Never feels uncertain, always knows the perfect intervention, or makes every session feel like a breakthrough.";
