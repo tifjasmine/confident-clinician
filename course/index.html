@@ -117,11 +117,11 @@
             <div class="week-form-list" data-week-form-list></div>
             <div class="activity-list" data-activity-list></div>
             <article class="card submission-card" data-milestone-card hidden>
-              <p class="eyebrow">Feedback Milestone</p>
+              <p class="eyebrow" data-milestone-eyebrow>Feedback Milestone</p>
               <h3 data-milestone-title></h3>
-              <p class="supporting">Share your reasoning, your pattern, and one next step. Do not include identifying client information.</p>
+              <p class="supporting" data-milestone-description></p>
               <form data-milestone-form>
-                <label>Your submission<textarea name="submission" required placeholder="Focus on your clinical reasoning and learning. Do not include a client’s identifying history."></textarea></label>
+                <label><span data-milestone-label>Your submission</span><textarea name="submission" required></textarea></label>
                 <div class="warning">Before submitting: remove names, initials, exact dates, locations, employers, screenshots, records, and combinations of details that could identify a client.</div>
                 <div class="form-actions">
                   <button class="button" type="submit">Submit for Feedback</button>
@@ -164,6 +164,6 @@
   <script src="/course/course-data.js?v=20260804c"></script>
   <script src="/course/assessment-data.js?v=20260804c"></script>
   <script src="/course/lab-content-plan.js?v=20260804e"></script>
-  <script src="/course/app.js?v=20260804e"></script>
+  <script src="/course/app.js?v=20260804f"></script>
 </body>
 </html>

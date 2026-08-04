@@ -387,6 +387,7 @@ const renderModule = (week) => {
   const activeIndex = Math.min(Math.max(0, state.lessonPositions[lessonKey]), Math.max(0, weekContent.length - 1));
   const activeItem = weekContent[activeIndex];
   const allLessonsComplete = weekContent.length > 0 && weekContent.every((item) => completionFor(item));
+  const atFinalLesson = Boolean(activeItem) && activeIndex === weekContent.length - 1;
   $("[data-lesson-list]").innerHTML = agenda + (activeItem ? (() => {
     const item = activeItem;
     const index = activeIndex;
@@ -587,7 +588,7 @@ const renderModule = (week) => {
       : Number(form.week) === Number(week.number) && !["baseline", "success-plan"].includes(key))
     : [];
   const orientationFormsComplete = ["baseline", "success-plan"].every((formKey) => state.formResponses.some((response) => response.formKey === formKey));
-  $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || allLessonsComplete) ? `
+  $("[data-week-form-list]").innerHTML = weekForms.length && (isOrientation || (allLessonsComplete && atFinalLesson)) ? `
     <article class="card week-forms-card">
       <p class="eyebrow">${isOrientation ? "Before You Begin" : `Finish Week ${week.number}`}</p>
       <h3>${isOrientation ? "Tell me a little about you." : `Complete your Week ${week.number} check-in.`}</h3>
@@ -611,11 +612,20 @@ const renderModule = (week) => {
   }));
   $("[data-continue-week-one]")?.addEventListener("click", () => openWeek(1));
 
-  $("[data-milestone-card]").hidden = !week.milestone || !allLessonsComplete;
-  if (week.milestone && allLessonsComplete) {
+  $("[data-milestone-card]").hidden = !week.milestone || !allLessonsComplete || !atFinalLesson;
+  if (week.milestone && allLessonsComplete && atFinalLesson) {
+    const isLabIntegration = state.profile.program === "Clinical Confidence Lab";
     $("[data-milestone-title]").textContent = week.feedbackFocus;
+    $("[data-milestone-eyebrow]").textContent = isLabIntegration ? "Weekly Reflection" : "Feedback Milestone";
+    $("[data-milestone-description]").textContent = isLabIntegration
+      ? "Share your feedback, questions, highlights, or anything that felt difficult while putting this week into practice."
+      : "Share your reasoning, your pattern, and one next step. Do not include identifying client information.";
+    $("[data-milestone-label]").textContent = isLabIntegration ? "What would you like to share?" : "Your submission";
     const existing = state.submissions.find((item) => Number(item.week) === week.number);
     const textarea = $("[data-milestone-form] textarea");
+    textarea.placeholder = isLabIntegration
+      ? "Share a highlight, a question, feedback, or a hard part of implementing this week’s material."
+      : "Focus on your clinical reasoning and learning. Do not include a client’s identifying history.";
     textarea.value = existing?.submission || "";
     $("[data-milestone-status]").textContent = existing ? existing.status : "";
   }
