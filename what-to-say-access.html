@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>What to Say When You Do Not Know What to Say | The Confident Clinician</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#f7f2ea;--paper:#fffdf9;--forest:#2a3c2f;--olive:#61705a;--terra:#b3543b;--line:#ddcfc1;--sand:#eee4d5}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--cream);color:var(--forest);font-family:Jost,sans-serif}
+    a{color:inherit}
+    button,input,textarea{font:inherit}
+    .nav{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 5vw;border-bottom:1px solid var(--line);background:rgba(247,242,234,.96)}
+    .brand{font:600 17px "Cormorant Garamond",serif;letter-spacing:.09em;text-decoration:none;text-transform:uppercase}
+    .navlinks{display:flex;gap:18px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+    .shell{width:min(100% - 32px,1080px);margin:0 auto;padding:64px 0 90px}
+    .hero{text-align:center;margin:0 auto 44px;max-width:850px}
+    .eyebrow{color:var(--terra);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+    h1,h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;line-height:1.08}
+    h1{margin:16px 0;font-size:clamp(42px,6vw,72px)}
+    h1 em{color:var(--terra)}
+    .lead{color:var(--olive);font-size:17px;line-height:1.7}
+    .card{border:1px solid var(--line);background:var(--paper);padding:clamp(24px,5vw,52px)}
+    .access-card{max-width:650px;margin:0 auto}
+    .access-card h2{margin:12px 0;font-size:40px}
+    .access-card p{color:var(--olive);line-height:1.65}
+    label{display:grid;gap:8px;margin-top:20px;color:var(--forest);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+    input,textarea{width:100%;border:1px solid var(--line);background:var(--paper);color:var(--forest);padding:14px 16px;font-size:16px;font-weight:400;text-transform:none;letter-spacing:0}
+    textarea{min-height:120px;resize:vertical}
+    .primary{width:100%;margin-top:24px;border:0;background:var(--terra);color:white;padding:17px 24px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+    .primary:disabled{opacity:.55;cursor:wait}
+    .status{min-height:24px;margin-top:14px;color:var(--terra);font-size:14px;line-height:1.5}
+    .support{margin-top:18px!important;font-size:13px}
+    .workshop{display:none}
+    .video-card{padding:clamp(22px,4vw,44px);background:var(--forest);color:white}
+    .video-card h2{margin:12px 0 26px;font-size:clamp(34px,5vw,55px)}
+    .video-frame{position:relative;overflow:hidden;aspect-ratio:16/9;background:#111}
+    .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .feedback{margin-top:42px}
+    .notes-card{margin-top:28px}
+    .notes-card h3{margin:10px 0;font-size:35px}
+    .notes-card p{color:var(--olive);line-height:1.6}
+    .feedback-head{text-align:center;max-width:720px;margin:0 auto 32px}
+    .feedback-head h2{margin:12px 0;font-size:clamp(38px,5vw,58px)}
+    .feedback-head p{color:var(--olive);line-height:1.65}
+    .feedback-form{padding:clamp(22px,5vw,52px)}
+    .section{padding:28px 0;border-bottom:1px solid var(--line)}
+    .section:first-child{padding-top:0}.section:last-of-type{border:0}
+    .question{font:600 23px "Cormorant Garamond",serif}
+    .help{margin-top:5px;color:var(--olive);font-size:13px}
+    .rating-row{display:grid;grid-template-columns:repeat(5,minmax(44px,1fr));gap:10px;margin-top:16px}
+    .rating-row.nps{grid-template-columns:repeat(11,minmax(38px,1fr));gap:7px}
+    .rating{min-height:48px;border:1px solid #cfae9e;background:var(--paper);color:var(--forest);cursor:pointer}
+    .rating.selected{background:var(--terra);color:white;border-color:var(--terra)}
+    .pause-list{display:grid;gap:22px;margin-top:20px}
+    .pause-item p{font-size:14px;font-weight:600}
+    .fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .consent{display:flex;grid-template-columns:none;align-items:flex-start;gap:12px;text-transform:none;letter-spacing:0;line-height:1.5;font-weight:400}
+    .consent input{width:auto;margin-top:4px}
+    .thanks{display:none;text-align:center;padding:45px}
+    .thanks h2{font-size:48px;margin:12px 0}
+    .thanks p{color:var(--olive)}
+    .legal{margin-top:28px;color:rgba(255,255,255,.65);font-size:12px;line-height:1.7}
+    @media(max-width:760px){.shell{padding-top:42px}.nav{align-items:flex-start;flex-direction:column}.navlinks{flex-wrap:wrap}.fields{grid-template-columns:1fr}.rating-row.nps{grid-template-columns:repeat(6,1fr)}.card{padding:24px 18px}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="/">The Confident Clinician</a>
+    <div class="navlinks"><a href="/portal.html">Workshop Home</a><a href="/member-account.html">Account</a><a href="/">Main Site</a></div>
+  </nav>
+
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Your Workshop</p>
+      <h1>What to Say When You <em>Do Not Know What to Say</em></h1>
+      <p class="lead">Learn how to pause, understand what is happening, and respond without performing, panicking, or filling the room with words.</p>
+    </header>
+
+    <section class="card access-card" data-access>
+      <p class="eyebrow">Private Access</p>
+      <h2>Open your workshop.</h2>
+      <p>Use the email you registered with and the access code from your email.</p>
+      <form data-access-form>
+        <label>Email<input type="email" name="email" autocomplete="email" required></label>
+        <label>Access Code<input type="password" name="password" autocomplete="current-password" required></label>
+        <button class="primary" type="submit">Open the Workshop</button>
+      </form>
+      <p class="status" data-access-status></p>
+      <p class="support">Need help? Email <a href="mailto:admin@theconfidentclinician.me">admin@theconfidentclinician.me</a></p>
+    </section>
+
+    <div class="workshop" data-workshop>
+      <section class="video-card">
+        <p class="eyebrow">Press Play</p>
+        <h2>What to Say When You Do Not Know What to Say</h2>
+        <div class="video-frame" data-video></div>
+        <p class="legal">This workshop is for individual educational use. It is not psychotherapy, clinical supervision, legal advice, or emergency consultation. Do not share the page, password, video, downloads, screenshots, transcripts, or workshop materials.</p>
+      </section>
+
+      <section class="card notes-card">
+        <p class="eyebrow">Workshop Notes</p>
+        <h3>Your private notes.</h3>
+        <p>Capture anything you want to remember. Your notes are connected to this workshop and your access email.</p>
+        <form data-notes-form>
+          <label>Notes<textarea name="notes" placeholder="Write your notes here" required></textarea></label>
+          <button class="primary" type="submit">Save My Notes</button>
+          <p class="status" data-notes-status></p>
+        </form>
+      </section>
+
+      <section class="feedback" id="feedback">
+        <div class="feedback-head">
+          <p class="eyebrow">Workshop Feedback</p>
+          <h2>Tell me what you think.</h2>
+          <p>Thank you for joining me. Your honest feedback helps me strengthen this workshop and create better tools for clinicians.</p>
+        </div>
+
+        <form class="card feedback-form" data-feedback-form>
+          <section class="section">
+            <p class="question">Overall, how valuable was this training?</p>
+            <p class="help">1 means not very valuable. 5 means extremely valuable.</p>
+            <div class="rating-row" data-rating="overallValue" data-start="1" data-end="5"></div>
+          </section>
+
+          <section class="section">
+            <p class="question">Rate each step of PAUSE by how usable it feels now.</p>
+            <div class="pause-list">
+              <div class="pause-item"><p>P: Pause the urge to perform</p><div class="rating-row" data-rating="pause" data-start="1" data-end="5"></div></div>
+              <div class="pause-item"><p>A: Attend to what is happening</p><div class="rating-row" data-rating="attend" data-start="1" data-end="5"></div></div>
+              <div class="pause-item"><p>U: Use what the client already gave you</p><div class="rating-row" data-rating="use" data-start="1" data-end="5"></div></div>
+              <div class="pause-item"><p>S: Say one grounded thing</p><div class="rating-row" data-rating="say" data-start="1" data-end="5"></div></div>
+              <div class="pause-item"><p>E: Explore before explaining</p><div class="rating-row" data-rating="explore" data-start="1" data-end="5"></div></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <label>What resonated most?<textarea name="resonated" placeholder="A moment, phrase, or idea that stuck with you"></textarea></label>
+            <label>What was confusing or could be better?<textarea name="improve" placeholder="Anything unclear, missing, or worth changing"></textarea></label>
+          </section>
+
+          <section class="section">
+            <p class="question">How likely are you to recommend this training to a fellow clinician?</p>
+            <p class="help">0 means not likely. 10 means extremely likely.</p>
+            <div class="rating-row nps" data-rating="recommendScore" data-start="0" data-end="10"></div>
+          </section>
+
+          <section class="section fields">
+            <label>Name, optional<input type="text" name="name" autocomplete="name"></label>
+            <label>Email, optional<input type="email" name="email" autocomplete="email"></label>
+          </section>
+
+          <section class="section">
+            <label class="consent"><input type="checkbox" name="testimonialConsent"><span>I am comfortable with The Confident Clinician sharing an anonymized quote from my feedback as a testimonial.</span></label>
+          </section>
+
+          <button class="primary" type="submit">Submit Feedback</button>
+          <p class="status" data-feedback-status></p>
+        </form>
+
+        <div class="card thanks" data-thanks tabindex="-1">
+          <p class="eyebrow">Thank You</p>
+          <h2>Your feedback was sent.</h2>
+          <p>I appreciate you taking the time to share it.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const ratings = {};
+    const access = document.querySelector('[data-access]');
+    const accessForm = document.querySelector('[data-access-form]');
+    const accessStatus = document.querySelector('[data-access-status]');
+    const workshop = document.querySelector('[data-workshop]');
+    const video = document.querySelector('[data-video]');
+    const feedbackForm = document.querySelector('[data-feedback-form]');
+    const feedbackStatus = document.querySelector('[data-feedback-status]');
+    const thanks = document.querySelector('[data-thanks]');
+    const notesForm = document.querySelector('[data-notes-form]');
+    const notesStatus = document.querySelector('[data-notes-status]');
+    let verifiedEmail = '';
+    let verifiedPassword = '';
+
+    document.querySelectorAll('[data-rating]').forEach((row) => {
+      const key = row.dataset.rating;
+      const start = Number(row.dataset.start);
+      const end = Number(row.dataset.end);
+      for (let value = start; value <= end; value += 1) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'rating';
+        button.textContent = value;
+        button.addEventListener('click', () => {
+          ratings[key] = value;
+          row.querySelectorAll('button').forEach((item) => item.classList.remove('selected'));
+          button.classList.add('selected');
+        });
+        row.appendChild(button);
+      }
+    });
+
+    const openWorkshop = async (email, password) => {
+      const button = accessForm.querySelector('button');
+      button.disabled = true;
+      button.textContent = 'Opening';
+      accessStatus.textContent = '';
+      try {
+        const response = await fetch('/.netlify/functions/workshop-resource-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resourceId: 'what-to-say-video', email, password }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || 'Access could not be verified.');
+        const iframe = document.createElement('iframe');
+        iframe.src = result.resource.url;
+        iframe.title = 'What to Say When You Do Not Know What to Say workshop video';
+        iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+        iframe.setAttribute('allowfullscreen', '');
+        video.replaceChildren(iframe);
+        verifiedEmail = email;
+        verifiedPassword = password;
+        feedbackForm.elements.email.value = email;
+        sessionStorage.setItem('tccMemberEmail', email);
+        sessionStorage.setItem('tccMemberPassword', password);
+        access.style.display = 'none';
+        workshop.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        loadNotes();
+      } catch (error) {
+        accessStatus.textContent = error.message;
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Open the Workshop';
+      }
+    };
+
+    accessForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(accessForm);
+      openWorkshop(String(data.get('email') || '').trim(), String(data.get('password') || ''));
+    });
+
+    const storedEmail = sessionStorage.getItem('tccMemberEmail');
+    const storedPassword = sessionStorage.getItem('tccMemberPassword');
+    const requestedEmail = new URLSearchParams(window.location.search).get('email');
+    if (requestedEmail) accessForm.elements.email.value = requestedEmail;
+    if (storedEmail && storedPassword) {
+      accessForm.elements.email.value = storedEmail;
+      openWorkshop(storedEmail, storedPassword);
+    }
+
+    const notesRequest = async (action, notes = '') => {
+      const response = await fetch('/.netlify/functions/save-workshop-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          notes,
+          email: verifiedEmail,
+          password: verifiedPassword,
+          workshop: 'What to Say When You Do Not Know What to Say',
+          resourceId: 'what-to-say-video',
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || 'Your notes could not be saved.');
+      return result;
+    };
+
+    async function loadNotes() {
+      try {
+        const result = await notesRequest('load');
+        notesForm.elements.notes.value = result.notes || '';
+      } catch (error) {
+        console.warn('Saved notes could not be loaded', error);
+      }
+    }
+
+    notesForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = notesForm.querySelector('button');
+      button.disabled = true;
+      button.textContent = 'Saving';
+      notesStatus.textContent = '';
+      try {
+        await notesRequest('save', notesForm.elements.notes.value);
+        notesStatus.textContent = 'Saved. You can return and keep adding to these notes.';
+      } catch (error) {
+        notesStatus.textContent = error.message;
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Save My Notes';
+      }
+    });
+
+    feedbackForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const requiredRatings = ['overallValue', 'pause', 'attend', 'use', 'say', 'explore', 'recommendScore'];
+      const missing = requiredRatings.find((key) => ratings[key] === undefined);
+      if (missing) {
+        feedbackStatus.textContent = 'Please choose a rating for each question before submitting.';
+        return;
+      }
+      const button = feedbackForm.querySelector('button[type="submit"]');
+      const data = new FormData(feedbackForm);
+      button.disabled = true;
+      button.textContent = 'Sending';
+      feedbackStatus.textContent = '';
+      try {
+        const response = await fetch('/.netlify/functions/workshop-feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            workshop: 'What to Say When You Do Not Know What to Say',
+            name: data.get('name'),
+            email: data.get('email') || verifiedEmail,
+            resonated: data.get('resonated'),
+            improve: data.get('improve'),
+            testimonialConsent: data.get('testimonialConsent') === 'on',
+            sourceUrl: window.location.href,
+            questionResponses: {
+              'Overall value': ratings.overallValue,
+              'Pause the urge to perform': ratings.pause,
+              'Attend to what is happening': ratings.attend,
+              'Use what the client already gave you': ratings.use,
+              'Say one grounded thing': ratings.say,
+              'Explore before explaining': ratings.explore,
+              'What resonated most': data.get('resonated'),
+              'What was confusing or could be better': data.get('improve'),
+              'Recommendation score': ratings.recommendScore,
+            },
+            ...ratings,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || 'Your feedback could not be sent.');
+        feedbackForm.style.display = 'none';
+        thanks.style.display = 'block';
+        thanks.focus();
+        thanks.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        feedbackStatus.textContent = error.message;
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Submit Feedback';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -101,13 +101,23 @@ Required Netlify environment variables:
 - `AIRTABLE_ACCESS_TOKEN`
 - `AIRTABLE_PURCHASES_BASE_ID` = `appPQAC82txeqHx9R`
 - `AIRTABLE_PURCHASES_TABLE_ID` = `tblL3eHxNfYVLbaf6`
-- `AIRTABLE_VIEWS_TABLE_ID` = `Views` unless you want to use the table ID
+- `AIRTABLE_VIEWS_TABLE_ID` = `tblUoGTm6u39TfJob`
+- `AIRTABLE_FEEDBACK_TABLE_ID` = `tblIAIdF9XiYSCVSg`
+- `AIRTABLE_RESOURCES_TABLE_ID` = `tbl44AA5SwkM8jxHI`
+- `AIRTABLE_WORKSHOP_ACCESS_TABLE_ID` = `tblYDbmtmYxIGI9Wb`
 - `FIVE_SKILLS_VIDEO_EMBED_URL`
 - `FIVE_SKILLS_ACCESS_PASSWORD`
+- `WHAT_TO_SAY_ACCESS_PASSWORD` if this workshop should use a different password. When omitted, the existing workshop password is used.
 
 The access page requires the workshop password and checks Airtable for a matching `Email` with `Purchased` checked.
-When access is confirmed, it also creates a record in the `Views` table so you can track who opened the workshop, when they opened it, and how many times they returned.
+When access is confirmed, it creates a new record in `Workshop Views` with the workshop, resource, email, and timestamp. Repeat opens create repeat view records.
 The workshop purchase buttons use `/.netlify/functions/create-five-skills-checkout`, which creates a Stripe Checkout session from `FIVE_SKILLS_STRIPE_PRICE_ID`. The member portal at `/portal.html` checks the same purchase email and password, then shows available workshop access pages.
+
+Workshop videos, downloads, worksheets, guides, and links are cataloged in the Airtable `Workshop Resources` table. The `Paid Access Required` field controls whether a purchase must be verified before the resource URL is returned. The `Published` field controls whether the resource is available. Run `npx netlify dev:exec --context production -- node scripts/setup-workshop-airtable.mjs` to recreate or verify the workshop feedback and resource structure without duplicating records.
+
+The private page for **What to Say When You Don’t Know What to Say** is `/what-to-say-access.html`. Workshop specific questions are stored together in the long `Question Responses` field. This prevents every future workshop framework from creating another set of columns. Universal information such as the workshop, participant, overall value, recommendation score, testimonial permission, submission time, and source page remains in dedicated fields.
+
+The `Workshop Codes` table catalogs active promo codes and the Netlify secret name connected to each workshop password. Password values stay in secure Netlify environment variables and are not stored in Airtable.
 
 The Clinical Confidence Lab purchase button uses `/.netlify/functions/create-clinical-confidence-lab-checkout`. It creates a Stripe Checkout session with promotion codes enabled and uses `CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID` when configured (falling back to the current founding-price ID).
 

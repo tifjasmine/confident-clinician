@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Get Workshop Access | The Confident Clinician</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#f7f2ea;--paper:#fffdf9;--forest:#2a3c2f;--olive:#61705a;--terra:#b3543b;--line:#ddcfc1}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;background:var(--cream);color:var(--forest);font-family:Jost,sans-serif}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:20px 5vw;border-bottom:1px solid var(--line)}
+    .brand{font:600 17px "Cormorant Garamond",serif;letter-spacing:.09em;text-decoration:none;text-transform:uppercase}
+    .nav a{color:inherit}
+    main{width:min(100% - 32px,1080px);margin:0 auto;padding:70px 0 90px}
+    .layout{display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+    .intro{display:flex;flex-direction:column;justify-content:center;background:var(--forest);color:white;padding:clamp(34px,6vw,70px)}
+    .eyebrow{color:#dc9b82;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+    h1,h2{font-family:"Cormorant Garamond",serif;font-weight:600;line-height:1.06}
+    h1{margin:16px 0 24px;font-size:clamp(43px,6vw,69px)}
+    .intro p:last-child{color:rgba(255,255,255,.72);font-size:17px;line-height:1.7}
+    .card{background:var(--paper);border:1px solid var(--line);padding:clamp(30px,6vw,65px)}
+    .card h2{margin:12px 0;font-size:43px}
+    .card>p{color:var(--olive);line-height:1.65}
+    label{display:grid;gap:8px;margin-top:22px;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    input{width:100%;border:1px solid var(--line);background:var(--paper);padding:15px 16px;color:var(--forest);font:400 16px Jost,sans-serif;text-transform:none;letter-spacing:0}
+    button{width:100%;margin-top:25px;border:0;background:var(--terra);color:white;padding:18px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
+    button:disabled{opacity:.55;cursor:wait}
+    .status{min-height:24px;margin-top:15px;color:var(--terra)!important;font-size:14px}
+    .success{display:none}
+    .success a{display:block;margin-top:25px;background:var(--terra);color:white;padding:18px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+    @media(max-width:760px){main{padding-top:36px}.layout{grid-template-columns:1fr}.nav{align-items:flex-start;gap:10px;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <nav class="nav"><a class="brand" href="/">The Confident Clinician</a><a href="/member-access.html">Member Access</a></nav>
+  <main>
+    <div class="layout">
+      <section class="intro">
+        <p class="eyebrow">Workshop Access</p>
+        <h1>What to Say When You <em>Don’t Know What to Say</em></h1>
+        <p>Enter your email to receive free access to the workshop.</p>
+      </section>
+      <section class="card">
+        <div data-form-wrap>
+          <p class="eyebrow">Get Access</p>
+          <h2>Get free access.</h2>
+          <p>Enter your email and I’ll send the workshop link and access code.</p>
+          <form data-form>
+            <label>Name, optional<input type="text" name="name" autocomplete="name"></label>
+            <label>Email<input type="email" name="email" autocomplete="email" required></label>
+            <button type="submit">Send Me Access</button>
+            <p class="status" data-status></p>
+          </form>
+        </div>
+        <div class="success" data-success tabindex="-1">
+          <p class="eyebrow">You’re Registered</p>
+          <h2>Check your email.</h2>
+          <p>Your workshop link and access code should arrive within the next five minutes.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const form = document.querySelector('[data-form]');
+    const formWrap = document.querySelector('[data-form-wrap]');
+    const status = document.querySelector('[data-status]');
+    const success = document.querySelector('[data-success]');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button');
+      const data = new FormData(form);
+      const participantEmail = String(data.get('email') || '').trim().toLowerCase();
+      button.disabled = true;
+      button.textContent = 'Saving';
+      status.textContent = '';
+      try {
+        const response = await fetch('/.netlify/functions/workshop-register-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: data.get('name'),
+            email: participantEmail,
+            workshop: 'What to Say When You Do Not Know What to Say',
+            sourceUrl: window.location.href,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || 'Your registration could not be saved.');
+        formWrap.style.display = 'none';
+        success.style.display = 'block';
+        success.focus();
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Send Me Access';
+      }
+    });
+  </script>
+</body>
+</html>

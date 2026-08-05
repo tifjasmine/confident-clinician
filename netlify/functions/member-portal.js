@@ -10,6 +10,7 @@ const json = (statusCode, body) => ({
 const defaultFieldMap = {
   name: 'Name',
   email: 'Email',
+  item: 'Item',
   purchased: 'Purchased',
   accountCreated: 'Account Created',
 };
@@ -27,7 +28,7 @@ const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
 
 const airtableFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
-const findPurchasedRecordByEmail = async (email, fieldMap) => {
+const findPurchasedRecordsByEmail = async (email, fieldMap) => {
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
   const tableId = process.env.AIRTABLE_PURCHASES_TABLE_ID || 'tblL3eHxNfYVLbaf6';
@@ -38,7 +39,7 @@ const findPurchasedRecordByEmail = async (email, fieldMap) => {
 
   const formula = `AND(LOWER({${emailField}})='${airtableFormulaString(email)}',{${purchasedField}})`;
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
-  url.searchParams.set('maxRecords', '1');
+  url.searchParams.set('maxRecords', '50');
   url.searchParams.set('filterByFormula', formula);
 
   const response = await fetch(url, {
@@ -52,7 +53,36 @@ const findPurchasedRecordByEmail = async (email, fieldMap) => {
   }
 
   const result = await response.json();
-  return result.records && result.records.length > 0 ? result.records[0] : null;
+  return result.records || [];
+};
+
+const normalizeTitle = (value) => String(value || '')
+  .trim()
+  .toLowerCase()
+  .replace(/[’']/g, '')
+  .replace(/\bdo not\b/g, 'dont')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim();
+
+const workshopForItem = (item, email) => {
+  const normalized = normalizeTitle(item);
+  if (normalized.includes('what to say when you dont know what to say')) {
+    return {
+      title: 'What to Say When You Don’t Know What to Say',
+      meta: 'Purchased Workshop',
+      description: 'Use PAUSE to slow the pressure, notice what is happening, and find a grounded response when the words do not come easily.',
+      accessUrl: `/what-to-say-access.html?email=${encodeURIComponent(email)}`,
+    };
+  }
+  if (normalized.includes('5 skills') || normalized.includes('five skills')) {
+    return {
+      title: 'The 5 Skills That Separate New Therapists from Confident Clinicians',
+      meta: 'Purchased Workshop',
+      description: 'A practical workshop on performing less, tolerating uncertainty, trusting the process, regulating yourself, and building self trust in the room.',
+      accessUrl: `/five-skills-access.html?email=${encodeURIComponent(email)}`,
+    };
+  }
+  return null;
 };
 
 const verifySupabasePassword = async (email, password) => {
@@ -102,23 +132,23 @@ exports.handler = async (event) => {
   }
 
   const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
-  const record = await findPurchasedRecordByEmail(email, fieldMap);
+  const records = await findPurchasedRecordsByEmail(email, fieldMap);
 
-  if (record && record.configurationError) {
+  if (records && records.configurationError) {
     return json(500, {
       ok: false,
       message: 'Member access is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.',
     });
   }
 
-  if (record && record.airtableError) {
+  if (records && records.airtableError) {
     return json(500, {
       ok: false,
       message: 'Member access could not be checked right now. Please try again in a few minutes.',
     });
   }
 
-  if (!record) {
+  if (!records.length) {
     return json(403, {
       ok: false,
       message: 'I could not find a purchased workshop for that email yet. Try the checkout email, or give it a minute to sync.',
@@ -137,19 +167,25 @@ exports.handler = async (event) => {
     });
   }
 
+  const workshops = records
+    .map((record) => workshopForItem(record.fields?.[fieldMap.item || 'Item'], email))
+    .filter(Boolean)
+    .filter((workshop, index, all) => all.findIndex((entry) => entry.accessUrl === workshop.accessUrl) === index);
+
+  if (!workshops.length) {
+    return json(403, {
+      ok: false,
+      message: 'I found your purchase email, but no available workshop is connected to it yet. Please email admin@theconfidentclinician.me.',
+    });
+  }
+
+  const record = records[0];
   return json(200, {
     ok: true,
     name: record.fields?.[fieldMap.name || 'Name'] || '',
     email,
     accountCreated: Boolean(record.fields?.[fieldMap.accountCreated || 'Account Created']),
     authType: passwordMatchesAccount ? 'member' : 'workshop',
-    workshops: [
-      {
-        title: 'The 5 Skills That Separate New Therapists from Confident Clinicians',
-        meta: 'Purchased Workshop',
-        description: 'A practical workshop on performing less, tolerating uncertainty, trusting the process, regulating yourself, and building self-trust in the room.',
-        accessUrl: `/five-skills-access.html?email=${encodeURIComponent(email)}`,
-      },
-    ],
+    workshops,
   });
 };

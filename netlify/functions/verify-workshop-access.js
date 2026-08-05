@@ -17,6 +17,9 @@ const defaultViewFieldMap = {
   student: 'Student',
   viewedAt: 'Viewed At',
   notes: 'Notes',
+  workshop: 'Workshop',
+  resourceId: 'Resource ID',
+  participantEmail: 'Participant Email',
 };
 
 const parseJsonEnv = (name, fallback) => {
@@ -107,6 +110,10 @@ const logWorkshopView = async ({ email, purchaseRecord, fieldMap }) => {
   if (fieldMap.notes) {
     fields[fieldMap.notes] = 'Access opened for The 5 Skills workshop.';
   }
+
+  if (fieldMap.workshop) fields[fieldMap.workshop] = 'The 5 Skills That Separate New Therapists from Confident Clinicians';
+  if (fieldMap.resourceId) fields[fieldMap.resourceId] = 'five-skills-video';
+  if (fieldMap.participantEmail) fields[fieldMap.participantEmail] = email;
 
   const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
     method: 'POST',

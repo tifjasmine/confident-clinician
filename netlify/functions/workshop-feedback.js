@@ -8,22 +8,23 @@ const json = (statusCode, body) => ({
 });
 
 const defaultFieldMap = {
-  submission: 'Submission',
-  name: 'Name',
+  submission: 'Name',
+  participantName: 'Participant Name',
   email: 'Email',
   workshop: 'Workshop',
   overallValue: 'Overall Value',
-  stopPerformingClarity: 'Stop Performing Therapy Clarity',
-  tolerateNotKnowingClarity: 'Tolerate Not Knowing Clarity',
-  trustProcessClarity: 'Trust the Process Clarity',
-  regulateYourselfClarity: 'Regulate Yourself First Clarity',
-  buildSelfTrustClarity: 'Build Self-Trust Clarity',
+  pause: 'Pause',
+  attend: 'Attend',
+  use: 'Use',
+  say: 'Say',
+  explore: 'Explore',
   resonated: 'What Resonated',
   improve: 'What Could Be Better',
   recommendScore: 'Recommend Score',
   testimonialConsent: 'Testimonial Consent',
   submittedAt: 'Submitted At',
   sourceUrl: 'Source URL',
+  questionResponses: 'Question Responses',
   notes: 'Notes',
 };
 
@@ -56,6 +57,11 @@ const buildNotes = (payload) => {
     ['Name', cleanString(payload.name)],
     ['Email', cleanEmail(payload.email)],
     ['Overall Value', cleanNumber(payload.overallValue)],
+    ['Pause', cleanNumber(payload.pause)],
+    ['Attend', cleanNumber(payload.attend)],
+    ['Use', cleanNumber(payload.use)],
+    ['Say', cleanNumber(payload.say)],
+    ['Explore', cleanNumber(payload.explore)],
     ['Stop Performing Therapy Clarity', cleanNumber(payload.stopPerformingClarity)],
     ['Tolerate Not Knowing Clarity', cleanNumber(payload.tolerateNotKnowingClarity)],
     ['Trust the Process Clarity', cleanNumber(payload.trustProcessClarity)],
@@ -75,6 +81,16 @@ const buildNotes = (payload) => {
     .join('\n');
 };
 
+const buildQuestionResponses = (payload) => {
+  const responses = payload.questionResponses && typeof payload.questionResponses === 'object'
+    ? payload.questionResponses
+    : {};
+  return Object.entries(responses)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .map(([question, value]) => `${question}: ${Array.isArray(value) ? value.join(', ') : value}`)
+    .join('\n');
+};
+
 const buildStructuredFields = (payload, fieldMap) => {
   const email = cleanEmail(payload.email);
   const name = cleanString(payload.name);
@@ -83,7 +99,7 @@ const buildStructuredFields = (payload, fieldMap) => {
   const fields = {};
 
   addIfPresent(fields, fieldMap, 'submission', `${workshop} Feedback - ${name || email || submittedAt}`);
-  addIfPresent(fields, fieldMap, 'name', name || email || 'Workshop Feedback');
+  addIfPresent(fields, fieldMap, 'participantName', name);
   addIfPresent(fields, fieldMap, 'email', email);
   addIfPresent(fields, fieldMap, 'workshop', workshop);
   addIfPresent(fields, fieldMap, 'overallValue', cleanNumber(payload.overallValue));
@@ -98,6 +114,7 @@ const buildStructuredFields = (payload, fieldMap) => {
   addIfPresent(fields, fieldMap, 'testimonialConsent', Boolean(payload.testimonialConsent));
   addIfPresent(fields, fieldMap, 'submittedAt', submittedAt);
   addIfPresent(fields, fieldMap, 'sourceUrl', cleanString(payload.sourceUrl));
+  addIfPresent(fields, fieldMap, 'questionResponses', buildQuestionResponses(payload));
   addIfPresent(fields, fieldMap, 'notes', buildNotes(payload));
 
   return fields;
@@ -107,7 +124,7 @@ const buildFallbackFields = (payload, fieldMap) => {
   const fields = {};
   const email = cleanEmail(payload.email);
   const name = cleanString(payload.name);
-  addIfPresent(fields, fieldMap, 'name', name || email || 'Workshop Feedback');
+  addIfPresent(fields, fieldMap, 'submission', `${cleanString(payload.workshop) || 'Workshop'} Feedback - ${name || email || new Date().toISOString()}`);
   addIfPresent(fields, fieldMap, 'notes', buildNotes(payload));
   return fields;
 };
@@ -139,7 +156,7 @@ exports.handler = async (event) => {
 
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
-  const tableId = process.env.AIRTABLE_FEEDBACK_TABLE_ID || 'tblL3eHxNfYVLbaf6';
+  const tableId = process.env.AIRTABLE_FEEDBACK_TABLE_ID || 'tblIAIdF9XiYSCVSg';
   const fieldMap = parseJsonEnv('AIRTABLE_FEEDBACK_FIELD_MAP', defaultFieldMap);
 
   if (!token) {
