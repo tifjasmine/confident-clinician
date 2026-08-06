@@ -14,6 +14,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    try {
+      if (sessionStorage.getItem('tccMemberEmail') && sessionStorage.getItem('tccMemberPassword')) {
+        document.documentElement.classList.add('has-stored-session');
+      }
+    } catch (error) {
+      document.documentElement.classList.remove('has-stored-session');
+    }
+  </script>
   <style>
     :root {
       --bg: #F6F2EB;
@@ -67,6 +76,18 @@
       text-transform: uppercase;
       color: var(--mid);
     }
+
+    .nav-links button {
+      border: 0;
+      background: transparent;
+      color: var(--mid);
+      font: 700 11px 'Jost', sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .has-stored-session .shell { opacity: 0; }
 
     .member-tools {
       display: flex;
@@ -319,7 +340,8 @@
         gap: 8px;
       }
 
-      .nav-links a {
+      .nav-links a,
+      .nav-links button {
         border: 1px solid rgba(42, 60, 47, 0.16);
         border-radius: 999px;
         padding: 8px 11px;
@@ -353,7 +375,8 @@
       <a href="./">Home</a>
       <a href="./workshop.html">Workshops</a>
       <a href="./course/">Course Portal</a>
-      <a href="./portal.html">Member Login</a>
+      <a href="./member-account.html">Account</a>
+      <button type="button" data-member-logout>Log Out</button>
     </div>
   </nav>
 
@@ -365,12 +388,6 @@
     </section>
 
     <section class="portal">
-      <div class="member-tools" aria-label="Member navigation">
-        <a href="./portal.html">Workshop Home</a>
-        <a href="./member-account.html">Edit Account</a>
-        <a href="./">Main Site</a>
-        <button type="button" data-member-logout>Log Out</button>
-      </div>
       <div class="card" data-login-card>
         <p class="eyebrow">Private Access</p>
         <h2>Let’s find your purchase.</h2>
@@ -491,10 +508,21 @@
         status.textContent = error.message || 'Something went wrong. Please try again.';
         status.style.display = 'block';
       } finally {
+        document.documentElement.classList.remove('has-stored-session');
         button.disabled = false;
         button.textContent = originalText;
       }
     });
+
+    const storedEmail = sessionStorage.getItem('tccMemberEmail');
+    const storedPassword = sessionStorage.getItem('tccMemberPassword');
+    if (storedEmail && storedPassword) {
+      form.elements.email.value = storedEmail;
+      form.elements.password.value = storedPassword;
+      form.requestSubmit();
+    } else {
+      document.documentElement.classList.remove('has-stored-session');
+    }
   </script>
 </body>
 </html>

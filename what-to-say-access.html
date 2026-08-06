@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    try {
+      if (sessionStorage.getItem('tccMemberEmail') && sessionStorage.getItem('tccMemberPassword')) {
+        document.documentElement.classList.add('session-opening');
+      }
+    } catch (error) {
+      document.documentElement.classList.remove('session-opening');
+    }
+  </script>
   <style>
     :root{--cream:#f7f2ea;--paper:#fffdf9;--forest:#2a3c2f;--olive:#61705a;--terra:#b3543b;--line:#ddcfc1;--sand:#eee4d5}
     *{box-sizing:border-box;margin:0;padding:0}
@@ -36,6 +45,7 @@
     .status{min-height:24px;margin-top:14px;color:var(--terra);font-size:14px;line-height:1.5}
     .support{margin-top:18px!important;font-size:13px}
     .workshop{display:none}
+    .session-opening [data-access]{display:none}
     .video-card{padding:clamp(22px,4vw,44px);background:var(--forest);color:white}
     .video-card h2{margin:12px 0 26px;font-size:clamp(34px,5vw,55px)}
     .video-frame{position:relative;overflow:hidden;aspect-ratio:16/9;background:#111}
@@ -231,9 +241,11 @@
         sessionStorage.setItem('tccMemberPassword', password);
         access.style.display = 'none';
         workshop.style.display = 'block';
+        document.documentElement.classList.remove('session-opening');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         loadNotes();
       } catch (error) {
+        document.documentElement.classList.remove('session-opening');
         accessStatus.textContent = error.message;
       } finally {
         button.disabled = false;

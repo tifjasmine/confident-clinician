@@ -131,11 +131,9 @@
           throw new Error(result.message || 'Your account could not be created.');
         }
 
-        status.className = 'status success';
-        status.textContent = result.message || 'Your member account is ready.';
-        status.style.display = 'block';
-        successActions.style.display = 'block';
-        form.reset();
+        sessionStorage.setItem('tccMemberEmail', String(formData.get('email') || '').trim());
+        sessionStorage.setItem('tccMemberPassword', String(formData.get('accountPassword') || ''));
+        window.location.href = './portal.html';
       } catch (error) {
         status.className = 'status error';
         status.textContent = error.message || 'Something went wrong. Please try again.';
