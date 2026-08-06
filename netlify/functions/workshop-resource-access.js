@@ -6,6 +6,9 @@ const json = (statusCode, body) => ({
 
 const normalizeEmail = (value) => String(value || '').trim().toLowerCase();
 const clean = (value) => String(value || '').trim();
+const accessCodeMatches = (provided, expected) => Boolean(
+  clean(expected) && clean(provided).toLowerCase() === clean(expected).toLowerCase()
+);
 const normalizeTitle = (value) => clean(value)
   .toLowerCase()
   .replace(/[’']/g, '')
@@ -114,6 +117,7 @@ exports.handler = async (event) => {
     const paid = Boolean(fields['Paid Access Required']);
     const email = normalizeEmail(payload.email);
     const password = clean(payload.password);
+    let participantName = '';
 
     if (paid) {
       if (!email || !password) {
@@ -129,11 +133,13 @@ exports.handler = async (event) => {
         maxRecords: 50,
       });
       const workshopTitle = normalizeTitle(workshop);
-      let ownsWorkshop = purchases.records?.some((record) => {
+      const purchaseMatch = purchases.records?.find((record) => {
         const itemTitle = normalizeTitle(record.fields?.Item);
         if (resourceId === 'what-to-say-video') return itemTitle.includes('what to say when you dont know what to say');
         return itemTitle === workshopTitle;
       });
+      let ownsWorkshop = Boolean(purchaseMatch);
+      participantName = clean(purchaseMatch?.fields?.Name);
       if (!ownsWorkshop && accessTable) {
         const registrations = await airtableList({
           baseId,
@@ -142,9 +148,11 @@ exports.handler = async (event) => {
           formula: `AND(LOWER({Email})='${escapeFormula(email)}',{Access Granted}=TRUE())`,
           maxRecords: 50,
         });
-        ownsWorkshop = registrations.records?.some((record) => (
+        const registrationMatch = registrations.records?.find((record) => (
           normalizeTitle(record.fields?.Workshop) === workshopTitle
         ));
+        ownsWorkshop = Boolean(registrationMatch);
+        participantName = clean(registrationMatch?.fields?.['Participant Name']);
       }
       if (!ownsWorkshop) {
         return json(403, { ok: false, message: 'I could not find workshop access for that email.' });
@@ -154,7 +162,7 @@ exports.handler = async (event) => {
       const workshopPassword = resourceId === 'what-to-say-video'
         ? process.env.WHAT_TO_SAY_ACCESS_PASSWORD
         : process.env.FIVE_SKILLS_ACCESS_PASSWORD;
-      if (!accountPasswordMatches && password !== workshopPassword) {
+      if (!accountPasswordMatches && !accessCodeMatches(password, workshopPassword)) {
         return json(401, { ok: false, message: 'That access code does not match. Please check your email and try again.' });
       }
     }
@@ -163,6 +171,7 @@ exports.handler = async (event) => {
 
     return json(200, {
       ok: true,
+      participantName,
       resource: {
         id: resourceId,
         title: fields.Title || fields.Workshop || 'Workshop',

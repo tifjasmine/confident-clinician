@@ -6,6 +6,9 @@ const json = (statusCode, body) => ({
 
 const clean = (value) => String(value || '').trim();
 const normalizeEmail = (value) => clean(value).toLowerCase();
+const accessCodeMatches = (provided, expected) => Boolean(
+  clean(expected) && clean(provided).toLowerCase() === clean(expected).toLowerCase()
+);
 const escapeFormula = (value) => clean(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 const normalizeTitle = (value) => clean(value)
   .toLowerCase()
@@ -71,7 +74,7 @@ exports.handler = async (event) => {
   const expectedPassword = resourceId === 'what-to-say-video'
     ? process.env.WHAT_TO_SAY_ACCESS_PASSWORD
     : process.env.FIVE_SKILLS_ACCESS_PASSWORD;
-  const passwordMatchesWorkshop = Boolean(expectedPassword && password === expectedPassword);
+  const passwordMatchesWorkshop = accessCodeMatches(password, expectedPassword);
   const passwordMatchesAccount = passwordMatchesWorkshop ? false : await verifySupabasePassword(email, password);
   if (!passwordMatchesWorkshop && !passwordMatchesAccount) {
     return json(401, { ok: false, message: 'That password does not match.' });

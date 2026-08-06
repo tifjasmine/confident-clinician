@@ -30,29 +30,29 @@
     button{width:100%;margin-top:25px;border:0;background:var(--terra);color:white;padding:18px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
     button:disabled{opacity:.55;cursor:wait}
     .status{min-height:24px;margin-top:15px;color:var(--terra)!important;font-size:14px}
+    .consent{margin-top:14px;color:var(--olive);font-size:12px;line-height:1.55}
     .success{display:none}
     .success a{display:block;margin-top:25px;background:var(--terra);color:white;padding:18px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
     @media(max-width:760px){main{padding-top:36px}.layout{grid-template-columns:1fr}.nav{align-items:flex-start;gap:10px;flex-direction:column}}
   </style>
 </head>
 <body>
-  <nav class="nav"><a class="brand" href="/">The Confident Clinician</a><a href="/member-access.html">Member Access</a></nav>
+  <nav class="nav"><a class="brand" href="/">The Confident Clinician</a><a href="/access.html">Member Access</a></nav>
   <main>
     <div class="layout">
       <section class="intro">
         <p class="eyebrow">Workshop Access</p>
         <h1>What to Say When You <em>Don’t Know What to Say</em></h1>
-        <p>Enter your email to receive free access to the workshop.</p>
       </section>
       <section class="card">
         <div data-form-wrap>
-          <p class="eyebrow">Get Access</p>
           <h2>Get free access.</h2>
           <p>Enter your email and I’ll send the workshop link and access code.</p>
           <form data-form>
-            <label>Name, optional<input type="text" name="name" autocomplete="name"></label>
+            <label>Name<input type="text" name="name" autocomplete="name"></label>
             <label>Email<input type="email" name="email" autocomplete="email" required></label>
             <button type="submit">Send Me Access</button>
+            <p class="consent">By joining, you agree to receive emails from The Confident Clinician. You can unsubscribe at any time.</p>
             <p class="status" data-status></p>
           </form>
         </div>

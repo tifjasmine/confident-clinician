@@ -25,6 +25,10 @@ const parseJsonEnv = (name, fallback) => {
 };
 
 const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
+const accessCodeMatches = (provided, expected) => Boolean(
+  String(expected || '').trim()
+  && String(provided || '').trim().toLowerCase() === String(expected || '').trim().toLowerCase()
+);
 
 const airtableFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
@@ -52,6 +56,20 @@ const findPurchasedRecordsByEmail = async (email, fieldMap) => {
     return { airtableError: response.status };
   }
 
+  const result = await response.json();
+  return result.records || [];
+};
+
+const findWorkshopRegistrationsByEmail = async (email) => {
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
+  const tableId = process.env.AIRTABLE_WORKSHOP_ACCESS_TABLE_ID;
+  if (!token || !tableId) return [];
+  const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
+  url.searchParams.set('maxRecords', '50');
+  url.searchParams.set('filterByFormula', `AND(LOWER({Email})='${airtableFormulaString(email)}',{Access Granted}=TRUE())`);
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!response.ok) return { airtableError: response.status };
   const result = await response.json();
   return result.records || [];
 };
@@ -85,6 +103,17 @@ const workshopForItem = (item, email) => {
   return null;
 };
 
+const workshopForRegistration = (workshop, email) => {
+  const normalized = normalizeTitle(workshop);
+  if (!normalized.includes('what to say when you dont know what to say')) return null;
+  return {
+    title: 'What to Say When You Don’t Know What to Say',
+    meta: 'Workshop',
+    description: 'Use PAUSE to slow the pressure, notice what is happening, and find a grounded response when the words do not come easily.',
+    accessUrl: `/what-to-say-access.html?email=${encodeURIComponent(email)}`,
+  };
+};
+
 const verifySupabasePassword = async (email, password) => {
   const supabaseUrl = process.env.SUPABASE_URL;
   const anonKey = process.env.SUPABASE_ANON_KEY;
@@ -108,9 +137,12 @@ exports.handler = async (event) => {
     return json(405, { ok: false, message: 'Method not allowed.' });
   }
 
-  const accessPassword = process.env.FIVE_SKILLS_ACCESS_PASSWORD;
+  const workshopPasswords = [
+    process.env.FIVE_SKILLS_ACCESS_PASSWORD,
+    process.env.WHAT_TO_SAY_ACCESS_PASSWORD,
+  ].filter(Boolean);
 
-  if (!accessPassword) {
+  if (!workshopPasswords.length) {
     return json(500, {
       ok: false,
       message: 'Member access is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.',
@@ -133,6 +165,7 @@ exports.handler = async (event) => {
 
   const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
   const records = await findPurchasedRecordsByEmail(email, fieldMap);
+  const registrations = await findWorkshopRegistrationsByEmail(email);
 
   if (records && records.configurationError) {
     return json(500, {
@@ -148,14 +181,21 @@ exports.handler = async (event) => {
     });
   }
 
-  if (!records.length) {
+  if (registrations && registrations.airtableError) {
+    return json(500, {
+      ok: false,
+      message: 'Member access could not be checked right now. Please try again in a few minutes.',
+    });
+  }
+
+  if (!records.length && !registrations.length) {
     return json(403, {
       ok: false,
       message: 'I could not find a purchased workshop for that email yet. Try the checkout email, or give it a minute to sync.',
     });
   }
 
-  const passwordMatchesWorkshop = password === accessPassword;
+  const passwordMatchesWorkshop = workshopPasswords.some((expected) => accessCodeMatches(password, expected));
   const passwordMatchesAccount = await verifySupabasePassword(email, password);
 
   if (!passwordMatchesAccount && !passwordMatchesWorkshop) {
@@ -167,9 +207,14 @@ exports.handler = async (event) => {
     });
   }
 
-  const workshops = records
+  const workshops = [
+    ...records
     .map((record) => workshopForItem(record.fields?.[fieldMap.item || 'Item'], email))
-    .filter(Boolean)
+    .filter(Boolean),
+    ...registrations
+      .map((record) => workshopForRegistration(record.fields?.Workshop, email))
+      .filter(Boolean),
+  ]
     .filter((workshop, index, all) => all.findIndex((entry) => entry.accessUrl === workshop.accessUrl) === index);
 
   if (!workshops.length) {
@@ -180,11 +225,12 @@ exports.handler = async (event) => {
   }
 
   const record = records[0];
+  const registration = registrations[0];
   return json(200, {
     ok: true,
-    name: record.fields?.[fieldMap.name || 'Name'] || '',
+    name: record?.fields?.[fieldMap.name || 'Name'] || registration?.fields?.['Participant Name'] || '',
     email,
-    accountCreated: Boolean(record.fields?.[fieldMap.accountCreated || 'Account Created']),
+    accountCreated: Boolean(record?.fields?.[fieldMap.accountCreated || 'Account Created']),
     authType: passwordMatchesAccount ? 'member' : 'workshop',
     workshops,
   });

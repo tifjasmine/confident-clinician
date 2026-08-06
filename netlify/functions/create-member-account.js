@@ -25,8 +25,27 @@ const parseJsonEnv = (name, fallback) => {
 };
 
 const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
+const accessCodeMatches = (provided, expected) => Boolean(
+  String(expected || '').trim()
+  && String(provided || '').trim().toLowerCase() === String(expected || '').trim().toLowerCase()
+);
 
 const airtableFormulaString = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+const findWorkshopAccessByEmail = async (email) => {
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+  const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
+  const tableId = process.env.AIRTABLE_WORKSHOP_ACCESS_TABLE_ID;
+  if (!token || !tableId) return null;
+
+  const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
+  url.searchParams.set('maxRecords', '1');
+  url.searchParams.set('filterByFormula', `AND(LOWER({Email})='${airtableFormulaString(email)}',{Access Granted}=TRUE())`);
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!response.ok) return { airtableError: response.status };
+  const result = await response.json();
+  return result.records?.[0] || null;
+};
 
 const findPurchasedRecordByEmail = async (email, fieldMap) => {
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
@@ -156,8 +175,11 @@ exports.handler = async (event) => {
     return json(405, { ok: false, message: 'Method not allowed.' });
   }
 
-  const workshopPassword = process.env.FIVE_SKILLS_ACCESS_PASSWORD;
-  if (!workshopPassword) {
+  const workshopPasswords = [
+    process.env.FIVE_SKILLS_ACCESS_PASSWORD,
+    process.env.WHAT_TO_SAY_ACCESS_PASSWORD,
+  ].filter(Boolean);
+  if (!workshopPasswords.length) {
     return json(500, { ok: false, message: 'Member account setup is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.' });
   }
 
@@ -180,12 +202,13 @@ exports.handler = async (event) => {
     return json(400, { ok: false, message: 'Please choose an account password with at least 8 characters.' });
   }
 
-  if (accessPassword !== workshopPassword) {
+  if (!workshopPasswords.some((expected) => accessCodeMatches(accessPassword, expected))) {
     return json(401, { ok: false, message: 'That workshop password does not match. Please check your welcome email and try again.' });
   }
 
   const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
-  const record = await findPurchasedRecordByEmail(email, fieldMap);
+  let record = await findPurchasedRecordByEmail(email, fieldMap);
+  let recordSource = 'purchase';
 
   if (record && record.configurationError) {
     return json(500, { ok: false, message: 'Member account setup is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.' });
@@ -196,10 +219,21 @@ exports.handler = async (event) => {
   }
 
   if (!record) {
-    return json(403, { ok: false, message: 'I could not find a purchased workshop for that email yet.' });
+    record = await findWorkshopAccessByEmail(email);
+    recordSource = 'registration';
   }
 
-  const displayName = record.fields?.[fieldMap.name || 'Name'] || '';
+  if (record && record.airtableError) {
+    return json(500, { ok: false, message: 'Member account setup could not be checked right now. Please try again in a few minutes.' });
+  }
+
+  if (!record) {
+    return json(403, { ok: false, message: 'I could not find workshop access for that email yet.' });
+  }
+
+  const displayName = recordSource === 'purchase'
+    ? record.fields?.[fieldMap.name || 'Name'] || ''
+    : record.fields?.['Participant Name'] || '';
   const supabaseResult = await createSupabaseUser({
     email,
     password: accountPassword,
@@ -226,20 +260,22 @@ exports.handler = async (event) => {
     name: displayName,
   });
 
-  const fields = {
-    [fieldMap.accountCreated || 'Account Created']: true,
-    [fieldMap.accountCreatedAt || 'Account Created At']: new Date().toISOString(),
-  };
+  if (recordSource === 'purchase') {
+    const fields = {
+      [fieldMap.accountCreated || 'Account Created']: true,
+      [fieldMap.accountCreatedAt || 'Account Created At']: new Date().toISOString(),
+    };
 
-  try {
-    await updateAirtableRecord(record.id, fields);
-  } catch (error) {
-    console.error(error.message || error);
-    return json(200, {
-      ok: true,
-      warning: true,
-      message: 'Your member account is ready. You can log in to the portal now.',
-    });
+    try {
+      await updateAirtableRecord(record.id, fields);
+    } catch (error) {
+      console.error(error.message || error);
+      return json(200, {
+        ok: true,
+        warning: true,
+        message: 'Your member account is ready. You can log in to the portal now.',
+      });
+    }
   }
 
   return json(200, {

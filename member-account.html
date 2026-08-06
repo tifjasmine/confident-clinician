@@ -35,23 +35,42 @@
     .status { display: none; margin-top: 16px; font-size: 14px; line-height: 1.65; }
     .status.error { color: var(--danger); }
     .status.success { color: var(--dark); }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .button-row .button { flex: 1 1 190px; }
+    [data-member-only] { display: none; }
     @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <nav class="nav" aria-label="Member navigation">
-    <a href="./portal.html">Workshop Home</a>
+    <a href="./portal.html">Workshop Library</a>
+    <a href="./course/">Course Portal</a>
     <a href="./member-account.html">Edit Account</a>
     <a href="./">Main Site</a>
   </nav>
   <main>
     <section class="intro">
       <p class="eyebrow">Member Account</p>
-      <h1>Update your access.</h1>
-      <p>Use this page to change the email connected to your member account or request a password reset. For security, your password is never visible here.</p>
+      <h1>Manage your access.</h1>
+      <p>Log in, create your member account, or update the email and password connected to it.</p>
     </section>
     <section class="grid">
       <article class="card">
+        <p class="eyebrow">Member Login</p>
+        <h2>Return to your learning.</h2>
+        <p>Choose your workshop library or course portal.</p>
+        <div class="button-row">
+          <a class="button" href="./portal.html">Workshop Library</a>
+          <a class="button" href="./course/">Course Portal</a>
+        </div>
+      </article>
+      <article class="card">
+        <p class="eyebrow">First Time Here</p>
+        <h2>Create your account.</h2>
+        <p>Use the email and workshop access code you received to choose a member password.</p>
+        <a class="button" href="./create-account.html" style="margin-top: 22px;">Create My Account</a>
+      </article>
+      <article class="card" data-member-only>
         <p class="eyebrow">Email</p>
         <h2>Change your email.</h2>
         <p>This updates the email connected to your member login and workshop access record.</p>
@@ -63,7 +82,7 @@
         </form>
         <p class="status" data-email-status></p>
       </article>
-      <article class="card">
+      <article class="card" data-member-only>
         <p class="eyebrow">Password</p>
         <h2>Change your password.</h2>
         <p>For security, you’ll get a reset email and choose a new password there.</p>
@@ -74,6 +93,30 @@
   <script>
     const emailForm = document.querySelector('[data-email-form]');
     const emailStatus = document.querySelector('[data-email-status]');
+    const memberOnlyCards = document.querySelectorAll('[data-member-only]');
+
+    const showMemberToolsWhenLoggedIn = async () => {
+      const email = sessionStorage.getItem('tccMemberEmail') || '';
+      const password = sessionStorage.getItem('tccMemberPassword') || '';
+      if (!email || !password) return;
+
+      try {
+        const response = await fetch('/.netlify/functions/member-portal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok || result.authType !== 'member') return;
+
+        memberOnlyCards.forEach((card) => { card.style.display = 'block'; });
+        emailForm.elements.email.value = result.email || email;
+      } catch (error) {
+        // Keep account editing hidden until a member login is verified.
+      }
+    };
+
+    showMemberToolsWhenLoggedIn();
 
     emailForm.addEventListener('submit', async (event) => {
       event.preventDefault();

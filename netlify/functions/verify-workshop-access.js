@@ -32,6 +32,10 @@ const parseJsonEnv = (name, fallback) => {
 };
 
 const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
+const accessCodeMatches = (provided, expected) => Boolean(
+  String(expected || '').trim()
+  && String(provided || '').trim().toLowerCase() === String(expected || '').trim().toLowerCase()
+);
 const fiveSkillsWistiaUrl = 'https://fast.wistia.net/embed/iframe/ujh4iffsoi';
 
 const getVideoEmbedUrl = () => {
@@ -162,7 +166,7 @@ exports.handler = async (event) => {
     return json(400, { ok: false, message: 'Please enter the email you used at checkout and the workshop password.' });
   }
 
-  const passwordMatchesWorkshop = password === accessPassword;
+  const passwordMatchesWorkshop = accessCodeMatches(password, accessPassword);
   const passwordMatchesAccount = passwordMatchesWorkshop ? false : await verifySupabasePassword(email, password);
 
   if (!passwordMatchesWorkshop && !passwordMatchesAccount) {

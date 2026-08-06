@@ -150,8 +150,8 @@
           </section>
 
           <section class="section fields">
-            <label>Name, optional<input type="text" name="name" autocomplete="name"></label>
-            <label>Email, optional<input type="email" name="email" autocomplete="email"></label>
+            <label>Name<input type="text" name="name" autocomplete="name"></label>
+            <label>Email<input type="email" name="email" autocomplete="email"></label>
           </section>
 
           <section class="section">
@@ -225,6 +225,7 @@
         video.replaceChildren(iframe);
         verifiedEmail = email;
         verifiedPassword = password;
+        feedbackForm.elements.name.value = result.participantName || '';
         feedbackForm.elements.email.value = email;
         sessionStorage.setItem('tccMemberEmail', email);
         sessionStorage.setItem('tccMemberPassword', password);
