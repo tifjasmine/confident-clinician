@@ -1,6 +1,7 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  command = "node scripts/verify-social-previews.mjs"
 
 [[redirects]]
   from = "/imposterguidebook"

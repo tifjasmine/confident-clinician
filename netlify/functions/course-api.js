@@ -121,6 +121,8 @@ const mapContent = (record) => ({
   videoUrl: record.fields["Video URL"] || "",
   downloadUrl: record.fields["Download URL"] || "",
   transcriptUrl: record.fields["Transcript URL"] || "",
+  summaryLabel: record.fields["Download URL"] ? `Read the Video ${Number(record.fields.Order || 0) / 10} Summary` : "",
+  recapUrl: record.fields["Content ID"] === "lab-week-1-lesson-8" ? "https://theconfidentclinician.me/course/resources/week-1/week-1-cheat-sheet.pdf" : "",
   files: record.fields.Files || [],
   workbookTitle: record.fields["Workbook Title"] || "",
   workbookPrompts: String(record.fields["Workbook Prompts"] || "").split("\n").map((prompt) => prompt.trim()).filter(Boolean),

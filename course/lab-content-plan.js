@@ -3,7 +3,7 @@ const lessonDescription = (week, title) => {
   return weekPlan?.agenda?.find(([lessonTitle]) => lessonTitle === title)?.[1] || "";
 };
 
-const lesson = (week, number, title, workbookTitle, prompts, contentType = "Video") => ({
+const lesson = (week, number, title, workbookTitle, prompts, contentType = "Video", videoUrl = "") => ({
   contentId: `lab-week-${week}-lesson-${number}`,
   program: "Clinical Confidence Lab",
   week,
@@ -11,7 +11,7 @@ const lesson = (week, number, title, workbookTitle, prompts, contentType = "Vide
   contentType,
   title,
   description: lessonDescription(week, title),
-  videoUrl: "",
+  videoUrl,
   downloadUrl: "",
   transcriptUrl: "",
   workbookTitle,
@@ -61,10 +61,15 @@ window.TCC_LAB_CONTENT_PLAN = [
     "What evidence did you collect at each rung?",
   ]),
   lesson(1, 3, "Five Stages of Clinical Integration", "Clinical Integration Audit", [
-    "What clinical skill do you want to examine?",
-    "What is your current stage: Know it, Recognize it, Access it, Apply it, or Adapt it?",
-    "What is the next appropriate form of practice?",
-  ]),
+    "Choose one clinical skill you feel like you should be better at.",
+    "Know It: Can I explain what this skill is, why it matters, and when it may be useful?",
+    "Recognize It: Can I identify when the skill is needed in a case, recording, supervision conversation, or after a session?",
+    "Access It: Can I remember the skill while the relevant moment is happening?",
+    "Apply It: Can I use the skill intentionally, even if it still feels awkward?",
+    "Adapt It: Can I adjust the skill based on the client, culture, context, relationship, readiness, and response?",
+    "What is the next stage I actually need to practice?",
+    "What kind of learning or practice fits that next stage?",
+  ], "Video", "https://theconfidentclinician.wistia.com/s/j17efa8d5q6ad1r"),
   lesson(1, 4, "Differential Confidence Check", "What Kind of Problem Is This?", [
     "Describe one recent moment of ‘I have no idea what I’m doing.’",
     "What kind of problem might this actually be: knowledge or skill, practice or repetition, confidence or uncertainty tolerance, therapist activation, system, boundary or responsibility, or scope or competence?",
@@ -343,6 +348,28 @@ window.TCC_LAB_CONTENT_PLAN = [
     "When would you pause and seek support?",
   ], "Resource"),
 ];
+
+const weekOneSummaryFiles = {
+  1: "video-1-you-are-not-behind-summary.pdf",
+  2: "video-2-confidence-is-built-not-bestowed-summary.pdf",
+  3: "video-3-why-graduate-school-could-not-finish-the-job-summary.pdf",
+  4: "video-4-wrong-diagnosis-summary.pdf",
+  5: "video-5-personal-patterns-in-the-room-summary.pdf",
+  6: "video-6-what-happens-when-you-feel-evaluated-summary.pdf",
+  7: "video-7-the-confidence-loop-summary.pdf",
+  8: "video-8-becoming-the-therapist-you-want-to-be-summary.pdf",
+};
+
+window.TCC_LAB_CONTENT_PLAN.forEach((item) => {
+  const summaryFile = item.week === 1 ? weekOneSummaryFiles[item.order / 10] : "";
+  if (summaryFile) {
+    item.downloadUrl = `https://theconfidentclinician.me/course/resources/week-1/${summaryFile}`;
+    item.summaryLabel = `Read the Video ${item.order / 10} Summary`;
+  }
+  if (item.contentId === "lab-week-1-lesson-8") {
+    item.recapUrl = "https://theconfidentclinician.me/course/resources/week-1/week-1-cheat-sheet.pdf";
+  }
+});
 
 const labWeekStoppingStatements = {
   1: "The role can become yours before it feels familiar. You become trustworthy by repeatedly practicing the behaviors that make you trustworthy.",

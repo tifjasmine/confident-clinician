@@ -132,7 +132,7 @@ const labCourse = {
       agenda: [
         ["Role–Identity Lag", "Notice the gap between entering the therapist role and feeling fully identified with it."],
         ["Confidence Evidence Loop", "Build confidence through small, responsible actions and collected evidence."],
-        ["Five Stages of Clinical Integration", "Identify where a clinical skill sits in the integration process."],
+        ["Five Stages of Clinical Integration", "Use the Clinical Integration Audit to identify your current stage with one clinical skill, then choose the kind of practice that fits what you actually need next."],
         ["Differential Confidence Check", "Name the actual problem before choosing the support it needs."],
         ["Personal Pattern → Clinical Expression", "Notice how personal protective patterns can become clinical behavior."],
         ["Notice → Name → Return", "Recognize activation and return attention to body, role, client, and information."],

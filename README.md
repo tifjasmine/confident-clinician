@@ -11,8 +11,12 @@ Static Netlify site for The Confident Clinician Fast Track.
 ## Deploy
 
 - Publish directory: `.`
-- Build command: none
+- Build command: `node scripts/verify-social-previews.mjs`
 - Netlify deploys from `main`.
+
+Every public HTML page must include both `og:image` and `twitter:image` metadata
+with an absolute HTTPS image URL. Netlify runs the social preview check before
+every publish so a new link cannot deploy with a blank social sharing card.
 
 ## Founding cohort course app
 

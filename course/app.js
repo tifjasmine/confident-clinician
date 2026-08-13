@@ -22,6 +22,14 @@ const promptExample = (prompt = "") => {
   if (text.includes("what evidence shows that i am already growing")) return "I noticed the moment sooner; I asked for consultation; I held the boundary even though my voice shook.";
   if (text.includes("one quality i want to practice")) return "Steadiness; honesty; curiosity.";
   if (text.includes("one observable behavior that would represent")) return "Pause before responding; name an observation and check whether it fits; bring one focused question to consultation.";
+  if (text.includes("choose one clinical skill you feel")) return "Tolerating silence; redirecting a session; reflecting emotion.";
+  if (text.startsWith("know it:")) return "I can explain why redirecting matters, when it may help, and how it differs from controlling the session.";
+  if (text.startsWith("recognize it:")) return "Afterward, I can identify the moment when the session lost focus, but I do not always notice it while it is happening.";
+  if (text.startsWith("access it:")) return "I notice the need to reflect emotion in the moment, but the language disappears when I feel pressure.";
+  if (text.startsWith("apply it:")) return "I can intentionally name the emotion I hear, even though my words may still feel awkward or rehearsed.";
+  if (text.startsWith("adapt it:")) return "I change my pacing and wording based on the client’s culture, readiness, relationship with me, and response.";
+  if (text.includes("next stage i actually need")) return "Access It. I recognize the need to redirect, but I need to remember a simple response while the session is happening.";
+  if (text.includes("kind of learning or practice fits")) return "Rehearse one natural redirect, keep one brief visual cue nearby, and practice using it once this week.";
   if (text.includes("fantasy version")) return "Calm, articulate, certain, never awkward, and always able to say something meaningful right away.";
   if (text.includes("trustworthy version")) return "I want to notice when I’m activated, slow down enough to think, and respond honestly instead of performing.";
   if (text.includes("not someone who")) return "Never feels uncertain, always knows the perfect intervention, or makes every session feel like a breakthrough.";
@@ -340,6 +348,8 @@ const workbookSectionPlan = {
 const buildWorkbookSections = (week, prompts, savedResponses = [], contentId = "") => {
   const plan = contentId === "lab-week-1-lesson-1"
     ? [["Role–Identity Check", 5], ["Extra Reflection", 2]]
+    : contentId === "lab-week-1-lesson-3"
+    ? [["Choose One Skill", 1], ["Audit the Five Stages", 5], ["Choose Your Next Stage", 2]]
     : Number(week) <= 1
     ? [["Complete this tool", prompts.length]]
     : workbookSectionPlan[Number(week)] || [["Workbook prompts", prompts.length]];
@@ -400,6 +410,32 @@ const renderModule = (week) => {
     const videoComplete = !item.videoUrl || lessonWatched(item.contentId);
     const itemComplete = completionFor(item);
     const itemInProgress = !itemComplete && (lessonWatched(item.contentId) || answeredCount > 0);
+    const lessonGuide = item.contentId === "lab-week-1-lesson-3" ? `
+      <aside class="lesson-written-guide">
+        <p class="eyebrow">Your Tool</p>
+        <h3>The Clinical Integration Audit</h3>
+        <p>Choose one clinical skill that you think you should already be better at. This might be tolerating silence, redirecting, challenging, reflecting emotion, ending on time, setting boundaries, identifying the clinical thread, case conceptualization, emotional processing, or using an intervention without sounding rehearsed.</p>
+        <ol>
+          <li><strong>Know It.</strong> Understand what the skill is, why it matters, and when it may be useful.</li>
+          <li><strong>Recognize It.</strong> Identify when the skill is needed, even if you only notice afterward at first.</li>
+          <li><strong>Access It.</strong> Remember the skill while the relevant moment is happening.</li>
+          <li><strong>Apply It.</strong> Use the skill intentionally, even while it still feels awkward.</li>
+          <li><strong>Adapt It.</strong> Adjust it for the client, culture, context, relationship, readiness, and response.</li>
+        </ol>
+        <p><strong>Choose the next stage, not the final stage.</strong> If you only recognize the moment afterward, review it and locate the earliest cue. If you recognize it live but lose your words, rehearse one simple response or use a brief visual cue. If the skill feels robotic, make the language more natural and responsive. If it works with some clients but not others, notice what changes. If you do not understand the skill well enough yet, seek training, supervision, consultation, or demonstration.</p>
+      </aside>
+    ` : "";
+    const lessonResources = item.downloadUrl || item.recapUrl ? `
+      <aside class="lesson-reading">
+        <p class="eyebrow">Lesson Reading</p>
+        <h3>${item.recapUrl ? "Your Summary and Week 1 Recap" : "Read the Lesson Summary"}</h3>
+        <p>${item.recapUrl ? "Review this lesson, then keep the full Week 1 cheat sheet nearby whenever you want a quick refresher." : "Prefer to read it? Open the one page summary for the main idea, a real session example, and the question to ask yourself."}</p>
+        <div class="lesson-reading-links">
+          ${item.downloadUrl ? `<a class="button secondary" href="${escapeHtml(item.downloadUrl)}" target="_blank" rel="noopener">${escapeHtml(item.summaryLabel || "Read the Lesson Summary")}</a>` : ""}
+          ${item.recapUrl ? `<a class="button" href="${escapeHtml(item.recapUrl)}" target="_blank" rel="noopener">Open the Week 1 Cheat Sheet</a>` : ""}
+        </div>
+      </aside>
+    ` : "";
     const continueHelp = !videoComplete
       ? "Watch the video and mark it complete to continue."
       : remainingAnswers
@@ -426,6 +462,7 @@ const renderModule = (week) => {
         <div class="lesson-step-body">
           ${video ? `<div class="lesson-video"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(item.title || video.title)}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : item.videoUrl ? `<a class="button" href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener">Open Video</a>` : item.contentType === "Video" ? `<div class="mini-video-slot"><span>Mini-lesson video</span><strong>Video coming soon</strong></div>` : ""}
           ${item.videoUrl ? `<label class="video-complete"><input type="checkbox" data-video-complete="${escapeHtml(item.contentId)}" data-video-week="${week.number}" ${lessonWatched(item.contentId) ? "checked" : ""}><span><strong>${lessonWatched(item.contentId) ? "Video complete" : "Mark video watched"}</strong><small>Check this after you finish this video.</small></span></label>` : ""}
+          ${lessonGuide}
           ${prompts.length ? `
           <form class="workbook-form" data-workbook-form="${escapeHtml(item.contentId)}" data-workbook-week="${week.number}">
             <div class="workbook-heading">
@@ -454,6 +491,7 @@ const renderModule = (week) => {
             <div class="form-actions workbook-save"><button class="button" type="submit">Save My Progress</button><span class="workbook-status" data-workbook-status>${saved?.savedAt ? "Progress saved" : ""}</span></div>
           </form>
           ` : ""}
+          ${lessonResources}
         </div>
       </article>
       ${isOrientation ? "" : `<nav class="lesson-sequence-nav" aria-label="Lesson navigation">
