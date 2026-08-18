@@ -170,13 +170,13 @@
   <main>
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Releases September 15, 2026</p>
+        <p class="eyebrow">Releases October 1, 2026</p>
         <h1>You learned how to be a therapist. Now learn how to <em>think like one.</em></h1>
         <p class="hero-lede">A four week clinical practice lab for newer therapists who want to understand what gets in their way, think more clearly under pressure, lead sessions with intention, and stop treating uncertainty like proof they are failing.</p>
         <div class="hero-actions">
           <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll in the Lab</a>
         </div>
-        <p class="promo-note">Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 1.</p>
+        <p class="promo-note">Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 15.</p>
       </div>
       <div class="hero-image">
         <img src="/office-self.png" alt="Tiffany McGilloway, LPC, smiling in her office">
@@ -258,14 +258,14 @@
     <section class="section offer">
       <div class="inner offer-grid">
         <div>
-          <p class="eyebrow" style="color:var(--tan)">Releases September 15, 2026</p>
+          <p class="eyebrow" style="color:var(--tan)">Releases October 1, 2026</p>
           <h2>Start building confidence this September.</h2>
         </div>
         <aside class="price-card">
           <p class="eyebrow">Early Bird</p>
           <div class="price">$297</div>
           <p>Four guided weeks · practical tools · one private completion session · 90 days of access</p>
-          <p class="promo-note">Regular price $397. Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 1.</p>
+          <p class="promo-note">Regular price $397. Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 15.</p>
           <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll and Use Code</a>
         </aside>
       </div>
@@ -273,7 +273,7 @@
 
     <section class="section signup" id="signup">
       <div class="inner">
-        <p class="eyebrow" style="color:var(--tan)">Releases September 15, 2026</p>
+        <p class="eyebrow" style="color:var(--tan)">Releases October 1, 2026</p>
         <h2>Join the mailing list.</h2>
         <p class="signup-copy">Get Clinical Confidence Lab updates, course dates, and enrollment news sent to your inbox.</p>
         <form class="signup-form" data-interest-form>
@@ -308,7 +308,7 @@
         const response = await fetch('/.netlify/functions/workshop-subscription', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({name:data.get('name'),email:data.get('email'),source:'Clinical Confidence Lab - September 15, 2026'})
+          body: JSON.stringify({name:data.get('name'),email:data.get('email'),source:'Clinical Confidence Lab - October 1, 2026'})
         });
         const result = await response.json();
         if (!response.ok || !result.ok) throw new Error(result.message || 'Something did not send.');
