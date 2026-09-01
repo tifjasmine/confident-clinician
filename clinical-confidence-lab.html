@@ -37,7 +37,7 @@
       "@type": "CourseInstance",
       "courseMode": "online",
       "courseWorkload": "PT60M",
-      "startDate": "2026-09-15"
+    "startDate": "2026-10-01"
     }
   }
   </script>
@@ -82,16 +82,36 @@
     .section-heading{max-width:760px}
     .section-heading h2{margin:14px 0 18px;font-size:clamp(34px,4vw,50px)}
     .section-heading p{color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
+    .pain{background:var(--cream)}
+    .pain-grid{display:block}
+    .pain-intro{max-width:760px}
+    .pain h2{max-width:720px;margin:14px 0 20px;font-size:clamp(36px,3.5vw,46px)}
+    .pain-copy{max-width:680px;margin-top:16px;color:var(--olive);font-size:15px;font-weight:300;line-height:1.72}
+    .pain-copy:first-of-type{margin-top:0}
+    .pain-copy strong{color:var(--forest);font-weight:600}
+    .pain-list{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:38px;background:var(--line);border:1px solid var(--line)}
+    .pain-item{background:var(--white);padding:24px;color:var(--forest);font:500 20px/1.38 "Cormorant Garamond",serif}
+    .pain-item strong{display:block;margin-bottom:8px;color:var(--terra);font:700 10px/1.3 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+    .pain-cost{margin-top:26px;border-left:4px solid var(--terra);background:var(--sand);padding:22px 24px;color:var(--olive);font-size:15px;line-height:1.75}
     .outcomes{background:var(--sand)}
-    .outcomes-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px;align-items:center}
-    .outcomes h2{margin:14px 0 18px;font-size:clamp(34px,4vw,50px)}
-    .outcomes-intro{color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
+    .outcomes-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:72px;align-items:start}
+    .outcomes h2{max-width:480px;margin:14px 0 24px;font-size:clamp(36px,3.5vw,46px)}
+    .outcomes-intro{max-width:480px;color:var(--olive);font-size:15px;font-weight:300;line-height:1.72}
+    .outcomes-intro + .outcomes-intro{margin-top:16px}
     .outcomes-list{background:var(--forest);color:white;padding:12px 34px}
     .outcome{display:grid;grid-template-columns:36px 1fr;gap:16px;padding:24px 0;border-bottom:1px solid rgba(255,255,255,.13)}
     .outcome:last-child{border-bottom:0}
     .outcome-mark{color:var(--tan);font:italic 28px "Cormorant Garamond",serif}
     .outcome h3{margin-bottom:5px;color:white;font-size:25px}
     .outcome p{color:rgba(246,242,235,.65);font-size:14px;line-height:1.6}
+    .method{background:var(--cream)}
+    .method-wrap{display:grid;grid-template-columns:.75fr 1.25fr;gap:64px;align-items:center}
+    .method h2{margin:14px 0 18px;font-size:clamp(36px,4.5vw,54px)}
+    .method-copy{color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
+    .clear-list{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);background:var(--line);gap:1px}
+    .clear-step{background:var(--white);padding:24px 16px;text-align:center}
+    .clear-letter{display:block;color:var(--terra);font:500 34px "Cormorant Garamond",serif}
+    .clear-word{display:block;margin-top:5px;color:var(--forest);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
     .curriculum{background:var(--forest);color:white}
     .curriculum .section-heading p{color:rgba(246,242,235,.65)}
     .curriculum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:38px;background:rgba(255,255,255,.13)}
@@ -105,9 +125,9 @@
     .included-card:last-child{grid-column:1 / -1}
     .included-card h3{margin-bottom:10px;font-size:26px}
     .included-card p{color:var(--olive);font-size:14px;line-height:1.65}
-    .bonus{background:var(--forest);color:white}
+    .included-bonus{margin-top:22px;background:var(--forest);color:white;padding:44px}
     .bonus-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr);gap:60px;align-items:center}
-    .bonus h2{margin:14px 0 20px;color:white;font-size:clamp(38px,5vw,60px)}
+    .included-bonus h2{margin:14px 0 20px;color:white;font-size:clamp(36px,4vw,50px)}
     .bonus-copy{color:rgba(246,242,235,.7);font-size:15px;font-weight:300;line-height:1.75}
     .bonus-promise{margin-top:22px;border-left:4px solid var(--terra);padding:4px 0 4px 18px;color:var(--tan);font:italic 24px/1.35 "Cormorant Garamond",serif}
     .bonus-box{background:var(--cream);color:var(--forest);padding:34px}
@@ -115,9 +135,20 @@
     .bonus-list{display:grid;gap:0;list-style:none}
     .bonus-list li{border-top:1px solid var(--line);padding:15px 0;color:var(--olive);font-size:14px;line-height:1.55}
     .bonus-list strong{display:block;margin-bottom:3px;color:var(--forest)}
-    .offer{background:var(--sage);color:white}
+    .fit{background:var(--cream)}
+    .fit-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:64px;align-items:start}
+    .fit h2{margin:14px 0 18px;font-size:clamp(36px,4.5vw,54px)}
+    .fit-copy{color:var(--olive);font-size:16px;font-weight:300;line-height:1.75}
+    .fit-list{list-style:none;border-top:1px solid var(--line)}
+    .fit-list li{border-bottom:1px solid var(--line);padding:18px 4px;color:var(--olive);font-size:15px;line-height:1.6}
+    .fit-list li::before{content:"✓";margin-right:12px;color:var(--terra);font-weight:700}
+    .scope-note{display:grid;grid-column:1 / -1;grid-template-columns:.75fr 1.25fr;gap:64px;margin-top:10px;border-top:1px solid var(--line);padding-top:32px}
+    .scope-note h3{font-size:31px}
+    .scope-note p{color:var(--olive);font-size:14px;line-height:1.75}
+    .faq{background:var(--cream)}
+    .faq-offer{margin-top:64px;background:var(--sage);color:white;padding:46px}
     .offer-grid{display:grid;grid-template-columns:1fr 360px;gap:60px;align-items:center}
-    .offer h2{margin:14px 0 20px;font-size:clamp(40px,5vw,64px)}
+    .faq-offer h2{margin:14px 0 20px;font-size:clamp(38px,4vw,54px)}
     .offer-copy{color:rgba(255,255,255,.74);font-size:16px;line-height:1.75}
     .price-card{background:var(--cream);color:var(--forest);padding:36px}
     .price{margin:8px 0;font:500 66px "Cormorant Garamond",serif}
@@ -127,13 +158,6 @@
     details{border-bottom:1px solid var(--line);padding:22px 0}
     summary{cursor:pointer;font:500 22px "Cormorant Garamond",serif}
     details p{max-width:800px;padding-top:14px;color:var(--olive);font-size:14px;line-height:1.7}
-    .signup{background:var(--forest);color:white;text-align:center}
-    .signup h2{max-width:800px;margin:14px auto 16px;font-size:clamp(40px,5vw,62px)}
-    .signup-copy{max-width:680px;margin:0 auto;color:rgba(246,242,235,.65);font-size:15px;line-height:1.7}
-    .signup-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;width:min(100%,820px);margin:32px auto 0}
-    .signup-form input{min-height:52px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:white;padding:13px 15px;font:400 16px Jost,sans-serif}
-    .signup-form input::placeholder{color:rgba(255,255,255,.45)}
-    .form-status{min-height:24px;margin-top:16px;color:var(--tan);font-size:14px}
     .scope{padding:30px 52px;background:var(--sand);color:var(--olive);font-size:12px;line-height:1.7;text-align:center}
     .footer{padding:40px 52px;background:var(--forest);color:white}
     .footer-inner{display:flex;justify-content:space-between;align-items:center;gap:24px;width:min(100%,1100px);margin:0 auto}
@@ -143,15 +167,16 @@
       .nav{align-items:flex-start;flex-direction:column;gap:12px;padding:14px 18px}.nav-links{width:100%;flex-wrap:nowrap;justify-content:flex-start;gap:8px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}.nav-links a{flex:0 0 auto;border:1px solid rgba(42,60,47,.15);border-radius:999px;padding:8px 10px}
       .hero{grid-template-columns:1fr;height:auto}.hero-copy{padding:56px 24px}.hero-image{height:430px;min-height:0}
       .section{padding:56px 24px}
-      .outcomes-wrap{grid-template-columns:1fr;gap:32px}.curriculum-grid{grid-template-columns:1fr 1fr}.included-grid{grid-template-columns:1fr}
+      .pain-grid,.outcomes-wrap,.method-wrap,.fit-grid,.scope-note{grid-template-columns:1fr;gap:32px}.pain-list{grid-template-columns:1fr 1fr}.curriculum-grid{grid-template-columns:1fr 1fr}.included-grid{grid-template-columns:1fr}.clear-list{grid-template-columns:1fr}
       .bonus-grid,.offer-grid{grid-template-columns:1fr}.price-card{max-width:480px}
-      .signup-form{grid-template-columns:1fr}.signup-form .button{width:100%}.footer-inner{flex-direction:column;align-items:flex-start}
+      .footer-inner{flex-direction:column;align-items:flex-start}
     }
     @media(max-width:560px){
       .hero h1{font-size:45px}.hero-image{height:360px}.hero-actions{display:grid}.hero-actions .button{width:100%}
-      .curriculum-grid{grid-template-columns:1fr}.week{min-height:auto}
-      .offer-grid{gap:34px}.price-card{padding:28px 22px}.scope,.footer{padding-right:22px;padding-left:22px}
+      .pain-list,.curriculum-grid{grid-template-columns:1fr}.week{min-height:auto}
+      .offer-grid{gap:34px}.included-bonus,.faq-offer{padding:30px 22px}.price-card{padding:28px 22px}.scope,.footer{padding-right:22px;padding-left:22px}
     }
+    @media (max-width:900px){.nav-links a,.nav-links button{display:inline-flex;min-height:44px;align-items:center;justify-content:center}}
   </style>
 </head>
 <body>
@@ -159,11 +184,10 @@
     <a class="brand" href="/">The Confident Clinician</a>
     <div class="nav-links">
       <a href="/about.html">About</a>
-      <a href="/workshop.html">Workshops</a>
       <a class="active" href="/clinical-confidence-lab">4 Week Lab</a>
       <a href="/program.html">Intensive</a>
       <a href="/course/">Course Login</a>
-      <a class="nav-cta" href="#signup">Join the Mailing List</a>
+      <a class="nav-cta" href="#enroll">Enroll in the Lab</a>
     </div>
   </nav>
 
@@ -172,11 +196,10 @@
       <div class="hero-copy">
         <p class="eyebrow">Releases October 1, 2026</p>
         <h1>You learned how to be a therapist. Now learn how to <em>think like one.</em></h1>
-        <p class="hero-lede">A four week clinical practice lab for newer therapists who want to understand what gets in their way, think more clearly under pressure, lead sessions with intention, and stop treating uncertainty like proof they are failing.</p>
+        <p class="hero-lede">A four week clinical practice lab for newer therapists who know the theory but still second guess what to do when sessions get messy, stuck, or unclear. Learn how to identify what matters, choose an intentional next move, and trust yourself without reaching for the perfect script.</p>
         <div class="hero-actions">
           <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll in the Lab</a>
         </div>
-        <p class="promo-note">Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 15.</p>
       </div>
       <div class="hero-image">
         <img src="/office-self.png" alt="Tiffany McGilloway, LPC, smiling in her office">
@@ -185,18 +208,52 @@
 
     <div class="truth-strip">Confidence is not knowing exactly what to do. It is <em>trusting yourself enough to figure it out.</em></div>
 
+    <section class="section pain">
+      <div class="inner pain-grid">
+        <div class="pain-intro">
+          <p class="eyebrow">When Theory Meets The Room</p>
+          <h2>You know the theory. The hard part is deciding what matters now.</h2>
+          <p class="pain-copy">When a session feels unclear, you need a way to slow down, find the thread, and choose a thoughtful next step.</p>
+        </div>
+        <div class="pain-list" aria-label="Maybe your version looks like this">
+          <p class="pain-item"><strong>Too much information</strong>You cannot tell which thread to follow.</p>
+          <p class="pain-item"><strong>Silence</strong>You feel pressure to fill the space.</p>
+          <p class="pain-item"><strong>A drifting session</strong>You want to redirect without taking over.</p>
+          <p class="pain-item"><strong>An awkward moment</strong>You need to decide whether to repair, adjust, or let it go.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="section outcomes">
       <div class="inner outcomes-wrap">
         <div>
-          <p class="eyebrow">What Changes</p>
-          <h2>Stop guessing your way through sessions. Start trusting how you think in the room.</h2>
-          <p class="outcomes-intro">You do not need a perfect line for every client moment. You need a way of thinking that is actually yours, one that helps you notice, reason, respond, and get sharper with every session.</p>
+          <p class="eyebrow">What Confidence Looks Like</p>
+          <h2>Confidence becomes real when you know how to work with the moment in front of you.</h2>
+          <p class="outcomes-intro">Not because you always have the right answer. Because you can slow down, think clearly, make a choice, and adjust.</p>
+          <p class="outcomes-intro">That is the kind of confidence we practice inside the Lab.</p>
         </div>
         <div class="outcomes-list">
-          <article class="outcome"><span class="outcome-mark">01</span><div><h3>You will stop reacting on autopilot</h3><p>Catch what is happening inside you the moment it happens, name it, and put your attention back where it belongs: on your client.</p></div></article>
-          <article class="outcome"><span class="outcome-mark">02</span><div><h3>You will trust your read on a client</h3><p>Slow the panic, find what actually matters in the moment, and make one purposeful move instead of freezing.</p></div></article>
-          <article class="outcome"><span class="outcome-mark">03</span><div><h3>You will lead the room, not just hold it</h3><p>Focus, redirect, deepen, and close sessions on purpose without sounding scripted or turning into someone you are not.</p></div></article>
-          <article class="outcome"><span class="outcome-mark">04</span><div><h3>You will believe you are good at this</h3><p>Reflect without punishing yourself, repair what needs repair, ask for support, and finally let go of what was never yours to carry.</p></div></article>
+          <article class="outcome"><span class="outcome-mark">01</span><div><h3>Find the thread</h3><p>Sort through what you are hearing and identify what deserves attention now.</p></div></article>
+          <article class="outcome"><span class="outcome-mark">02</span><div><h3>Choose a next move</h3><p>Decide whether the moment calls for listening, clarification, depth, practice, redirection, or support.</p></div></article>
+          <article class="outcome"><span class="outcome-mark">03</span><div><h3>Lead with intention</h3><p>Speak clearly, redirect without apologizing, tolerate silence, and help the session move somewhere meaningful.</p></div></article>
+          <article class="outcome"><span class="outcome-mark">04</span><div><h3>Recover and adjust</h3><p>Notice impact, repair when needed, learn from the session, and stop replaying it once you know your next step.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section method">
+      <div class="inner method-wrap">
+        <div>
+          <p class="eyebrow">A Process To Return To</p>
+          <h2>Uncertainty is part of clinical work. Feeling lost in it does not have to be.</h2>
+          <p class="method-copy">CLEAR gives you a practical way to slow the moment down, use what the client is giving you, decide what matters, make one intentional move, and adjust as new information appears.</p>
+        </div>
+        <div class="clear-list" aria-label="The CLEAR Method">
+          <div class="clear-step"><span class="clear-letter">C</span><span class="clear-word">Center</span></div>
+          <div class="clear-step"><span class="clear-letter">L</span><span class="clear-word">Listen</span></div>
+          <div class="clear-step"><span class="clear-letter">E</span><span class="clear-word">Evaluate</span></div>
+          <div class="clear-step"><span class="clear-letter">A</span><span class="clear-word">Act</span></div>
+          <div class="clear-step"><span class="clear-letter">R</span><span class="clear-word">Recalibrate</span></div>
         </div>
       </div>
     </section>
@@ -206,13 +263,13 @@
         <div class="section-heading">
           <p class="eyebrow" style="color:var(--tan)">Four Focused Weeks</p>
           <h2>Build the therapist. Build the judgment. Build the session. Build the trust.</h2>
-          <p>Eight short lessons each week, real practice, and one integration check. Nothing wasted. Nothing extra.</p>
+          <p>Four focused weeks designed to help you understand yourself, think more clearly in session, lead with intention, and trust your work.</p>
         </div>
         <div class="curriculum-grid">
-          <article class="week"><span class="week-number">Week 1</span><h3>The Therapist Behind the Therapy</h3><p>Learn why becoming a therapist can feel so personal and how to stop the patterns that follow you into the room.</p></article>
-          <article class="week"><span class="week-number">Week 2</span><h3>Getting Unstuck in the Room</h3><p>Use the CLEAR method to center, listen, evaluate, act, and recalibrate. Learn to think clearly while you are still uncertain.</p></article>
-          <article class="week"><span class="week-number">Week 3</span><h3>From Conversation to Clinical Movement</h3><p>Lead sessions with real direction. Redirect naturally, sound like yourself, and close with intention.</p></article>
-          <article class="week"><span class="week-number">Week 4</span><h3>Become a Clinician You Can Trust</h3><p>Separate what is yours from what is not, repair what needs repair, and build a growth plan that actually fits.</p></article>
+          <article class="week"><span class="week-number">Week 1</span><h3>The Therapist Behind the Therapy</h3><p>Understand what happens inside you when uncertainty enters the room and how your patterns can shape your clinical choices.</p></article>
+          <article class="week"><span class="week-number">Week 2</span><h3>Getting Unstuck in the Room</h3><p>Learn the CLEAR Method to slow down, identify what matters, and choose one intentional next move.</p></article>
+          <article class="week"><span class="week-number">Week 3</span><h3>From Conversation to Clinical Movement</h3><p>Create focus, deepen the work, redirect naturally, and help sessions move somewhere meaningful.</p></article>
+          <article class="week"><span class="week-number">Week 4</span><h3>Become a Clinician You Can Trust</h3><p>Reflect without spiraling, repair when needed, use support wisely, and stop expecting perfection from yourself.</p></article>
         </div>
       </div>
     </section>
@@ -221,72 +278,91 @@
       <div class="inner">
         <div class="section-heading">
           <p class="eyebrow">Included</p>
-          <h2>What is inside</h2>
+          <h2>Everything included</h2>
           <p>Everything is organized into one clear four week experience, with teaching, practice, feedback, and support along the way.</p>
         </div>
         <div class="included-grid">
-          <article class="included-card"><h3>32 short video lessons</h3><p>Eight short lessons each week, in order, so you always know exactly what comes next and why it matters.</p></article>
-          <article class="included-card"><h3>Interactive workbook and tools</h3><p>Reflections, reasoning maps, and practice plans live inside your private portal.</p></article>
-          <article class="included-card"><h3>Weekly check ins</h3><p>Bring your questions, wins, and the hard parts every single week.</p></article>
-          <article class="included-card"><h3>One private session with Tiffany</h3><p>Get one on one time to work through your questions, your cases, and exactly where you feel stuck.</p></article>
-          <article class="included-card"><h3>90 days of course access</h3><p>Revisit the lessons, workbook, and tools after the four guided weeks end.</p></article>
+          <article class="included-card"><h3>32 short video lessons</h3><p>Eight short lessons each week, designed to help you understand the material and apply it in real clinical moments.</p></article>
+          <article class="included-card"><h3>Interactive workbook and tools</h3><p>Reflections, reasoning maps, and practice tools that help you apply what you are learning as you go.</p></article>
+          <article class="included-card"><h3>Weekly check ins</h3><p>Bring your questions, wins, and stuck points each week and get support as you move through the Lab.</p></article>
+          <article class="included-card"><h3>One private session with Tiffany</h3><p>Use your private session to talk through your growth, your patterns, and where you want more clarity and support.</p></article>
+          <article class="included-card"><h3>90 days of access</h3><p>Revisit the lessons, workbook, and tools after the guided four weeks end.</p></article>
+        </div>
+        <div class="included-bonus">
+          <div class="bonus-grid">
+            <div>
+              <p class="eyebrow" style="color:var(--tan)">Plus An Included Bonus</p>
+              <h2>Common Clinical Moments That Make Therapists Panic</h2>
+              <p class="bonus-copy">A practical mini library for the moments nobody prepares you for. Practice what to notice, what not to assume, and how to respond without freezing, rescuing, or reaching for a canned therapist line.</p>
+            </div>
+            <aside class="bonus-box">
+              <h3>Your bonus includes:</h3>
+              <ul class="bonus-list">
+                <li><strong>Common Clinical Moments mini library</strong>Walk through the high pressure situations newer therapists often replay after sessions.</li>
+                <li><strong>Common Moments Field Guide</strong>Review what to notice, what to consider, and what might fit across fourteen common moments.</li>
+                <li><strong>Natural Language Bank</strong>Use flexible language organized by clinical purpose, not scripts to memorize.</li>
+                <li><strong>Personal Panic Pattern Inventory</strong>Identify which moments activate you and the protective response you tend to reach for.</li>
+                <li><strong>Panic to Process Case Lab</strong>Practice thoughtful responses using four fictional clinical moments.</li>
+              </ul>
+            </aside>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section bonus">
-      <div class="inner bonus-grid">
+    <section class="section fit">
+      <div class="inner fit-grid">
         <div>
-          <p class="eyebrow" style="color:var(--tan)">Included Bonus</p>
-          <h2>Common Clinical Moments That Make Therapists Panic</h2>
-          <p class="bonus-copy">A practical mini library for the moments nobody prepares you for: when a client goes silent, asks for advice, gets angry, questions whether therapy is helping, asks about your personal life, requests a hug, or looks at you and says, “What would you do?”</p>
-          <p class="bonus-promise">Learn what to notice, what not to assume, and how to respond without freezing, rescuing, overexplaining, or reaching for a canned therapist line.</p>
+          <p class="eyebrow">Who It Is For</p>
+          <h2>This is for you if…</h2>
+          <p class="fit-copy">You want practical therapist training that helps you think more clearly in real clinical moments, not just another source of inspiration.</p>
         </div>
-        <aside class="bonus-box">
-          <h3>Your bonus includes:</h3>
-          <ul class="bonus-list">
-            <li><strong>Common Clinical Moments mini library</strong>Walk through the high pressure situations newer therapists often replay after sessions.</li>
-            <li><strong>Common Moments Field Guide</strong>Review what to notice, what to consider, and what might fit across fourteen common moments.</li>
-            <li><strong>Natural Language Bank</strong>Use flexible language organized by clinical purpose, not scripts to memorize.</li>
-            <li><strong>Personal Panic Pattern Inventory</strong>Identify which moments activate you and the protective response you tend to reach for.</li>
-            <li><strong>Panic to Process Case Lab</strong>Practice thoughtful responses using four fictional clinical moments.</li>
-          </ul>
-        </aside>
+        <ul class="fit-list">
+          <li>You are a newer therapist who knows the theory but still second guesses yourself in session.</li>
+          <li>You often leave sessions replaying what you said or wondering if you missed something.</li>
+          <li>You want more clinical confidence without sounding scripted or robotic.</li>
+          <li>You want a better way to think through uncertainty in real time.</li>
+          <li>You are looking for practical therapist training, not just inspiration.</li>
+        </ul>
+        <div class="scope-note">
+          <h3>A quick note on scope</h3>
+          <p>The Clinical Confidence Lab is a professional development and clinical training experience. It is not supervision, psychotherapy, emergency consultation, or a replacement for your clinical judgment, required supervision, or licensure requirements.</p>
+        </div>
       </div>
     </section>
 
-    <section class="section offer">
-      <div class="inner offer-grid">
-        <div>
-          <p class="eyebrow" style="color:var(--tan)">Releases October 1, 2026</p>
-          <h2>Start building confidence this September.</h2>
-        </div>
-        <aside class="price-card">
-          <p class="eyebrow">Early Bird</p>
-          <div class="price">$297</div>
-          <p>Four guided weeks · practical tools · one private completion session · 90 days of access</p>
-          <p class="promo-note">Regular price $397. Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 15.</p>
-          <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll and Use Code</a>
-        </aside>
-      </div>
-    </section>
-
-    <section class="section signup" id="signup">
+    <section class="section faq">
       <div class="inner">
-        <p class="eyebrow" style="color:var(--tan)">Releases October 1, 2026</p>
-        <h2>Join the mailing list.</h2>
-        <p class="signup-copy">Get Clinical Confidence Lab updates, course dates, and enrollment news sent to your inbox.</p>
-        <form class="signup-form" data-interest-form>
-          <input type="text" name="name" autocomplete="name" placeholder="Your name">
-          <input type="email" name="email" autocomplete="email" placeholder="Your email" required>
-          <button class="button" type="submit">Join the Mailing List</button>
-        </form>
-        <p class="form-status" data-form-status role="status"></p>
+        <div class="section-heading">
+          <p class="eyebrow">Frequently Asked Questions</p>
+          <h2>A few things you may be wondering</h2>
+        </div>
+        <div class="faq-list">
+          <details><summary>What if I already have supervision?</summary><p>Great. This Lab is not meant to replace supervision. It is designed to help you build a stronger process for thinking in the room so you can use supervision more effectively.</p></details>
+          <details><summary>Is this only for brand new therapists?</summary><p>It is designed for newer therapists, but it can also be helpful for clinicians who still struggle with self doubt, uncertainty, or finding direction in session.</p></details>
+          <details><summary>Will I learn exactly what to say?</summary><p>You will get language support, but the bigger goal is helping you understand how to think through the moment so you are not dependent on scripts.</p></details>
+          <details><summary>Is this supervision or case consultation?</summary><p>No. This is a clinical training and professional development experience, not supervision.</p></details>
+        </div>
+        <div class="faq-offer" id="enroll">
+          <div class="offer-grid">
+            <div>
+              <p class="eyebrow" style="color:var(--tan)">Releases October 1, 2026</p>
+              <h2>You do not need to know everything. You need a way to think when the answer is not obvious.</h2>
+              <p class="offer-copy">That is what we practice inside the Lab. If you are ready to think more clearly in session, respond with more intention, and trust yourself more after the session ends, this is for you.</p>
+            </div>
+            <aside class="price-card">
+              <p class="eyebrow">Early Bird</p>
+              <div class="price">$297</div>
+              <p>Four guided weeks · practical tools · one private completion session · 90 days of access</p>
+              <p class="promo-note">Regular price $397. Register early and get $100 off with promo code <span class="promo-code">LABLAUNCH100</span>. Expires September 15.</p>
+              <a class="button" href="/.netlify/functions/create-clinical-confidence-lab-checkout">Enroll</a>
+            </aside>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <p class="scope">The Clinical Confidence Lab is an educational mentorship and professional development program. It is not psychotherapy, clinical supervision, emergency consultation, legal advice, a certification, or a substitute for required professional support.</p>
   <footer class="footer">
     <div class="footer-inner">
       <div><p class="footer-title">The Confident Clinician</p><p style="margin-top:5px;color:rgba(255,255,255,.4);font-size:12px">Created by Tiffany McGilloway, LPC</p></div>
@@ -294,33 +370,5 @@
     </div>
   </footer>
 
-  <script>
-    const form = document.querySelector('[data-interest-form]');
-    const status = document.querySelector('[data-form-status]');
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const button = form.querySelector('button');
-      const data = new FormData(form);
-      button.disabled = true;
-      button.textContent = 'Sending...';
-      status.textContent = '';
-      try {
-        const response = await fetch('/.netlify/functions/workshop-subscription', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({name:data.get('name'),email:data.get('email'),source:'Clinical Confidence Lab - October 1, 2026'})
-        });
-        const result = await response.json();
-        if (!response.ok || !result.ok) throw new Error(result.message || 'Something did not send.');
-        status.textContent = 'You are on the mailing list. Watch your inbox for Clinical Confidence Lab updates.';
-        form.reset();
-      } catch (error) {
-        status.textContent = error.message || 'Something did not send. Please email admin@theconfidentclinician.me.';
-      } finally {
-        button.disabled = false;
-        button.textContent = 'Join the Mailing List';
-      }
-    });
-  </script>
 </body>
 </html>

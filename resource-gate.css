@@ -81,7 +81,7 @@ h1 em { color: var(--accent); font-style: italic; }
   .nav { flex-direction: column; gap: 12px; padding: 16px 18px; }
   .nav-brand { text-align: center; font-size: 16px; line-height: 1.2; }
   .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-  .nav-links a { background: rgba(255,255,255,0.45); border: 1px solid rgba(42,60,47,0.16); border-radius: 999px; color: var(--dark); font-size: 11px; letter-spacing: 0.055em; line-height: 1.1; padding: 8px 11px; white-space: nowrap; }
+  .nav-links a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; background: rgba(255,255,255,0.45); border: 1px solid rgba(42,60,47,0.16); border-radius: 999px; color: var(--dark); font-size: 11px; letter-spacing: 0.055em; line-height: 1.1; padding: 8px 11px; white-space: nowrap; }
   .nav-links a.nav-cta { background: var(--accent); border-color: var(--accent); color: #fff !important; }
   .hero { padding: 38px 20px 28px; }
   .gate-section { padding: 30px 18px 42px; }

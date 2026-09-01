@@ -98,7 +98,8 @@
     .outcomes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); }
     .outcome-item { background: var(--bg); padding: 28px 24px; }
     .outcome-num { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: var(--line); line-height: 1; margin-bottom: 10px; }
-    .outcome-text { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 500; line-height: 1.48; color: var(--dark); }
+    .outcome-title { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 600; line-height: 1.28; color: var(--dark); }
+    .outcome-text { margin-top: 10px; color: var(--olive); font-size: 13px; font-weight: 300; line-height: 1.6; }
 
     /* QUOTE */
     .quote-section { background: #D7C9B1; padding: 64px 52px; }
@@ -108,6 +109,8 @@
     .quote-rule { width: 48px; height: 2px; background: #C56A4D; margin-bottom: 22px; }
 
     /* OFFERS */
+    .offers-heading { padding: 64px 52px 30px; background: var(--bg); }
+    .offers-heading h2 { margin-top: 12px; font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 50px); font-weight: 400; color: var(--dark); }
     .offers { display: grid; grid-template-columns: 3fr 2fr; }
     .offer-main { background: #2A3C2F; padding: 72px 60px; display: flex; flex-direction: column; gap: 20px; }
     .offer-side { background: #C56A4D; padding: 72px 48px; display: flex; flex-direction: column; gap: 20px; }
@@ -175,6 +178,7 @@
     }
   
     @media (max-width: 560px) { .outcomes-grid { grid-template-columns: 1fr; } .hero-h1 { font-size: clamp(40px, 13vw, 58px); } .hero-btns .btn, .footer-cta-btns .btn { width: 100%; text-align: center; } }
+    @media (max-width:900px){.nav-links a,.nav-links button{display:inline-flex;min-height:44px;align-items:center;justify-content:center}}
   </style>
 </head>
 <body>
@@ -184,7 +188,6 @@
     <div class="nav-links">
       <a href="./">Home</a>
       <a href="./about.html">About Me</a>
-      <a href="./workshop.html">Workshops</a>
       <a href="./clinical-confidence-lab">4 Week Lab</a>
       <a href="./program.html">Intensive</a>
       <a href="./access.html" class="nav-cta">Member Access</a>
@@ -198,7 +201,7 @@
       <h1 class="hero-h1">Build the clinical <em>confidence</em> school didn't fully teach you.</h1>
       <p class="hero-lead">Grad school gave you the theory. Supervision gave you feedback. But somewhere between the DSM and your first solo session, nobody covered the midnight replays, the boundary you kept meaning to hold, or the client who caught you off guard and you've been thinking about ever since.<br><br>The Confident Clinician helps newer therapists move from second-guessing and over-preparing to leading sessions with clarity, confidence, and a repeatable clinical framework they can actually use.<br><br>You're not a bad therapist. You're undertrained for the real stuff. Let's fix that!</p>
       <div class="hero-btns">
-        <a href="./workshop.html" class="btn btn-white">View Workshops</a>
+        <a href="https://www.skool.com/the-confident-clinician-1929/about" class="btn btn-white" target="_blank" rel="noopener">Join the Free Community</a>
         <a href="./clinical-confidence-lab" class="btn btn-outline-white">The 4-Week Lab</a>
       </div>
     </div>
@@ -220,23 +223,28 @@
     <div class="outcomes-grid">
       <div class="outcome-item">
         <p class="outcome-num">01</p>
-        <p class="outcome-text">Language you can actually reach for when a client goes quiet, starts crying, or says the thing you did not see coming.</p>
+        <h3 class="outcome-title">Know what to say without sounding scripted</h3>
+        <p class="outcome-text">Flexible language for silence, emotion, hard questions, and moments that catch you off guard.</p>
       </div>
       <div class="outcome-item">
         <p class="outcome-num">02</p>
-        <p class="outcome-text">A steadier way to work when your own nervous system is loud and the room still needs you present.</p>
+        <h3 class="outcome-title">Stay steadier when your own anxiety shows up</h3>
+        <p class="outcome-text">Notice what is happening inside you without letting it take over the session.</p>
       </div>
       <div class="outcome-item">
         <p class="outcome-num">03</p>
-        <p class="outcome-text">Boundaries that sound like care, not coldness, so you can hold the frame without apologizing for it.</p>
+        <h3 class="outcome-title">Hold boundaries without feeling mean</h3>
+        <p class="outcome-text">Learn how to be clear, warm, and clinically grounded at the same time.</p>
       </div>
       <div class="outcome-item">
         <p class="outcome-num">04</p>
-        <p class="outcome-text">A clearer clinical thread so sessions feel intentional, even when a client brings ten things at once.</p>
+        <h3 class="outcome-title">Help sessions actually go somewhere</h3>
+        <p class="outcome-text">Find the thread, create focus, and make more intentional clinical choices.</p>
       </div>
       <div class="outcome-item">
         <p class="outcome-num">05</p>
-        <p class="outcome-text">A clinical voice that sounds grounded, human, and like you. Not like a textbook.</p>
+        <h3 class="outcome-title">Sound more like yourself as a therapist</h3>
+        <p class="outcome-text">Build a clinical voice that feels human, competent, and yours.</p>
       </div>
     </div>
   </section>
@@ -251,20 +259,24 @@
 
   <!-- OFFERS -->
   <section data-screen-label="Offers">
+    <div class="offers-heading">
+      <p class="section-label">Choose Your Starting Point</p>
+      <h2>Work with The Confident Clinician</h2>
+    </div>
     <div class="offers">
       <div class="offer-main">
         <p class="offer-kicker-light">Begins October 1, 2026</p>
         <h3 class="offer-h3-light">The Clinical Confidence Lab</h3>
         <div class="offer-rule-accent"></div>
-        <p class="offer-body-dark">Four focused weeks to understand yourself, think clinically, lead sessions with intention, and become a clinician you can trust. Includes practical tools and one private completion session with Tiffany.</p>
-        <a href="./clinical-confidence-lab" class="btn btn-accent" style="align-self:flex-start;">View the 4-Week Lab</a>
+        <p class="offer-body-dark"><strong style="display:block;color:white;margin-bottom:8px;">For the therapist who wants deeper practice and real change.</strong>Four guided weeks to strengthen how you think, respond, lead sessions, and reflect on your work.</p>
+        <a href="./clinical-confidence-lab" class="btn btn-accent" style="align-self:flex-start;">Explore the 4 Week Lab</a>
       </div>
       <div class="offer-side">
-        <p class="offer-kicker-white">Bite Size</p>
-        <h3 class="offer-h3-white">Focused Workshops</h3>
+        <p class="offer-kicker-white">Free Community</p>
+        <h3 class="offer-h3-white">The Confident Clinician on Skool</h3>
         <div class="offer-rule-white"></div>
-        <p class="offer-body-white">Not ready to commit to the full intensive, but still want practical skills you can use now? Join us for short, focused trainings on the real moments that do not always get covered in school or supervision.</p>
-        <a href="./workshop.html" class="btn btn-outline-white" style="align-self:flex-start;">View Workshops</a>
+        <p class="offer-body-white"><strong style="display:block;color:white;margin-bottom:8px;">Want to start free?</strong>Join other therapists inside The Confident Clinician Community for clinical tools, case labs, templates, and practical support.</p>
+        <a href="https://www.skool.com/the-confident-clinician-1929/about" class="btn btn-outline-white" style="align-self:flex-start;" target="_blank" rel="noopener">Join the Free Community</a>
       </div>
     </div>
   </section>
@@ -280,8 +292,8 @@
       <div class="about-rule"></div>
       <div class="bio">
         <p>I'm a Licensed Professional Counselor (LPC) with years of experience working alongside people in some of their most vulnerable moments, including crisis stabilization, higher levels of care, school based counseling, and private practice.</p>
-        <p>Imposter syndrome is real!!! I know what it is to leave a session replaying one sentence, wonder if a boundary landed too harshly, stare at a blank progress note because the work felt bigger than the checkbox, and still wonder if I was confident enough, skilled enough, or actually cut out for this job.</p>
-        <p>So I built the thing I kept looking for: a space that takes newer clinicians seriously and gives them real, usable tools for the work they're already doing.</p>
+        <p>Imposter syndrome is real!!! I know what it is like to leave a session replaying one sentence, wonder if a boundary landed too harshly, stare at a blank progress note because the work felt bigger than the checkbox, and still wonder if I was confident enough, skilled enough, or actually cut out for this job.</p>
+        <p>So I built the thing I kept looking for: practical tools, space to grow, and a clear process for deciding what matters and what to do next in session.</p>
       </div>
       <div class="beliefs">
         <div>
@@ -298,7 +310,7 @@
     <h2>The Clinical Confidence Lab opens <em>October 1, 2026.</em><br>Understand yourself. Think clinically. Lead with purpose.</h2>
     <div class="footer-cta-btns">
       <a href="./clinical-confidence-lab" class="btn btn-white">View the 4-Week Lab</a>
-      <a href="./workshop.html" class="btn btn-outline-white">Start with a Workshop</a>
+      <a href="https://www.skool.com/the-confident-clinician-1929/about" class="btn btn-outline-white" target="_blank" rel="noopener">Join the Free Community</a>
     </div>
   </section>
 
