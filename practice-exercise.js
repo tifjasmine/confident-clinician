@@ -7,6 +7,8 @@
   const source = params.get("source") || "direct";
   const campaign = params.get("campaign") || params.get("utm_campaign") || "";
   const referralToken = params.get("ref") || "";
+  const keyword = params.get("keyword") || "";
+  const triggerType = params.get("trigger") || "";
   const escape = (value = "") => String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[character]));
   let exercise;
   let sessionId = localStorage.getItem("tccPracticeSession");
@@ -26,7 +28,7 @@
     button.disabled = true; message.textContent = "Saving your thinking…";
     try {
       window.tccTrack?.("practice_submission", { exercise_slug: slug, exercise_type: exercise.type, source, campaign });
-      const response = await fetch(`${api}?action=submit`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, response: form.response?.value || "", selectedOption: selected, rationale: form.rationale?.value || "", sessionId, source, campaign, referralToken, referrer: document.referrer }) });
+      const response = await fetch(`${api}?action=submit`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, response: form.response?.value || "", selectedOption: selected, rationale: form.rationale?.value || "", sessionId, source, campaign, keyword, triggerType, referralToken, referrer: document.referrer }) });
       const data = await response.json(); if (!response.ok) throw new Error(data.message);
       renderReveal(data.exercise, { response: form.response?.value || "", selectedOption: selected, rationale: form.rationale?.value || "" }, data.attemptId);
       window.tccTrack?.("practice_breakdown_reveal", { exercise_slug: slug, exercise_type: exercise.type, source, campaign });
@@ -44,10 +46,10 @@
     signup?.addEventListener("submit", async (event) => {
       event.preventDefault(); const message = signup.querySelector("[data-signup-status]"); const button = signup.querySelector("button"); const form = new FormData(signup);
       button.disabled = true; message.textContent = "Adding you…";
-      try { const response = await fetch(`${api}?action=signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ firstName: form.get("firstName"), email: form.get("email"), consent: form.get("consent") === "on", attemptId, exerciseId: item.exerciseId, source, campaign }) }); const data = await response.json(); if (!response.ok) throw new Error(data.message); signup.innerHTML = `<div class="signup-success"><h3>${escape(data.message)}</h3><p>You can unsubscribe anytime using the link in any email.</p></div>`; window.tccTrack?.("practice_email_opt_in", { exercise_slug: slug, source, campaign }); } catch (error) { message.textContent = error.message; button.disabled = false; }
+      try { const response = await fetch(`${api}?action=signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ firstName: form.get("firstName"), email: form.get("email"), consent: form.get("consent") === "on", attemptId, exerciseId: item.exerciseId, sessionId, source, campaign, keyword, triggerType, referralToken }) }); const data = await response.json(); if (!response.ok) throw new Error(data.message); signup.innerHTML = `<div class="signup-success"><h3>${escape(data.message)}</h3><p>You can unsubscribe anytime using the link in any email.</p></div>`; window.tccTrack?.("practice_email_opt_in", { exercise_slug: slug, source, campaign }); } catch (error) { message.textContent = error.message; button.disabled = false; }
     });
-    root.querySelector("[data-skool-cta]")?.addEventListener("click", () => { fetch(`${api}?action=track`, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: JSON.stringify({ eventType: "Skool CTA Click", exerciseId: item.exerciseId, attemptId, source }) }); });
+    root.querySelector("[data-skool-cta]")?.addEventListener("click", () => { fetch(`${api}?action=track`, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: JSON.stringify({ eventType: "Skool CTA Click", exerciseId: item.exerciseId, attemptId, sessionId, source, campaign, keyword, triggerType, referralToken }) }); });
   };
 
-  fetch(`${api}?action=exercise&slug=${encodeURIComponent(slug)}`).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.message); exercise = data.exercise; status.textContent = ""; prompt(); window.tccTrack?.("practice_exercise_view", { exercise_slug: slug, source }); if (!sessionStorage.getItem(`tccExerciseView:${slug}`)) { sessionStorage.setItem(`tccExerciseView:${slug}`, "1"); fetch(`${api}?action=track`, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: JSON.stringify({ eventType: "Exercise View", exerciseId: exercise.exerciseId, sessionId, source, campaign, page: slug, referrer: document.referrer, referralToken }) }); } }).catch((error) => { status.textContent = error.message || "That exercise could not load."; });
+  fetch(`${api}?action=exercise&slug=${encodeURIComponent(slug)}`).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.message); exercise = data.exercise; status.textContent = ""; prompt(); window.tccTrack?.("practice_exercise_view", { exercise_slug: slug, source }); if (!sessionStorage.getItem(`tccExerciseView:${slug}`)) { sessionStorage.setItem(`tccExerciseView:${slug}`, "1"); fetch(`${api}?action=track`, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: JSON.stringify({ eventType: "Exercise View", exerciseId: exercise.exerciseId, sessionId, source, campaign, keyword, triggerType, page: slug, referrer: document.referrer, referralToken }) }); } }).catch((error) => { status.textContent = error.message || "That exercise could not load."; });
 })();

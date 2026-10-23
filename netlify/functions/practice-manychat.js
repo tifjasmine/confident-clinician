@@ -2,10 +2,12 @@ const crypto = require("node:crypto");
 
 const BASE_ID = process.env.AIRTABLE_PRACTICE_BASE_ID || "appxvDBMXbODnk9tS";
 const LEADS_TABLE = process.env.AIRTABLE_PRACTICE_LEADS_TABLE_ID || "tblEvRzM42xU89aAe";
+const FUNNEL_TABLE = process.env.AIRTABLE_PRACTICE_FUNNEL_TABLE_ID || "tbl7RLsUtFoAjKOmM";
 const clean = (value, max = 500) => String(value || "").trim().slice(0, max);
 const reply = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) });
 const headers = () => ({ Authorization: `Bearer ${process.env.AIRTABLE_ACCESS_TOKEN}`, "Content-Type": "application/json" });
 const url = (id = "") => `https://api.airtable.com/v0/${BASE_ID}/${LEADS_TABLE}${id ? `/${id}` : ""}`;
+const funnelUrl = () => `https://api.airtable.com/v0/${BASE_ID}/${FUNNEL_TABLE}`;
 const formulaValue = (value) => clean(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
 async function findByContact(contactId) {
@@ -15,6 +17,11 @@ async function findByContact(contactId) {
 async function write(fields, id = "") {
   const response = await fetch(url(id), { method: id ? "PATCH" : "POST", headers: headers(), body: JSON.stringify({ fields, typecast: true }) });
   if (!response.ok) throw new Error("Airtable write failed"); return response.json();
+}
+async function writeFunnel(fields) {
+  const response = await fetch(funnelUrl(), { method: "POST", headers: headers(), body: JSON.stringify({ fields, typecast: true }) });
+  if (!response.ok) throw new Error("Airtable funnel write failed");
+  return response.json();
 }
 
 exports.handler = async (event) => {
@@ -39,6 +46,8 @@ exports.handler = async (event) => {
     const payload = Buffer.from(JSON.stringify({ leadId, manychatContactId: contactId, instagramUsername: clean(instagramUsername, 100).replace(/^@/, ""), exp: Date.now() + 24 * 60 * 60 * 1000 })).toString("base64url");
     const signature = crypto.createHmac("sha256", referralSecret).update(payload).digest("base64url");
     const path = clean(exerciseReference, 100) || "boundaries-and-guilt";
-    return reply(200, { ok: true, leadId, referralToken: `${payload}.${signature}`, exerciseUrl: `https://theconfidentclinician.me/clinical-breakdowns/${encodeURIComponent(path)}?source=manychat&campaign=${encodeURIComponent(clean(sourceCampaign, 150))}&ref=${payload}.${signature}`, expiresIn: "24 hours" });
+    await writeFunnel({ "Event ID": `event-${crypto.randomUUID()}`, "Event Type": clean(body.eventType || "Access Requested", 60), "Event At": now, "Instagram Handle": clean(instagramUsername, 100).replace(/^@/, ""), "ManyChat Contact ID": contactId, Keyword: clean(body.keyword || "PRACTICE", 100), "Trigger Type": clean(body.triggerType || "instagram-keyword", 100), Campaign: clean(sourceCampaign, 150), "Exercise Reference": clean(exerciseReference, 100), "Lead ID": leadId });
+    const referralToken = `${payload}.${signature}`;
+    return reply(200, { ok: true, leadId, referralToken, exerciseUrl: `https://theconfidentclinician.me/clinical-breakdowns/${encodeURIComponent(path)}?source=manychat&campaign=${encodeURIComponent(clean(sourceCampaign, 150))}&keyword=${encodeURIComponent(clean(body.keyword || "PRACTICE", 100))}&trigger=${encodeURIComponent(clean(body.triggerType || "instagram-keyword", 100))}&ref=${referralToken}`, expiresIn: "24 hours" });
   } catch (error) { console.error("practice-manychat", error); return reply(500, { message: "The ManyChat practice integration could not complete the request." }); }
 };

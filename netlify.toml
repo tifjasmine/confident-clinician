@@ -126,6 +126,11 @@
   status = 200
 
 [[redirects]]
+  from = "/practice-admin"
+  to = "/practice-admin.html"
+  status = 200
+
+[[redirects]]
   from = "/finding-focal-point-get-access"
   to = "/finding-focal-point-get-access.html"
   status = 200

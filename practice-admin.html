@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R4CT95G3TD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-R4CT95G3TD');
+</script>
+<script src="/analytics-events.js" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Practice Funnel Admin | The Confident Clinician</title>
+  <meta name="description" content="Private practice funnel dashboard for The Confident Clinician.">
+  <meta property="og:title" content="Practice Funnel Admin | The Confident Clinician">
+  <meta property="og:description" content="Private practice funnel dashboard.">
+  <meta property="og:image" content="https://theconfidentclinician.me/confident-clinician-social.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://theconfidentclinician.me/confident-clinician-social.png">
+  <link rel="canonical" href="https://theconfidentclinician.me/practice-admin">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="practice-admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header"><div><p class="eyebrow">The Confident Clinician</p><h1>Practice Funnel</h1><p>See who requested access, opened an exercise, submitted, subscribed, or joined the community.</p></div><button class="text-button" data-logout hidden>Log out</button></header>
+    <section class="login-card" data-login>
+      <p class="eyebrow">Private admin</p><h2>Sign in</h2>
+      <form data-login-form><label>Email<input type="email" name="email" autocomplete="username" required></label><label>Password<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">Open dashboard</button><p class="status" data-login-status></p></form>
+    </section>
+    <section data-dashboard hidden>
+      <div class="summary-grid" data-summary></div>
+      <div class="toolbar"><label>Filter stage<select data-stage-filter><option value="">All stages</option></select></label><label>Search<input data-search type="search" placeholder="IG handle, keyword, campaign…"></label></div>
+      <div class="table-card"><table><thead><tr><th>When</th><th>Instagram</th><th>Stage</th><th>Keyword</th><th>Campaign</th><th>Exercise</th></tr></thead><tbody data-events></tbody></table><p class="empty" data-empty hidden>No matching activity yet.</p></div>
+    </section>
+  </main>
+  <script src="practice-admin.js" defer></script>
+</body>
+</html>

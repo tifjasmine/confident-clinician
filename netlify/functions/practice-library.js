@@ -6,6 +6,7 @@ const TABLES = {
   attempts: process.env.AIRTABLE_PRACTICE_ATTEMPTS_TABLE_ID || "tblNwje2Qovijm7Yt",
   leads: process.env.AIRTABLE_PRACTICE_LEADS_TABLE_ID || "tblEvRzM42xU89aAe",
   history: process.env.AIRTABLE_PRACTICE_HISTORY_TABLE_ID || "tblCiSAdgO6QS3ECU",
+  funnel: process.env.AIRTABLE_PRACTICE_FUNNEL_TABLE_ID || "tbl7RLsUtFoAjKOmM",
 };
 
 const headers = { "Content-Type": "application/json", "Cache-Control": "no-store" };
@@ -71,6 +72,21 @@ async function history(eventType, fields = {}) {
   await write(TABLES.history, { "History ID": `history-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, "Event Type": eventType, ...fields, "Occurred At": now });
 }
 
+async function funnel(eventType, fields = {}) {
+  await write(TABLES.funnel, { "Event ID": `event-${crypto.randomUUID()}`, "Event Type": eventType, "Event At": new Date().toISOString(), ...fields });
+}
+
+const funnelIdentity = (referral, body = {}) => ({
+  "Instagram Handle": clean(referral?.instagramUsername, 100).replace(/^@/, "") || null,
+  "ManyChat Contact ID": clean(referral?.manychatContactId, 150) || null,
+  "Lead ID": clean(referral?.leadId, 150) || null,
+  "Anonymous Session ID": clean(body.sessionId, 100) || null,
+  Keyword: clean(body.keyword, 100) || null,
+  "Trigger Type": clean(body.triggerType, 100) || null,
+  Campaign: clean(body.campaign, 150) || null,
+  "Exercise Reference": clean(body.exerciseId || body.slug || body.page, 100) || null,
+});
+
 exports.handler = async (event) => {
   if (!process.env.AIRTABLE_ACCESS_TOKEN) return reply(503, { message: "The practice library is being connected. Please try again shortly." });
   const params = event.queryStringParameters || {};
@@ -105,6 +121,7 @@ exports.handler = async (event) => {
       const now = new Date().toISOString();
       await write(TABLES.attempts, { "Attempt ID": attemptId, "Exercise ID": exercise.exerciseId, "Exercise Slug": exercise.slug, "Exercise Type": exercise.type, "Visitor Response": responseText || null, "Selected Option": selectedOption || null, "Optional Rationale": clean(body.rationale, 2000) || null, "Anonymous Session ID": sessionId, Source: clean(body.source || "direct", 100), "Source Campaign": clean(body.campaign, 150), "Exercise Category": exercise.category, "Lead ID": referral?.leadId || null, "Instagram Handle": instagramHandle || null, Referrer: /^https?:\/\//.test(clean(body.referrer)) ? clean(body.referrer, 1000) : null, "Reveal Completed": true, "Review Status": "New", "Submitted At": now });
       await history("Attempt Submitted", { "Exercise ID": exercise.exerciseId, "Attempt ID": attemptId, Actor: referral ? "Verified referral" : "Unnamed visitor", "Details JSON": JSON.stringify({ source: clean(body.source || "direct", 100), category: exercise.category }) });
+      await funnel("Exercise Submitted", { ...funnelIdentity(referral, { ...body, exerciseId: exercise.exerciseId }), "Attempt ID": attemptId, "Instagram Handle": instagramHandle || null });
       return reply(200, { attemptId, exercise, identityLinked: Boolean(referral) });
     }
     if (event.httpMethod === "POST" && action === "signup") {
@@ -123,6 +140,8 @@ exports.handler = async (event) => {
       const attempts = body.attemptId ? await list(TABLES.attempts, `{Attempt ID}='${formulaValue(body.attemptId)}'`, 1) : [];
       if (attempts[0]) await write(TABLES.attempts, { "Lead ID": leadId }, attempts[0].id);
       await history("Email Opt-In", { "Exercise ID": clean(body.exerciseId, 100), "Attempt ID": clean(body.attemptId, 100), Actor: "Practice lead", "Details JSON": JSON.stringify({ source: clean(body.source || "practice-library", 100) }) });
+      const referral = decodeReferral(clean(body.referralToken, 2000));
+      await funnel("Email Subscribed", { ...funnelIdentity(referral, body), "Lead ID": leadId, "Attempt ID": clean(body.attemptId, 100) || null });
       return reply(200, { ok: true, message: "You're in! Watch your inbox for the next clinical challenge." });
     }
     if (event.httpMethod === "POST" && action === "track") {
@@ -130,6 +149,8 @@ exports.handler = async (event) => {
       if (!["Skool CTA Click", "Library View", "Exercise View"].includes(body.eventType)) return reply(400, { message: "Unsupported event." });
       const referral = decodeReferral(clean(body.referralToken, 2000));
       await history(body.eventType, { "Exercise ID": clean(body.exerciseId, 100), "Attempt ID": clean(body.attemptId, 100), Actor: referral ? "Verified referral" : "Website visitor", "Details JSON": JSON.stringify({ source: clean(body.source || "direct", 100), campaign: clean(body.campaign, 150), sessionId: clean(body.sessionId, 100), page: clean(body.page, 150), leadId: referral?.leadId || "", referrer: /^https?:\/\//.test(clean(body.referrer)) ? clean(body.referrer, 1000) : "" }) });
+      if (body.eventType === "Exercise View") await funnel("Exercise Opened", funnelIdentity(referral, body));
+      if (body.eventType === "Skool CTA Click") await funnel("Community Clicked", { ...funnelIdentity(referral, body), "Attempt ID": clean(body.attemptId, 100) || null });
       return reply(200, { ok: true });
     }
     return reply(405, { message: "Method not allowed." });
