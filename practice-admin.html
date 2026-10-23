@@ -13,10 +13,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Practice Funnel Admin | The Confident Clinician</title>
-  <meta name="description" content="Private practice funnel dashboard for The Confident Clinician.">
-  <meta property="og:title" content="Practice Funnel Admin | The Confident Clinician">
-  <meta property="og:description" content="Private practice funnel dashboard.">
+  <title>Practice Library Admin | The Confident Clinician</title>
+  <meta name="description" content="Private Clinical Practice Library administration.">
+  <meta property="og:title" content="Practice Library Admin | The Confident Clinician">
+  <meta property="og:description" content="Private Clinical Practice Library administration.">
   <meta property="og:image" content="https://theconfidentclinician.me/confident-clinician-social.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://theconfidentclinician.me/confident-clinician-social.png">
@@ -28,15 +28,20 @@
 </head>
 <body>
   <main class="admin-shell">
-    <header class="admin-header"><div><p class="eyebrow">The Confident Clinician</p><h1>Practice Funnel</h1><p>See who requested access, opened an exercise, submitted, subscribed, or joined the community.</p></div><button class="text-button" data-logout hidden>Log out</button></header>
+    <header class="admin-header"><div><p class="eyebrow">The Confident Clinician</p><h1>Practice Library Admin</h1><p>Create and publish exercises, review participation, manage leads, and follow the ManyChat funnel—all from Airtable-backed data.</p></div><div class="header-actions"><a class="text-button link-button" href="/clinical-breakdowns" target="_blank">Open library ↗</a><button class="text-button" data-logout hidden>Log out</button></div></header>
     <section class="login-card" data-login>
       <p class="eyebrow">Private admin</p><h2>Sign in</h2>
       <form data-login-form><label>Email<input type="email" name="email" autocomplete="username" required></label><label>Password<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">Open dashboard</button><p class="status" data-login-status></p></form>
     </section>
     <section data-dashboard hidden>
-      <div class="summary-grid" data-summary></div>
-      <div class="toolbar"><label>Filter stage<select data-stage-filter><option value="">All stages</option></select></label><label>Search<input data-search type="search" placeholder="IG handle, keyword, campaign…"></label></div>
-      <div class="table-card"><table><thead><tr><th>When</th><th>Instagram</th><th>Stage</th><th>Keyword</th><th>Campaign</th><th>Exercise</th></tr></thead><tbody data-events></tbody></table><p class="empty" data-empty hidden>No matching activity yet.</p></div>
+      <nav class="admin-tabs" aria-label="Admin sections"><button class="active" data-tab="overview">Overview</button><button data-tab="exercises">Exercises</button><button data-tab="participation">Participation</button><button data-tab="leads">Leads</button><button data-tab="funnel">Funnel</button><button data-tab="history">History</button></nav>
+      <p class="status" data-admin-status></p>
+      <section class="admin-pane active" data-pane="overview"><div class="summary-grid" data-summary></div><div class="overview-grid"><article class="panel"><h2>Quick actions</h2><button data-new-exercise>Create a new exercise</button><a class="text-link" href="/clinical-breakdowns" target="_blank">View the public library →</a></article><article class="panel"><h2>Content status</h2><div data-content-status></div></article></div></section>
+      <section class="admin-pane" data-pane="exercises"><div class="editor-grid"><aside class="exercise-sidebar"><button data-new-exercise>+ New exercise</button><div data-exercise-list></div></aside><article class="panel editor-panel"><form class="exercise-form" data-exercise-form><input type="hidden" name="id"><input type="hidden" name="exerciseId"><div class="field-grid"><label>Exercise type<select name="type"><option>The Clinical Response Check</option><option>Clinical Case Lab</option></select></label><label>Status<select name="status"><option>Draft</option><option>Published</option><option>Unpublished</option><option>Archived</option></select></label><label>Number<input name="number" placeholder="002"></label><label>Category<select name="category"><option>Clinical Language</option><option>Therapeutic Alliance</option><option>Boundaries</option><option>Clinical Decision-Making</option><option>Emotional Processing</option><option>Challenging Session Moments</option><option>Intervention Skills</option></select></label></div><label>Title<input name="title" required></label><label>URL slug<input name="slug" required placeholder="boundaries-and-guilt"></label><label>Short library preview<textarea name="summary"></textarea></label><label>Client statement<textarea name="clientStatement"></textarea></label><label>Therapist response<textarea name="therapistResponse"></textarea></label><label>Case scenario<textarea name="caseScenario"></textarea></label><label>Participation question<textarea name="reflectionQuestion"></textarea></label><label>Optional hint<textarea name="hint"></textarea></label><label>Clinical framing title<input name="clinicalConsideration"></label><label>Clinical framing explanation<textarea name="clinicalConsiderationExplanation"></textarea></label><label>Therapist intention<textarea name="therapistIntention"></textarea></label><details><summary>Advanced teaching content</summary><label>Clinical teaching points (JSON)<textarea name="clinicalPoints"></textarea></label><label>Case choices A–D (JSON)<textarea name="choices"></textarea></label><label>Alternative responses (JSON)<textarea name="alternatives"></textarea></label><label>Preferred starting point<textarea name="preferredStartingPoint"></textarea></label><label>Bigger clinical lesson<textarea name="biggerLesson"></textarea></label><label>Context and nuance<textarea name="nuance"></textarea></label><label>Practical application<textarea name="practicalApplication"></textarea></label><label>Reflection prompts (JSON)<textarea name="reflectionPrompts"></textarea></label><label>SEO description<textarea name="seoDescription"></textarea></label><label>Publication date<input name="publicationDate" type="date"></label></details><div class="sticky-actions"><button type="submit">Save exercise</button><button class="secondary" type="button" data-preview>Preview</button></div></form></article></div></section>
+      <section class="admin-pane" data-pane="participation"><div class="card-grid" data-attempts></div></section>
+      <section class="admin-pane" data-pane="leads"><div class="card-grid" data-leads></div></section>
+      <section class="admin-pane" data-pane="funnel"><div class="toolbar"><label>Filter stage<select data-stage-filter><option value="">All stages</option></select></label><label>Search<input data-search type="search" placeholder="IG handle, keyword, campaign…"></label></div><div class="table-card"><table><thead><tr><th>When</th><th>Instagram</th><th>Stage</th><th>Keyword</th><th>Campaign</th><th>Exercise</th></tr></thead><tbody data-events></tbody></table><p class="empty" data-empty hidden>No matching activity yet.</p></div></section>
+      <section class="admin-pane" data-pane="history"><div class="card-grid" data-history></div></section>
     </section>
   </main>
   <script src="practice-admin.js" defer></script>

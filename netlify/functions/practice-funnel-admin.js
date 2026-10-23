@@ -1,10 +1,11 @@
 const crypto = require("node:crypto");
 const BASE_ID = process.env.AIRTABLE_PRACTICE_BASE_ID || "appxvDBMXbODnk9tS";
 const FUNNEL_TABLE = process.env.AIRTABLE_PRACTICE_FUNNEL_TABLE_ID || "tbl7RLsUtFoAjKOmM";
+const TABLES = { exercises: "tblPFguDAbHiU2pkl", attempts: "tblNwje2Qovijm7Yt", responses: "tblTbXB4yZbKIFq7y", leads: "tblEvRzM42xU89aAe", history: "tblCiSAdgO6QS3ECU" };
 const ALLOWED_EMAILS = (process.env.PRACTICE_ADMIN_EMAILS || "tiffany@livingwright.org,admin@theconfidentclinician.me").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
 const COOKIE = "tcc_practice_funnel_admin";
 const json = (statusCode, body, extraHeaders = {}) => ({ statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store, private", ...extraHeaders }, body: JSON.stringify(body) });
-const clean = (value, max = 500) => String(value || "").trim().slice(0, max);
+const clean = (value, max = 10000) => String(value || "").trim().slice(0, max);
 const safeEqual = (a, b) => { const left = Buffer.from(String(a)); const right = Buffer.from(String(b)); return left.length === right.length && crypto.timingSafeEqual(left, right); };
 const verifyPassword = (password) => {
   const [salt, expected] = String(process.env.PRACTICE_ADMIN_PASSWORD_HASH || "").split(":");
@@ -12,6 +13,7 @@ const verifyPassword = (password) => {
   return safeEqual(crypto.scryptSync(String(password || ""), salt, 64).toString("hex"), expected);
 };
 const airtableHeaders = () => ({ Authorization: `Bearer ${process.env.AIRTABLE_ACCESS_TOKEN}` });
+const airtableUrl = (table, id = "") => `https://api.airtable.com/v0/${BASE_ID}/${table}${id ? `/${id}` : ""}`;
 const sign = (payload) => crypto.createHmac("sha256", process.env.PRACTICE_ADMIN_SESSION_SECRET).update(payload).digest("base64url");
 const sessionToken = (email) => { const payload = Buffer.from(JSON.stringify({ email, exp: Date.now() + 8 * 60 * 60 * 1000 })).toString("base64url"); return `${payload}.${sign(payload)}`; };
 const cookieValue = (event) => (event.headers.cookie || "").split(";").map((part) => part.trim()).find((part) => part.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1) || "";
@@ -30,6 +32,17 @@ async function listEvents() {
   } while (offset && records.length < 1000);
   return records.map((record) => ({ id: record.id, ...record.fields }));
 }
+async function list(table, max = 100) {
+  const url = new URL(airtableUrl(table)); url.searchParams.set("pageSize", String(Math.min(max, 100)));
+  const response = await fetch(url, { headers: airtableHeaders() }); if (!response.ok) throw new Error(`Airtable read failed (${response.status})`);
+  return (await response.json()).records || [];
+}
+async function write(table, fields, id = "") {
+  const response = await fetch(airtableUrl(table, id), { method: id ? "PATCH" : "POST", headers: { ...airtableHeaders(), "Content-Type": "application/json" }, body: JSON.stringify({ fields, typecast: true }) });
+  if (!response.ok) throw new Error(`Airtable write failed (${response.status})`); return response.json();
+}
+const parse = (value, fallback = []) => { try { return JSON.parse(value || ""); } catch { return fallback; } };
+const mapExercise = (record) => { const f = record.fields || {}; return { id: record.id, exerciseId: f["Exercise ID"], type: f["Exercise Type"] === "What's Missing?" ? "The Clinical Response Check" : f["Exercise Type"], status: f.Status, number: f["Breakdown Number"], title: f.Title, slug: f.Slug, category: f.Category, summary: f.Summary, clientStatement: f["Client Statement"], therapistResponse: f["Therapist Response"], caseScenario: f["Case Scenario"], reflectionQuestion: f["Reflection Question"], hint: f.Hint, clinicalConsideration: f["Clinical Consideration"], clinicalConsiderationExplanation: f["Clinical Consideration Explanation"], therapistIntention: f["Therapist Intention"], clinicalPoints: parse(f["Clinical Points JSON"]), choices: parse(f["Choices JSON"]), alternatives: parse(f["Alternatives JSON"]), preferredStartingPoint: f["Preferred Starting Point"], biggerLesson: f["Bigger Clinical Lesson"], nuance: f["Context and Nuance"], practicalApplication: f["Practical Application"], reflectionPrompts: parse(f["Reflection Prompts JSON"]), seoDescription: f["SEO Description"], publicationDate: f["Publication Date"] }; };
 exports.handler = async (event) => {
   const action = event.queryStringParameters?.action || "session";
   if (event.httpMethod === "POST" && action === "login") {
@@ -46,6 +59,35 @@ exports.handler = async (event) => {
     if (!process.env.AIRTABLE_ACCESS_TOKEN) return json(503, { message: "Airtable is not configured." });
     try { const events = await listEvents(); const counts = events.reduce((totals, item) => { const type = item["Event Type"] || "Other"; totals[type] = (totals[type] || 0) + 1; return totals; }, {}); const people = new Set(events.map((item) => item["ManyChat Contact ID"] || item["Lead ID"] || item["Anonymous Session ID"]).filter(Boolean)).size; return json(200, { email: session.email, events, counts, people }); }
     catch (error) { console.error("practice-funnel-admin", error); return json(500, { message: "The funnel data could not be loaded." }); }
+  }
+  if (event.httpMethod === "GET" && action === "dashboard") {
+    if (!process.env.AIRTABLE_ACCESS_TOKEN) return json(503, { message: "Airtable is not configured." });
+    try { const [exercises, attempts, responses, leads, history, events] = await Promise.all([list(TABLES.exercises), list(TABLES.attempts), list(TABLES.responses), list(TABLES.leads), list(TABLES.history), listEvents()]); return json(200, { exercises: exercises.map(mapExercise), attempts: attempts.map((record) => ({ id: record.id, ...record.fields })).reverse(), responses: responses.map((record) => ({ id: record.id, ...record.fields })).reverse(), leads: leads.map((record) => ({ id: record.id, ...record.fields })).reverse(), history: history.map((record) => ({ id: record.id, ...record.fields })).reverse(), events }); }
+    catch (error) { console.error("practice-admin dashboard", error); return json(500, { message: "The admin data could not be loaded." }); }
+  }
+  if (event.httpMethod === "POST" && action === "save-exercise") {
+    let body = {}; try { body = JSON.parse(event.body || "{}"); } catch { return json(400, { message: "Invalid exercise data." }); }
+    const slug = clean(body.slug, 150).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (!slug || !clean(body.title, 200)) return json(400, { message: "Title and slug are required." });
+    const now = new Date().toISOString(); const exerciseId = clean(body.exerciseId, 100) || `practice-${Date.now()}`; const status = ["Draft", "Published", "Unpublished", "Archived"].includes(body.status) ? body.status : "Draft";
+    const fields = { "Exercise ID": exerciseId, "Exercise Type": body.type === "Clinical Case Lab" ? "Clinical Case Lab" : "The Clinical Response Check", Status: status, "Breakdown Number": clean(body.number, 10), Title: clean(body.title, 200), Slug: slug, Category: clean(body.category, 100), Summary: clean(body.summary, 1000), "Client Statement": clean(body.clientStatement), "Therapist Response": clean(body.therapistResponse), "Case Scenario": clean(body.caseScenario), "Reflection Question": clean(body.reflectionQuestion), Hint: clean(body.hint), "Clinical Consideration": clean(body.clinicalConsideration, 300), "Clinical Consideration Explanation": clean(body.clinicalConsiderationExplanation), "Therapist Intention": clean(body.therapistIntention), "Clinical Points JSON": JSON.stringify(body.clinicalPoints || []), "Choices JSON": JSON.stringify(body.choices || []), "Alternatives JSON": JSON.stringify(body.alternatives || []), "Preferred Starting Point": clean(body.preferredStartingPoint), "Bigger Clinical Lesson": clean(body.biggerLesson), "Context and Nuance": clean(body.nuance), "Practical Application": clean(body.practicalApplication), "Reflection Prompts JSON": JSON.stringify(body.reflectionPrompts || []), "SEO Description": clean(body.seoDescription, 500), "Publication Date": body.publicationDate || null, "Published URL": `https://theconfidentclinician.me/clinical-breakdowns/${slug}`, "Updated At": now };
+    if (!body.id) fields["Created At"] = now;
+    try { const saved = await write(TABLES.exercises, fields, clean(body.id, 100)); await write(TABLES.history, { "History ID": `history-${Date.now()}`, "Event Type": body.id ? status === "Published" ? "Published" : "Exercise Updated" : "Exercise Created", "Exercise ID": exerciseId, Actor: session.email, "Details JSON": JSON.stringify({ slug, status }), "Occurred At": now }); return json(200, { exercise: mapExercise(saved) }); }
+    catch (error) { console.error("practice-admin save", error); return json(500, { message: "The exercise could not be saved." }); }
+  }
+  if (event.httpMethod === "POST" && action === "save-response") {
+    let body = {}; try { body = JSON.parse(event.body || "{}"); } catch { return json(400, { message: "Invalid response data." }); }
+    const attemptId = clean(body.attemptId, 100); const attemptRecordId = clean(body.attemptRecordId, 100);
+    if (!attemptId || !attemptRecordId) return json(400, { message: "The attempt could not be identified." });
+    const responseStatus = ["Draft", "Ready", "Published", "Internal only"].includes(body.responseStatus) ? body.responseStatus : "Draft";
+    const reviewStatus = ["New", "Reviewed", "Responded", "Archived"].includes(body.reviewStatus) ? body.reviewStatus : "Reviewed";
+    const now = new Date().toISOString(); const responseId = clean(body.responseId, 100) || `response-${Date.now()}`;
+    try {
+      const saved = await write(TABLES.responses, { "Response ID": responseId, "Attempt ID": attemptId, "Exercise Slug": clean(body.exerciseSlug, 150), "Public Response": clean(body.publicResponse), "Internal Notes": clean(body.internalNotes), "Response Status": responseStatus, "Responded By": session.email, "Responded At": now }, clean(body.responseRecordId, 100));
+      await write(TABLES.attempts, { "Review Status": reviewStatus }, attemptRecordId);
+      await write(TABLES.history, { "History ID": `history-${Date.now()}`, "Event Type": "Admin Response Added", "Attempt ID": attemptId, "Admin Response ID": responseId, Actor: session.email, "Details JSON": JSON.stringify({ reviewStatus, responseStatus }), "Occurred At": now });
+      return json(200, { response: { id: saved.id, ...saved.fields }, reviewStatus });
+    } catch (error) { console.error("practice-admin response", error); return json(500, { message: "The response could not be saved." }); }
   }
   return json(405, { message: "Method not allowed." });
 };
