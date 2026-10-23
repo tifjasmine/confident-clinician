@@ -190,12 +190,20 @@ const codeSeeds = [
     notes: "The usable password is stored securely in Netlify environment variables.",
   },
   {
+    record: "Finding the Focal Point Password",
+    offer: "Finding the Focal Point",
+    type: "Password",
+    secret: "FOCAL_POINT_ACCESS_PASSWORD",
+    status: "Active",
+    notes: "The usable password is stored securely in Netlify environment variables. Password matching is case insensitive.",
+  },
+  {
     record: "Clinical Confidence Lab Launch Promotion",
     offer: "Clinical Confidence Lab",
     type: "Promo Code",
     promo: "LABLAUNCH100",
     status: "Active",
-    expires: "2026-09-01",
+    expires: "2027-01-01",
     notes: "$100 early registration discount.",
   },
 ].filter((entry) => !existingCodeRecords.has(entry.record));
@@ -238,6 +246,13 @@ const resourceSeeds = [
     title: "The 5 Skills That Separate New Therapists from Confident Clinicians",
     url: process.env.FIVE_SKILLS_VIDEO_EMBED_URL,
     description: "Private workshop video covering five foundational clinical confidence skills.",
+  },
+  {
+    id: "finding-focal-point-video",
+    workshop: "Finding the Focal Point",
+    title: "Finding the Focal Point",
+    url: "https://theconfidentclinician.wistia.com/s/7z5rwcr8alqgjbv",
+    description: "A free clinical training video about identifying what deserves attention and choosing the thread to follow in session.",
   },
 ].filter((resource) => resource.url && !existingResourceIds.has(resource.id));
 

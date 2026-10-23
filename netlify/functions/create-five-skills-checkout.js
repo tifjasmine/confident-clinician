@@ -99,6 +99,8 @@ exports.handler = async (event) => {
   params.set('mode', 'payment');
   params.set('line_items[0][price]', priceId);
   params.set('line_items[0][quantity]', '1');
+  params.set('metadata[product]', '5 Skills Workshop');
+  params.set('metadata[resource_id]', 'five-skills-video');
   if (promotionCodeId) {
     params.set('discounts[0][promotion_code]', promotionCodeId);
   } else {

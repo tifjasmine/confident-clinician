@@ -1,7 +1,24 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "node scripts/verify-social-previews.mjs"
+  command = "node scripts/verify-social-previews.mjs && node scripts/verify-seo.mjs && node scripts/verify-analytics.mjs && node scripts/verify-internal-links.mjs"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[redirects]]
   from = "/imposterguidebook"
@@ -91,6 +108,41 @@
 [[redirects]]
   from = "/clinical-confidence-lab/"
   to = "/clinical-confidence-lab.html"
+  status = 200
+
+[[redirects]]
+  from = "/clinical-breakdowns"
+  to = "/clinical-breakdowns.html"
+  status = 200
+
+[[redirects]]
+  from = "/clinical-breakdowns/"
+  to = "/clinical-breakdowns.html"
+  status = 200
+
+[[redirects]]
+  from = "/clinical-breakdowns/:slug"
+  to = "/practice-exercise.html?slug=:slug"
+  status = 200
+
+[[redirects]]
+  from = "/finding-focal-point-get-access"
+  to = "/finding-focal-point-get-access.html"
+  status = 200
+
+[[redirects]]
+  from = "/finding-focal-point-get-access/"
+  to = "/finding-focal-point-get-access.html"
+  status = 200
+
+[[redirects]]
+  from = "/finding-focal-point-access"
+  to = "/finding-focal-point-access.html"
+  status = 200
+
+[[redirects]]
+  from = "/finding-focal-point-access/"
+  to = "/finding-focal-point-access.html"
   status = 200
 
 [[redirects]]

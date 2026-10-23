@@ -16,6 +16,15 @@ const normalizeTitle = (value) => clean(value)
   .replace(/\bdo not\b/g, 'dont')
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
+const accessTokenMatches = ({ provided, secret, email, workshop, resourceId }) => {
+  if (!provided || !secret || !email) return false;
+  const expected = crypto.createHmac('sha256', secret)
+    .update(`${email}|${workshop}|${resourceId}`)
+    .digest('hex');
+  const supplied = clean(provided);
+  return supplied.length === expected.length
+    && crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
+};
 
 const listRecords = async ({ baseId, tableId, token, formula, maxRecords = 50 }) => {
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`);
@@ -62,21 +71,25 @@ exports.handler = async (event) => {
   const notesTable = process.env.AIRTABLE_NOTES_TABLE_ID || 'Workshop Notes';
   const email = normalizeEmail(payload.email);
   const password = clean(payload.password);
+  const accessToken = clean(payload.accessToken);
   const action = clean(payload.action || 'save').toLowerCase();
   const notes = String(payload.notes || '');
   const resourceId = clean(payload.resourceId || 'five-skills-video');
   const workshop = clean(payload.workshop || 'The 5 Skills That Separate New Therapists from Confident Clinicians');
 
   if (!token) return json(500, { ok: false, message: 'Workshop notes are temporarily unavailable.' });
-  if (!email || !password) return json(400, { ok: false, message: 'Please enter your email and password before opening notes.' });
+  if (!email || (!password && !accessToken)) return json(400, { ok: false, message: 'Please reopen your private workshop link before using notes.' });
   if (action === 'save' && !notes.trim()) return json(400, { ok: false, message: 'Please write a note before saving.' });
 
   const expectedPassword = resourceId === 'what-to-say-video'
     ? process.env.WHAT_TO_SAY_ACCESS_PASSWORD
-    : process.env.FIVE_SKILLS_ACCESS_PASSWORD;
-  const passwordMatchesWorkshop = accessCodeMatches(password, expectedPassword);
-  const passwordMatchesAccount = passwordMatchesWorkshop ? false : await verifySupabasePassword(email, password);
-  if (!passwordMatchesWorkshop && !passwordMatchesAccount) {
+    : resourceId === 'finding-focal-point-video'
+      ? process.env.FOCAL_POINT_ACCESS_PASSWORD
+      : process.env.FIVE_SKILLS_ACCESS_PASSWORD;
+  const privateLinkMatches = accessTokenMatches({ provided: accessToken, secret: token, email, workshop, resourceId });
+  const passwordMatchesWorkshop = privateLinkMatches ? false : accessCodeMatches(password, expectedPassword);
+  const passwordMatchesAccount = privateLinkMatches || passwordMatchesWorkshop ? false : await verifySupabasePassword(email, password);
+  if (!privateLinkMatches && !passwordMatchesWorkshop && !passwordMatchesAccount) {
     return json(401, { ok: false, message: 'That password does not match.' });
   }
 
@@ -152,3 +165,4 @@ exports.handler = async (event) => {
     return json(500, { ok: false, message: 'Your notes could not be saved right now. Please try again.' });
   }
 };
+const crypto = require('node:crypto');

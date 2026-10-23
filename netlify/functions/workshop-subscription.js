@@ -12,6 +12,7 @@ const defaultFieldMap = {
   email: 'Email',
   source: 'Source',
   subscribedAt: 'Subscribed At',
+  notes: 'Notes',
 };
 
 const parseJsonEnv = (name, fallback) => {
@@ -36,7 +37,7 @@ const escapeHtml = (value) => String(value || '')
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#039;');
 
-const sendFormNotification = async ({ name, email, source }) => {
+const sendFormNotification = async ({ name, email, source, stage, challenge, waitlistValue }) => {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.FORM_NOTIFICATION_EMAIL || 'admin@theconfidentclinician.me';
   const from = process.env.FORM_NOTIFICATION_FROM
@@ -64,12 +65,18 @@ const sendFormNotification = async ({ name, email, source }) => {
         `Name: ${name || 'Not provided'}`,
         `Email: ${email}`,
         `Source: ${source}`,
-      ].join('\n'),
+        stage ? `Clinical stage: ${stage}` : '',
+        challenge ? `Hardest session challenge: ${challenge}` : '',
+        waitlistValue ? `What would make it worth joining: ${waitlistValue}` : '',
+      ].filter(Boolean).join('\n'),
       html: `
         <h2>New Clinical Confidence interest</h2>
         <p><strong>Name:</strong> ${escapeHtml(name || 'Not provided')}</p>
         <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
         <p><strong>Source:</strong> ${escapeHtml(source)}</p>
+        ${stage ? `<p><strong>Clinical stage:</strong> ${escapeHtml(stage)}</p>` : ''}
+        ${challenge ? `<p><strong>Hardest session challenge:</strong> ${escapeHtml(challenge)}</p>` : ''}
+        ${waitlistValue ? `<p><strong>What would make it worth joining:</strong> ${escapeHtml(waitlistValue)}</p>` : ''}
       `,
     }),
   });
@@ -98,6 +105,9 @@ exports.handler = async (event) => {
   const email = String(payload.email || '').trim().toLowerCase();
   const name = String(payload.name || '').trim();
   const source = String(payload.source || 'Workshop page').trim();
+  const stage = String(payload.stage || '').trim();
+  const challenge = String(payload.challenge || '').trim();
+  const waitlistValue = String(payload.waitlistValue || '').trim();
 
   if (!email || !email.includes('@')) {
     return json(400, { ok: false, message: 'Please enter a valid email.' });
@@ -118,6 +128,11 @@ exports.handler = async (event) => {
   addIfConfigured(fields, fieldMap, 'email', email);
   addIfConfigured(fields, fieldMap, 'source', source || 'Workshop page');
   addIfConfigured(fields, fieldMap, 'subscribedAt', new Date().toISOString());
+  addIfConfigured(fields, fieldMap, 'notes', [
+    stage ? `Clinical stage: ${stage}` : '',
+    challenge ? `Hardest session challenge: ${challenge}` : '',
+    waitlistValue ? `What would make it worth joining: ${waitlistValue}` : '',
+  ].filter(Boolean).join('\n'));
 
   try {
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
@@ -138,7 +153,7 @@ exports.handler = async (event) => {
       return json(500, { ok: false, message: 'Something did not send. Please try again or email admin@theconfidentclinician.me.' });
     }
 
-    const notificationSent = await sendFormNotification({ name, email, source });
+    const notificationSent = await sendFormNotification({ name, email, source, stage, challenge, waitlistValue });
     return json(200, { ok: true, notificationSent });
   } catch (error) {
     console.error('Workshop subscription failed', error);

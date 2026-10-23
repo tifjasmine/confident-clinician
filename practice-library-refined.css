@@ -1,0 +1,101 @@
+/* Refined to match the established site scale: editorial, readable, and less bulky. */
+body { font-size: 16px; line-height: 1.65; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 22px 52px; background: var(--paper); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 30; }
+.nav-brand { font: 500 16px/1.1 "Cormorant Garamond", serif; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-links a { color: var(--sage); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+.nav-links a.active:not(.nav-lab) { position: relative; color: var(--rust); }
+.nav-links a.active:not(.nav-lab)::after { content: ""; position: absolute; right: 0; bottom: -9px; left: 0; height: 2px; background: var(--rust); }
+.nav-links .nav-lab { padding: 10px 22px; background: var(--rust); color: #fff; }
+.nav-links .nav-cta { color: var(--sage); }
+.hero { padding: clamp(48px, 6vw, 76px) clamp(22px, 8vw, 140px) clamp(38px, 5vw, 58px); }
+.hero h1, .exercise-head h1 { font-size: clamp(40px, 4.5vw, 60px); font-weight: 400; line-height: 1.02; }
+.hero .lede { max-width: 680px; margin-top: 16px; font-size: 16px; line-height: 1.65; }
+.library-shell { padding-top: 38px; padding-bottom: 64px; }
+.folder-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 24px; }
+.folder { display: grid; grid-template-columns: 1fr auto; gap: 5px 16px; min-height: 126px; padding: 20px 22px; border: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.folder:hover, .folder:focus-visible { background: var(--paper2); border-color: rgba(152, 69, 47, .42); }
+.folder.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.folder strong { grid-column: 1; font: 500 25px/1.08 "Cormorant Garamond", serif; }
+.folder > span:not(.folder-kicker) { grid-column: 1; max-width: 440px; font-size: 13px; line-height: 1.45; }
+.folder small { grid-column: 2; grid-row: 1 / 4; align-self: end; color: inherit; opacity: .68; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.filters { grid-template-columns: minmax(0, 480px); margin-bottom: 20px; }
+.search { padding: 12px 14px; }
+.folder-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 0 12px; }
+.folder-heading .eyebrow, .folder-heading .status { margin: 0; }
+.exercise-card { min-height: 220px; padding: 22px; background: transparent; box-shadow: none; }
+.exercise-card h2 { margin: 16px 0 8px; font-size: clamp(27px, 2.6vw, 34px); line-height: 1.08; }
+.card-meta { padding-top: 16px; }
+.card-link { margin-top: 14px; }
+.exercise-head { padding-bottom: 22px; }
+.exercise-head h1 { max-width: 780px; font-size: clamp(38px, 4.5vw, 54px); }
+.exercise-meta { margin-top: 15px; }
+.moment, .reveal-section { margin-top: 18px; padding: clamp(20px, 3vw, 30px); }
+.moment h2, .reveal-section h2 { margin: 0 0 14px; font-size: clamp(28px, 3vw, 36px); font-weight: 400; line-height: 1.08; }
+.moment p, .moment li, .reveal-section p, .reveal-section li, .reveal-section blockquote { font-family: Jost, sans-serif; font-size: 16px; line-height: 1.65; }
+.reveal-section h3, .teaching-point h3, .alternative h3 { font-family: Jost, sans-serif; font-size: 17px; line-height: 1.45; }
+.alternative blockquote { margin: 8px 0; font: inherit; }
+.your-thinking small { font-size: 13px; line-height: 1.5; }
+.exercise-intro { max-width: 690px; margin: -2px 0 20px; }
+.quote-block { margin: 16px 0; padding: 16px 0; }
+.quote-block blockquote { font-size: clamp(20px, 2vw, 25px); }
+.participation { margin-top: 22px; padding-top: 20px; }
+.answer-box { min-height: 112px; padding: 13px 15px; }
+.teaching-list, .alternatives { gap: 12px; }
+.teaching-point, .alternative { padding-top: 18px; padding-bottom: 18px; }
+.community-band { margin-top: 34px; padding: 30px; }
+.community-band h2 { font-size: 32px; }
+.signup-card { margin-top: 22px; padding: 28px 30px; border: 1px solid var(--line); background: var(--paper2); }
+.signup-card h2 { margin: 0 0 10px; font: 400 clamp(28px, 3vw, 36px)/1.08 "Cormorant Garamond", serif; }
+.signup-card > p { max-width: 680px; }
+.signup-card form { margin-top: 20px; }
+.signup-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.signup-fields label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
+.signup-fields input { min-width: 0; padding: 12px 14px; border: 1px solid var(--line); background: #fff; color: var(--ink); }
+.consent-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; margin: 15px 0; font-size: 13px; line-height: 1.5; }
+.consent-row input { margin-top: 3px; }
+.signup-card .status { margin: 10px 0 0; }
+.signup-success h3 { margin: 0 0 6px; font: 500 26px/1.1 "Cormorant Garamond", serif; }
+.library-next-steps { display: grid; grid-template-columns: 1.08fr .92fr; gap: 18px; margin-top: 40px; }
+.library-next-steps .signup-card, .library-next-steps .community-band { height: 100%; margin-top: 0; }
+.library-next-steps .community-band { display: flex; flex-direction: column; align-items: flex-start; }
+.library-next-steps .community-band .button { margin-top: auto; }
+.intention-note { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.intention-note h3 { margin: 0 0 6px; }
+
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .nav, .practice-nav { position: sticky; flex-direction: column; gap: 6px; padding: 12px 0 6px; overflow: hidden; }
+  .nav-brand, .practice-brand { width: 100%; padding: 0 16px 8px; text-align: center; font-size: 14px; }
+  .nav-links, .practice-links { display: flex; width: 100%; flex-wrap: nowrap !important; justify-content: flex-start; gap: 20px; overflow-x: auto; padding: 6px 16px 2px; border-top: 1px solid var(--line); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .nav-links::-webkit-scrollbar, .practice-links::-webkit-scrollbar { display: none; }
+  .nav-links a, .practice-links a { display: inline-flex; flex: 0 0 auto; min-height: 34px; align-items: center; justify-content: center; font-size: 10px; }
+  .nav-links .nav-lab, .practice-links .lab-link { min-height: 34px; padding: 6px 10px; }
+  .hero { padding: 38px 20px 30px; }
+  .hero h1 { font-size: 38px; line-height: 1.02; }
+  .hero .lede { margin-top: 12px; font-size: 16px; line-height: 1.58; }
+  .library-shell, .exercise-shell { width: min(100% - 32px, 960px); padding: 28px 0 48px; }
+  .folder-nav { grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
+  .folder { min-height: 0; padding: 17px 18px; }
+  .folder strong { font-size: 24px; }
+  .folder > span:not(.folder-kicker) { font-size: 13px; line-height: 1.4; }
+  .folder small { font-size: 10px; }
+  .folder-heading { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .filters { margin-bottom: 16px; }
+  .exercise-card { min-height: 0; padding: 19px 17px; }
+  .exercise-card h2 { margin-top: 13px; font-size: 27px; }
+  .exercise-head { padding-bottom: 17px; }
+  .exercise-head h1 { font-size: 36px; line-height: 1.03; }
+  .exercise-meta { margin-top: 12px; }
+  .moment, .reveal-section { margin-top: 14px; padding: 19px 16px; }
+  .moment h2, .reveal-section h2 { font-size: 29px; }
+  .moment p, .moment li, .reveal-section p, .reveal-section li, .reveal-section blockquote { font-size: 16px; }
+  .quote-block { margin: 13px 0; padding: 13px 0; }
+  .quote-block blockquote { font-size: 21px; }
+  .participation { margin-top: 17px; padding-top: 17px; }
+  .community-band { margin-top: 26px; padding: 24px 19px; }
+  .community-band h2 { font-size: 29px; }
+  .signup-card { padding: 22px 18px; }
+  .signup-fields { grid-template-columns: 1fr; }
+  .library-next-steps { grid-template-columns: 1fr; gap: 12px; margin-top: 28px; }
+}

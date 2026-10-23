@@ -178,6 +178,7 @@ exports.handler = async (event) => {
   const workshopPasswords = [
     process.env.FIVE_SKILLS_ACCESS_PASSWORD,
     process.env.WHAT_TO_SAY_ACCESS_PASSWORD,
+    process.env.FOCAL_POINT_ACCESS_PASSWORD,
   ].filter(Boolean);
   if (!workshopPasswords.length) {
     return json(500, { ok: false, message: 'Member account setup is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.' });

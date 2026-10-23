@@ -6,7 +6,12 @@ const json = (statusCode, body) => ({
 
 const clean = (value) => String(value || '').trim();
 const email = (value) => clean(value).toLowerCase();
-const escapeFormula = (value) => clean(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+const FOCAL_POINT_WORKSHOP = 'Finding the Focal Point';
+
+const getOrigin = (event) => {
+  const proto = event.headers['x-forwarded-proto'] || 'https';
+  return `${proto}://${event.headers.host}`;
+};
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { ok: false, message: 'Method not allowed.' });
@@ -29,33 +34,32 @@ exports.handler = async (event) => {
   if (!participantEmail || !workshop) return json(400, { ok: false, message: 'Please enter your email.' });
 
   try {
-    const query = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
-    query.searchParams.set('maxRecords', '1');
-    query.searchParams.set('filterByFormula', `AND(LOWER({Email})='${escapeFormula(participantEmail)}',{Workshop}='${escapeFormula(workshop)}')`);
-    const existingResponse = await fetch(query, { headers: { Authorization: `Bearer ${token}` } });
-    if (!existingResponse.ok) throw new Error(`Airtable lookup failed with ${existingResponse.status}`);
-    const existing = await existingResponse.json();
+    const registrationFields = {
+      Registration: `${workshop} | ${participantEmail}`,
+      'Participant Name': participantName,
+      Email: participantEmail,
+      Workshop: workshop,
+      'Access Granted': true,
+      'Registered At': new Date().toISOString(),
+      'Source URL': clean(payload.sourceUrl),
+    };
 
-    if (!existing.records?.length) {
-      const createResponse = await fetch(`https://api.airtable.com/v0/${baseId}/${tableId}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          records: [{
-            fields: {
-              Registration: `${workshop} | ${participantEmail}`,
-              'Participant Name': participantName,
-              Email: participantEmail,
-              Workshop: workshop,
-              'Access Granted': true,
-              'Registered At': new Date().toISOString(),
-              'Source URL': clean(payload.sourceUrl),
-            },
-          }],
-          typecast: true,
-        }),
-      });
-      if (!createResponse.ok) throw new Error(`Airtable create failed with ${createResponse.status}`);
+    const createResponse = await fetch(`https://api.airtable.com/v0/${baseId}/${tableId}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        records: [{ fields: registrationFields }],
+        typecast: true,
+      }),
+    });
+    if (!createResponse.ok) {
+      const details = await createResponse.text();
+      throw new Error(`Airtable create failed with ${createResponse.status}: ${details}`);
+    }
+
+    if (workshop === FOCAL_POINT_WORKSHOP) {
+      const accessUrl = `${getOrigin(event)}/finding-focal-point-access.html?email=${encodeURIComponent(participantEmail)}`;
+      return json(200, { ok: true, email: participantEmail, accessUrl });
     }
 
     return json(200, { ok: true, email: participantEmail });

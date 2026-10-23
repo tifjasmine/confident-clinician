@@ -1,8 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R4CT95G3TD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-R4CT95G3TD');
+</script>
+<script src="/analytics-events.js" defer></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="robots" content="noindex, nofollow">
   <title>What to Say When You Do Not Know What to Say | The Confident Clinician</title>
   <meta name="description" content="Private access to What to Say When You Do Not Know What to Say from The Confident Clinician.">
@@ -94,6 +105,9 @@
     .legal{margin-top:28px;color:rgba(255,255,255,.65);font-size:12px;line-height:1.7}
     @media(max-width:760px){.shell{padding-top:42px}.nav{align-items:flex-start;flex-direction:column}.navlinks{flex-wrap:wrap}.fields{grid-template-columns:1fr}.rating-row.nps{grid-template-columns:repeat(6,1fr)}.card{padding:24px 18px}}
   </style>
+  <link rel="stylesheet" href="/mobile-readable.css">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
 <body>
   <nav class="nav">
@@ -167,7 +181,7 @@
 
           <section class="section">
             <label>What resonated most?<textarea name="resonated" placeholder="A moment, phrase, or idea that stuck with you"></textarea></label>
-            <label>What was confusing or could be better?<textarea name="improve" placeholder="Anything unclear, missing, or worth changing"></textarea></label>
+            <label>Was anything not helpful or could anything be improved?<textarea name="improve" placeholder="Anything that felt unclear, unnecessary, missing, or less useful than you hoped"></textarea></label>
           </section>
 
           <section class="section">
@@ -182,7 +196,7 @@
           </section>
 
           <section class="section">
-            <label class="consent"><input type="checkbox" name="testimonialConsent"><span>I am comfortable with The Confident Clinician sharing an anonymized quote from my feedback as a testimonial.</span></label>
+            <label class="consent"><input type="checkbox" name="testimonialConsent"><span>I am comfortable with The Confident Clinician sharing my feedback as a testimonial. If I provide my name, I give permission for it to be included.</span></label>
           </section>
 
           <button class="primary" type="submit">Submit Feedback</button>
@@ -206,6 +220,7 @@
     const workshop = document.querySelector('[data-workshop]');
     const video = document.querySelector('[data-video]');
     const feedbackForm = document.querySelector('[data-feedback-form]');
+    const feedbackHead = document.querySelector('.feedback-head');
     const feedbackStatus = document.querySelector('[data-feedback-status]');
     const thanks = document.querySelector('[data-thanks]');
     const notesForm = document.querySelector('[data-notes-form]');
@@ -362,7 +377,7 @@
               'Say one grounded thing': ratings.say,
               'Explore before explaining': ratings.explore,
               'What resonated most': data.get('resonated'),
-              'What was confusing or could be better': data.get('improve'),
+              'Was anything not helpful or could anything be improved?': data.get('improve'),
               'Recommendation score': ratings.recommendScore,
             },
             ...ratings,
@@ -370,6 +385,7 @@
         });
         const result = await response.json();
         if (!response.ok || !result.ok) throw new Error(result.message || 'Your feedback could not be sent.');
+        feedbackHead.style.display = 'none';
         feedbackForm.style.display = 'none';
         thanks.style.display = 'block';
         thanks.focus();

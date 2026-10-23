@@ -87,7 +87,7 @@ const workshopForItem = (item, email) => {
   if (normalized.includes('what to say when you dont know what to say')) {
     return {
       title: 'What to Say When You Don’t Know What to Say',
-      meta: 'Purchased Workshop',
+      meta: 'Workshop',
       description: 'Use PAUSE to slow the pressure, notice what is happening, and find a grounded response when the words do not come easily.',
       accessUrl: `/what-to-say-access.html?email=${encodeURIComponent(email)}`,
     };
@@ -95,7 +95,7 @@ const workshopForItem = (item, email) => {
   if (normalized.includes('5 skills') || normalized.includes('five skills')) {
     return {
       title: 'The 5 Skills That Separate New Therapists from Confident Clinicians',
-      meta: 'Purchased Workshop',
+      meta: 'Workshop',
       description: 'A practical workshop on performing less, tolerating uncertainty, trusting the process, regulating yourself, and building self trust in the room.',
       accessUrl: `/five-skills-access.html?email=${encodeURIComponent(email)}`,
     };
@@ -105,13 +105,23 @@ const workshopForItem = (item, email) => {
 
 const workshopForRegistration = (workshop, email) => {
   const normalized = normalizeTitle(workshop);
-  if (!normalized.includes('what to say when you dont know what to say')) return null;
-  return {
-    title: 'What to Say When You Don’t Know What to Say',
-    meta: 'Workshop',
-    description: 'Use PAUSE to slow the pressure, notice what is happening, and find a grounded response when the words do not come easily.',
-    accessUrl: `/what-to-say-access.html?email=${encodeURIComponent(email)}`,
-  };
+  if (normalized.includes('what to say when you dont know what to say')) {
+    return {
+      title: 'What to Say When You Don’t Know What to Say',
+      meta: 'Workshop',
+      description: 'Use PAUSE to slow the pressure, notice what is happening, and find a grounded response when the words do not come easily.',
+      accessUrl: `/what-to-say-access.html?email=${encodeURIComponent(email)}`,
+    };
+  }
+  if (normalized === 'finding the focal point') {
+    return {
+      title: 'Finding the Focal Point',
+      meta: 'Workshop',
+      description: 'Learn how to identify what deserves attention when a session contains more information than you can follow at once.',
+      accessUrl: `/finding-focal-point-access.html?email=${encodeURIComponent(email)}`,
+    };
+  }
+  return null;
 };
 
 const verifySupabasePassword = async (email, password) => {
@@ -120,16 +130,21 @@ const verifySupabasePassword = async (email, password) => {
 
   if (!supabaseUrl || !anonKey) return false;
 
-  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/token?grant_type=password`, {
-    method: 'POST',
-    headers: {
-      apikey: anonKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-  });
+  try {
+    const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  return response.ok;
+    return response.ok;
+  } catch (error) {
+    console.warn('Member password service could not be reached; continuing with workshop access code.', error?.cause?.code || error?.message);
+    return false;
+  }
 };
 
 exports.handler = async (event) => {
@@ -140,6 +155,7 @@ exports.handler = async (event) => {
   const workshopPasswords = [
     process.env.FIVE_SKILLS_ACCESS_PASSWORD,
     process.env.WHAT_TO_SAY_ACCESS_PASSWORD,
+    process.env.FOCAL_POINT_ACCESS_PASSWORD,
   ].filter(Boolean);
 
   if (!workshopPasswords.length) {
@@ -196,7 +212,7 @@ exports.handler = async (event) => {
   }
 
   const passwordMatchesWorkshop = workshopPasswords.some((expected) => accessCodeMatches(password, expected));
-  const passwordMatchesAccount = await verifySupabasePassword(email, password);
+  const passwordMatchesAccount = passwordMatchesWorkshop ? false : await verifySupabasePassword(email, password);
 
   if (!passwordMatchesAccount && !passwordMatchesWorkshop) {
     return json(401, {

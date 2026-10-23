@@ -12,18 +12,10 @@ const json = (statusCode, body) => ({
 const defaultFieldMap = {
   name: 'Name',
   email: 'Email',
-  workshop: 'Workshop',
-  amount: 'Amount',
-  currency: 'Currency',
-  paymentStatus: 'Payment Status',
+  workshop: 'Item',
   purchaseDate: 'Purchase Date',
-  stripeSessionId: 'Stripe Session ID',
-  stripePaymentIntent: 'Stripe Payment Intent',
-  stripeCustomerId: 'Stripe Customer ID',
-  coupon: 'Coupon',
-  discount: 'Discount',
-  accessPage: 'Access Page',
   purchased: 'Purchased',
+  notes: 'Notes',
 };
 
 const defaultProductViewFieldMap = {
@@ -48,6 +40,11 @@ const parseJsonEnv = (name, fallback) => {
 };
 
 const getResourceAccessByPrice = () => ({
+  [process.env.FIVE_SKILLS_STRIPE_PRICE_ID || 'price_1TsSiQASIf43jszVDqlejM0I']: {
+    product: '5 Skills Workshop',
+    password: process.env.FIVE_SKILLS_ACCESS_PASSWORD,
+    accessPage: process.env.FIVE_SKILLS_ACCESS_PAGE_URL || 'https://theconfidentclinician.me/five-skills-access.html',
+  },
   [process.env.OFFICIAL_PLAYBOOK_STRIPE_PRICE_ID || 'price_1TwA6QASlf43jszV4L67qeoU']: {
     product: 'Official Playbook',
     password: 'FULLCOVER26',
@@ -55,6 +52,19 @@ const getResourceAccessByPrice = () => ({
   },
   ...parseJsonEnv('RESOURCE_ACCESS_BY_PRICE', {}),
 });
+
+const getResourceAccessFromMetadata = (session) => {
+  const product = String(session?.metadata?.product || '').trim();
+  const resourceId = String(session?.metadata?.resource_id || '').trim();
+  if (resourceId === 'five-skills-video' || /5 skills/i.test(product)) {
+    return {
+      product: '5 Skills Workshop',
+      password: process.env.FIVE_SKILLS_ACCESS_PASSWORD,
+      accessPage: process.env.FIVE_SKILLS_ACCESS_PAGE_URL || 'https://theconfidentclinician.me/five-skills-access.html',
+    };
+  }
+  return null;
+};
 
 const stripeRequest = async (path, secretKey) => {
   const response = await fetch(`https://api.stripe.com/v1${path}`, {
@@ -104,6 +114,80 @@ const getStripeSignatureHeader = (headers = {}) => (
 const centsToDollars = (amount) => {
   if (typeof amount !== 'number') return null;
   return Number((amount / 100).toFixed(2));
+};
+
+const escapeHtml = (value) => String(value || '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
+const sendOwnerPurchaseNotification = async ({ session, resourceAccess, lineItems }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn('Purchase notification skipped because RESEND_API_KEY is missing.');
+    return false;
+  }
+
+  const customer = session.customer_details || {};
+  const name = String(customer.name || 'Not provided').trim();
+  const email = String(customer.email || session.customer_email || 'Not provided').trim().toLowerCase();
+  const itemNames = (Array.isArray(lineItems?.data) ? lineItems.data : [])
+    .map((item) => item.description || item.price?.product?.name)
+    .filter(Boolean);
+  const product = resourceAccess?.product || itemNames.join(', ') || session.metadata?.product || 'Purchase';
+  const amount = typeof session.amount_total === 'number'
+    ? new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: String(session.currency || 'usd').toUpperCase(),
+    }).format(session.amount_total / 100)
+    : 'Not available';
+  const to = process.env.PURCHASE_NOTIFICATION_EMAIL
+    || process.env.FORM_NOTIFICATION_EMAIL
+    || 'admin@theconfidentclinician.me';
+  const from = process.env.PURCHASE_NOTIFICATION_FROM
+    || process.env.FORM_NOTIFICATION_FROM
+    || 'The Confident Clinician <notifications@theconfidentclinician.me>';
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      reply_to: email.includes('@') ? email : undefined,
+      subject: `New purchase: ${product}`,
+      text: [
+        'A new purchase was completed and saved to Airtable.',
+        '',
+        `Product: ${product}`,
+        `Amount: ${amount}`,
+        `Customer: ${name}`,
+        `Email: ${email}`,
+        `Stripe checkout session: ${session.id}`,
+      ].join('\n'),
+      html: `
+        <h2>New purchase</h2>
+        <p><strong>Product:</strong> ${escapeHtml(product)}</p>
+        <p><strong>Amount:</strong> ${escapeHtml(amount)}</p>
+        <p><strong>Customer:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${email.includes('@') ? `<a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>` : escapeHtml(email)}</p>
+        <p><strong>Stripe checkout session:</strong> ${escapeHtml(session.id)}</p>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    console.error('Purchase notification email failed', response.status, message);
+    return false;
+  }
+
+  return true;
 };
 
 const getDiscountDetails = (session) => {
@@ -169,9 +253,9 @@ const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
     Name: customer.name || email,
     Email: email,
     Program: 'Clinical Confidence Lab',
-    'Program Version': 'CCL-2026-v1',
+    'Program Version': 'CCL-2027-v1',
     'Program Weeks': 4,
-    Cohort: 'Founding Beta · October 1, 2026',
+    Cohort: 'Founding Beta · January 15, 2027',
     'Payment Status': 'Paid',
     'Onboarding Status': 'Onboarding incomplete',
     'Current Week': 1,
@@ -194,7 +278,8 @@ const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
 const buildAirtableFields = (session, lineItems, fieldMap) => {
   const customer = session.customer_details || {};
   const firstLineItem = lineItems && lineItems.data && lineItems.data.length > 0 ? lineItems.data[0] : null;
-  const workshop = firstLineItem ? firstLineItem.description : 'The Confident Clinician Workshop';
+  const workshop = String(session?.metadata?.product || '').trim()
+    || (firstLineItem ? firstLineItem.description : 'The Confident Clinician Workshop');
   const amount = centsToDollars(session.amount_total);
   const { coupon, discount } = getDiscountDetails(session);
   const resourceAccess = getPurchasedResource(lineItems);
@@ -215,6 +300,7 @@ const buildAirtableFields = (session, lineItems, fieldMap) => {
   addIfConfigured(fields, fieldMap, 'discount', discount);
   addIfConfigured(fields, fieldMap, 'accessPage', accessPage);
   addIfConfigured(fields, fieldMap, 'purchased', true);
+  addIfConfigured(fields, fieldMap, 'notes', 'Purchased through Stripe checkout.');
   return fields;
 };
 
@@ -403,6 +489,11 @@ const findProductViewRecord = async (email, product, fieldMap) => {
 const upsertProductViewAccess = async (session, lineItems, resourceAccess) => {
   if (!resourceAccess) return null;
 
+  // Workshop purchases are owned by the Users/Workshop Access flow. Writing the
+  // 5 Skills purchase into Product Views can also match free-playbook email
+  // automations, causing an unrelated Mini Playbook email to be sent.
+  if (normalizeProductName(resourceAccess.product) === '5 Skills Workshop') return null;
+
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_PURCHASES_BASE_ID || 'appPQAC82txeqHx9R';
   const tableId = process.env.AIRTABLE_PRODUCT_VIEWS_TABLE_ID || 'Product Views';
@@ -478,12 +569,17 @@ exports.handler = async (event) => {
   }
 
   try {
-    const lineItems = stripeSecretKey
-      ? await stripeRequest(`/checkout/sessions/${session.id}/line_items?limit=100`, stripeSecretKey)
-      : { data: [] };
+    let lineItems = { data: [] };
+    if (stripeSecretKey) {
+      try {
+        lineItems = await stripeRequest(`/checkout/sessions/${session.id}/line_items?limit=100`, stripeSecretKey);
+      } catch (error) {
+        console.warn('Stripe line items could not be retrieved; using signed webhook metadata.', error.message);
+      }
+    }
     await syncClinicalConfidenceLabEnrollment(session, lineItems);
     const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
-    const resourceAccess = getPurchasedResource(lineItems);
+    const resourceAccess = getPurchasedResource(lineItems) || getResourceAccessFromMetadata(session);
     const existingRecord = await findExistingAirtableRecord(session.id, fieldMap);
 
     if (existingRecord) {
@@ -511,6 +607,11 @@ exports.handler = async (event) => {
       } catch (error) {
         console.error('Could not sync resource access', error);
       }
+      try {
+        await sendOwnerPurchaseNotification({ session, resourceAccess, lineItems });
+      } catch (error) {
+        console.error('Could not send owner purchase notification', error);
+      }
 
       return json(200, {
         ok: true,
@@ -524,6 +625,11 @@ exports.handler = async (event) => {
       await upsertProductViewAccess(session, lineItems, resourceAccess);
     } catch (error) {
       console.error('Could not sync resource access', error);
+    }
+    try {
+      await sendOwnerPurchaseNotification({ session, resourceAccess, lineItems });
+    } catch (error) {
+      console.error('Could not send owner purchase notification', error);
     }
 
     return json(200, {

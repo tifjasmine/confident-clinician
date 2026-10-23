@@ -16,6 +16,15 @@ const normalizeTitle = (value) => clean(value)
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
 const escapeFormula = (value) => clean(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+const accessTokenMatches = ({ provided, secret, email, workshop, resourceId }) => {
+  if (!provided || !secret || !email) return false;
+  const expected = crypto.createHmac('sha256', secret)
+    .update(`${email}|${workshop}|${resourceId}`)
+    .digest('hex');
+  const supplied = clean(provided);
+  return supplied.length === expected.length
+    && crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
+};
 
 const airtableList = async ({ baseId, tableId, token, formula, maxRecords = 10 }) => {
   const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`);
@@ -30,12 +39,17 @@ const verifySupabasePassword = async (email, password) => {
   const supabaseUrl = process.env.SUPABASE_URL;
   const anonKey = process.env.SUPABASE_ANON_KEY;
   if (!supabaseUrl || !anonKey) return false;
-  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/token?grant_type=password`, {
-    method: 'POST',
-    headers: { apikey: anonKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  return response.ok;
+  try {
+    const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { apikey: anonKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    return response.ok;
+  } catch (error) {
+    console.warn('Member password service could not be reached; continuing with workshop access code.', error?.cause?.code || error?.message);
+    return false;
+  }
 };
 
 const wistiaEmbed = async (url) => {
@@ -120,8 +134,9 @@ exports.handler = async (event) => {
     let participantName = '';
 
     if (paid) {
-      if (!email || !password) {
-        return json(400, { ok: false, message: 'Enter your purchase email and password.' });
+      const accessToken = clean(payload.accessToken);
+      if (!email || (!password && !accessToken)) {
+        return json(400, { ok: false, message: 'Open the private link from your email, or sign in with your member password.' });
       }
 
       const workshop = clean(fields.Workshop);
@@ -158,11 +173,23 @@ exports.handler = async (event) => {
         return json(403, { ok: false, message: 'I could not find workshop access for that email.' });
       }
 
-      const accountPasswordMatches = await verifySupabasePassword(email, password);
+      const privateLinkMatches = accessTokenMatches({
+        provided: accessToken,
+        secret: token,
+        email,
+        workshop,
+        resourceId,
+      });
       const workshopPassword = resourceId === 'what-to-say-video'
         ? process.env.WHAT_TO_SAY_ACCESS_PASSWORD
-        : process.env.FIVE_SKILLS_ACCESS_PASSWORD;
-      if (!accountPasswordMatches && !accessCodeMatches(password, workshopPassword)) {
+        : resourceId === 'finding-focal-point-video'
+          ? process.env.FOCAL_POINT_ACCESS_PASSWORD
+          : process.env.FIVE_SKILLS_ACCESS_PASSWORD;
+      const workshopPasswordMatches = privateLinkMatches ? false : accessCodeMatches(password, workshopPassword);
+      const accountPasswordMatches = privateLinkMatches || workshopPasswordMatches
+        ? false
+        : await verifySupabasePassword(email, password);
+      if (!privateLinkMatches && !accountPasswordMatches && !workshopPasswordMatches) {
         return json(401, { ok: false, message: 'That access code does not match. Please check your email and try again.' });
       }
     }
@@ -185,3 +212,4 @@ exports.handler = async (event) => {
     return json(500, { ok: false, message: 'Workshop access could not be checked right now. Please try again.' });
   }
 };
+const crypto = require('node:crypto');

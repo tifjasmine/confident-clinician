@@ -1,8 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R4CT95G3TD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-R4CT95G3TD');
+</script>
+<script src="/analytics-events.js" defer></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <title>Clinical Confidence Reset | The Confident Clinician</title>
   <meta name="description" content="A free guidebook for newer therapists navigating imposter syndrome, self-doubt, and the real moments of clinical work." />
   <link rel="canonical" href="https://theconfidentclinician.me/imposterguidebook" />
@@ -88,7 +99,7 @@
     .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
     .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; letter-spacing: 0.08em; color: #fff; text-transform: uppercase; }
     .footer-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
-    .footer-links a { font-size: 11px; color: rgba(255,255,255,0.45); }
+    .footer-links a,.footer-links span { font-size: 11px; color: rgba(255,255,255,0.45); }
 
     @media (max-width: 860px) {
       .nav { flex-direction: column; gap: 12px; padding: 16px 18px; }
@@ -134,6 +145,9 @@
     }
     @media (max-width:900px){.nav-links a,.nav-links button{display:inline-flex;min-height:44px;align-items:center;justify-content:center}}
   </style>
+  <link rel="stylesheet" href="/mobile-readable.css">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
 <body>
   <nav class="nav">
@@ -142,7 +156,7 @@
       <a href="./">Home</a>
       <a href="./about.html">About Me</a>
       <a href="./clinical-confidence-lab">4 Week Lab</a>
-      <a href="./program.html">12-Week Intensive</a>
+      <a href="./resources">Resources</a>
       <a href="./access.html">Member Access</a>
     </div>
   </nav>
@@ -206,6 +220,7 @@
         <a href="./terms.html">Terms</a>
         <a href="./privacy.html">Privacy</a>
         <a href="./disclaimer.html">Disclaimer</a>
+        <span>Not a substitute for clinical supervision</span>
       </div>
     </div>
   </footer>

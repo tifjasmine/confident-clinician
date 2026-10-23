@@ -1,0 +1,40 @@
+/* Site-wide mobile readability baseline. Loaded after page-specific styles. */
+@media (max-width: 600px) {
+  body {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  main p:not(.eyebrow):not(.section-label):not([class*="kicker"]):not([class*="label"]):not([class*="number"]):not([class*="num"]):not([class*="status"]):not([class*="tag"]):not([class*="meta"]),
+  main li,
+  main dd,
+  main blockquote {
+    font-size: 16px !important;
+    line-height: 1.72 !important;
+  }
+
+  main .lead,
+  main [class*="lede"],
+  main [class*="intro"] {
+    font-size: 17px !important;
+    line-height: 1.72 !important;
+  }
+
+  main small,
+  main [class*="note"],
+  footer p,
+  footer a,
+  .footer p,
+  .footer a,
+  .footer span {
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px;
+  }
+}
