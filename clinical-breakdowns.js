@@ -29,13 +29,16 @@
     const shown = items.filter((item) => item.type === currentFolder && [item.title, item.summary, item.category].join(" ").toLowerCase().includes(query));
     folderHeading.textContent = currentFolder === "Clinical Case Lab" ? "Clinical Case Labs" : "The Clinical Response Check";
     status.textContent = shown.length ? `${shown.length} practice ${shown.length === 1 ? "exercise" : "exercises"}` : "";
-    grid.innerHTML = shown.length ? shown.map((item) => `
-      <article class="exercise-card">
-        <span class="type-label">${escape(item.number)} · ${escape(item.category)}</span>
+    grid.innerHTML = shown.length ? shown.map((item) => {
+      const caseLab = item.type === "Clinical Case Lab";
+      return `
+      <article class="exercise-card ${caseLab ? "case-card" : "response-card"}">
+        <div class="card-labels"><span class="type-label">${escape(item.number)} · ${escape(item.category)}</span>${item.roundTwoEnabled ? '<span class="challenge-label">Two-Round Challenge</span>' : ""}</div>
         <h2>${escape(item.title)}</h2>
         <p>${escape(item.summary)}</p>
-        <a class="card-link" href="/clinical-breakdowns/${encodeURIComponent(item.slug)}">Begin exercise →</a>
-      </article>`).join("") : `<div class="empty"><h2>${query ? "No exercises match that search." : "This folder is being prepared."}</h2><p>${query ? "Try a broader clinical topic." : "New practice exercises will appear here once they are published."}</p></div>`;
+        <a class="card-link" href="/clinical-breakdowns/${encodeURIComponent(item.slug)}">${caseLab ? "Enter the case" : "Try the response check"} →</a>
+      </article>`;
+    }).join("") : `<div class="empty"><h2>${query ? "No exercises match that search." : "This folder is being prepared."}</h2><p>${query ? "Try a broader clinical topic." : "New practice exercises will appear here once they are published."}</p></div>`;
   };
 
   folderButtons.forEach((button) => button.addEventListener("click", () => {

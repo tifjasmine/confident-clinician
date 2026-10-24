@@ -34,9 +34,22 @@ async function write(table, fields, id = "") {
 const mapExercise = (record, includeTeaching = false) => {
   const f = record.fields || {};
   const type = f["Exercise Type"] === "What's Missing?" ? "The Clinical Response Check" : f["Exercise Type"];
-  const base = { id: record.id, exerciseId: f["Exercise ID"], type, status: f.Status, number: f["Breakdown Number"], title: f.Title, slug: f.Slug, category: f.Category, summary: f.Summary, readingTime: f["Reading Time"] || "5 min", clientStatement: f["Client Statement"] || "", therapistResponse: f["Therapist Response"] || "", caseScenario: f["Case Scenario"] || "", reflectionQuestion: f["Reflection Question"] || "", hint: f.Hint || "", choices: safeJson(f["Choices JSON"]), publicationDate: f["Publication Date"] || "", seoDescription: f["SEO Description"] || f.Summary || "" };
+  const base = { id: record.id, exerciseId: f["Exercise ID"], type, status: f.Status, number: f["Breakdown Number"], title: f.Title, slug: f.Slug, category: f.Category, summary: f.Summary, clientStatement: f["Client Statement"] || "", therapistResponse: f["Therapist Response"] || "", caseScenario: f["Case Scenario"] || "", reflectionQuestion: f["Reflection Question"] || "", hint: f.Hint || "", choices: safeJson(f["Choices JSON"]), publicationDate: f["Publication Date"] || "", seoDescription: f["SEO Description"] || f.Summary || "", roundTwoEnabled: Boolean(f["Round Two Enabled"]), roundTwoClientResponse: f["Round Two Client Response"] || "", roundTwoQuestion: f["Round Two Question"] || "", roundTwoAnswerFormat: f["Round Two Answer Format"] || "Free text", roundTwoChoices: safeJson(f["Round Two Choices JSON"]), saveFreeTextResponses: Boolean(f["Save Free-Text Responses"]) };
   if (!includeTeaching) return base;
-  return { ...base, clinicalConsideration: f["Clinical Consideration"] || "", clinicalConsiderationExplanation: f["Clinical Consideration Explanation"] || "", therapistIntention: f["Therapist Intention"] || "", clinicalPoints: safeJson(f["Clinical Points JSON"]), alternatives: safeJson(f["Alternatives JSON"]), preferredStartingPoint: f["Preferred Starting Point"] || "", biggerLesson: f["Bigger Clinical Lesson"] || "", nuance: f["Context and Nuance"] || "", practicalApplication: f["Practical Application"] || "", reflectionPrompts: safeJson(f["Reflection Prompts JSON"]) };
+  return { ...base, clinicalConsideration: f["Clinical Consideration"] || "", clinicalConsiderationExplanation: f["Clinical Consideration Explanation"] || "", therapistIntention: f["Therapist Intention"] || "", clinicalPoints: safeJson(f["Clinical Points JSON"]), alternatives: safeJson(f["Alternatives JSON"]), preferredStartingPoint: f["Preferred Starting Point"] || "", biggerLesson: f["Bigger Clinical Lesson"] || "", nuance: f["Context and Nuance"] || "", practicalApplication: f["Practical Application"] || "", reflectionPrompts: safeJson(f["Reflection Prompts JSON"]), roundTwoBreakdown: f["Round Two Breakdown"] || "", whatChangedBetweenDecisions: f["What Changed Between Decisions"] || "" };
+};
+
+const roundSecret = () => process.env.PRACTICE_REFERRAL_SECRET || process.env.PRACTICE_ADMIN_SESSION_SECRET || "";
+const createRoundToken = (exercise, selectedOption) => {
+  const payload = Buffer.from(JSON.stringify({ exerciseId: exercise.exerciseId, slug: exercise.slug, selectedOption, exp: Date.now() + 30 * 60 * 1000 })).toString("base64url");
+  const signature = crypto.createHmac("sha256", roundSecret()).update(payload).digest("base64url");
+  return `${payload}.${signature}`;
+};
+const readRoundToken = (token) => {
+  const [payload, signature] = clean(token, 3000).split("."); if (!payload || !signature || !roundSecret()) return null;
+  const expected = crypto.createHmac("sha256", roundSecret()).update(payload).digest("base64url");
+  if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
+  try { const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")); return data.exp > Date.now() ? data : null; } catch { return null; }
 };
 
 const meaningfulResponse = (value) => {
@@ -106,9 +119,22 @@ exports.handler = async (event) => {
       if (!records[0]) return reply(404, { message: "That practice exercise is not available." });
       const exercise = mapExercise(records[0], true);
       const responseText = clean(body.response, 2000);
-      const selectedOption = clean(body.selectedOption, 4).toUpperCase();
+      let selectedOption = clean(body.selectedOption, 4).toUpperCase();
       if (exercise.type === "The Clinical Response Check") { const problem = meaningfulResponse(responseText); if (problem) return reply(400, { message: problem }); }
-      if (exercise.type === "Clinical Case Lab" && !["A", "B", "C", "D"].includes(selectedOption)) return reply(400, { message: "Choose a response before revealing the analysis." });
+      if (exercise.type === "Clinical Case Lab" && !body.roundTwoToken && !["A", "B", "C", "D"].includes(selectedOption)) return reply(400, { message: "Choose a response before revealing the analysis." });
+      if (exercise.type === "Clinical Case Lab" && exercise.roundTwoEnabled && !body.roundTwoToken) {
+        if (!roundSecret()) return reply(503, { message: "The second decision is temporarily unavailable." });
+        return reply(200, { requiresRoundTwo: true, continuationToken: createRoundToken(exercise, selectedOption), roundTwo: { clientResponse: exercise.roundTwoClientResponse, question: exercise.roundTwoQuestion, answerFormat: exercise.roundTwoAnswerFormat, choices: exercise.roundTwoChoices }, saveFreeTextResponses: exercise.saveFreeTextResponses });
+      }
+      let roundTwoResponse = ""; let roundTwoSelectedOption = ""; let roundTwoRationale = "";
+      if (exercise.type === "Clinical Case Lab" && exercise.roundTwoEnabled) {
+        const continuation = readRoundToken(body.roundTwoToken);
+        if (!continuation || continuation.exerciseId !== exercise.exerciseId || continuation.slug !== exercise.slug) return reply(400, { message: "That second-round session expired. Please begin the exercise again." });
+        selectedOption = continuation.selectedOption;
+        roundTwoResponse = clean(body.roundTwoResponse, 2000); roundTwoSelectedOption = clean(body.roundTwoSelectedOption, 4).toUpperCase(); roundTwoRationale = clean(body.roundTwoRationale, 2000);
+        if (exercise.roundTwoAnswerFormat === "Multiple choice" && !["A", "B", "C", "D"].includes(roundTwoSelectedOption)) return reply(400, { message: "Choose a Round Two response before viewing the analysis." });
+        if (exercise.roundTwoAnswerFormat !== "Multiple choice") { const problem = meaningfulResponse(roundTwoResponse); if (problem) return reply(400, { message: problem }); }
+      }
       const sessionId = clean(body.sessionId, 100);
       if (await checkRateLimit(sessionId)) return reply(429, { message: "You've submitted several practices recently. Please wait a few minutes and try again." });
       const referral = decodeReferral(clean(body.referralToken, 2000));
@@ -119,7 +145,8 @@ exports.handler = async (event) => {
       }
       const attemptId = `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       const now = new Date().toISOString();
-      await write(TABLES.attempts, { "Attempt ID": attemptId, "Exercise ID": exercise.exerciseId, "Exercise Slug": exercise.slug, "Exercise Type": exercise.type, "Visitor Response": responseText || null, "Selected Option": selectedOption || null, "Optional Rationale": clean(body.rationale, 2000) || null, "Anonymous Session ID": sessionId, Source: clean(body.source || "direct", 100), "Source Campaign": clean(body.campaign, 150), "Exercise Category": exercise.category, "Lead ID": referral?.leadId || null, "Instagram Handle": instagramHandle || null, Referrer: /^https?:\/\//.test(clean(body.referrer)) ? clean(body.referrer, 1000) : null, "Reveal Completed": true, "Review Status": "New", "Submitted At": now });
+      const storeText = exercise.saveFreeTextResponses;
+      await write(TABLES.attempts, { "Attempt ID": attemptId, "Exercise ID": exercise.exerciseId, "Exercise Slug": exercise.slug, "Exercise Type": exercise.type, "Visitor Response": storeText && responseText ? responseText : null, "Selected Option": selectedOption || null, "Optional Rationale": storeText ? clean(body.rationale, 2000) || null : null, "Round Two Selected Option": roundTwoSelectedOption || null, "Round Two Response": storeText && roundTwoResponse ? roundTwoResponse : null, "Round Two Rationale": storeText && roundTwoRationale ? roundTwoRationale : null, "Anonymous Session ID": sessionId, Source: clean(body.source || "direct", 100), "Source Campaign": clean(body.campaign, 150), "Exercise Category": exercise.category, "Lead ID": referral?.leadId || null, "Instagram Handle": instagramHandle || null, Referrer: /^https?:\/\//.test(clean(body.referrer)) ? clean(body.referrer, 1000) : null, "Reveal Completed": true, "Review Status": "New", "Submitted At": now });
       await history("Attempt Submitted", { "Exercise ID": exercise.exerciseId, "Attempt ID": attemptId, Actor: referral ? "Verified referral" : "Unnamed visitor", "Details JSON": JSON.stringify({ source: clean(body.source || "direct", 100), category: exercise.category }) });
       await funnel("Exercise Submitted", { ...funnelIdentity(referral, { ...body, exerciseId: exercise.exerciseId }), "Attempt ID": attemptId, "Instagram Handle": instagramHandle || null });
       return reply(200, { attemptId, exercise, identityLinked: Boolean(referral) });
