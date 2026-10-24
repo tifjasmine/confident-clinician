@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/practice-admin.css?v=20261024-1">
+  <link rel="stylesheet" href="/practice-admin.css?v=20261024-2">
 </head>
 <body>
   <main class="admin-shell">
@@ -37,9 +37,27 @@
       <form data-login-form><label>Email<input type="email" name="email" autocomplete="username" required></label><label>Password<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">Open dashboard</button><p class="status" data-login-status></p></form>
     </section>
     <section data-dashboard hidden>
-      <nav class="admin-tabs" aria-label="Admin sections"><button class="active" data-tab="overview">Overview</button><button data-tab="exercises">Exercises</button><button data-tab="participation">Participation</button><button data-tab="leads">Leads</button><button data-tab="funnel">Funnel</button><button data-tab="history">History</button></nav>
+      <nav class="admin-tabs" aria-label="Admin sections"><button class="active" data-tab="overview">Overview</button><button data-tab="capture">Quick Capture</button><button data-tab="exercises">Exercises</button><button data-tab="participation">Participation</button><button data-tab="leads">Leads</button><button data-tab="funnel">Funnel</button><button data-tab="history">History</button></nav>
       <p class="status" data-admin-status></p>
       <section class="admin-pane active" data-pane="overview"><div class="summary-grid" data-summary></div><div class="overview-grid"><article class="panel"><h2>Quick actions</h2><button data-new-exercise>Create a new exercise</button><a class="text-link" href="/clinical-breakdowns" target="_blank">View the public library →</a></article><article class="panel"><h2>Content status</h2><div data-content-status></div></article></div></section>
+      <section class="admin-pane" data-pane="capture">
+        <article class="panel capture-panel">
+          <p class="eyebrow">Phone-friendly idea capture</p>
+          <h2>What clinical moment should we build?</h2>
+          <p class="capture-intro">Type it—or tap your phone keyboard’s microphone and say it naturally. The exercise, Instagram package, and ManyChat copy will be saved together as a private draft.</p>
+          <form data-capture-form>
+            <label class="idea-field">Describe the clinical moment<textarea name="idea" minlength="20" required placeholder="Example: A client apologizes every time they become emotional and the therapist keeps reassuring them that it’s okay…"></textarea></label>
+            <div class="capture-options">
+              <label>Exercise format<select name="type"><option>The Clinical Response Check</option><option>Clinical Case Lab</option></select></label>
+              <label>Keyword idea <span class="optional">optional</span><input name="keyword" maxlength="40" placeholder="e.g. REPAIR"></label>
+            </div>
+            <label class="checkbox-field capture-rounds"><input type="checkbox" name="roundTwo" disabled> <span>Make this a two-round Case Lab</span></label>
+            <button class="generate-button" type="submit">Generate Exercise + Campaign</button>
+            <p class="status" data-capture-status>Nothing will publish automatically.</p>
+          </form>
+          <div class="generated-package" data-generated-package hidden></div>
+        </article>
+      </section>
       <section class="admin-pane" data-pane="exercises">
         <div class="editor-grid">
           <aside class="exercise-sidebar"><button data-new-exercise>+ New exercise</button><div data-exercise-list></div></aside>
@@ -102,6 +120,21 @@
                 <p class="field-note">When enabled, participants see a disclosure before submitting. Leave off when you only need validation and completion tracking.</p>
               </section>
 
+              <section class="type-panel campaign-fields">
+                <p class="editor-section-label">Campaign package</p>
+                <div class="field-grid"><label>ManyChat keyword<input name="campaignKeyword"></label><label>Campaign name<input name="campaignName"></label></div>
+                <label>Instagram hook<textarea name="instagramHook"></textarea></label>
+                <label>Instagram caption<textarea name="instagramCaption"></textarea></label>
+                <label>Carousel slides (JSON)<textarea name="carouselSlides" class="code-field"></textarea></label>
+                <label>Public comment replies (JSON)<textarea name="publicReplies" class="code-field"></textarea></label>
+                <label>Opening DM<textarea name="openingDm"></textarea></label>
+                <label>ManyChat button label<input name="manychatButtonLabel"></label>
+                <label>Link-delivery message<textarea name="linkDeliveryMessage"></textarea></label>
+                <label>Follow-up message<textarea name="followUpMessage"></textarea></label>
+                <label>Marblism brief<textarea name="marblismBrief" class="campaign-brief"></textarea></label>
+                <label>Campaign status<select name="campaignStatus"><option>Draft package</option><option>Exercise approved</option><option>ManyChat ready</option><option>Post ready</option><option>Live</option></select></label>
+              </section>
+
               <details><summary>Publishing and search settings</summary><label>SEO description<textarea name="seoDescription"></textarea></label><label>Publication date<input name="publicationDate" type="date"></label></details>
               <div class="sticky-actions"><button type="submit">Save exercise</button><button class="secondary" type="button" data-preview>Preview participant experience</button></div>
             </form>
@@ -114,6 +147,6 @@
       <section class="admin-pane" data-pane="history"><div class="card-grid" data-history></div></section>
     </section>
   </main>
-  <script src="/practice-admin.js?v=20261024-1" defer></script>
+  <script src="/practice-admin.js?v=20261024-2" defer></script>
 </body>
 </html>

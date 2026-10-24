@@ -8,6 +8,9 @@
   const logout = $("[data-logout]");
   const status = $("[data-admin-status]");
   const form = $("[data-exercise-form]");
+  const captureForm = $("[data-capture-form]");
+  const captureStatus = $("[data-capture-status]");
+  const generatedPackage = $("[data-generated-package]");
   let data = { exercises: [], attempts: [], responses: [], leads: [], history: [], events: [] };
 
   const choiceFields = ["A", "B", "C", "D"];
@@ -38,18 +41,20 @@
 
   const resetExercise = () => {
     form.reset();
-    formValue("id"); formValue("exerciseId"); formValue("clinicalPoints", "[]"); formValue("reflectionPrompts", "[]"); formValue("roundTwoChoices", "[]");
+    formValue("id"); formValue("exerciseId"); formValue("clinicalPoints", "[]"); formValue("reflectionPrompts", "[]"); formValue("roundTwoChoices", "[]"); formValue("carouselSlides", "[]"); formValue("publicReplies", "[]");
     updateAuthoringFields();
     switchTab("exercises");
   };
 
   const editExercise = (item) => {
-    ["id", "exerciseId", "type", "status", "number", "title", "slug", "category", "summary", "clientStatement", "therapistResponse", "caseScenario", "hint", "clinicalConsideration", "clinicalConsiderationExplanation", "therapistIntention", "preferredStartingPoint", "biggerLesson", "nuance", "practicalApplication", "seoDescription", "publicationDate", "roundTwoClientResponse", "roundTwoQuestion", "roundTwoAnswerFormat", "roundTwoBreakdown", "whatChangedBetweenDecisions"].forEach((key) => formValue(key, item[key]));
+    ["id", "exerciseId", "type", "status", "number", "title", "slug", "category", "summary", "clientStatement", "therapistResponse", "caseScenario", "hint", "clinicalConsideration", "clinicalConsiderationExplanation", "therapistIntention", "preferredStartingPoint", "biggerLesson", "nuance", "practicalApplication", "seoDescription", "publicationDate", "roundTwoClientResponse", "roundTwoQuestion", "roundTwoAnswerFormat", "roundTwoBreakdown", "whatChangedBetweenDecisions", "campaignKeyword", "campaignName", "instagramHook", "instagramCaption", "openingDm", "manychatButtonLabel", "linkDeliveryMessage", "followUpMessage", "marblismBrief", "campaignStatus"].forEach((key) => formValue(key, item[key]));
     formValue("reflectionQuestion", item.type === "The Clinical Response Check" ? item.reflectionQuestion : "");
     formValue("caseQuestion", item.type === "Clinical Case Lab" ? item.reflectionQuestion : "");
     formValue("clinicalPoints", JSON.stringify(item.clinicalPoints || [], null, 2));
     formValue("reflectionPrompts", JSON.stringify(item.reflectionPrompts || [], null, 2));
     formValue("roundTwoChoices", JSON.stringify(item.roundTwoChoices || [], null, 2));
+    formValue("carouselSlides", JSON.stringify(item.carouselSlides || [], null, 2));
+    formValue("publicReplies", JSON.stringify(item.publicReplies || [], null, 2));
     formChecked("roundTwoEnabled", item.roundTwoEnabled);
     formChecked("saveFreeTextResponses", item.saveFreeTextResponses);
     ["A", "B", "C"].forEach((label, index) => {
@@ -70,6 +75,8 @@
     fields.clinicalPoints = parseJson("clinicalPoints");
     fields.reflectionPrompts = parseJson("reflectionPrompts");
     fields.roundTwoChoices = parseJson("roundTwoChoices");
+    fields.carouselSlides = parseJson("carouselSlides");
+    fields.publicReplies = parseJson("publicReplies");
     fields.roundTwoEnabled = form.roundTwoEnabled.checked;
     fields.saveFreeTextResponses = form.saveFreeTextResponses.checked;
     fields.alternatives = ["A", "B", "C"].map((label) => ({ label, title: fields[`alt${label}Title`] || "", response: fields[`alt${label}Response`] || "", why: fields[`alt${label}Why`] || "" })).filter((item) => item.response);
@@ -130,6 +137,16 @@
   };
   const openDashboard = async () => { login.hidden = true; dashboard.hidden = false; logout.hidden = false; await load(); };
 
+  const manyChatPackage = (item) => `Keyword: ${item.campaignKeyword}\nCampaign: ${item.campaignName}\n\nPublic replies:\n${(item.publicReplies || []).map((reply) => `- ${reply}`).join("\n")}\n\nOpening DM:\n${item.openingDm}\n\nButton:\n${item.manychatButtonLabel}\n\nLink-delivery message:\n${item.linkDeliveryMessage}\n\nFollow-up:\n${item.followUpMessage}\n\nExercise URL:\nhttps://theconfidentclinician.me/clinical-breakdowns/${item.slug}?source=instagram&campaign=${encodeURIComponent(item.campaignName)}&keyword=${encodeURIComponent(item.campaignKeyword)}`;
+  const copy = async (value, button) => { await navigator.clipboard.writeText(value); const original = button.textContent; button.textContent = "Copied"; setTimeout(() => { button.textContent = original; }, 1600); };
+  const showGeneratedPackage = (item) => {
+    generatedPackage.hidden = false;
+    generatedPackage.innerHTML = `<p class="eyebrow">Draft created</p><h2>${escape(item.title)}</h2><p>${escape(item.summary)}</p><div class="package-meta"><span>${escape(item.type)}</span><span>${item.roundTwoEnabled ? "Two rounds" : "One round"}</span><span>Keyword: ${escape(item.campaignKeyword)}</span></div><div class="package-actions"><button type="button" data-open-generated>Review full exercise</button><button type="button" class="secondary" data-copy-marblism>Copy for Marblism</button><button type="button" class="secondary" data-copy-manychat>Copy ManyChat setup</button><a class="link-button" href="/practice-exercise.html?previewId=${encodeURIComponent(item.id)}&slug=${encodeURIComponent(item.slug)}" target="_blank">Preview experience ↗</a></div><p class="field-note">Saved to Airtable as Draft. Nothing is public yet.</p>`;
+    $("[data-open-generated]", generatedPackage).onclick = () => editExercise(item);
+    $("[data-copy-marblism]", generatedPackage).onclick = (event) => copy(item.marblismBrief, event.currentTarget);
+    $("[data-copy-manychat]", generatedPackage).onclick = (event) => copy(manyChatPackage(item), event.currentTarget);
+  };
+
   $("[data-login-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const loginStatus = $("[data-login-status]");
@@ -151,6 +168,29 @@
   });
 
   $$("[data-new-exercise]").forEach((button) => button.addEventListener("click", resetExercise));
+  captureForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = captureForm.querySelector('button[type="submit"]');
+    const payload = Object.fromEntries(new FormData(captureForm));
+    payload.roundTwo = captureForm.roundTwo.checked;
+    button.disabled = true;
+    captureStatus.textContent = "Building the exercise, campaign copy, and private draft…";
+    generatedPackage.hidden = true;
+    try {
+      const result = await request("generate-campaign", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      await load();
+      const item = data.exercises.find((exercise) => exercise.id === result.exercise.id) || result.exercise;
+      showGeneratedPackage(item);
+      captureStatus.textContent = result.message;
+      generatedPackage.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) { captureStatus.textContent = error.message; }
+    finally { button.disabled = false; }
+  });
+  captureForm.type.addEventListener("change", () => {
+    const caseLab = captureForm.type.value === "Clinical Case Lab";
+    captureForm.roundTwo.disabled = !caseLab;
+    if (!caseLab) captureForm.roundTwo.checked = false;
+  });
   form.type.addEventListener("change", updateAuthoringFields);
   form.roundTwoEnabled.addEventListener("change", updateAuthoringFields);
   form.roundTwoAnswerFormat.addEventListener("change", updateAuthoringFields);
