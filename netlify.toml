@@ -101,6 +101,16 @@
   status = 301
 
 [[redirects]]
+  from = "/course/lab"
+  to = "/course/lab/"
+  status = 301
+
+[[redirects]]
+  from = "/course/lab/"
+  to = "/course/lab-2026-preview.html"
+  status = 200
+
+[[redirects]]
   from = "/clinical-confidence-lab"
   to = "/clinical-confidence-lab.html"
   status = 200

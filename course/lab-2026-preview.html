@@ -23,6 +23,16 @@
   <link rel="stylesheet" href="/course/lab-2026-preview.css?v=20261026a">
 </head>
 <body>
+  <section class="preview-login" data-preview-login>
+    <div class="preview-login-story"><p class="brand">The Confident Clinician</p><p class="eyebrow">Student experience preview</p><h1>Practice making decisions you can <em>explain.</em></h1><p>This test account does not connect to a real student, purchase, Airtable record, or saved course progress.</p></div>
+    <form class="preview-login-card" data-preview-login-form>
+      <p class="eyebrow">Private test access</p><h2>Enter the Lab</h2>
+      <label>Email address<input name="email" type="email" autocomplete="username" required></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Open student preview</button>
+      <p class="form-error" data-preview-login-error role="alert"></p>
+    </form>
+  </section>
   <div class="preview-banner">Private curriculum preview · Nothing here changes a student record</div>
   <button class="mobile-menu" type="button" data-menu aria-expanded="false" aria-controls="course-sidebar">Course menu</button>
   <div class="academy-shell">
@@ -40,6 +50,7 @@
         <button class="side-link" data-screen="capstone">Final Capstone</button>
       </nav>
       <p class="sidebar-note">Use fictional or appropriately generalized examples only. Never enter identifiable client information.</p>
+      <button class="preview-signout" type="button" data-preview-signout>Sign out of preview</button>
     </aside>
 
     <main class="course-main">

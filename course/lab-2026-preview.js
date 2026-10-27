@@ -8,6 +8,10 @@ const modules = [
 const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=(v="")=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let completed=new Set(); let caseStep=1; const caseAnswers={};
+const PREVIEW_SESSION="tccLabStudentPreview";
+const PREVIEW_EMAIL="studentpreview@theconfidentclinician.me";
+const PREVIEW_PASSWORD="LabPreview2026!";
+const setPreviewAccess=(allowed)=>{document.body.classList.toggle("preview-authenticated",allowed);$("[data-preview-login]").hidden=allowed;if(allowed)sessionStorage.setItem(PREVIEW_SESSION,"1");else sessionStorage.removeItem(PREVIEW_SESSION)};
 
 const renderModules=()=>{$("[data-module-grid]").innerHTML=modules.map(m=>`<article class="module-card"><p class="eyebrow">Week ${m.week}</p><h3>${m.title}</h3><p>${m.outcome}</p><div class="module-meta"><span>8 activities</span><span>Not started</span></div><button class="secondary" data-go="week-${m.week}">Explore Week ${m.week}</button></article>`).join("");};
 const renderWeek=(m)=>{$(`[data-screen-panel="week-${m.week}"]`).innerHTML=`<header class="page-head"><p class="eyebrow">Week ${m.week}</p><h1>${m.title}</h1><p>${m.outcome}</p></header><div class="week-overview"><div><p class="eyebrow">This week</p><h2>Learn it. See it. Practice it.</h2></div><div class="week-tool"><span>Weekly tool</span><strong>${m.tool}</strong></div></div><div class="activity-stack">${m.lessons.map((x,i)=>activity("Teaching lesson",x,`Video ${i+1}`,false)).join("")}${activity("Demonstration",m.demo,"Wistia video placeholder",false)}${m.cases.map((x,i)=>activity("Clinical case",x,"Guided written practice",m.week===1&&i===0)).join("")}${activity("Reflect and retry","Debrief, score, and redo","Private reflection",false)}${activity("Weekly tool",m.tool,"Printable + saved digital version",false)}</div>`};
@@ -29,5 +33,8 @@ const renderCase=()=>{const host=$("[data-case-player]");$$(".case-progress i").
 const bind=()=>{$$("[data-go]").forEach(x=>x.onclick=()=>show(x.dataset.go));$$('[data-case-open]').forEach(x=>x.onclick=()=>{caseStep=1;renderCase();show('case-advice')});$('[data-case-next]')?.addEventListener('click',()=>{saveFields();const needed=caseStep===1?["noticed","first","why","info"]:caseStep===2?["changed","adjust","next","limits"]:caseStep===4?["keep","change","retry","learned"]:[];if(needed.length&&!meaningful(needed)){$('.form-error').textContent='Add a meaningful attempt to each response before continuing.';return;}caseStep++;renderCase();scrollTo({top:0,behavior:'smooth'})});$('[data-case-restart]')?.addEventListener('click',()=>{Object.keys(caseAnswers).forEach(k=>delete caseAnswers[k]);caseStep=1;renderCase()});};
 
 renderModules();modules.forEach(renderWeek);renderCapstone();renderCase();bind();
+$('[data-preview-login-form]').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const allowed=String(data.get('email')||'').trim().toLowerCase()===PREVIEW_EMAIL&&String(data.get('password')||'')===PREVIEW_PASSWORD;if(!allowed){$('[data-preview-login-error]').textContent='That test email or password does not match.';return}$('[data-preview-login-error]').textContent='';setPreviewAccess(true)});
+$('[data-preview-signout]').onclick=()=>{setPreviewAccess(false);$('[data-preview-login-form]').reset()};
+setPreviewAccess(sessionStorage.getItem(PREVIEW_SESSION)==='1');
 $('[data-menu]').onclick=()=>{const side=$('.course-sidebar');side.classList.toggle('open');$('[data-menu]').setAttribute('aria-expanded',String(side.classList.contains('open')))};
 $('[data-demo-save]').onclick=e=>{const note=e.currentTarget.nextElementSibling;note.textContent='Preview only — this will save privately after the backend migration is approved.'};
