@@ -101,11 +101,6 @@
   status = 301
 
 [[redirects]]
-  from = "/course/lab"
-  to = "/course/lab/"
-  status = 301
-
-[[redirects]]
   from = "/course/lab/"
   to = "/course/lab-2026-preview.html"
   status = 200
