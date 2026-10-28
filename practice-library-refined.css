@@ -64,10 +64,15 @@ body { font-size: 16px; line-height: 1.65; }
 .consent-row input { margin-top: 3px; }
 .signup-card .status { margin: 10px 0 0; }
 .signup-success h3 { margin: 0 0 6px; font: 500 26px/1.1 "Cormorant Garamond", serif; }
-.library-next-steps { display: grid; grid-template-columns: 1.08fr .92fr; gap: 18px; margin-top: 40px; }
+.library-next-steps { position: relative; display: grid; grid-template-columns: 1.08fr .92fr; gap: 18px; margin-top: 58px; padding-top: 42px; border-top: 1px solid rgba(41, 61, 48, .28); }
+.library-next-steps::before { content: ""; position: absolute; top: -2px; left: 0; width: 72px; height: 3px; background: var(--rust); }
 .library-next-steps .signup-card, .library-next-steps .community-band { height: 100%; margin-top: 0; }
 .library-next-steps .community-band { display: flex; flex-direction: column; align-items: flex-start; }
 .library-next-steps .community-band .button { margin-top: auto; }
+.lesson h2 { max-width: 780px; margin-bottom: 20px; font-size: clamp(30px, 3vw, 40px); line-height: 1.12; text-wrap: balance; }
+.lesson p { max-width: 820px; margin: 16px 0 0; line-height: 1.7; }
+.lesson p + p { margin-top: 22px; padding-top: 20px; border-top: 1px solid rgba(246, 241, 232, .18); }
+.lesson strong { font-weight: 600; }
 .intention-note { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
 .intention-note h3 { margin: 0 0 6px; }
 .format-kicker { margin: 0 0 6px; color: var(--rust); font-size: 10px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
@@ -120,5 +125,8 @@ body { font-size: 16px; line-height: 1.65; }
   .community-band h2 { font-size: 29px; }
   .signup-card { padding: 22px 18px; }
   .signup-fields { grid-template-columns: 1fr; }
-  .library-next-steps { grid-template-columns: 1fr; gap: 12px; margin-top: 28px; }
+  .library-next-steps { grid-template-columns: 1fr; gap: 12px; margin-top: 38px; padding-top: 30px; }
+  .library-next-steps::before { width: 54px; }
+  .lesson h2 { font-size: 29px; line-height: 1.14; }
+  .lesson p { line-height: 1.65; }
 }
