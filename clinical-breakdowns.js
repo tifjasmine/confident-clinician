@@ -39,14 +39,15 @@
     const meta = [item.readingTime, item.roundTwoEnabled ? "Two rounds" : ""].filter(Boolean).join(" · ");
     const quote = stripQuotes(item.clientStatement);
     const reply = !isCase && item.therapistResponse ? `<p class="pl-card-reply">Therapist: “${escape(stripQuotes(item.therapistResponse))}”</p>` : "";
+    const clock = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
     return `
       <article class="pl-card">
-        <div class="pl-card-meta"><span class="pl-tag ${isCase ? "pl-tag-case" : "pl-tag-response"}">${isCase ? "Case Lab" : "Response Check"}</span>${meta ? `<span>${escape(meta)}</span>` : ""}</div>
-        ${quote ? `<blockquote class="pl-quote pl-card-quote">“${escape(quote)}”</blockquote>` : ""}
+        <div class="pl-card-top"><span class="pl-tag ${isCase ? "pl-tag-case" : "pl-tag-response"}">${isCase ? "Case Lab" : "Response Check"}</span>${meta ? `<span class="pl-time">${item.readingTime ? clock : ""}${escape(meta)}</span>` : ""}</div>
+        ${quote ? `<blockquote class="pl-card-quote">“${escape(quote)}”</blockquote>` : ""}
         ${reply}
         <h3><a href="${exerciseUrl(item.slug)}">${escape(item.title)}</a></h3>
         <p class="pl-card-summary">${escape(item.summary)}</p>
-        <div class="pl-card-foot"><span>${escape(item.category || "")}</span><span class="pl-card-go" aria-hidden="true">${isCase ? "Enter the case" : "Try the check"} →</span></div>
+        <div class="pl-card-foot"><span>${escape(item.category || "")}</span><span class="pl-card-go" aria-hidden="true">Start</span></div>
       </article>`;
   };
 
@@ -64,11 +65,11 @@
     const shown = items.filter((item) => (currentFilter === "all" || item.type === currentFilter)
       && [item.title, item.summary, item.category, item.clientStatement].join(" ").toLowerCase().includes(query));
     if (shown.length) {
-      status.textContent = query || currentFilter !== "all" ? `Showing ${plural(shown.length, "practice moment")}` : "";
+      status.textContent = query || currentFilter !== "all" ? `Showing ${plural(shown.length, "exercise")}` : "";
       grid.innerHTML = shown.map(cardHtml).join("");
     } else {
       status.textContent = "";
-      grid.innerHTML = `<div class="pl-empty"><h3>${query ? "No practice moments match that search." : "None published yet."}</h3><p>${query ? "Try a broader clinical topic." : "New ones are added regularly."}</p></div>`;
+      grid.innerHTML = `<div class="pl-empty"><h3>${query ? "No exercises match that search." : "None published yet."}</h3><p>${query ? "Try a broader clinical topic." : "New exercises are added regularly."}</p></div>`;
     }
   };
 
@@ -91,8 +92,9 @@
     const setup = card.querySelector("[data-try-setup]");
     if (pick.caseScenario) setup.textContent = pick.caseScenario; else setup.hidden = true;
     if (pick.reflectionQuestion) card.querySelector("[data-try-ask]").textContent = pick.reflectionQuestion;
+    const topic = card.querySelector("[data-try-topic]");
+    if (topic && pick.category) { topic.textContent = pick.category; topic.hidden = false; }
     const choicesBox = card.querySelector("[data-try-choices]");
-    const next = card.querySelector("[data-try-next]");
     card.querySelector("[data-try-link]").href = exerciseUrl(pick.slug);
     pick.choices.filter((c) => c && c.title).slice(0, 4).forEach((choice) => {
       const button = document.createElement("button");
@@ -103,7 +105,6 @@
         const wasOn = button.getAttribute("aria-pressed") === "true";
         choicesBox.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", "false"));
         button.setAttribute("aria-pressed", String(!wasOn));
-        next.hidden = wasOn;
         if (!wasOn) window.tccTrack?.("practice_library_try_choice", { exercise_slug: pick.slug, choice: choice.label || choice.title, source, campaign });
       });
       choicesBox.appendChild(button);
@@ -117,7 +118,7 @@
   signup?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const message = signup.querySelector("[data-library-signup-status]");
-    const button = signup.querySelector("button");
+    const button = signup.querySelector("button[type=submit]");
     const form = new FormData(signup);
     button.disabled = true;
     message.textContent = "Adding you…";
