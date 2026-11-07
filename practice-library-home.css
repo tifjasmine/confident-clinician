@@ -31,10 +31,7 @@ body.pl-page{
 /* Header */
 .pl-page .pl-head{padding:64px 0 44px}
 .pl-page .pl-head h1{margin:0;font:400 clamp(40px,5vw,64px)/1.05 var(--pl-serif);letter-spacing:-.01em;color:var(--pl-text)}
-.pl-page .pl-lede{max-width:620px;margin:0 0 22px;font-size:18px;color:var(--pl-mid)}
-.pl-page .pl-facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin:0;padding:0;list-style:none;font-size:14.5px;color:var(--pl-mid)}
-.pl-page .pl-facts li{display:inline-flex;align-items:center;gap:8px}
-.pl-page .pl-facts svg{color:var(--pl-rust-rule)}
+.pl-page .pl-lede{max-width:620px;margin:0;font-size:18px;color:var(--pl-mid)}
 
 /* Featured case */
 .pl-page .pl-feature{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);border:1px solid var(--pl-line);background:var(--pl-paper)}
