@@ -36,33 +36,19 @@
 
   const cardHtml = (item) => {
     const isCase = item.type === CASE;
-    const meta = [item.readingTime, item.roundTwoEnabled ? "Two rounds" : ""].filter(Boolean).join(" · ") || (isCase ? "Choose your move" : "Review a response");
+    const meta = [item.readingTime, item.roundTwoEnabled ? "Two rounds" : ""].filter(Boolean).join(" · ");
     const quote = stripQuotes(item.clientStatement);
-    const reply = !isCase && item.therapistResponse ? `<p class="pl-card-reply"><b>Therapist responds</b>${escape(stripQuotes(item.therapistResponse))}</p>` : "";
+    const reply = !isCase && item.therapistResponse ? `<p class="pl-card-reply">Therapist: “${escape(stripQuotes(item.therapistResponse))}”</p>` : "";
     return `
       <article class="pl-card">
-        <div class="pl-card-top"><span class="pl-badge ${isCase ? "pl-badge-case" : "pl-badge-response"}">${isCase ? "Case Lab" : "Response Check"}</span><span>${escape(meta)}</span></div>
-        <div class="pl-card-body">
-          ${quote ? `<p class="pl-quote-lead">Your client says:</p><blockquote class="pl-card-quote">“${escape(quote)}”</blockquote>` : ""}
-          ${reply}
-          <h3>${escape(item.title)}</h3>
-          <p class="pl-card-summary">${escape(item.summary)}</p>
-          <div class="pl-card-foot">
-            <span class="pl-card-topic">${escape(item.category || "")}</span>
-            <a class="pl-btn pl-btn-dark" href="${exerciseUrl(item.slug)}" aria-label="${escape(`${isCase ? "Enter the case" : "Try the check"}: ${item.title}`)}">${isCase ? "Enter the case" : "Try the check"}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          </div>
-        </div>
+        <div class="pl-card-meta"><span class="pl-tag ${isCase ? "pl-tag-case" : "pl-tag-response"}">${isCase ? "Case Lab" : "Response Check"}</span>${meta ? `<span>${escape(meta)}</span>` : ""}</div>
+        ${quote ? `<blockquote class="pl-quote pl-card-quote">“${escape(quote)}”</blockquote>` : ""}
+        ${reply}
+        <h3><a href="${exerciseUrl(item.slug)}">${escape(item.title)}</a></h3>
+        <p class="pl-card-summary">${escape(item.summary)}</p>
+        <div class="pl-card-foot"><span>${escape(item.category || "")}</span><span class="pl-card-go" aria-hidden="true">${isCase ? "Enter the case" : "Try the check"} →</span></div>
       </article>`;
   };
-
-  const nextCard = `
-      <article class="pl-card pl-card-next">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-        <h3>The next moment is on its way.</h3>
-        <p>Get each new practice moment by email, or talk it through in the community.</p>
-        <a href="#notify">Notify me →</a>
-      </article>`;
 
   const updateCounts = () => {
     document.querySelectorAll("[data-filter-count]").forEach((node) => {
@@ -79,10 +65,10 @@
       && [item.title, item.summary, item.category, item.clientStatement].join(" ").toLowerCase().includes(query));
     if (shown.length) {
       status.textContent = query || currentFilter !== "all" ? `Showing ${plural(shown.length, "practice moment")}` : "";
-      grid.innerHTML = shown.map(cardHtml).join("") + (query ? "" : nextCard);
+      grid.innerHTML = shown.map(cardHtml).join("");
     } else {
       status.textContent = "";
-      grid.innerHTML = `<div class="pl-empty"><h3>${query ? "No practice moments match that search." : "This type is being prepared."}</h3><p>${query ? "Try a broader clinical topic." : "New practice moments will appear here once they’re published."}</p></div>${query ? "" : nextCard}`;
+      grid.innerHTML = `<div class="pl-empty"><h3>${query ? "No practice moments match that search." : "None published yet."}</h3><p>${query ? "Try a broader clinical topic." : "New ones are added regularly."}</p></div>`;
     }
   };
 
@@ -102,9 +88,11 @@
     const pick = items.filter((item) => item.type === CASE && item.clientStatement && Array.isArray(item.choices) && item.choices.some((c) => c && c.title)).sort(newestFirst)[0];
     if (!pick) return;
     card.querySelector("[data-try-quote]").textContent = `“${stripQuotes(pick.clientStatement)}”`;
+    const setup = card.querySelector("[data-try-setup]");
+    if (pick.caseScenario) setup.textContent = pick.caseScenario; else setup.hidden = true;
+    if (pick.reflectionQuestion) card.querySelector("[data-try-ask]").textContent = pick.reflectionQuestion;
     const choicesBox = card.querySelector("[data-try-choices]");
     const next = card.querySelector("[data-try-next]");
-    const hint = card.querySelector("[data-try-hint]");
     card.querySelector("[data-try-link]").href = exerciseUrl(pick.slug);
     pick.choices.filter((c) => c && c.title).slice(0, 4).forEach((choice) => {
       const button = document.createElement("button");
@@ -116,7 +104,6 @@
         choicesBox.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", "false"));
         button.setAttribute("aria-pressed", String(!wasOn));
         next.hidden = wasOn;
-        hint.hidden = !wasOn;
         if (!wasOn) window.tccTrack?.("practice_library_try_choice", { exercise_slug: pick.slug, choice: choice.label || choice.title, source, campaign });
       });
       choicesBox.appendChild(button);
