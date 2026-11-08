@@ -95,3 +95,23 @@
 .practice-card label{display:block;color:#4b5d54;font-size:.92rem}
 .practice-card textarea{width:100%;min-height:110px;margin-top:10px;padding:12px 14px}
 .practice-card .secondary{margin-top:12px}
+
+/* ---------- Drip: locked weeks ---------- */
+.side-link.is-locked{opacity:.62}
+.side-link.is-locked span:after{content:" · Locked";letter-spacing:.14em}
+.redesign-roadmap .module-card.is-locked h3,.redesign-roadmap .module-card.is-locked .module-outcome{opacity:.72}
+.redesign-roadmap .module-card.is-locked .module-status{color:var(--ital)}
+.locked-shell .course-week-hero{padding-bottom:120px}
+.unlock-card{position:relative;max-width:620px;margin:-72px auto 40px;padding:40px clamp(24px,4vw,48px);background:var(--paper);border:1px solid var(--line);box-shadow:0 30px 70px -40px rgba(30,70,54,.45);display:grid;gap:16px}
+.unlock-card h2{margin:0 0 6px;font-size:clamp(1.8rem,3vw,2.4rem)}
+.unlock-card h2 em{color:var(--terra);font-style:italic}
+.unlock-card p{margin:0;color:#4b5d54}
+.unlock-card label{display:grid;gap:8px;font-weight:500}
+.unlock-card input{height:52px;padding:0 14px;border:1px solid var(--line);background:#fff;font:inherit}
+.unlock-card input:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px rgba(30,70,54,.12)}
+.unlock-card .primary{justify-self:start;background:var(--terra);border-color:var(--terra)}
+.unlock-card .form-error{min-height:0;color:#a2442c}
+.unlock-icon{width:46px;height:46px;border-radius:50%;background:rgba(206,110,82,.12);position:relative}
+.unlock-icon:before{content:"";position:absolute;left:16px;top:21px;width:14px;height:11px;background:var(--terra);border-radius:2px}
+.unlock-icon:after{content:"";position:absolute;left:18px;top:12px;width:6px;height:9px;border:2px solid var(--terra);border-bottom:0;border-radius:6px 6px 0 0}
+.redesign-roadmap .module-card .secondary{font-size:.72rem!important;letter-spacing:.12em!important;gap:8px}
