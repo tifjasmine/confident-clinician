@@ -330,3 +330,27 @@
 .rep-yours{margin:0 0 20px;padding:14px 18px;background:#fff;border:1px solid var(--line)}
 .rep-yours span{color:var(--sage);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
 .rep-yours p{margin:4px 0 0;font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--forest)}
+
+/* Reps: choose, see the reaction */
+.rep-options{display:grid;gap:8px}
+.rep-options button{position:relative;padding:15px 18px;border:1px solid var(--line);background:#fff;color:var(--forest);text-align:left;font:500 1rem/1.45 Jost,sans-serif;cursor:pointer;transition:border-color .15s,background .15s}
+.rep-options button:hover{border-color:var(--forest)}
+.rep-options button.selected{border-color:var(--terra);background:#fbeee9}
+.rep-options button.seen{background:#f6f2ea;color:#5d6e64}
+.rep-options button i{font-style:italic;color:#5d6e64}
+.rep-options button small{display:block;margin-top:4px;color:var(--terra);font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.rep-reaction{margin-top:18px;padding:20px 22px;background:#f3ede2;border-left:2px solid var(--terra)}
+.course-main .rep-reaction blockquote{margin:6px 0 0!important;padding:0!important;border:0!important;background:none!important;font:italic 500 var(--t-quote)/1.45 "Cormorant Garamond",serif!important;color:var(--forest)!important}
+.rep-reaction blockquote i{font-family:Jost,sans-serif;font-size:.9rem;color:var(--sage)}
+.rep-happened{margin:12px 0 0;padding-top:10px;border-top:1px solid rgba(30,70,54,.12);color:#4b5d54}
+.rep-happened b{color:var(--forest);font-weight:600}
+.rep-own{display:grid;gap:8px;margin-top:20px;font-weight:500;color:var(--forest)}
+.rep-own small{font-weight:400;color:var(--sage);margin-left:6px}
+.rep-own textarea{width:100%;padding:12px 14px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:400}
+.rep-tally{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;margin:0 0 18px;background:var(--line);border:1px solid var(--line)}
+.rep-tally div{padding:14px 12px;background:#fff;text-align:center}
+.rep-tally span{display:block;color:#4b5d54;font-size:.78rem}
+.rep-tally b{display:block;margin-top:4px;font:500 1.6rem "Cormorant Garamond",serif;color:var(--forest)}
+.rep-tally .zero b{color:#c9c3b6}
+@media (max-width:700px){.rep-tally{grid-template-columns:repeat(2,1fr)}}
+.rep-tally b{font:500 1.4rem Jost,sans-serif!important}
