@@ -1,0 +1,97 @@
+/* Clinical Confidence Lab: polish layer on the original Cormorant Garamond + Jost style.
+   Loaded last. Keeps the italic accent words, big watermark numerals and overlapping stage cards. */
+:root{--ital:#e9a68f}
+.serif-num,.module-num,.lesson-num{font-family:"Cormorant Garamond",serif;font-weight:500;line-height:1}
+
+/* ---------- Login ---------- */
+.preview-login-card{box-shadow:0 30px 80px -40px rgba(30,70,54,.35)}
+.preview-login-card .primary{background:var(--terra);border-color:var(--terra)}
+.preview-login-card .primary:hover{background:#b95d43;border-color:#b95d43}
+.preview-login-card label{font-weight:500;letter-spacing:.01em}
+.preview-login-card input{transition:border-color .15s,box-shadow .15s}
+.preview-login-card input:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px rgba(30,70,54,.12)}
+
+/* ---------- Course home ---------- */
+.redesign-next{transition:transform .2s ease,box-shadow .2s ease}
+.redesign-next:hover{transform:translateY(-2px);box-shadow:0 18px 40px -22px rgba(206,110,82,.8)}
+.redesign-next strong{font-size:1.75rem!important;line-height:1.15}
+.redesign-roadmap{margin-top:0!important;padding:56px clamp(24px,4vw,56px) 64px!important;background:var(--forest)!important;position:relative}
+.redesign-roadmap:before{content:"Your four weeks";display:block;margin:0 0 26px;color:var(--ital);font:600 .72rem/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.redesign-roadmap .module-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:1px!important;background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.14)}
+.redesign-roadmap .module-card{position:relative;overflow:hidden;min-height:340px!important;padding:30px 26px 26px!important;border:0!important;background:var(--forest)!important;color:#fff!important;transition:background .2s}
+.redesign-roadmap .module-card:hover{background:#245240!important}
+.redesign-roadmap .module-card .module-num{position:absolute;right:10px;bottom:-34px;font-size:11rem;color:rgba(255,255,255,.055);pointer-events:none}
+.redesign-roadmap .module-card .eyebrow{position:relative;margin:0 0 14px;color:#c8d0c7!important;opacity:1!important}
+.redesign-roadmap .module-card h3{position:relative;margin:0 0 14px;color:#fff!important;font-size:1.7rem!important;line-height:1.12}
+.redesign-roadmap .module-card h3 em{color:var(--ital);font-style:italic}
+.redesign-roadmap .module-card .module-outcome{position:relative;margin:0 0 22px;color:#c8d0c7!important;font-size:.92rem;line-height:1.55;opacity:1!important;min-height:0!important}
+.module-foot{position:relative;margin-top:auto;width:100%}
+.module-status{display:block;margin-bottom:12px;color:#c8d0c7;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase}
+.redesign-roadmap .module-card .secondary{width:100%;white-space:nowrap;padding:0 14px!important;margin:0!important;border-color:rgba(255,255,255,.7)!important;color:#fff!important;background:transparent!important}
+.redesign-roadmap .module-card .secondary:hover{background:#fff!important;color:var(--forest)!important}
+.redesign-roadmap .module-card.is-current{background:var(--paper)!important;color:var(--forest)!important}
+.redesign-roadmap .module-card.is-current .module-num{color:rgba(206,110,82,.10)}
+.redesign-roadmap .module-card.is-current .eyebrow,.redesign-roadmap .module-card.is-current .module-status{color:var(--terra)!important}
+.redesign-roadmap .module-card.is-current h3{color:var(--forest)!important}
+.redesign-roadmap .module-card.is-current h3 em{color:var(--terra)}
+.redesign-roadmap .module-card.is-current .module-outcome{color:#4b5d54!important}
+.redesign-roadmap .module-card.is-current .secondary{background:var(--terra)!important;border-color:var(--terra)!important;color:#fff!important}
+.redesign-roadmap .module-card.is-current .secondary:hover{background:#b95d43!important}
+@media (max-width:1100px){.redesign-roadmap .module-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (max-width:640px){.redesign-roadmap .module-grid{grid-template-columns:1fr!important}.redesign-roadmap .module-card{min-height:0!important}}
+
+/* ---------- Week page ---------- */
+.course-stage-tab{transition:transform .18s ease,box-shadow .18s ease}
+.course-stage-tab:not(.active):hover{transform:translateY(-3px);box-shadow:0 16px 30px -22px rgba(30,70,54,.6)}
+.course-lesson-list{gap:0!important;border-top:1px solid var(--line)}
+.course-lesson-list button{grid-template-columns:44px 1fr auto!important;gap:14px!important;padding:18px 6px!important;background:transparent!important;box-shadow:none!important;border-bottom:1px solid var(--line)!important;cursor:pointer;transition:background .15s}
+.course-lesson-list button:hover{background:#fff!important}
+.course-lesson-list button span{font:italic 500 2rem/1 "Cormorant Garamond",serif!important;color:var(--terra)!important}
+.course-lesson-list button strong{display:block;font:500 1.28rem/1.2 "Cormorant Garamond",serif!important;color:var(--forest)}
+.course-lesson-list button strong em{display:block;margin-top:4px;font:400 .86rem/1.45 Jost,sans-serif;font-style:normal;color:#5d6e64}
+.course-lesson-list button small{grid-column:auto!important;align-self:center;font:600 .68rem/1 Jost,sans-serif!important;letter-spacing:.14em;color:var(--terra)!important;white-space:nowrap}
+.course-lesson-list button.is-done small{color:var(--sage)!important}
+.course-then{margin-top:18px;padding:0;border:0;background:none;color:var(--forest);font:500 .92rem Jost,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--terra)}
+@media (max-width:700px){.course-lesson-list button{grid-template-columns:34px 1fr!important}.course-lesson-list button small{grid-column:2!important}}
+
+/* ---------- Start Here ---------- */
+.start-next{margin-top:28px}
+
+/* ---------- Lesson page ---------- */
+.lesson-page{max-width:1000px}
+.lesson-head{position:relative;overflow:hidden;margin:18px 0 0;padding:44px clamp(24px,4vw,52px) 40px;background:var(--forest);color:#fff}
+.lesson-head .lesson-num{position:absolute;right:20px;top:-30px;font-size:15rem;color:rgba(255,255,255,.06)}
+.lesson-head .eyebrow{position:relative;color:var(--ital)}
+.lesson-head h1{position:relative;margin:10px 0 12px;color:#fff;font-size:clamp(2.3rem,4vw,3.4rem);line-height:1.05}
+.lesson-head h1 em{color:var(--ital);font-style:italic}
+.lesson-head p:not(.eyebrow){position:relative;max-width:620px;margin:0;color:#dfe5dc}
+.lesson-video{position:relative;aspect-ratio:16/9;background:#163a2c}
+.lesson-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.lesson-video-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#c8d0c7}
+.lesson-video-empty small{font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+.lesson-play{width:76px;height:76px;border-radius:50%;background:var(--terra);position:relative;box-shadow:0 0 0 10px rgba(206,110,82,.18)}
+.lesson-play:after{content:"";position:absolute;left:31px;top:25px;border-left:19px solid #fff;border-top:13px solid transparent;border-bottom:13px solid transparent}
+.lesson-steps{display:grid;grid-template-columns:repeat(3,1fr);background:var(--paper);border:1px solid var(--line);border-top:0}
+.lesson-steps button{display:flex;gap:12px;align-items:baseline;padding:16px 18px;text-align:left;background:none;border:0;border-left:1px solid var(--line);border-top:3px solid transparent;color:#5d6e64;font:500 .9rem/1.35 Jost,sans-serif;cursor:pointer}
+.lesson-steps button:first-child{border-left:0}
+.lesson-steps button span{font:italic 500 1.4rem/1 "Cormorant Garamond",serif;color:var(--terra)}
+.lesson-steps button.active{color:var(--forest);border-top-color:var(--terra);background:#fff}
+.lesson-steps button.done span:after{content:" ✓";font:normal 600 .8rem Jost,sans-serif;color:var(--sage)}
+.lesson-reflect{position:relative;margin-top:40px;padding:40px clamp(22px,4vw,48px);background:var(--paper);border:1px solid var(--line)}
+.lesson-reflect:before{content:"“";position:absolute;right:28px;top:-8px;font:500 9rem/1 "Cormorant Garamond",serif;color:rgba(206,110,82,.16)}
+.lesson-reflect .eyebrow{color:var(--terra)}
+.lesson-reflect h2{position:relative;max-width:720px;margin:10px 0 22px;font-size:clamp(1.55rem,2.4vw,2rem);line-height:1.22}
+.lesson-reflect textarea{width:100%;min-height:150px;padding:16px;border:1px solid var(--line);background:#fff}
+.lesson-reflect .save-status{min-height:1.2em;margin:8px 0 0;font-size:.82rem;color:var(--sage)}
+.lesson-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:28px 0 12px}
+@media (max-width:700px){.lesson-steps{grid-template-columns:1fr}.lesson-steps button{border-left:0;border-top:1px solid var(--line)}.lesson-nav>*{flex:1 1 100%}.lesson-head .lesson-num{font-size:9rem}}
+
+/* ---------- Practice Floor ---------- */
+.practice-week{margin-top:38px}
+.practice-week-title{padding-bottom:12px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.practice-card{position:relative;padding:28px!important;background:var(--paper)!important;border:1px solid var(--line)!important}
+.practice-card h3{margin:0 0 14px;font-size:1.45rem}
+.course-main .practice-card blockquote{margin:0 0 18px!important;padding:0 0 0 18px!important;border-left:2px solid var(--terra)!important;background:none!important;font:italic 500 1.35rem/1.35 "Cormorant Garamond",serif!important;color:var(--forest)}
+.practice-card label{display:block;color:#4b5d54;font-size:.92rem}
+.practice-card textarea{width:100%;min-height:110px;margin-top:10px;padding:12px 14px}
+.practice-card .secondary{margin-top:12px}
