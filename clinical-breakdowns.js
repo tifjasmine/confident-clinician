@@ -3,56 +3,126 @@
   const grid = document.querySelector("[data-exercise-grid]");
   const status = document.querySelector("[data-library-status]");
   const search = document.querySelector("[data-search]");
-  const folderHeading = document.querySelector("[data-current-folder]");
-  const folderButtons = [...document.querySelectorAll("[data-folder]")];
+  const searchWrap = document.querySelector("[data-search-wrap]");
+  const filterButtons = [...document.querySelectorAll("[data-filter]")];
   const signup = document.querySelector("[data-library-signup]");
   const params = new URLSearchParams(location.search);
   const source = params.get("source") || "direct";
   const campaign = params.get("campaign") || params.get("utm_campaign") || "";
+  const SEARCH_THRESHOLD = 8;
+  const CASE = "Clinical Case Lab";
+  const RESPONSE = "The Clinical Response Check";
   let sessionId = localStorage.getItem("tccPracticeSession");
   if (!sessionId) { sessionId = crypto.randomUUID?.() || `session-${Date.now()}-${Math.random().toString(36).slice(2)}`; localStorage.setItem("tccPracticeSession", sessionId); }
   let items = [];
-  let currentFolder = "The Clinical Response Check";
+  let currentFilter = "all";
   const escape = (value = "") => String(value).replace(/[&<>"']/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
   }[character]));
+  const stripQuotes = (text = "") => String(text).trim().replace(/^["“”']+|["“”']+$/g, "");
+  const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
+
+  // Keep Instagram / ManyChat attribution when a visitor moves from the library into an exercise.
+  const exerciseUrl = (slug, choice = "") => {
+    const url = `/clinical-breakdowns/${encodeURIComponent(slug)}`;
+    const carry = new URLSearchParams();
+    if (params.get("source")) carry.set("source", params.get("source"));
+    if (campaign) carry.set("campaign", campaign);
+    if (choice) carry.set("choice", choice);
+    const query = carry.toString();
+    return query ? `${url}?${query}` : url;
+  };
+
+  const newestFirst = (a, b) => String(b.publicationDate || "").localeCompare(String(a.publicationDate || ""));
+
+  const cardHtml = (item) => {
+    const isCase = item.type === CASE;
+    const meta = [item.readingTime, item.roundTwoEnabled ? "Two rounds" : ""].filter(Boolean).join(" · ");
+    const quote = stripQuotes(item.clientStatement);
+    const reply = !isCase && item.therapistResponse ? `<p class="pl-card-reply">Therapist: “${escape(stripQuotes(item.therapistResponse))}”</p>` : "";
+    const clock = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+    return `
+      <article class="pl-card">
+        <div class="pl-card-top"><span class="pl-tag ${isCase ? "pl-tag-case" : "pl-tag-response"}">${isCase ? "Case Lab" : "Response Check"}</span>${meta ? `<span class="pl-time">${item.readingTime ? clock : ""}${escape(meta)}</span>` : ""}</div>
+        ${quote ? `<blockquote class="pl-card-quote">“${escape(quote)}”</blockquote>` : ""}
+        ${reply}
+        <h3><a href="${exerciseUrl(item.slug)}">${escape(item.title)}</a></h3>
+        <p class="pl-card-summary">${escape(item.summary)}</p>
+        <div class="pl-card-foot"><span>${escape(item.category || "")}</span><span class="pl-card-go" aria-hidden="true">Start</span></div>
+      </article>`;
+  };
 
   const updateCounts = () => {
-    document.querySelectorAll("[data-folder-count]").forEach((node) => {
-      const count = items.filter((item) => item.type === node.dataset.folderCount).length;
-      node.textContent = `${count} ${count === 1 ? "exercise" : "exercises"}`;
+    document.querySelectorAll("[data-filter-count]").forEach((node) => {
+      const key = node.dataset.filterCount;
+      const count = key === "all" ? items.length : items.filter((item) => item.type === key).length;
+      node.textContent = `(${count})`;
     });
+    if (searchWrap) searchWrap.hidden = items.length < SEARCH_THRESHOLD;
   };
 
   const render = () => {
-    const query = search.value.trim().toLowerCase();
-    const shown = items.filter((item) => item.type === currentFolder && [item.title, item.summary, item.category].join(" ").toLowerCase().includes(query));
-    folderHeading.textContent = currentFolder === "Clinical Case Lab" ? "Clinical Case Labs" : "The Clinical Response Check";
-    status.textContent = shown.length ? `${shown.length} practice ${shown.length === 1 ? "exercise" : "exercises"}` : "";
-    grid.innerHTML = shown.length ? shown.map((item) => {
-      const caseLab = item.type === "Clinical Case Lab";
-      return `
-      <article class="exercise-card ${caseLab ? "case-card" : "response-card"}">
-        <div class="card-labels"><span class="type-label">${escape(item.number)} · ${escape(item.category)}</span>${item.roundTwoEnabled ? '<span class="challenge-label">Two-Round Challenge</span>' : ""}</div>
-        <h2>${escape(item.title)}</h2>
-        <p>${escape(item.summary)}</p>
-        <a class="card-link" href="/clinical-breakdowns/${encodeURIComponent(item.slug)}">${caseLab ? "Enter the case" : "Try the response check"} →</a>
-      </article>`;
-    }).join("") : `<div class="empty"><h2>${query ? "No exercises match that search." : "This folder is being prepared."}</h2><p>${query ? "Try a broader clinical topic." : "New practice exercises will appear here once they are published."}</p></div>`;
+    const query = (search?.value || "").trim().toLowerCase();
+    const shown = items.filter((item) => (currentFilter === "all" || item.type === currentFilter)
+      && [item.title, item.summary, item.category, item.clientStatement].join(" ").toLowerCase().includes(query));
+    if (shown.length) {
+      status.textContent = query || currentFilter !== "all" ? `Showing ${plural(shown.length, "exercise")}` : "";
+      grid.innerHTML = shown.map(cardHtml).join("");
+    } else {
+      status.textContent = "";
+      grid.innerHTML = `<div class="pl-empty"><h3>${query ? "No exercises match that search." : "None published yet."}</h3><p>${query ? "Try a broader clinical topic." : "New exercises are added regularly."}</p></div>`;
+    }
   };
 
-  folderButtons.forEach((button) => button.addEventListener("click", () => {
-    currentFolder = button.dataset.folder;
-    folderButtons.forEach((item) => item.classList.toggle("active", item === button));
-    search.value = "";
+  const setFilter = (key) => {
+    currentFilter = key;
+    filterButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.filter === key)));
     render();
-  }));
-  search.addEventListener("input", render);
+    window.tccTrack?.("practice_library_filter", { filter: key });
+  };
+  filterButtons.forEach((button) => button.addEventListener("click", () => setFilter(button.dataset.filter)));
+  search?.addEventListener("input", render);
+
+  // "Try one now": the newest published Case Lab that has authored choices.
+  const setupTryCard = () => {
+    const card = document.querySelector("[data-try-card]");
+    if (!card) return;
+    const pick = items.filter((item) => item.type === CASE && item.clientStatement && Array.isArray(item.choices) && item.choices.some((c) => c && c.title)).sort(newestFirst)[0];
+    if (!pick) return;
+    card.querySelector("[data-try-quote]").textContent = `“${stripQuotes(pick.clientStatement)}”`;
+    const setup = card.querySelector("[data-try-setup]");
+    if (pick.caseScenario) setup.textContent = pick.caseScenario; else setup.hidden = true;
+    if (pick.reflectionQuestion) card.querySelector("[data-try-ask]").textContent = pick.reflectionQuestion;
+    const topic = card.querySelector("[data-try-topic]");
+    if (topic && pick.category) { topic.textContent = pick.category; topic.hidden = false; }
+    const choicesBox = card.querySelector("[data-try-choices]");
+    const link = card.querySelector("[data-try-link]");
+    link.href = exerciseUrl(pick.slug);
+    // Same lettered wording as the exercise page; the pick travels with the link so it isn't asked twice.
+    pick.choices.filter((c) => c && (c.response || c.title)).slice(0, 4).forEach((choice) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("aria-pressed", "false");
+      button.innerHTML = `<span class="pl-opt-letter" aria-hidden="true">${escape(choice.label || "")}</span><span>${escape(stripQuotes(choice.response || choice.title))}</span>`;
+      button.addEventListener("click", () => {
+        const wasOn = button.getAttribute("aria-pressed") === "true";
+        choicesBox.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", "false"));
+        button.setAttribute("aria-pressed", String(!wasOn));
+        link.href = exerciseUrl(pick.slug, wasOn ? "" : choice.label || "");
+        if (!wasOn) window.tccTrack?.("practice_library_try_choice", { exercise_slug: pick.slug, choice: choice.label || choice.title, source, campaign });
+      });
+      choicesBox.appendChild(button);
+    });
+    card.querySelector("[data-try-link]").addEventListener("click", () => {
+      window.tccTrack?.("practice_library_try_continue", { exercise_slug: pick.slug, source, campaign });
+    });
+    card.hidden = false;
+  };
 
   signup?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const message = signup.querySelector("[data-library-signup-status]");
-    const button = signup.querySelector("button");
+    const button = signup.querySelector("button[type=submit]");
     const form = new FormData(signup);
     button.disabled = true;
     message.textContent = "Adding you…";
@@ -62,7 +132,7 @@
       if (!response.ok) throw new Error(data.message);
       signup.innerHTML = `<div class="signup-success"><h3>${escape(data.message)}</h3><p>Your next clinical challenge will come to your inbox.</p></div>`;
       window.tccTrack?.("practice_email_opt_in", { source, campaign, location: "library_home" });
-    } catch (error) { message.textContent = error.message; button.disabled = false; }
+    } catch (error) { message.textContent = error.message || "That didn’t go through. Please try again."; button.disabled = false; }
   });
 
   document.querySelector("[data-library-community]")?.addEventListener("click", () => {
@@ -74,9 +144,14 @@
     fetch(`${api}?action=track`, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: JSON.stringify({ eventType: "Library View", sessionId, source, campaign, page: "practice-library", referrer: document.referrer }) });
   }
 
+  grid.innerHTML = '<div class="pl-skeleton" aria-hidden="true"></div><div class="pl-skeleton" aria-hidden="true"></div>';
   fetch(`${api}?action=list`).then((response) => response.ok ? response.json() : Promise.reject()).then((data) => {
-    items = data.exercises || [];
+    items = (data.exercises || []).slice().sort(newestFirst);
     updateCounts();
     render();
-  }).catch(() => { status.textContent = "The library could not load. Please refresh and try again."; });
+    setupTryCard();
+  }).catch(() => {
+    grid.innerHTML = "";
+    status.textContent = "The library couldn’t load. Please refresh and try again.";
+  });
 })();
