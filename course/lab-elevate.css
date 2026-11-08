@@ -450,3 +450,25 @@
 .course-main .rep-options .opt-body blockquote{margin:6px 0 0!important;padding:0!important;border:0!important;background:none!important;font:italic 500 var(--t-quote)/1.45 "Cormorant Garamond",serif!important;color:var(--forest)!important}
 .rep-options .opt-body .rep-happened+.rep-happened{border-top:0;padding-top:0;margin-top:6px}
 @media (max-width:700px){.rep-options .opt-body{margin-left:18px}}
+
+/* ---------- Pressure Points (Week 1 simulation) ---------- */
+.session-line{margin:0;padding:0;list-style:none;border-left:1px solid rgba(255,255,255,.2)}
+.session-line li button{display:grid;grid-template-columns:64px 1fr auto;gap:8px;align-items:baseline;width:100%;padding:10px 0 10px 16px;border:0;background:none;color:#c8d0c7;text-align:left;font:500 .95rem Jost,sans-serif;cursor:pointer;position:relative}
+.session-line li button:disabled{cursor:default;opacity:.6}
+.session-line li button:before{content:"";position:absolute;left:-5px;top:16px;width:9px;height:9px;border-radius:50%;background:var(--forest);border:1.5px solid rgba(255,255,255,.4)}
+.session-line li.now button{color:#fff}
+.session-line li.now button:before{background:var(--ital);border-color:var(--ital)}
+.session-line li.done button:before{background:#fff;border-color:#fff}
+.session-line b{font-weight:600;color:var(--ital)}
+.session-line i{font-style:normal;color:var(--ital)}
+.course-main .session-line-quote{margin:4px 0 6px!important;padding:0 0 0 16px!important;border:0!important;border-left:2px solid var(--terra)!important;background:none!important;font:italic 500 var(--t-client)/1.4 "Cormorant Garamond",serif!important;color:var(--forest)!important}
+.session-line-quote i{color:#5d6e64}
+.transcript{display:grid;gap:14px;margin-bottom:22px}
+.tr-turn{padding:18px 20px;background:#fff;border:1px solid var(--line)}
+.tr-min{margin:0 0 10px;color:var(--terra);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.tr-line{display:grid;grid-template-columns:52px 1fr;gap:10px;margin:6px 0;font:italic 500 var(--t-quote)/1.4 "Cormorant Garamond",serif;color:var(--forest)}
+.tr-line .who{font:600 .7rem/2 Jost,sans-serif;font-style:normal;letter-spacing:.12em;text-transform:uppercase;color:var(--sage)}
+.tr-line.you .who{color:var(--terra)}
+.tr-line i{color:#5d6e64}
+.tr-pull{margin:4px 0 4px 62px;color:#5d6e64;font-size:.88rem}
+.tr-turn .linkish{margin-top:8px;font-size:.85rem}

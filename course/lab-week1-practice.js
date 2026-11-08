@@ -208,7 +208,7 @@ function renderProfileEvidence() {
   const week = `<div class="pf-grid">
       <div><span>Week 1 reps</span>${R.done ? `<p>${R.done} of ${R.total} moments practiced out loud</p>` : `<p class="pf-todo"><button class="linkish" data-go="w1-blind-spot">Start the reps →</button></p>`}</div>
       <div><span>Your growth edge</span>${R.edge ? `<p>${esc(R.edge)}</p>` : `<p class="pf-todo">${R.done ? "Nothing marked “not yet”" : "After the reps"}</p>`}</div>
-      <div><span>The Advice Request · what you learned</span>${A2.step >= 5 && a1 ? `<p>${esc(A2.reflect)}</p>` : `<p class="pf-todo"><button class="linkish" data-go="case-advice">Complete the simulation →</button></p>`}</div></div>`;
+      <div><span>Pressure Points · pulls you noticed</span>${(window.TCCSessionSummary?.() || {}).done ? `<p>${esc(window.TCCSessionSummary().pulls.join(" · "))}</p>` : `<p class="pf-todo"><button class="linkish" data-go="case-advice">Complete the simulation →</button></p>`}</div></div>`;
   host.innerHTML = `<div class="advanced-shell practice-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
     <header class="practice-head"><p class="eyebrow">Week 1 · Create</p><h1>Update your Confidence <em>Profile.</em></h1><p>Look at where you started, what this week showed you, then choose what to practice next.</p></header>
     <section class="pf-section"><p class="pf-num">1</p><div><h2>Where you started</h2>${started}</div></section>
