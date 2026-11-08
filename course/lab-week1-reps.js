@@ -11,7 +11,8 @@ const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 const stage = t => esc(t).replace(/\(([^)]*)\)/g, "<i>($1)</i>");
 
-const PULLS = { reassure: "Reassure", fix: "Jump to a fix", move: "Move on", defend: "Explain or defend", stay: "Stay curious" };
+const PULLS = { reassure: "Reassuring", fix: "Jumping to a fix", move: "Moving on", defend: "Explaining or defending", stay: "Staying curious" };
+const DOES = { reassure: "Reassures", fix: "Jumps to a fix", move: "Moves on", defend: "Explains or defends", stay: "Stays curious" };
 /* [what you say, pull tag, client's reaction, what happened] */
 const REPS = [
   { id: "sam", who: "Sam, 26", when: "Second session", setup: "Sam has been describing panic attacks at work.",
@@ -87,12 +88,14 @@ function repHTML() {
   return `<div class="rep-client"><p class="rep-meta"><span>${esc(r.who)}</span>${esc(r.when)}</p><p class="rep-setup">${esc(r.setup)}</p>
       <blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>
     <div class="rep-work">
-      <h2>${o ? "Here’s what each response does." : "What would you most likely say?"}</h2>${o ? `<p class="task-sub">Tap any response to see how ${esc(name)} reacts.</p>` : ""}
-      <div class="rep-options${R.first != null ? " explained" : ""}">${r.options.map((op, k) => { const [say, tag] = op; return `<button type="button" class="${k === sel ? "selected" : ""}" data-opt="${k}">
-        ${R.first != null ? `<span class="opt-tags"><em class="eff ${op.effect}">${op.effect === "opens" ? "Opens it up" : "Closes it down"}</em><em>${PULLS[tag]}</em>${k === r.pick ? `<em class="pick">What I’d most likely say</em>` : ""}${R.first === k ? `<em class="first">Your first choice</em>` : ""}</span>` : ""}
-        <span class="opt-say">${stage(say)}</span>
-        ${R.first != null ? `<span class="opt-fit"><b>Can fit when:</b> ${esc(op.fit)}</span>` : ""}</button>
-        ${k === sel ? `<div class="rep-reaction"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote><p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p></div>` : ""}`; }).join("")}</div>
+      <h2>${o ? "Here’s what each response does." : "What would you most likely say?"}</h2>${o ? `<p class="task-sub">Open any response to see how ${esc(name)} reacts.</p>` : ""}
+      <div class="rep-options${R.first != null ? " explained" : ""}">${r.options.map((op, k) => { const [say, tag] = op, open = k === sel, ex = R.first != null; return `<div class="opt${open ? " open" : ""}">
+        <button type="button" class="opt-head" data-opt="${k}" aria-expanded="${open}">
+          ${ex ? `<i class="dot ${op.effect}" aria-hidden="true"></i>` : ""}<span class="opt-say">${stage(say)}</span>
+          ${ex ? `<span class="opt-meta">${DOES[tag]} · ${op.effect === "opens" ? "opens it up" : "closes it down"}${R.first === k ? ` · <b>your first choice</b>` : ""}${k === r.pick ? ` · <b class="pick">what I’d most likely say</b>` : ""}</span>` : ""}
+          ${ex ? `<span class="chev" aria-hidden="true"></span>` : ""}</button>
+        ${open ? `<div class="opt-body"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote>
+          <p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p><p class="rep-happened"><b>Can fit when:</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
       ${o ? `<div class="rep-why"><span>Why I’d most likely say that</span><p>${esc(r.why)}</p></div>
         <div class="rep-take"><span>The skill here</span><p>${esc(r.take)}</p></div>
         <label class="rep-own">In your own words <small>Optional</small><textarea data-own rows="2" placeholder="How would you say it?">${esc(R.own)}</textarea></label>` : ""}

@@ -428,3 +428,25 @@
 /* Stage panel on week pages: same body size and color as everywhere else */
 .course-main .course-stage-focus>p:not(.eyebrow),.course-main .course-stage-copy>p:not(.eyebrow){font-size:1rem!important;line-height:1.6!important;color:#4b5d54!important;max-width:560px}
 .course-main .course-stage-focus h2,.course-main .course-stage-copy h2{font-size:var(--t-h2)!important}
+
+/* Reps: options as a dropdown list */
+.rep-options .opt{border:1px solid var(--line);background:#fff}
+.rep-options .opt.open{border-color:var(--terra)}
+.rep-options .opt-head{display:grid;grid-template-columns:auto 1fr auto;column-gap:12px;align-items:start;width:100%;padding:15px 18px;border:0;background:none;text-align:left;color:var(--forest);font:500 1rem/1.45 Jost,sans-serif;cursor:pointer}
+.rep-options:not(.explained) .opt-head{grid-template-columns:1fr}
+.rep-options .opt-head:hover{background:#faf7f1}
+.rep-options .opt-say{grid-column:2}
+.rep-options:not(.explained) .opt-say{grid-column:1}
+.rep-options .opt-say i{color:#5d6e64}
+.rep-options .opt-meta{grid-column:2;margin-top:4px;color:#5d6e64;font-size:.86rem;font-weight:400}
+.rep-options .opt-meta b{font-weight:600;color:var(--terra)}
+.rep-options .opt-meta b.pick{color:var(--forest)}
+.rep-options .dot{grid-column:1;grid-row:1;width:10px;height:10px;margin-top:7px;border-radius:50%}
+.rep-options .dot.opens{background:#3f7a5d}
+.rep-options .dot.closes{background:#c06a50}
+.rep-options .chev{grid-column:3;grid-row:1/span 2;align-self:center;width:9px;height:9px;border-right:1.5px solid var(--sage);border-bottom:1.5px solid var(--sage);transform:rotate(45deg);margin-top:-4px}
+.rep-options .opt.open .chev{transform:rotate(-135deg);margin-top:4px}
+.rep-options .opt-body{margin:0 18px 16px 40px;padding:16px 18px;background:#f3ede2;border-left:2px solid var(--terra)}
+.course-main .rep-options .opt-body blockquote{margin:6px 0 0!important;padding:0!important;border:0!important;background:none!important;font:italic 500 var(--t-quote)/1.45 "Cormorant Garamond",serif!important;color:var(--forest)!important}
+.rep-options .opt-body .rep-happened+.rep-happened{border-top:0;padding-top:0;margin-top:6px}
+@media (max-width:700px){.rep-options .opt-body{margin-left:18px}}
