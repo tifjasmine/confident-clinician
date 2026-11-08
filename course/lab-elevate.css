@@ -354,3 +354,36 @@
 .rep-tally .zero b{color:#c9c3b6}
 @media (max-width:700px){.rep-tally{grid-template-columns:repeat(2,1fr)}}
 .rep-tally b{font:500 1.4rem Jost,sans-serif!important}
+
+/* ---------- Clinical Detective (Week 2) ---------- */
+.case-board{padding:clamp(24px,3vw,36px);background:var(--forest);color:#fff}
+.case-open{margin:12px 0 22px;font:italic 500 var(--t-quote)/1.45 "Cormorant Garamond",serif;color:#fff}
+.board-label{margin:18px 0 8px;color:var(--ital);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.board-files{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.board-files button{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.04);color:#fff;font:500 .95rem Jost,sans-serif;cursor:pointer}
+.board-files button:disabled{cursor:default}
+.board-files button i{font-style:normal;color:var(--ital)}
+.board-files button.opened{background:rgba(255,255,255,.1)}
+.board-files button.active{border-color:var(--ital)}
+.board-files .twist-file{grid-column:1/-1;border-color:var(--ital);color:var(--ital)}
+.board-files .twist-file.pulse{animation:tccPulse 1.6s ease-in-out infinite}
+@keyframes tccPulse{50%{background:rgba(233,166,143,.18)}}
+@media (prefers-reduced-motion:reduce){.board-files .twist-file.pulse{animation:none}}
+.board-pins{display:flex;flex-wrap:wrap;gap:6px}
+.board-pins span{padding:6px 10px;background:#f3ede2;color:var(--forest);font-size:.85rem}
+.case-theory{position:relative;padding:14px 16px;border:1px solid rgba(255,255,255,.3)}
+.case-theory p{margin:0;font:italic 500 1.05rem/1.4 "Cormorant Garamond",serif}
+.case-theory b{display:block;margin-top:8px;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ital)}
+.case-theory.cracked{border-style:dashed;border-color:var(--ital)}
+.case-theory.cracked p{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(233,166,143,.7)}
+.case-theory.revised{border-color:var(--ital)}
+.clue-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.clue-grid button{padding:12px 14px;border:1px solid var(--line);background:#fff;color:var(--forest);text-align:left;font:500 .95rem/1.35 Jost,sans-serif;cursor:pointer}
+.clue-grid button small{display:block;margin-bottom:2px;color:var(--sage);font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.clue-grid button.selected{border-color:var(--terra);background:#fbeee9}
+.twist-open{width:100%;padding:22px;border:1px dashed var(--terra);background:#fbeee9;color:var(--forest);font:500 1.05rem Jost,sans-serif;cursor:pointer}
+.think-map{margin:0;padding:0;list-style:none;display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.think-map li{display:grid;grid-template-columns:170px 1fr;gap:16px;padding:16px 20px;background:#fff}
+.think-map span{color:var(--terra);font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding-top:4px}
+.think-map p{margin:0;font:500 var(--t-quote)/1.4 "Cormorant Garamond",serif;color:var(--forest)}
+@media (max-width:700px){.clue-grid{grid-template-columns:1fr}.think-map li{grid-template-columns:1fr;gap:4px}}
