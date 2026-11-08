@@ -190,12 +190,34 @@ function bindBlind(host) {
   $("[data-b-finish]", host)?.addEventListener("click", () => { B.done = true; saveB(); renderBlind(); top(); });
 }
 
+const P_KEY = "tcc-w1-profile-v1";
+let P = Object.assign({ target: "", saved: false }, load(P_KEY) || {});
 function renderProfileEvidence() {
-  const panel = $('[data-screen-panel="w1-profile"] .advanced-shell'); if (!panel) return;
-  let box = $("[data-profile-evidence]", panel);
-  if (!B.saved) { box?.remove(); return; }
-  if (!box) { box = document.createElement("aside"); box.dataset.profileEvidence = ""; box.className = "profile-evidence"; $(".advanced-head", panel).after(box); }
-  box.innerHTML = `<p class="eyebrow">From your Blind Spot Lab</p><div><span>Your pull</span><p>${esc(B.pull)}</p></div><div><span>Your line</span><p>“${esc(B.line)}”</p></div>`;
+  const host = $("[data-w1-profile]"); if (!host) return;
+  const base = window.TCCBaseline?.() || { done: false, baseline: {} }, b = base.baseline;
+  const A2 = load("tcc-w1-advice-v2") || {}, a1 = find(beat1, A2.b1);
+  if (!P.target && b.target) P.target = b.target;
+  const pull = B.pull;
+  const started = base.done ? `<div class="pf-grid">
+      <div><span>The moment you chose</span><p>${esc(b.moment)}</p></div>
+      <div><span>Where your attention goes</span><p>${esc([...(b.attention || [])].join(" · "))}</p></div>
+      <div><span>Your starting target</span><p>${esc(b.target)}</p></div></div>`
+    : `<div class="pf-empty"><p>You haven’t taken the starting assessment yet. It takes about five minutes.</p><button class="secondary" data-go="start">Take the starting assessment →</button></div>`;
+  const week = `<div class="pf-grid">
+      <div><span>Blind Spot Lab · your pull</span>${B.done ? `<p>${esc(pull)}</p>` : `<p class="pf-todo"><button class="linkish" data-go="w1-blind-spot">Complete the lab →</button></p>`}</div>
+      <div><span>Blind Spot Lab · your line</span>${B.done ? `<p>“${esc(B.line)}”</p>` : `<p class="pf-todo">After the lab</p>`}</div>
+      <div><span>The Advice Request · what you learned</span>${A2.step >= 5 && a1 ? `<p>${esc(A2.reflect)}</p>` : `<p class="pf-todo"><button class="linkish" data-go="case-advice">Complete the simulation →</button></p>`}</div></div>`;
+  host.innerHTML = `<div class="advanced-shell practice-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
+    <header class="practice-head"><p class="eyebrow">Week 1 · Create</p><h1>Update your Confidence <em>Profile.</em></h1><p>Look at where you started, what this week showed you, then choose what to practice next.</p></header>
+    <section class="pf-section"><p class="pf-num">1</p><div><h2>Where you started</h2>${started}</div></section>
+    <section class="pf-section"><p class="pf-num">2</p><div><h2>What this week showed you</h2>${week}</div></section>
+    <section class="pf-section"><p class="pf-num">3</p><div><h2>What you’ll practice next</h2><p class="task-sub">Keep your starting target, or sharpen it based on this week. Make it small enough to notice and repeat.</p>
+      <div class="task"><textarea data-pf-target rows="3" placeholder="For the next seven days, I will…">${esc(P.target)}</textarea></div>
+      <div class="task-actions"><span class="pf-status">${P.saved ? "Saved to your profile ✓" : ""}</span><button class="primary" data-pf-save>${P.saved ? "Save changes" : "Save my Week 1 profile"}</button></div></div></section>
+  </div>`;
+  bindGo(host);
+  $("[data-pf-target]", host).oninput = e => { P.target = e.target.value; P.saved = false; store(P_KEY, P); };
+  $("[data-pf-save]", host).onclick = () => { if (!P.target.trim()) return; P.saved = true; store(P_KEY, P); renderProfileEvidence(); };
 }
 
 /* ================= The Advice Request ================= */
@@ -224,32 +246,35 @@ const find = (list, id) => list.find(x => x[0] === id);
 const jordanPanel = (extra = "") => `<aside class="moment"><p class="moment-who"><span>Jordan, 29</span>Third session</p>
   <p class="moment-setup">Exhausted after another argument with their partner. The relationship has felt draining for months. No safety screening has been done yet.</p>
   <div class="moment-lines"><span class="moment-say solo">“${esc(jordanLine)}”</span></div>${extra}</aside>`;
-const reply = (who, text, shows) => `<div class="client-reply"><span class="reply-who">${who}</span><blockquote>${esc(text).replace(/^\(([^)]*)\)/, '<i>($1)</i>')}</blockquote>${shows ? `<p class="reply-shows">${esc(shows)}</p>` : ""}</div>`;
+const reply = (who, text, shows) => `<div class="client-reply"><span class="reply-who">${who}</span><blockquote>${esc(text).replace(/^\(([^)]*)\)/, '<i>($1)</i>')}</blockquote>${shows ? `<p class="reply-shows"><b>What happened:</b> ${esc(shows)}</p>` : ""}</div>`;
 
 function adviceBody() {
   const s = A.step, p1 = find(beat1, A.b1), p2 = find(beat2, A.b2), rw = find(beat1, A.rw);
   if (s === 1) return `${jordanPanel()}<div class="task">
-    <p class="eyebrow">Beat 1 · Your move</p><h2>What’s the <em>purpose</em> of your next move?</h2>
+    <p class="eyebrow">Step 1 · Your move</p><h2>What’s the <em>purpose</em> of your next move?</h2>
     <p class="task-sub">Pick the purpose first. Jordan will respond to what you choose.</p>
     <div class="pick-list">${beat1.map(([id, label]) => `<button type="button" class="${A.b1 === id ? "selected" : ""}" data-b1="${id}">${esc(label)}</button>`).join("")}</div>
     ${A.b1 ? `<label>Say your line out loud to Jordan, then type it.<input type="text" data-a="line" value="${esc(A.line)}" placeholder="What you’d actually say…"></label>` : ""}
     ${A.b1 && A.seen1 ? reply("Jordan", p1[2], p1[3]) : ""}
     <p class="form-error" role="alert"></p><div class="task-actions">${A.b1 ? (A.seen1 ? `<button class="primary" data-a-next>Keep going →</button>` : `<button class="primary" data-a-seen>See how Jordan responds</button>`) : ""}</div></div>`;
   if (s === 2) return `${jordanPanel(`<div class="moment-path"><span>You chose</span>${esc(p1[1])}</div>`)}<div class="task">
-    <p class="eyebrow">Beat 2 · It shifts</p><p class="task-sub">A few minutes later, Jordan says:</p><h2 class="said">“${esc(shiftLine)}”</h2>
+    <p class="eyebrow">Step 2 · It shifts</p><p class="task-sub">A few minutes later, Jordan says:</p><h2 class="said">“${esc(shiftLine)}”</h2>
     <p class="task-q">What’s your purpose now?</p>
     <div class="pick-list">${beat2.map(([id, label]) => `<button type="button" class="${A.b2 === id ? "selected" : ""}${A.b1 === "safety" && id === "assess" ? " suggested" : ""}" data-b2="${id}">${esc(label)}${A.b1 === "safety" && id === "assess" ? "<small>Given what Jordan just shared</small>" : ""}</button>`).join("")}</div>
     ${A.b2 === "role" ? `<p class="your-line">You: “I won’t choose for you, and I won’t leave you alone with it.”</p>` : ""}
     ${p2 ? reply("Jordan", p2[2], p2[3]) : ""}
     <p class="form-error" role="alert"></p><div class="task-actions"><button class="secondary" data-a-back>← Back</button>${A.b2 ? `<button class="primary" data-a-next>Rewind →</button>` : ""}</div></div>`;
-  if (s === 3) return `${jordanPanel()}<div class="task">
-    <p class="eyebrow">Beat 3 · Rewind</p><h2>Go back. Try a different <em>purpose.</em></h2>
-    <p class="task-sub">Same question from Jordan. Pick a purpose you didn’t choose the first time.</p>
+  if (s === 3) return `<aside class="moment"><p class="moment-who"><span>Jordan, 29</span>Your first try</p>
+      <div class="moment-lines"><span class="moment-say solo">“${esc(jordanLine)}”</span></div>
+      <div class="moment-path"><span>You chose</span>${esc(p1[1])}</div>
+      <div class="moment-path"><span>Jordan said</span><em class="moment-reply">${esc(p1[2]).replace(/^\(([^)]*)\)/, '<i>($1)</i>')}</em></div></aside><div class="task">
+    <p class="eyebrow">Step 3 · Rewind</p><h2>Same question. Try a different <em>purpose.</em></h2>
+    <p class="task-sub">Your first try is on the left. Pick something you didn’t choose.</p>
     <div class="pick-list">${beat1.filter(x => x[0] !== A.b1).map(([id, label]) => `<button type="button" class="${A.rw === id ? "selected" : ""}" data-rw="${id}">${esc(label)}</button>`).join("")}</div>
-    ${rw ? `<div class="paths"><div><p class="eyebrow">First time</p><h3>${esc(p1[1])}</h3>${reply("Jordan", p1[2], "")}</div><div><p class="eyebrow">Rewind</p><h3>${esc(rw[1])}</h3>${reply("Jordan", rw[2], "")}</div></div>` : ""}
+    ${rw ? reply("Jordan", rw[2], rw[3]) + `<p class="insight-key solo">Same client, same question. A different purpose led somewhere different.</p>` : ""}
     <p class="form-error" role="alert"></p><div class="task-actions"><button class="secondary" data-a-back>← Back</button>${rw ? `<button class="primary" data-a-next>Reflect →</button>` : ""}</div></div>`;
   if (s === 4) return `<div class="task wide">
-    <p class="eyebrow">Reflect</p><h2>What did Jordan’s reactions tell you about what the question was <em>really</em> asking?</h2>
+    <p class="eyebrow">Step 4 · Reflect</p><h2>Jordan asked, “Should I break up with them?” What was Jordan <em>really</em> asking for?</h2><p class="task-sub">Think about how Jordan responded to each purpose you tried.</p>
     <textarea data-a="reflect" rows="4" placeholder="A few honest sentences…">${esc(A.reflect)}</textarea>
     <p class="form-error" role="alert"></p>
     <div class="breakdown"><p class="eyebrow">How clinicians think about it</p>
@@ -259,7 +284,7 @@ function adviceBody() {
     <div class="task-actions"><button class="secondary" data-a-back>← Back</button><button class="primary" data-a-next>Finish →</button></div></div>`;
   return `<div class="task wide"><p class="eyebrow">The Advice Request · Complete</p><h2>You practiced choosing a purpose, not a perfect <em>line.</em></h2>
     <div class="pattern-grid"><div><span>Your first move</span><p>${esc(p1[1])}${A.line ? `<br><em>“${esc(A.line)}”</em>` : ""}</p></div><div><span>When it shifted</span><p>${esc(p2[1])}</p></div><div><span>Your rewind</span><p>${esc(rw[1])}</p></div><div><span>What you took from it</span><p>${esc(A.reflect)}</p></div></div>
-    <div class="task-actions"><button class="secondary" data-a-restart>Run it again</button><button class="primary" data-a-save>${A.saved ? "Saved ✓ Back to Week 1" : "Save to my Playbook"}</button></div></div>`;
+    <div class="task-actions"><button class="secondary" data-a-restart>Run it again</button><button class="primary" data-go="w1-profile">Add it to my Confidence Profile →</button></div></div>`;
 }
 
 function renderAdvice() {
@@ -285,7 +310,6 @@ function bindAdvice(host) {
     A.step++; saveA(); renderAdvice(); top();
   });
   $("[data-a-restart]", host)?.addEventListener("click", () => { A = aDefaults(); saveA(); renderAdvice(); top(); });
-  $("[data-a-save]", host)?.addEventListener("click", () => { if (A.saved) { go("week-1"); return; } A.saved = true; saveA(); renderAdvice(); });
 }
 
 /* Re-render whenever either screen opens, so the newest version always shows. */
