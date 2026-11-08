@@ -425,3 +425,6 @@
 .sum-own p{margin:4px 0 0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:var(--t-quote);color:var(--forest)}
 .rep-summary .rep-edge{margin-top:14px}
 @media (max-width:700px){.rep-score{flex-direction:column;align-items:flex-start}.sum-retry button{grid-template-columns:1fr}}
+/* Stage panel on week pages: same body size and color as everywhere else */
+.course-main .course-stage-focus>p:not(.eyebrow),.course-main .course-stage-copy>p:not(.eyebrow){font-size:1rem!important;line-height:1.6!important;color:#4b5d54!important;max-width:560px}
+.course-main .course-stage-focus h2,.course-main .course-stage-copy h2{font-size:var(--t-h2)!important}
