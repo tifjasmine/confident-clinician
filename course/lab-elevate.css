@@ -308,3 +308,25 @@
 .rep-edge p{margin:8px 0 6px;font:italic 500 1.5rem/1.35 "Cormorant Garamond",serif}
 .rep-edge small{color:#c8d0c7}
 @media (max-width:860px){.reps-layout{grid-template-columns:1fr}.reps-rail{position:static;display:flex;gap:6px;overflow-x:auto}.reps-rail .reps-level{display:none}.reps-rail button{white-space:nowrap}.rep-examples{grid-template-columns:1fr}.rep-check{flex-direction:column;align-items:flex-start}}
+
+/* ================= One type scale for every inner page =================
+   Display: only the Course Home and Week heroes.  Page title 2.4rem.  Section heading 1.6rem.
+   Client's main line 1.45rem.  Quoted lines and saved answers 1.2rem.  Body 1rem.  Labels .72rem. */
+:root{--t-title:clamp(2rem,3vw,2.4rem);--t-h2:1.6rem;--t-h3:1.25rem;--t-client:1.45rem;--t-quote:1.2rem}
+.course-main :is(.practice-head h1,.advanced-head h1,.page-head h1,.lesson-head h1,.pattern-card h1){font-size:var(--t-title)!important;line-height:1.1!important}
+.course-main :is(.task h2,.rep-work h2,.lesson-reflect h2,.pf-section h2,.start-step-body h2,.rep-summary h2,.unlock-card h2,.course-stage-copy h2,.course-stage-focus h2,.baseline-card h2,.practice-week-title,.playbook-panel h2){font-size:var(--t-h2)!important;line-height:1.25!important}
+.course-main :is(.practice-card h3,.paths h3,.module-card h3:not(.redesign-roadmap *)){font-size:var(--t-h3)!important}
+.course-main :is(.moment-lines,.moment-lines .solo,.rep-line,.task h2.said){font-size:var(--t-client)!important;line-height:1.45!important}
+.course-main .moment-lines .moment-stage,.course-main .moment-lines i{font-size:1rem!important}
+.course-main :is(.take blockquote,.client-reply blockquote,.rep-examples blockquote,.insight-quote,.pattern-grid p,.pf-grid p,.practice-card blockquote,.moment-reply,.moment-you,.rep-edge p,.pull-note,.rep-check p,.sort-row>p:first-child,.reveal li strong,.rep-yours p){font-size:var(--t-quote)!important;line-height:1.45!important}
+.course-main .moment-who span{font-size:var(--t-h3)!important}
+.course-main :is(.task-sub,.task label,.pick-list button,.rep-examples p,.insight p:not(.insight-quote):not(.insight-label),.reply-shows,.moment-setup,.start-step-sub){font-size:1rem!important}
+.course-main .rep-client:after,.course-main .moment:after,.course-main .lesson-reflect:before{display:none}
+
+/* Typed response in reps */
+.rep-input{width:100%;padding:14px 16px;border:1px solid var(--line);background:#fff;font:inherit}
+.rep-input:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px rgba(30,70,54,.1)}
+.rep-work .form-error{margin:8px 0 0;color:#a2442c;min-height:0}
+.rep-yours{margin:0 0 20px;padding:14px 18px;background:#fff;border:1px solid var(--line)}
+.rep-yours span{color:var(--sage);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.rep-yours p{margin:4px 0 0;font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--forest)}

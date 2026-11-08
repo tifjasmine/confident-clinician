@@ -1,5 +1,5 @@
 /* Week 1 Reps (prototype, Nov 7). One loop for every rep:
-   hear the moment → say it out loud → see two example responses → check yourself on the week's skill → go again.
+   read the moment → write your response → see two example responses → check yourself on the week's skill → go again.
    All client moments and example responses are fictional DRAFT wording for Tiffany's clinical review. No scores. */
 (() => {
 "use strict";
@@ -61,43 +61,32 @@ const REPS = [
     ] }
 ];
 
-const blank = () => ({ i: 0, step: "say", reps: {} });   // reps[id] = { done, checks:[yes/no x3], tries }
+const blank = () => ({ i: 0, step: "say", reps: {} });
+   // reps[id] = { done, checks:[yes/no x3], tries }
 let S = Object.assign(blank(), load() || {});
 const cur = () => REPS[S.i];
 const rec = id => S.reps[id] || (S.reps[id] = { done: false, checks: [null, null, null], tries: 0 });
 
-/* Optional recording: microphone only when the learner asks, never by default, nothing is uploaded or saved. */
-let media = null, chunks = [], audioURL = "";
-async function toggleRecord(btn, host) {
-  if (media && media.state === "recording") { media.stop(); return; }
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    chunks = []; media = new MediaRecorder(stream);
-    media.ondataavailable = e => chunks.push(e.data);
-    media.onstop = () => { stream.getTracks().forEach(t => t.stop()); if (audioURL) URL.revokeObjectURL(audioURL); audioURL = URL.createObjectURL(new Blob(chunks)); const a = $("[data-playback]", host); if (a) { a.src = audioURL; a.hidden = false; } btn.textContent = "Record again"; btn.classList.remove("on"); };
-    media.start(); btn.textContent = "Stop recording"; btn.classList.add("on");
-  } catch { btn.textContent = "Microphone not available"; btn.disabled = true; }
-}
-
 function railHTML() {
-  return `<ol class="reps-rail">${REPS.map((r, i) => { const d = S.reps[r.id]?.done; const newLevel = i === 0 || REPS[i - 1].level !== r.level;
-    return `${newLevel ? `<li class="reps-level">${LEVELS[r.level]}</li>` : ""}<li><button type="button" class="${i === S.i ? "active" : ""} ${d ? "done" : ""}" data-rep="${i}"><span>${d ? "✓" : i + 1}</span>${esc(r.who.split(",")[0])}</button></li>`; }).join("")}</ol>`;
+  return `<ol class="reps-rail">${REPS.map((r, i) => { const d = S.reps[r.id]?.done;
+    return `<li><button type="button" class="${i === S.i ? "active" : ""} ${d ? "done" : ""}" data-rep="${i}"><span>${d ? "✓" : i + 1}</span>${esc(r.who.split(",")[0])}</button></li>`; }).join("")}</ol>`;
 }
 
 function repHTML() {
   const r = cur(), R = rec(r.id), last = S.i === REPS.length - 1;
-  const client = `<div class="rep-client"><p class="rep-meta"><span>${esc(r.who)}</span>${esc(r.when)} · ${LEVELS[r.level]}</p><p class="rep-setup">${esc(r.setup)}</p><blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
+  const client = `<div class="rep-client"><p class="rep-meta"><span>${esc(r.who)}</span>${esc(r.when)}</p><p class="rep-setup">${esc(r.setup)}</p><blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
   const steps = ["Say it", "Compare", "Check"], idx = { say: 0, compare: 1, check: 2 }[S.step];
   const stepBar = `<ol class="rep-steps">${steps.map((t, i) => `<li class="${i === idx ? "on" : i < idx ? "past" : ""}">${t}</li>`).join("")}</ol>`;
   let body = "";
-  if (S.step === "say") body = `<h2>Respond out loud, as if ${esc(r.who.split(",")[0])} is in front of you.</h2>
-      <div class="rep-tools"><button type="button" class="ghost" data-record>Record myself (optional)</button><audio data-playback controls hidden></audio></div>
-      <div class="rep-actions"><button class="primary" data-said>I said it →</button></div>`;
-  if (S.step === "compare") body = `<h2>Two ways a clinician might respond</h2>
+  if (S.step === "say") body = `<h2>What would you say to ${esc(r.who.split(",")[0])}?</h2>
+      <textarea class="rep-input" data-resp rows="3" placeholder="Write it the way you’d actually say it.">${esc(R.text || "")}</textarea>
+      <p class="form-error" role="alert"></p>
+      <div class="rep-actions"><button class="primary" data-said>Compare →</button></div>`;
+  if (S.step === "compare") body = `<div class="rep-yours"><span>You said</span><p>“${esc(R.text)}”</p></div><h2>Two ways a clinician might respond</h2>
       <div class="rep-examples">${r.examples.map(([t, w]) => `<div><blockquote>${esc(t)}</blockquote><p>${esc(w)}</p></div>`).join("")}</div>
       <p class="rep-note">Yours doesn’t need to match. There’s more than one good response.</p>
       <div class="rep-actions"><button class="primary" data-tocheck>Check my response →</button></div>`;
-  if (S.step === "check") { const all = R.checks.every(v => v !== null); body = `<h2>Check your response</h2>
+  if (S.step === "check") { const all = R.checks.every(v => v !== null); body = `<div class="rep-yours"><span>You said</span><p>“${esc(R.text)}”</p></div><h2>Check your response</h2>
       <div class="rep-checks">${CHECKS.map((c, k) => `<div class="rep-check"><p>${c}</p><div><button type="button" class="${R.checks[k] === true ? "sel" : ""}" data-chk="${k}" data-v="1">Yes</button><button type="button" class="${R.checks[k] === false ? "sel" : ""}" data-chk="${k}" data-v="0">Not yet</button></div></div>`).join("")}</div>
       <div class="rep-actions"><button class="ghost" data-again>Try this one again</button>${all ? (last ? `<button class="primary" data-finish>Finish this week’s reps →</button>` : `<button class="primary" data-next>Next rep →</button>`) : ""}</div>`; }
   return `${client}<div class="rep-work">${stepBar}${body}</div>`;
@@ -106,7 +95,7 @@ function repHTML() {
 function summaryHTML() {
   const miss = CHECKS.map((c, k) => [c, REPS.filter(r => S.reps[r.id]?.checks[k] === false).length]).sort((a, b) => b[1] - a[1]);
   const edge = miss[0][1] ? miss[0][0] : "";
-  return `<div class="rep-summary"><p class="eyebrow">Week 1 reps · done</p><h2>${REPS.length} moments. <em>Out loud.</em></h2>
+  return `<div class="rep-summary"><p class="eyebrow">Week 1 reps · done</p><h2>${REPS.length} moments <em>practiced.</em></h2>
     ${edge ? `<div class="rep-edge"><span>Your growth edge this week</span><p>${esc(edge)}</p><small>Marked “not yet” ${miss[0][1]} of ${REPS.length} times. That’s what to practice next.</small></div>` : `<div class="rep-edge"><span>This week</span><p>You checked “yes” on every skill. Try the Stretch reps again, faster.</p></div>`}
     <div class="rep-actions"><button class="ghost" data-restart>Run the reps again</button><button class="primary" data-go-profile>Add to my Confidence Profile →</button></div></div>`;
 }
@@ -115,7 +104,7 @@ function render() {
   const host = $("[data-week1-blind-spot]"); if (!host) return;
   const finished = S.finished;
   host.innerHTML = `<div class="advanced-shell reps-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
-    <header class="practice-head"><p class="eyebrow">Week 1 · Reps</p><h1>${SKILL.replace(/respond$/, "<em>respond.</em>")}</h1><p>Six short client moments. Respond out loud each time.</p></header>
+    <header class="practice-head"><p class="eyebrow">Week 1 · Reps</p><h1>${SKILL.replace(/respond$/, "<em>respond.</em>")}</h1><p>Six short client moments. They get harder as you go.</p></header>
     <div class="reps-layout">${railHTML()}<article class="rep-card">${finished ? summaryHTML() : repHTML()}</article></div></div>`;
   bind(host);
 }
@@ -124,8 +113,8 @@ function bind(host) {
   $$("[data-go]", host).forEach(b => b.onclick = () => window.TCCShowCourseScreen?.(b.dataset.go));
   const r = cur(), R = rec(r.id), top = () => host.scrollIntoView({ behavior: "smooth", block: "start" });
   $$("[data-rep]", host).forEach(b => b.onclick = () => { S.i = +b.dataset.rep; S.step = "say"; S.finished = false; save(); render(); });
-  $("[data-record]", host)?.addEventListener("click", e => toggleRecord(e.currentTarget, host));
-  $("[data-said]", host)?.addEventListener("click", () => { if (media && media.state === "recording") media.stop(); R.tries++; S.step = "compare"; save(); render(); });
+  $("[data-resp]", host)?.addEventListener("input", e => { R.text = e.target.value; save(); });
+  $("[data-said]", host)?.addEventListener("click", () => { if ((R.text || "").trim().length < 3) { $(".form-error", host).textContent = "Write your response first."; return; } R.tries++; S.step = "compare"; save(); render(); });
   $("[data-tocheck]", host)?.addEventListener("click", () => { S.step = "check"; save(); render(); });
   $$("[data-chk]", host).forEach(b => b.onclick = () => { R.checks[+b.dataset.chk] = b.dataset.v === "1"; save(); render(); });
   $("[data-again]", host)?.addEventListener("click", () => { R.checks = [null, null, null]; S.step = "say"; save(); render(); });
