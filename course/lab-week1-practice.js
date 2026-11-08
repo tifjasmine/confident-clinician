@@ -28,115 +28,136 @@ const maya = {
   ]
 };
 const noticed = [
-  ["The laugh and the phone", "A light tone over something that may feel heavier."],
-  ["“It’s fine” twice", "Repeating it can be a way of closing the topic."],
-  ["The jump to her sister", "She changed direction right after naming what didn’t happen."],
+  ["The laugh and the glance at her phone", "A light tone over something that may feel heavier."],
+  ["“It’s fine” said twice", "Repeating it can be a way of closing the topic."],
+  ["The jump to her sister", "She changed direction right after saying what didn’t happen."],
   ["The quieter apology", "She apologizes to you, not just about the task."],
-  ["“You probably think I’m hopeless”", "A prediction about what you think. It puts you in the room."]
+  ["“You probably think I’m hopeless”", "A prediction about what you think. It brings you into the moment."]
+];
+const pulls = [
+  ["Reassure her she isn’t hopeless", "Warm, but it can quietly close the door on the fear she just named."],
+  ["Fix the manager problem", "Useful later. Right now it skips what not doing it meant to her."],
+  ["Move on to her sister’s visit", "It follows her lead, and leaves the moment that just mattered behind."],
+  ["Explain that change takes time", "True, but it teaches instead of asks."],
+  ["Freeze and search for the right words", "Very common. The pause itself is fine. What helps is knowing where to look next."]
 ];
 const sortItems = [
   ["She didn’t raise it with her manager.", "seen", "She told you this directly."],
   ["She laughed and looked at her phone.", "seen", "You could see it happen."],
   ["She changed the subject.", "seen", "She moved to her sister without being asked."],
   ["She’s avoiding conflict.", "added", "Plausible, but she hasn’t said it. Worth checking, not assuming."],
-  ["She’s embarrassed.", "added", "The laugh and apology might fit. They might not. Ask."],
+  ["She’s embarrassed.", "added", "The laugh and the apology might fit. They might not."],
   ["She expects you to judge her.", "added", "She said “you probably think,” but what she expects is still your guess."]
 ];
-const pulls = [
-  ["Reassure her she isn’t hopeless", "Warm, and it can quietly close the door on the fear she just named."],
-  ["Fix the manager problem", "Useful later. Right now it skips what not doing it meant to her."],
-  ["Follow her to the sister topic", "Respects her lead, and leaves the moment that just mattered behind."],
-  ["Explain that change takes time", "True, and it teaches instead of asks."],
-  ["Something else", ""]
+const checks = {
+  3: "“What made bringing it up feel hard?”",
+  4: "“What was it like to tell me you didn’t bring it up?”",
+  5: "“What do you imagine I’m thinking right now?”"
+};
+/* Say: three purposes, each with one example line and Maya's response to that purpose. */
+const purposes = [
+  { id: "name", label: "Name what just happened", why: "Gently point to something she did, so she can look at it with you.",
+    example: "You laughed when you said it wasn’t a big deal. What’s it like to say that out loud?",
+    maya: "(small laugh) I guess I always say it’s fine. It’s easier than admitting I chickened out.",
+    next: [
+      ["“What does ‘chickened out’ feel like, saying it to me now?”", "Stays with what just opened and slows things down."],
+      ["“You said ‘always.’ Where else do you tell people it’s fine?”", "Follows her own word toward a pattern. Helpful if she’s ready to widen the lens."],
+      ["“Let’s plan how you’ll bring it up this week.”", "Action can come later. Right now it may close what she just opened."]
+    ] },
+  { id: "fear", label: "Get curious about her fear", why: "Explore the prediction she made about you instead of correcting it.",
+    example: "You said I probably think you’re hopeless. What made you expect that?",
+    maya: "(pause) Because everyone else does. My dad used to say I never finish anything.",
+    next: [
+      ["“That sounds like it stuck with you. What’s it like to hear it in your head now?”", "Stays with the impact of what she shared."],
+      ["“When you expect me to see you that way, what happens for you here, with me?”", "Gently brings it into the room. Powerful when the relationship can hold it."],
+      ["“I don’t think you’re hopeless at all.”", "Kind, but it argues with her rather than understanding her, and may end the thread."]
+    ] },
+  { id: "choose", label: "Choose the focus together", why: "Name both threads and let her decide what matters most today.",
+    example: "We could talk about your sister’s visit, or the conversation that didn’t happen. Which matters more today?",
+    maya: "The sister thing, I guess… (pause) Actually, no. The work thing. I keep avoiding it.",
+    next: [
+      ["“You changed your mind just now. What shifted?”", "Notices her process in the moment. Often where the real material is."],
+      ["“Let’s look at the avoiding. What happens right before you back off?”", "Follows her choice and gets specific."],
+      ["“Okay, tell me about your sister’s visit.”", "Follows her first answer and misses that she corrected herself."]
+    ] }
 ];
-const takes = [
-  ["Name what happened", "You laughed when you said it wasn’t a big deal. What’s it like to say that out loud?"],
-  ["Get curious about the fear", "You said I probably think you’re hopeless. What made you expect that?"],
-  ["Choose together", "We could talk about your sister, or the conversation that didn’t happen. Which matters more today?"]
-];
-const devon = { who: "Devon, 52", when: "First session · arms folded", line: "My wife made me come. I don’t really see the point, but go ahead, ask your questions." };
-const ROUNDS = ["Spot it", "Seen or supplied", "The pull", "Your move", "Fresh rep"];
+const ROUNDS = [["P", "Pause"], ["A", "Attend"], ["U", "Use what you know"], ["S", "Say it"], ["E", "Explore"]];
 
 let B = load(B_KEY) || {};
-const bDefaults = () => ({ round: 1, taps: [], first: "", revealed: false, sort: {}, check: "", pull: "", pullOther: "", miss: "", line: "", takes: false, closest: "", revised: "", d: { notice: "", pull: "", say: "" }, done: false, saved: false });
-B = Object.assign(bDefaults(), B);
+const bDefaults = () => ({ v: 3, round: 1, pull: "", taps: [], revealed: false, sort: {}, check: "", purpose: "", line: "", spoken: false, next: "", done: false, saved: false });
+B = B.v === 3 ? Object.assign(bDefaults(), B) : bDefaults();
 const saveB = () => store(B_KEY, B);
 
-const momentPanel = (m, interactive) => `<aside class="moment">
-  <p class="moment-who"><span>${esc(m.who)}</span>${esc(m.when)}</p>
-  <p class="moment-setup">${esc(m.setup)}</p>
-  <div class="moment-lines">${m.lines.map(([id, kind, text]) => kind === "stage"
+const momentPanel = (interactive) => `<aside class="moment">
+  <p class="moment-who"><span>${esc(maya.who)}</span>${esc(maya.when)}</p>
+  <p class="moment-setup">${esc(maya.setup)}</p>
+  <div class="moment-lines">${maya.lines.map(([id, kind, text]) => kind === "stage"
     ? `<button type="button" class="moment-stage${B.taps.includes(id) ? " tapped" : ""}" ${interactive ? `data-tap="${id}"` : "disabled"}>(${esc(text)})</button>`
     : `<button type="button" class="moment-say${B.taps.includes(id) ? " tapped" : ""}" ${interactive ? `data-tap="${id}"` : "disabled"}>“${esc(text)}”</button>`).join(" ")}</div>
+  ${interactive ? `<p class="moment-hint">Tap to highlight</p>` : ""}
 </aside>`;
 
 function bRail() {
-  return `<nav class="round-rail" aria-label="Blind Spot Lab rounds">${ROUNDS.map((r, i) => `<button type="button" class="${i + 1 === B.round ? "active" : ""} ${i + 1 < B.round || B.done ? "complete" : ""}" data-b-round="${i + 1}" ${i + 1 > B.round ? "disabled" : ""}><b>${i + 1}</b><span>${r}</span></button>`).join("")}</nav>`;
+  return `<nav class="round-rail pause-rail" aria-label="P.A.U.S.E. steps">${ROUNDS.map(([l, r], i) => `<button type="button" class="${i + 1 === B.round ? "active" : ""} ${i + 1 < B.round || B.done ? "complete" : ""}" data-b-round="${i + 1}" ${i + 1 > B.round ? "disabled" : ""}><b>${l}</b><span>${r}</span></button>`).join("")}</nav>`;
 }
+const pick = id => purposes.find(p => p.id === id);
 
 function blindBody() {
   const r = B.round;
-  if (r === 1) return `${momentPanel(maya, true)}<div class="task">
-    <p class="eyebrow">Round 1 · Spot it</p><h2>Tap what caught your <em>attention.</em></h2>
-    <p class="task-sub">Words, pauses, stage directions. Anything that made you lean in.</p>
-    <label>What stood out first, and why that?<textarea data-b="first" rows="3" placeholder="One or two sentences…">${esc(B.first)}</textarea></label>
-    ${B.revealed ? `<div class="reveal"><p class="eyebrow">What other clinicians noticed</p><ul>${noticed.map(([a, b]) => `<li><strong>${a}</strong>${b}</li>`).join("")}</ul></div>` : ""}
-    <p class="form-error" role="alert"></p>
-    <div class="task-actions">${B.revealed ? `<button class="primary" data-b-next>Next round →</button>` : `<button class="primary" data-b-reveal>See what others noticed</button>`}</div></div>`;
-  if (r === 2) {
-    const allSorted = sortItems.every((_, i) => B.sort[i]);
-    return `${momentPanel(maya, false)}<div class="task">
-    <p class="eyebrow">Round 2 · Seen or supplied</p><h2>Did Maya say it, or did <em>you</em> add it?</h2>
-    <div class="sort-list">${sortItems.map(([s, ans, why], i) => { const pick = B.sort[i]; return `<div class="sort-row${pick ? " picked" : ""}">
-      <p>${esc(s)}</p><div class="sort-btns"><button type="button" class="${pick === "seen" ? "selected" : ""}" data-sort="${i}" data-val="seen">She said or did it</button><button type="button" class="${pick === "added" ? "selected" : ""}" data-sort="${i}" data-val="added">I added it</button></div>
-      ${pick ? `<p class="sort-note ${pick === ans ? "match" : "look"}">${pick === ans ? "Yes. " : "Look again. "}${esc(why)}</p>` : ""}</div>`; }).join("")}</div>
-    ${allSorted ? `<label>Which guess would you most want to check with her, and how would you ask?<textarea data-b="check" rows="3" placeholder="The guess, then the question you’d ask…">${esc(B.check)}</textarea></label>` : ""}
-    <p class="form-error" role="alert"></p>
-    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${allSorted ? `<button class="primary" data-b-next>Next round →</button>` : ""}</div></div>`;
-  }
-  if (r === 3) {
-    const p = pulls.find(x => x[0] === B.pull);
-    return `${momentPanel({ ...maya, lines: maya.lines.slice(6) , setup: "The moment that lands on you:" }, false)}<div class="task">
-    <p class="eyebrow">Round 3 · The pull</p><h2>“You probably think I’m <em>hopeless.</em>”</h2>
-    <p class="task-sub">Be honest. What do you feel pulled to do in the next second?</p>
+  if (r === 1) { const p = pulls.find(x => x[0] === B.pull); return `${momentPanel(false)}<div class="task">
+    <p class="eyebrow">P · Pause</p><h2>She just said, “You probably think I’m <em>hopeless.</em>”</h2>
+    <p class="task-sub">Before you say anything: what do you feel pulled to do?</p>
     <div class="pick-list">${pulls.map(([label]) => `<button type="button" class="${B.pull === label ? "selected" : ""}" data-pull="${esc(label)}">${esc(label)}</button>`).join("")}</div>
-    ${B.pull === "Something else" ? `<label>Name the pull<input type="text" data-b="pullOther" value="${esc(B.pullOther)}" placeholder="e.g. Change the subject so she feels better"></label>` : ""}
-    ${p && p[1] ? `<p class="pull-note">${esc(p[1])}</p>` : ""}
-    ${B.pull ? `<label>If you followed that pull right now, what might Maya miss?<textarea data-b="miss" rows="3" placeholder="One honest sentence…">${esc(B.miss)}</textarea></label>` : ""}
+    ${p ? `<div class="insight"><p>${esc(p[1])}</p><p class="insight-key">Noticing the pull is the pause. It’s information, not an instruction.</p></div>` : ""}
+    <div class="task-actions">${B.pull ? `<button class="primary" data-b-next>Next: Attend →</button>` : ""}</div></div>`; }
+  if (r === 2) return `${momentPanel(true)}<div class="task">
+    <p class="eyebrow">A · Attend</p><h2>Bring your attention back to <em>Maya.</em></h2>
+    <p class="task-sub">In the transcript, tap everything she actually showed you: words, pauses, actions.</p>
+    ${B.revealed ? `<div class="reveal"><p class="eyebrow">What other clinicians noticed</p><ul>${noticed.map(([a, b]) => `<li><strong>${a}</strong>${b}</li>`).join("")}</ul></div>` : `<p class="tap-count">${B.taps.length ? `${B.taps.length} highlighted` : "Nothing highlighted yet"}</p>`}
     <p class="form-error" role="alert"></p>
-    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${B.pull ? `<button class="primary" data-b-next>Next round →</button>` : ""}</div></div>`;
+    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${B.revealed ? `<button class="primary" data-b-next>Next: Use what you know →</button>` : `<button class="primary" data-b-reveal>Compare with other clinicians</button>`}</div></div>`;
+  if (r === 3) {
+    const allSorted = sortItems.every((_, i) => B.sort[i]);
+    return `${momentPanel(false)}<div class="task">
+    <p class="eyebrow">U · Use what you know</p><h2>What do you actually know, and what are you <em>guessing?</em></h2>
+    <p class="task-sub">Sort each statement.</p>
+    <div class="sort-list">${sortItems.map(([s, ans, why], i) => { const pk = B.sort[i]; return `<div class="sort-row">
+      <p>${esc(s)}</p><div class="sort-btns"><button type="button" class="${pk === "seen" ? "selected" : ""}" data-sort="${i}" data-val="seen">She said or did this</button><button type="button" class="${pk === "added" ? "selected" : ""}" data-sort="${i}" data-val="added">I’m guessing this</button></div>
+      ${pk ? `<p class="sort-note ${pk === ans ? "match" : "look"}">${pk === ans ? "Yes. " : "Look again. "}${esc(why)}</p>` : ""}</div>`; }).join("")}</div>
+    ${allSorted ? `<p class="task-q">Which guess would you most want to check with her?</p><div class="pick-list">${[3, 4, 5].map(i => `<button type="button" class="${B.check === String(i) ? "selected" : ""}" data-check="${i}">${esc(sortItems[i][0])}</button>`).join("")}</div>
+      ${B.check ? `<div class="insight"><p class="insight-label">One way to check it</p><p class="insight-quote">${checks[B.check]}</p><p class="insight-key">A guess becomes useful once you ask about it.</p></div>` : ""}` : ""}
+    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${allSorted && B.check ? `<button class="primary" data-b-next>Next: Say it →</button>` : ""}</div></div>`;
   }
-  if (r === 4) return `${momentPanel(maya, false)}<div class="task">
-    <p class="eyebrow">Round 4 · P.A.U.S.E., then your move</p><h2>Pause. Say it out loud. <em>Then</em> type it.</h2>
-    <p class="task-sub">Pause · Attend · Use what you know · Say one purposeful thing · Explore what follows.</p>
-    <label>What you said<textarea data-b="line" rows="3" placeholder="One natural sentence, not a perfect script…">${esc(B.line)}</textarea></label>
-    ${B.takes ? `<div class="takes"><p class="eyebrow">Three clinician takes · different purposes, none “the answer”</p>${takes.map(([p, t]) => `<div class="take"><span>${p}</span><blockquote>“${esc(t)}”</blockquote></div>`).join("")}</div>
-      <p class="task-q">Which purpose was closest to yours?</p><div class="pick-list inline">${[...takes.map(t => t[0]), "None of these"].map(l => `<button type="button" class="${B.closest === l ? "selected" : ""}" data-closest="${esc(l)}">${esc(l)}</button>`).join("")}</div>
-      <label>Keep your line, or change it? <small>Optional</small><textarea data-b="revised" rows="2" placeholder="Your revised line, if you’d change it…">${esc(B.revised)}</textarea></label>` : ""}
+  if (r === 4) { const p = pick(B.purpose); return `${momentPanel(false)}<div class="task">
+    <p class="eyebrow">S · Say one purposeful thing</p><h2>What do you want your next words to <em>do?</em></h2>
+    <p class="task-sub">Pick a purpose first. The words come easier once you know what they’re for.</p>
+    <div class="pick-list">${purposes.map(x => `<button type="button" class="${B.purpose === x.id ? "selected" : ""}" data-purpose="${x.id}">${esc(x.label)}<small class="muted">${esc(x.why)}</small></button>`).join("")}</div>
+    ${p ? `<label>Now say your line out loud to Maya. Then type what you said.<textarea data-b="line" rows="3" placeholder="One natural sentence. It doesn’t need to be perfect.">${esc(B.line)}</textarea></label>
+      ${B.spoken ? `<div class="insight"><p class="insight-label">One way a clinician might say it</p><p class="insight-quote">“${esc(p.example)}”</p><p class="insight-key">Yours doesn’t need to match. Check that it does the same job.</p></div>` : ""}` : ""}
     <p class="form-error" role="alert"></p>
-    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${B.takes ? `<button class="primary" data-b-next>Next round →</button>` : `<button class="primary" data-b-takes>See three clinician takes</button>`}</div></div>`;
-  if (r === 5) return `<aside class="moment"><p class="moment-who"><span>${devon.who}</span>${devon.when}</p><p class="moment-setup">A new client. Less help this time.</p><div class="moment-lines"><span class="moment-say solo">“${esc(devon.line)}”</span></div></aside><div class="task">
-    <p class="eyebrow">Round 5 · Fresh rep</p><h2>Same skill, new <em>room.</em></h2>
-    <div class="rep-fields">
-      <label>What do you notice?<input type="text" data-bd="notice" value="${esc(B.d.notice)}"></label>
-      <label>What pull do you feel?<input type="text" data-bd="pull" value="${esc(B.d.pull)}"></label>
-      <label>What would you say? <small>Say it out loud first</small><textarea data-bd="say" rows="3">${esc(B.d.say)}</textarea></label>
-    </div>
-    <p class="form-error" role="alert"></p>
-    <div class="task-actions"><button class="secondary" data-b-back>← Back</button><button class="primary" data-b-finish>Finish the lab</button></div></div>`;
+    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${p ? (B.spoken ? `<button class="primary" data-b-next>Next: See how Maya responds →</button>` : `<button class="primary" data-b-spoken>Compare with an example</button>`) : ""}</div></div>`; }
+  if (r === 5) { const p = pick(B.purpose), n = p.next.find(x => x[0] === B.next); return `<aside class="moment">
+      <p class="moment-who"><span>${esc(maya.who)}</span>${esc(maya.when)}</p>
+      <p class="moment-setup">You said:</p><p class="moment-you">“${esc(B.line)}”</p>
+      <p class="moment-setup">Maya responds:</p><div class="moment-lines"><span class="moment-say solo">${esc(p.maya).replace(/\(([^)]*)\)/g, '<i>($1)</i>')}</span></div></aside><div class="task">
+    <p class="eyebrow">E · Explore what follows</p><h2>Maya opened a door. Where do you <em>go next?</em></h2>
+    <div class="pick-list">${p.next.map(([label]) => `<button type="button" class="${B.next === label ? "selected" : ""}" data-nextpick="${esc(label)}">${esc(label)}</button>`).join("")}</div>
+    ${n ? `<div class="insight"><p class="insight-label">What this does</p><p>${esc(n[1])}</p></div>` : ""}
+    <div class="task-actions"><button class="secondary" data-b-back>← Back</button>${n ? `<button class="primary" data-b-finish>Finish the lab</button>` : ""}</div></div>`; }
   return "";
 }
 
 function renderBlind() {
   const host = $("[data-week1-blind-spot]"); if (!host) return;
   if (B.done) {
-    const pull = B.pull === "Something else" ? (B.pullOther || "Something else") : B.pull;
+    const p = pick(B.purpose);
     host.innerHTML = `<div class="advanced-shell practice-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
-      <article class="pattern-card"><p class="eyebrow">Week 1 · Clinical Blind Spot Lab</p><h1>Your pattern this <em>week.</em></h1>
+      <article class="pattern-card"><p class="eyebrow">Week 1 · Clinical Blind Spot Lab</p><h1>Your P.A.U.S.E. with <em>Maya.</em></h1>
       <div class="pattern-grid">
-        <div><span>The pull you felt</span><p>${esc(pull)}</p></div>
-        <div><span>What you’d say to Maya</span><p>“${esc(B.revised || B.line)}”</p></div>
-        <div><span>With Devon</span><p>“${esc(B.d.say)}”</p></div>
+        <div><span>P · The pull you noticed</span><p>${esc(B.pull)}</p></div>
+        <div><span>U · The guess you’d check</span><p>${esc(sortItems[+B.check]?.[0] || "")}</p></div>
+        <div><span>S · Your purpose and line</span><p>${esc(p.label)}<br><em>“${esc(B.line)}”</em></p></div>
+        <div><span>E · Where you went next</span><p>${esc(B.next)}</p></div>
       </div>
       <div class="task-actions"><button class="secondary" data-b-restart>Practice again</button><button class="primary" data-b-save>${B.saved ? "Saved ✓ Open my profile →" : "Save to my Confidence Profile →"}</button></div></article></div>`;
     $("[data-b-restart]", host).onclick = () => { B = bDefaults(); saveB(); renderBlind(); top(); };
@@ -144,7 +165,7 @@ function renderBlind() {
     bindGo(host); return;
   }
   host.innerHTML = `<div class="advanced-shell practice-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
-    <header class="practice-head"><p class="eyebrow">Week 1 · Train</p><h1>Clinical Blind Spot <em>Lab</em></h1><p>Notice what’s really in the room, including what’s happening in you, before you respond.</p></header>
+    <header class="practice-head"><p class="eyebrow">Week 1 · Train</p><h1>Clinical Blind Spot <em>Lab</em></h1><p>One client moment, walked through P.A.U.S.E. one step at a time.</p></header>
     ${bRail()}<article class="practice-stage">${blindBody()}</article></div>`;
   bindBlind(host);
 }
@@ -154,23 +175,19 @@ function bindGo(host) { $$("[data-go]", host).forEach(b => b.onclick = () => go(
 
 function bindBlind(host) {
   bindGo(host);
-  $$("[data-tap]", host).forEach(b => b.onclick = () => { const id = b.dataset.tap; B.taps = B.taps.includes(id) ? B.taps.filter(x => x !== id) : [...B.taps, id]; saveB(); b.classList.toggle("tapped"); });
+  $$("[data-tap]", host).forEach(b => b.onclick = () => { const id = b.dataset.tap; B.taps = B.taps.includes(id) ? B.taps.filter(x => x !== id) : [...B.taps, id]; saveB(); b.classList.toggle("tapped"); const c = $(".tap-count", host); if (c) c.textContent = B.taps.length ? `${B.taps.length} highlighted` : "Nothing highlighted yet"; });
   $$("[data-b]", host).forEach(t => t.oninput = () => { B[t.dataset.b] = t.value; saveB(); });
-  $$("[data-bd]", host).forEach(t => t.oninput = () => { B.d[t.dataset.bd] = t.value; saveB(); });
   $$("[data-b-round]", host).forEach(b => b.onclick = () => { B.round = +b.dataset.bRound; saveB(); renderBlind(); });
-  $("[data-b-reveal]", host)?.addEventListener("click", () => { if (!need(host, B.taps.length && B.first.trim().length > 2, "Tap at least one moment and add a sentence first.")) return; B.revealed = true; saveB(); renderBlind(); });
-  $$("[data-sort]", host).forEach(b => b.onclick = () => { B.sort[b.dataset.sort] = b.dataset.val; saveB(); renderBlind(); });
   $$("[data-pull]", host).forEach(b => b.onclick = () => { B.pull = b.dataset.pull; saveB(); renderBlind(); });
-  $$("[data-closest]", host).forEach(b => b.onclick = () => { B.closest = b.dataset.closest; saveB(); renderBlind(); });
-  $("[data-b-takes]", host)?.addEventListener("click", () => { if (!need(host, B.line.trim().length > 2, "Say it out loud, then type what you said.")) return; B.takes = true; saveB(); renderBlind(); });
+  $$("[data-sort]", host).forEach(b => b.onclick = () => { B.sort[b.dataset.sort] = b.dataset.val; saveB(); renderBlind(); });
+  $$("[data-check]", host).forEach(b => b.onclick = () => { B.check = b.dataset.check; saveB(); renderBlind(); });
+  $$("[data-purpose]", host).forEach(b => b.onclick = () => { if (B.purpose !== b.dataset.purpose) { B.purpose = b.dataset.purpose; B.spoken = false; B.next = ""; } saveB(); renderBlind(); });
+  $$("[data-nextpick]", host).forEach(b => b.onclick = () => { B.next = b.dataset.nextpick; saveB(); renderBlind(); });
+  $("[data-b-reveal]", host)?.addEventListener("click", () => { if (!need(host, B.taps.length >= 2, "Tap at least two things Maya said or did.")) return; B.revealed = true; saveB(); renderBlind(); });
+  $("[data-b-spoken]", host)?.addEventListener("click", () => { if (!need(host, B.line.trim().length > 2, "Say it out loud, then type what you said.")) return; B.spoken = true; saveB(); renderBlind(); });
   $("[data-b-back]", host)?.addEventListener("click", () => { B.round = Math.max(1, B.round - 1); saveB(); renderBlind(); top(); });
-  $("[data-b-next]", host)?.addEventListener("click", () => {
-    const r = B.round;
-    if (r === 2 && !need(host, B.check.trim().length > 2, "Name one guess you’d check, and how.")) return;
-    if (r === 3 && !need(host, B.miss.trim().length > 2, "Add one sentence about what she might miss.")) return;
-    B.round = r + 1; saveB(); renderBlind(); top();
-  });
-  $("[data-b-finish]", host)?.addEventListener("click", () => { if (!need(host, B.d.say.trim().length > 2, "Add what you would say to Devon.")) return; B.done = true; saveB(); renderBlind(); top(); });
+  $("[data-b-next]", host)?.addEventListener("click", () => { B.round++; saveB(); renderBlind(); top(); });
+  $("[data-b-finish]", host)?.addEventListener("click", () => { B.done = true; saveB(); renderBlind(); top(); });
 }
 
 function renderProfileEvidence() {
@@ -178,8 +195,7 @@ function renderProfileEvidence() {
   let box = $("[data-profile-evidence]", panel);
   if (!B.saved) { box?.remove(); return; }
   if (!box) { box = document.createElement("aside"); box.dataset.profileEvidence = ""; box.className = "profile-evidence"; $(".advanced-head", panel).after(box); }
-  const pull = B.pull === "Something else" ? (B.pullOther || "Something else") : B.pull;
-  box.innerHTML = `<p class="eyebrow">From your Blind Spot Lab</p><div><span>Your pull</span><p>${esc(pull)}</p></div><div><span>Your line</span><p>“${esc(B.revised || B.line)}”</p></div>`;
+  box.innerHTML = `<p class="eyebrow">From your Blind Spot Lab</p><div><span>Your pull</span><p>${esc(B.pull)}</p></div><div><span>Your line</span><p>“${esc(B.line)}”</p></div>`;
 }
 
 /* ================= The Advice Request ================= */
@@ -200,7 +216,7 @@ const beat2 = [
 ];
 const STEPS = ["Your move", "It shifts", "Rewind", "Reflect", "Done"];
 let A = load(A_KEY) || {};
-const aDefaults = () => ({ step: 1, b1: "", line: "", b2: "", rw: "", reflect: "", saved: false });
+const aDefaults = () => ({ step: 1, b1: "", line: "", seen1: false, b2: "", rw: "", reflect: "", saved: false });
 A = Object.assign(aDefaults(), A);
 const saveA = () => store(A_KEY, A);
 const find = (list, id) => list.find(x => x[0] === id);
@@ -214,10 +230,11 @@ function adviceBody() {
   const s = A.step, p1 = find(beat1, A.b1), p2 = find(beat2, A.b2), rw = find(beat1, A.rw);
   if (s === 1) return `${jordanPanel()}<div class="task">
     <p class="eyebrow">Beat 1 · Your move</p><h2>What’s the <em>purpose</em> of your next move?</h2>
-    <p class="task-sub">Pick the purpose. Jordan will respond to what you actually do.</p>
+    <p class="task-sub">Pick the purpose first. Jordan will respond to what you choose.</p>
     <div class="pick-list">${beat1.map(([id, label]) => `<button type="button" class="${A.b1 === id ? "selected" : ""}" data-b1="${id}">${esc(label)}</button>`).join("")}</div>
-    ${A.b1 ? `<label>Your line <small>Say it out loud first · optional</small><input type="text" data-a="line" value="${esc(A.line)}" placeholder="What you’d actually say…"></label>${reply("Jordan", p1[2], p1[3])}` : ""}
-    <p class="form-error" role="alert"></p><div class="task-actions">${A.b1 ? `<button class="primary" data-a-next>Keep going →</button>` : ""}</div></div>`;
+    ${A.b1 ? `<label>Say your line out loud to Jordan, then type it.<input type="text" data-a="line" value="${esc(A.line)}" placeholder="What you’d actually say…"></label>` : ""}
+    ${A.b1 && A.seen1 ? reply("Jordan", p1[2], p1[3]) : ""}
+    <p class="form-error" role="alert"></p><div class="task-actions">${A.b1 ? (A.seen1 ? `<button class="primary" data-a-next>Keep going →</button>` : `<button class="primary" data-a-seen>See how Jordan responds</button>`) : ""}</div></div>`;
   if (s === 2) return `${jordanPanel(`<div class="moment-path"><span>You chose</span>${esc(p1[1])}</div>`)}<div class="task">
     <p class="eyebrow">Beat 2 · It shifts</p><p class="task-sub">A few minutes later, Jordan says:</p><h2 class="said">“${esc(shiftLine)}”</h2>
     <p class="task-q">What’s your purpose now?</p>
@@ -227,7 +244,7 @@ function adviceBody() {
     <p class="form-error" role="alert"></p><div class="task-actions"><button class="secondary" data-a-back>← Back</button>${A.b2 ? `<button class="primary" data-a-next>Rewind →</button>` : ""}</div></div>`;
   if (s === 3) return `${jordanPanel()}<div class="task">
     <p class="eyebrow">Beat 3 · Rewind</p><h2>Go back. Try a different <em>purpose.</em></h2>
-    <p class="task-sub">Same question from Jordan. A different move from you.</p>
+    <p class="task-sub">Same question from Jordan. Pick a purpose you didn’t choose the first time.</p>
     <div class="pick-list">${beat1.filter(x => x[0] !== A.b1).map(([id, label]) => `<button type="button" class="${A.rw === id ? "selected" : ""}" data-rw="${id}">${esc(label)}</button>`).join("")}</div>
     ${rw ? `<div class="paths"><div><p class="eyebrow">First time</p><h3>${esc(p1[1])}</h3>${reply("Jordan", p1[2], "")}</div><div><p class="eyebrow">Rewind</p><h3>${esc(rw[1])}</h3>${reply("Jordan", rw[2], "")}</div></div>` : ""}
     <p class="form-error" role="alert"></p><div class="task-actions"><button class="secondary" data-a-back>← Back</button>${rw ? `<button class="primary" data-a-next>Reflect →</button>` : ""}</div></div>`;
@@ -257,7 +274,8 @@ function renderAdvice() {
 function bindAdvice(host) {
   bindGo(host);
   $$("[data-a]", host).forEach(t => t.oninput = () => { A[t.dataset.a] = t.value; saveA(); });
-  $$("[data-b1]", host).forEach(b => b.onclick = () => { A.b1 = b.dataset.b1; if (A.rw === A.b1) A.rw = ""; saveA(); renderAdvice(); });
+  $$("[data-b1]", host).forEach(b => b.onclick = () => { if (A.b1 !== b.dataset.b1) { A.b1 = b.dataset.b1; A.seen1 = false; A.b2 = ""; } if (A.rw === A.b1) A.rw = ""; saveA(); renderAdvice(); });
+  $("[data-a-seen]", host)?.addEventListener("click", () => { if (!need(host, A.line.trim().length > 2, "Say it out loud, then type what you said.")) return; A.seen1 = true; saveA(); renderAdvice(); });
   $$("[data-b2]", host).forEach(b => b.onclick = () => { A.b2 = b.dataset.b2; saveA(); renderAdvice(); });
   $$("[data-rw]", host).forEach(b => b.onclick = () => { A.rw = b.dataset.rw; saveA(); renderAdvice(); });
   $$("[data-a-step]", host).forEach(b => b.onclick = () => { A.step = +b.dataset.aStep; saveA(); renderAdvice(); });
