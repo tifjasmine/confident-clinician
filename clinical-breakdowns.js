@@ -23,11 +23,12 @@
   const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
   // Keep Instagram / ManyChat attribution when a visitor moves from the library into an exercise.
-  const exerciseUrl = (slug) => {
+  const exerciseUrl = (slug, choice = "") => {
     const url = `/clinical-breakdowns/${encodeURIComponent(slug)}`;
     const carry = new URLSearchParams();
     if (params.get("source")) carry.set("source", params.get("source"));
     if (campaign) carry.set("campaign", campaign);
+    if (choice) carry.set("choice", choice);
     const query = carry.toString();
     return query ? `${url}?${query}` : url;
   };
@@ -95,16 +96,19 @@
     const topic = card.querySelector("[data-try-topic]");
     if (topic && pick.category) { topic.textContent = pick.category; topic.hidden = false; }
     const choicesBox = card.querySelector("[data-try-choices]");
-    card.querySelector("[data-try-link]").href = exerciseUrl(pick.slug);
-    pick.choices.filter((c) => c && c.title).slice(0, 4).forEach((choice) => {
+    const link = card.querySelector("[data-try-link]");
+    link.href = exerciseUrl(pick.slug);
+    // Same lettered wording as the exercise page; the pick travels with the link so it isn't asked twice.
+    pick.choices.filter((c) => c && (c.response || c.title)).slice(0, 4).forEach((choice) => {
       const button = document.createElement("button");
       button.type = "button";
       button.setAttribute("aria-pressed", "false");
-      button.textContent = choice.title;
+      button.innerHTML = `<span class="pl-opt-letter" aria-hidden="true">${escape(choice.label || "")}</span><span>${escape(stripQuotes(choice.response || choice.title))}</span>`;
       button.addEventListener("click", () => {
         const wasOn = button.getAttribute("aria-pressed") === "true";
         choicesBox.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", "false"));
         button.setAttribute("aria-pressed", String(!wasOn));
+        link.href = exerciseUrl(pick.slug, wasOn ? "" : choice.label || "");
         if (!wasOn) window.tccTrack?.("practice_library_try_choice", { exercise_slug: pick.slug, choice: choice.label || choice.title, source, campaign });
       });
       choicesBox.appendChild(button);

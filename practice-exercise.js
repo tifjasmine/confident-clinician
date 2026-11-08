@@ -61,6 +61,12 @@
     form.addEventListener("input", update);
     form.addEventListener("change", update);
     form.addEventListener("submit", submitRoundOne);
+    // A move picked on the library page arrives as ?choice=C, so the learner isn't asked twice.
+    const preset = params.get("choice");
+    if (!responseCheck && preset) {
+      const input = [...form.querySelectorAll('input[name="choice"]')].find((item) => item.value === preset);
+      if (input) { input.checked = true; update(); }
+    }
   };
 
   const submitRoundOne = async (event) => {

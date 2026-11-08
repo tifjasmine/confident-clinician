@@ -42,11 +42,11 @@ body.pl-page{
 .pl-page .pl-decide{display:flex;flex-direction:column;padding:44px;background:var(--pl-forest);color:var(--pl-on-dark)}
 .pl-page .pl-decide .pl-eyebrow{color:var(--pl-on-dark-2)}
 .pl-page .pl-decide h2{margin:0 0 20px;font:400 28px/1.2 var(--pl-serif);letter-spacing:-.01em;color:#fff}
-.pl-page .pl-options button{display:flex;align-items:center;gap:14px;width:100%;min-height:54px;margin:0 0 8px;padding:10px 18px;border:1px solid var(--pl-forest-line);border-radius:0;background:transparent;color:#fff;font:500 15.5px/1.35 var(--pl-sans);text-align:left;cursor:pointer}
-.pl-page .pl-options button::before{content:"";flex:none;width:18px;height:18px;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--pl-on-dark-2)}
+.pl-page .pl-options button{display:flex;align-items:flex-start;gap:14px;width:100%;min-height:54px;margin:0 0 8px;padding:14px 16px;border:1px solid var(--pl-forest-line);border-radius:0;background:transparent;color:#fff;font:400 15.5px/1.5 var(--pl-sans);text-align:left;cursor:pointer}
+.pl-page .pl-opt-letter{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:1px solid var(--pl-on-dark-2);font:600 12.5px/1 var(--pl-sans);color:var(--pl-on-dark)}
 .pl-page .pl-options button:hover{border-color:var(--pl-on-dark-2)}
 .pl-page .pl-options button[aria-pressed="true"]{background:var(--pl-cream);border-color:var(--pl-cream);color:var(--pl-text)}
-.pl-page .pl-options button[aria-pressed="true"]::before{border:5px solid var(--pl-rust)}
+.pl-page .pl-options button[aria-pressed="true"] .pl-opt-letter{background:var(--pl-rust);border-color:var(--pl-rust);color:#fff}
 .pl-page .pl-decide .pl-btn{width:100%;margin-top:auto}
 .pl-page .pl-options{margin-bottom:14px}
 
