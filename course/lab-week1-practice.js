@@ -148,6 +148,7 @@ function blindBody() {
 }
 
 function renderBlind() {
+  if (window.TCCRenderReps) return window.TCCRenderReps();
   const host = $("[data-week1-blind-spot]"); if (!host) return;
   if (B.done) {
     const p = pick(B.purpose);
@@ -203,9 +204,10 @@ function renderProfileEvidence() {
       <div><span>Where your attention goes</span><p>${esc([...(b.attention || [])].join(" · "))}</p></div>
       <div><span>Your starting target</span><p>${esc(b.target)}</p></div></div>`
     : `<div class="pf-empty"><p>You haven’t taken the starting assessment yet. It takes about five minutes.</p><button class="secondary" data-go="start">Take the starting assessment →</button></div>`;
+  const R = window.TCCRepsSummary?.() || { done: 0, total: 6, edge: "" };
   const week = `<div class="pf-grid">
-      <div><span>Blind Spot Lab · your pull</span>${B.done ? `<p>${esc(pull)}</p>` : `<p class="pf-todo"><button class="linkish" data-go="w1-blind-spot">Complete the lab →</button></p>`}</div>
-      <div><span>Blind Spot Lab · your line</span>${B.done ? `<p>“${esc(B.line)}”</p>` : `<p class="pf-todo">After the lab</p>`}</div>
+      <div><span>Week 1 reps</span>${R.done ? `<p>${R.done} of ${R.total} moments practiced out loud</p>` : `<p class="pf-todo"><button class="linkish" data-go="w1-blind-spot">Start the reps →</button></p>`}</div>
+      <div><span>Your growth edge</span>${R.edge ? `<p>${esc(R.edge)}</p>` : `<p class="pf-todo">${R.done ? "Nothing marked “not yet”" : "After the reps"}</p>`}</div>
       <div><span>The Advice Request · what you learned</span>${A2.step >= 5 && a1 ? `<p>${esc(A2.reflect)}</p>` : `<p class="pf-todo"><button class="linkish" data-go="case-advice">Complete the simulation →</button></p>`}</div></div>`;
   host.innerHTML = `<div class="advanced-shell practice-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
     <header class="practice-head"><p class="eyebrow">Week 1 · Create</p><h1>Update your Confidence <em>Profile.</em></h1><p>Look at where you started, what this week showed you, then choose what to practice next.</p></header>
