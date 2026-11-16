@@ -70,12 +70,145 @@ REPS.forEach(r => { const [pick, why, take, opts] = EXTRA[r.id]; r.pick = pick; 
 
 /* Step 1 (Notice) and step 2 (Your pull) content, per client. DRAFT wording for Tiffany's review. */
 const NOTICE = {
-  sam: { cues: ["The word “crazy”", "“Just tell me”", "Asking you to decide what’s normal"], worth: "“Crazy” is a heavy word. Sam is scared of what the panic says about them, not only of the panic itself.", pull: "Most clinicians feel an instant pull to reassure here. It’s kind, and it comes fast." },
-  priya: { cues: ["She looks at the floor", "A long silence after a simple question", "Sleep seems to matter more than expected"], worth: "A simple question landed somewhere heavy. The silence is information, not a gap.", pull: "Silence pulls most of us to fill it, or to rescue the client from it." },
-  maya: { cues: ["The laugh and the glance at her phone", "“It’s not a big deal”", "The apology", "“You probably think I’m hopeless”"], worth: "She minimizes, apologizes, then predicts your judgment. That prediction is the most important thing in the room.", pull: "When a client is hard on themselves, the pull to reassure is strong." },
-  alex: { cues: ["“Way more than any therapist”", "Comparing you to past therapists", "It comes near the end of the session"], worth: "A compliment tells you what Alex values, and that something was missing before.", pull: "Compliments feel good, so the pull is to accept them and move on." },
-  chris: { cues: ["Raised voice, crossed arms", "“Pointless”", "“Nothing changes”"], worth: "Under the anger is disappointment, and a hope that something would be different by now.", pull: "Being challenged pulls most of us to defend the work." },
-  devon: { cues: ["“My wife made me come”", "Arms folded, short answers", "“Go ahead, ask your questions”"], worth: "He’s telling you he didn’t choose this. That’s the first thing to talk about.", pull: "Reluctance pulls us to sell therapy, or to push past it." }
+ "sam": {
+  "cues": [
+   [
+    "The word “crazy”",
+    "A heavy, self-judging word. Sam may be more scared of what the panic says about them than of the panic itself.",
+    1
+   ],
+   [
+    "“Just tell me”",
+    "Urgency. Sam wants relief fast, which can pull you to answer fast too.",
+    0
+   ],
+   [
+    "Asking you to decide what’s normal",
+    "Sam is handing you the authority. Worth noticing before you take it.",
+    0
+   ]
+  ],
+  "worth": "Sam is frightened and wants you to settle it quickly. The fear underneath matters more than the answer.",
+  "pull": "Most clinicians feel an instant pull to reassure here. It’s kind, and it comes fast."
+ },
+ "priya": {
+  "cues": [
+   [
+    "She looks at the floor",
+    "A shift in her body. Something landed.",
+    0
+   ],
+   [
+    "A long silence after a simple question",
+    "Silence is information. She may be deciding whether to say more.",
+    1
+   ],
+   [
+    "Sleep seems to matter more than expected",
+    "A “simple” topic is connected to something bigger.",
+    0
+   ]
+  ],
+  "worth": "A simple question touched something heavy. The most useful thing you can give right now is room.",
+  "pull": "Silence pulls most of us to fill it, or to rescue the client from it."
+ },
+ "maya": {
+  "cues": [
+   [
+    "The laugh and the glance at her phone",
+    "A light tone over something that may feel heavy.",
+    0
+   ],
+   [
+    "“It’s not a big deal”",
+    "Minimizing. It may protect her from disappointment, or from your reaction.",
+    0
+   ],
+   [
+    "The apology",
+    "She apologizes to you, as if she let you down.",
+    0
+   ],
+   [
+    "“You probably think I’m hopeless”",
+    "A prediction about your judgment. It brings you into the moment.",
+    1
+   ]
+  ],
+  "worth": "She minimizes, apologizes, then predicts your judgment. That prediction is the most important thing in the room.",
+  "pull": "When a client is hard on themselves, the pull to reassure is strong."
+ },
+ "alex": {
+  "cues": [
+   [
+    "“Way more than any therapist”",
+    "Strong praise. Notice how it feels to receive it.",
+    0
+   ],
+   [
+    "Comparing you to past therapists",
+    "Something was missing before. That’s useful information.",
+    1
+   ],
+   [
+    "It comes near the end of the session",
+    "Timing matters. There may not be room to explore it fully today.",
+    0
+   ]
+  ],
+  "worth": "A compliment tells you what Alex values, and that something was missing before.",
+  "pull": "Compliments feel good, so the pull is to accept them and move on."
+ },
+ "chris": {
+  "cues": [
+   [
+    "Raised voice, crossed arms",
+    "Frustration in the body. Your steadiness matters here.",
+    0
+   ],
+   [
+    "“Pointless”",
+    "A strong word, and a challenge to you and the work.",
+    0
+   ],
+   [
+    "“Nothing changes”",
+    "Underneath it: a hope that something would change, and disappointment that it hasn’t.",
+    1
+   ]
+  ],
+  "worth": "Under the anger is disappointment, and a hope that something would be different by now.",
+  "pull": "Being challenged pulls most of us to defend the work."
+ },
+ "devon": {
+  "cues": [
+   [
+    "“My wife made me come”",
+    "He didn’t choose this. Reluctance is the first thing in the room.",
+    1
+   ],
+   [
+    "Arms folded, short answers",
+    "Guarded. Pushing harder may make it stronger.",
+    0
+   ],
+   [
+    "“Go ahead, ask your questions”",
+    "He hands you control while keeping his distance.",
+    0
+   ]
+  ],
+  "worth": "He’s telling you he didn’t choose this. That’s the first thing to talk about.",
+  "pull": "Reluctance pulls us to sell therapy, or to push past it."
+ }
+};
+const PULL_NOTES = {
+  "Reassure": "Reassuring comes from care. The risk is that it answers before you understand what’s underneath.",
+  "Fix it": "Fixing comes from wanting to help. The risk is skipping what the client needs to feel first.",
+  "Move on": "Moving on can protect both of you from discomfort. The risk is leaving the important moment behind.",
+  "Explain or defend": "Explaining feels steadying. The risk is that it puts your view at the center instead of theirs.",
+  "Get curious": "Curiosity keeps the door open. Check that it’s real curiosity, not a technique you reach for to feel safe.",
+  "Not sure": "That’s honest. Sometimes the pull shows up as freezing or going blank, and noticing that counts."
 };
 const PULL_CHOICES = ["Reassure", "Fix it", "Move on", "Explain or defend", "Get curious", "Not sure"];
 const STEP_NAMES = ["Notice", "Your pull", "Respond", "Compare", "Your words"];
@@ -102,13 +235,15 @@ function repHTML() {
       <blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
   const steps = `<ol class="rep-stepper">${STEP_NAMES.map((t, k) => `<li class="${k + 1 === st ? "on" : k + 1 < st ? "past" : ""}"><button type="button" ${k + 1 < st ? `data-gostep="${k + 1}"` : "disabled"}><b>${k + 1}</b>${t}</button></li>`).join("")}</ol>`;
   let body = "", next = "";
-  if (st === 1) { body = `<h2>What do you notice?</h2><p class="task-sub">Tap anything that stands out in what ${esc(name)} said or did.</p>
-      <div class="pick-list inline">${N.cues.map(c => `<button type="button" class="${R.cues.includes(c) ? "selected" : ""}" data-cue="${esc(c)}">${esc(c)}</button>`).join("")}</div>
-      ${R.cueShown ? `<div class="rep-note-box"><span>Worth noticing</span><p>${esc(N.worth)}</p></div>` : ""}`;
-    next = R.cueShown ? `<button class="primary" data-step-next>Next: your pull →</button>` : (R.cues.length ? `<button class="primary" data-cue-show>See what’s worth noticing</button>` : ""); }
+  if (st === 1) { body = `<h2>What do you notice?</h2><p class="task-sub">${R.cueShown ? `Here’s what each detail can tell you.` : `Tap anything that stands out in what ${esc(name)} said or did.`}</p>
+      ${R.cueShown ? `<ul class="cue-list">${N.cues.map(([c, m, key]) => { const mine = R.cues.includes(c); return `<li class="${mine ? "mine" : ""}"><span class="cue-tag">${mine ? "You noticed" : "Also here"}${key ? ` · <b>most telling</b>` : ""}</span><strong>${esc(c)}</strong><p>${esc(m)}</p></li>`; }).join("")}</ul>
+        <div class="rep-note-box"><span>Putting it together</span><p>${esc(N.worth)}</p></div>`
+      : `<div class="pick-list inline">${N.cues.map(([c]) => `<button type="button" class="${R.cues.includes(c) ? "selected" : ""}" data-cue="${esc(c)}">${esc(c)}</button>`).join("")}</div>`}`;
+    next = R.cueShown ? `<button class="primary" data-step-next>Next: your pull →</button>` : (R.cues.length ? `<button class="primary" data-cue-show>See what each one tells you</button>` : ""); }
   if (st === 2) { body = `<h2>What do you feel pulled to do?</h2><p class="task-sub">Before choosing words, be honest about your first impulse.</p>
       <div class="pick-list inline">${PULL_CHOICES.map(c => `<button type="button" class="${R.pull === c ? "selected" : ""}" data-pullpick="${esc(c)}">${esc(c)}</button>`).join("")}</div>
-      ${R.pull ? `<div class="rep-note-box"><span>About that pull</span><p>${esc(N.pull)} Noticing it is what gives you a choice.</p></div>` : ""}`;
+      ${R.pull ? `<div class="rep-note-box"><span>About “${esc(R.pull.toLowerCase())}”</span><p>${esc(PULL_NOTES[R.pull])}</p></div>
+        <div class="rep-note-box plain"><span>With ${esc(name)}</span><p>${esc(N.pull)} Noticing it is what gives you a choice.</p></div>` : ""}`;
     next = R.pull ? `<button class="primary" data-step-next>Next: respond →</button>` : ""; }
   if (st === 3) { body = `<h2>What would you most likely say?</h2><p class="task-sub">Pick the one closest to what you’d actually say.</p>
       <div class="rep-options">${r.options.map((op, k) => `<div class="opt${k === R.first ? " open" : ""}"><button type="button" class="opt-head" data-first="${k}"><span class="opt-say">${stage(op[0])}</span></button>

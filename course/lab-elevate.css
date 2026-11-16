@@ -490,3 +490,12 @@
 .starters button{padding:7px 12px;border:1px solid var(--line);background:#fff;color:#4b5d54;font:400 .9rem Jost,sans-serif;cursor:pointer}
 .starters button:hover{border-color:var(--forest);color:var(--forest)}
 @media (max-width:700px){.rep-stepper{grid-template-columns:repeat(5,auto);gap:10px;overflow-x:auto}.rep-stepper button{white-space:nowrap}}
+.cue-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.cue-list li{padding:14px 18px;background:#fff;border:1px solid var(--line)}
+.cue-list li.mine{border-left:3px solid var(--terra)}
+.cue-tag{display:block;margin-bottom:4px;color:var(--sage);font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.cue-list li.mine .cue-tag{color:var(--terra)}
+.cue-tag b{color:var(--forest)}
+.cue-list strong{display:block;color:var(--forest);font-weight:600}
+.cue-list p{margin:4px 0 0;color:#4b5d54}
+.rep-note-box.plain{margin-top:8px;background:#fff;border:1px solid var(--line);border-left:2px solid var(--forest)}.rep-note-box.plain span{color:var(--forest)}
