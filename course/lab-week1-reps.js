@@ -6,7 +6,7 @@
 "use strict";
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const KEY = "tcc-w1-reps-v2";
+const KEY = "tcc-w1-reps-v3";
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 const stage = t => esc(t).replace(/\(([^)]*)\)/g, "<i>($1)</i>");
@@ -67,9 +67,22 @@ const REPS = [
 
 const EXTRA = {"sam": [3, "It answers the question honestly and still opens the door. Sam gets some relief, and you learn what the worry is about.", "“Is this normal?” usually asks for more than a yes. Answer briefly, then get curious.", [["closes", "Brief normalizing can calm acute panic. It works best after you understand the worry."], ["opens", "Best when you sense shame or fear under the question."], ["closes", "Tools fit once Sam wants them and you understand the pattern, often later in the session."], ["opens", "Fits most times a client asks whether they’re normal: some relief, then curiosity."]]], "priya": [1, "Silence after a meaningful question is often the client thinking. A few more seconds gave her room to decide.", "Silence isn’t a problem to solve. Notice your urge to fill it, then choose.", [["closes", "Right if she seems flooded or not ready. Say you’ll come back to it, and do."], ["opens", "Fits when the silence feels like thinking, not confusion or distress."], ["opens", "A gentle way to make silence feel allowed, especially if she seems anxious about it."], ["closes", "Sleep habits matter, after you understand what’s keeping her up."]]], "maya": [1, "She made a prediction about you. Exploring it, instead of correcting it, opened something older and important.", "When a client predicts your judgment, get curious about the prediction before you correct it.", [["closes", "Some reassurance can help in an established relationship, ideally after exploring the fear."], ["opens", "Fits when the client names what they think you think."], ["closes", "Planning fits after she feels understood, and only if she wants it."], ["opens", "Works well when the relationship feels safe enough to notice behavior out loud."]]], "alex": [1, "Receiving the compliment, then getting curious, turns it into information about what actually helps Alex.", "Compliments pull on us too. Receive them, then get curious about what’s working.", [["closes", "Fine at the very end of a session. You can return to it next time."], ["opens", "Fits almost any time a client tells you something is working."], ["closes", "Rarely needed. If Alex were harshly criticizing someone, you’d explore that instead."], ["opens", "Useful, with warmth, so it doesn’t sound like you’re digging at past therapists."]]], "chris": [1, "Steady acknowledgment plus a question about hopes turned frustration into a clear goal.", "When a client challenges the work, treat it as information, not an attack.", [["closes", "Reviewing progress helps later, once Chris feels heard, and only if it’s accurate."], ["opens", "Fits when frustration is high and you don’t yet know what they hoped for."], ["closes", "Changing approach may be right. Decide it together, after you understand what isn’t working."], ["opens", "Welcoming the challenge shows that feedback is safe here."]]], "devon": [1, "Naming his reluctance out loud made it something you can talk about together.", "Reluctance is the first thing to talk about, not something to get past.", [["closes", "Background matters. Once his reluctance is named, he may engage with it more."], ["opens", "Fits most first sessions where someone didn’t choose to come."], ["closes", "Information about therapy helps later, when he asks for it."], ["opens", "A strong alternative. It respects his autonomy and finds his own reason."]]]};
 REPS.forEach(r => { const [pick, why, take, opts] = EXTRA[r.id]; r.pick = pick; r.why = why; r.take = take; r.options.forEach((o, k) => { o.effect = opts[k][0]; o.fit = opts[k][1]; }); });
+
+/* Step 1 (Notice) and step 2 (Your pull) content, per client. DRAFT wording for Tiffany's review. */
+const NOTICE = {
+  sam: { cues: ["The word “crazy”", "“Just tell me”", "Asking you to decide what’s normal"], worth: "“Crazy” is a heavy word. Sam is scared of what the panic says about them, not only of the panic itself.", pull: "Most clinicians feel an instant pull to reassure here. It’s kind, and it comes fast." },
+  priya: { cues: ["She looks at the floor", "A long silence after a simple question", "Sleep seems to matter more than expected"], worth: "A simple question landed somewhere heavy. The silence is information, not a gap.", pull: "Silence pulls most of us to fill it, or to rescue the client from it." },
+  maya: { cues: ["The laugh and the glance at her phone", "“It’s not a big deal”", "The apology", "“You probably think I’m hopeless”"], worth: "She minimizes, apologizes, then predicts your judgment. That prediction is the most important thing in the room.", pull: "When a client is hard on themselves, the pull to reassure is strong." },
+  alex: { cues: ["“Way more than any therapist”", "Comparing you to past therapists", "It comes near the end of the session"], worth: "A compliment tells you what Alex values, and that something was missing before.", pull: "Compliments feel good, so the pull is to accept them and move on." },
+  chris: { cues: ["Raised voice, crossed arms", "“Pointless”", "“Nothing changes”"], worth: "Under the anger is disappointment, and a hope that something would be different by now.", pull: "Being challenged pulls most of us to defend the work." },
+  devon: { cues: ["“My wife made me come”", "Arms folded, short answers", "“Go ahead, ask your questions”"], worth: "He’s telling you he didn’t choose this. That’s the first thing to talk about.", pull: "Reluctance pulls us to sell therapy, or to push past it." }
+};
+const PULL_CHOICES = ["Reassure", "Fix it", "Move on", "Explain or defend", "Get curious", "Not sure"];
+const STEP_NAMES = ["Notice", "Your pull", "Respond", "Compare", "Your words"];
+const STARTERS = ["It sounds like…", "I noticed…", "What’s it like…", "Help me understand…"];
 const blank = () => ({ i: 0, reps: {}, finished: false });   // reps[id] = { first, seen:[], own }
 let S = Object.assign(blank(), load() || {});
-const rec = id => S.reps[id] || (S.reps[id] = { first: null, seen: [], own: "" });
+const rec = id => { const R = S.reps[id] || (S.reps[id] = { first: null, seen: [], own: "" }); R.step = R.step || 1; R.cues = R.cues || []; return R; };
 
 function tally() {
   const t = {}; REPS.forEach(r => { const f = S.reps[r.id]?.first; if (f != null) { const tag = r.options[f][1]; t[tag] = (t[tag] || 0) + 1; } });
@@ -83,24 +96,37 @@ function railHTML() {
 }
 
 function repHTML() {
-  const r = REPS[S.i], R = rec(r.id), last = S.i === REPS.length - 1, sel = R.seen[R.seen.length - 1], name = r.who.split(",")[0];
-  const o = sel != null ? r.options[sel] : null;
-  return `<div class="rep-client"><p class="rep-meta"><span>${esc(r.who)}</span>${esc(r.when)}</p><p class="rep-setup">${esc(r.setup)}</p>
-      <blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>
-    <div class="rep-work">
-      <h2>${o ? "Here’s what each response does." : "What would you most likely say?"}</h2>${o ? `<p class="task-sub">Open any response to see how ${esc(name)} reacts.</p>` : ""}
-      <div class="rep-options${R.first != null ? " explained" : ""}">${r.options.map((op, k) => { const [say, tag] = op, open = k === sel, ex = R.first != null; return `<div class="opt${open ? " open" : ""}">
-        <button type="button" class="opt-head" data-opt="${k}" aria-expanded="${open}">
-          ${ex ? `<i class="dot ${op.effect}" aria-hidden="true"></i>` : ""}<span class="opt-say">${stage(say)}</span>
-          ${ex ? `<span class="opt-meta">${DOES[tag]} · ${op.effect === "opens" ? "opens it up" : "closes it down"}${R.first === k ? ` · <b>your first choice</b>` : ""}${k === r.pick ? ` · <b class="pick">what I’d most likely say</b>` : ""}</span>` : ""}
-          ${ex ? `<span class="chev" aria-hidden="true"></span>` : ""}</button>
-        ${open ? `<div class="opt-body"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote>
-          <p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p><p class="rep-happened"><b>Can fit when:</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
-      ${o ? `<div class="rep-why"><span>Why I’d most likely say that</span><p>${esc(r.why)}</p></div>
-        <div class="rep-take"><span>The skill here</span><p>${esc(r.take)}</p></div>
-        <label class="rep-own">In your own words <small>Optional</small><textarea data-own rows="2" placeholder="How would you say it?">${esc(R.own)}</textarea></label>` : ""}
-      <div class="rep-actions">${o ? (last ? `<button class="primary" data-finish>See your pattern →</button>` : `<button class="primary" data-next>Next client →</button>`) : ""}</div>
-    </div>`;
+  const r = REPS[S.i], R = rec(r.id), N = NOTICE[r.id], name = r.who.split(",")[0], last = S.i === REPS.length - 1, st = R.step;
+  const sel = R.seen[R.seen.length - 1], o = sel != null ? r.options[sel] : null;
+  const client = `<div class="rep-client"><p class="rep-meta"><span>${esc(r.who)}</span>${esc(r.when)}</p><p class="rep-setup">${esc(r.setup)}</p>
+      <blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
+  const steps = `<ol class="rep-stepper">${STEP_NAMES.map((t, k) => `<li class="${k + 1 === st ? "on" : k + 1 < st ? "past" : ""}"><button type="button" ${k + 1 < st ? `data-gostep="${k + 1}"` : "disabled"}><b>${k + 1}</b>${t}</button></li>`).join("")}</ol>`;
+  let body = "", next = "";
+  if (st === 1) { body = `<h2>What do you notice?</h2><p class="task-sub">Tap anything that stands out in what ${esc(name)} said or did.</p>
+      <div class="pick-list inline">${N.cues.map(c => `<button type="button" class="${R.cues.includes(c) ? "selected" : ""}" data-cue="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+      ${R.cueShown ? `<div class="rep-note-box"><span>Worth noticing</span><p>${esc(N.worth)}</p></div>` : ""}`;
+    next = R.cueShown ? `<button class="primary" data-step-next>Next: your pull →</button>` : (R.cues.length ? `<button class="primary" data-cue-show>See what’s worth noticing</button>` : ""); }
+  if (st === 2) { body = `<h2>What do you feel pulled to do?</h2><p class="task-sub">Before choosing words, be honest about your first impulse.</p>
+      <div class="pick-list inline">${PULL_CHOICES.map(c => `<button type="button" class="${R.pull === c ? "selected" : ""}" data-pullpick="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+      ${R.pull ? `<div class="rep-note-box"><span>About that pull</span><p>${esc(N.pull)} Noticing it is what gives you a choice.</p></div>` : ""}`;
+    next = R.pull ? `<button class="primary" data-step-next>Next: respond →</button>` : ""; }
+  if (st === 3) { body = `<h2>What would you most likely say?</h2><p class="task-sub">Pick the one closest to what you’d actually say.</p>
+      <div class="rep-options">${r.options.map((op, k) => `<div class="opt${k === R.first ? " open" : ""}"><button type="button" class="opt-head" data-first="${k}"><span class="opt-say">${stage(op[0])}</span></button>
+        ${k === R.first ? `<div class="opt-body"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote><p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p></div>` : ""}</div>`).join("")}</div>`;
+    next = R.first != null ? `<button class="primary" data-step-next>Next: compare all four →</button>` : ""; }
+  if (st === 4) { body = `<h2>How each response lands</h2><p class="task-sub">Open any response to see how ${esc(name)} reacts and when it can fit.</p>
+      <div class="rep-options explained">${r.options.map((op, k) => { const [say, tag] = op, open = k === sel; return `<div class="opt${open ? " open" : ""}">
+        <button type="button" class="opt-head" data-opt="${k}" aria-expanded="${open}"><i class="dot ${op.effect}" aria-hidden="true"></i><span class="opt-say">${stage(say)}</span>
+          <span class="opt-meta">${DOES[tag]} · ${op.effect === "opens" ? "opens it up" : "closes it down"}${R.first === k ? " · <b>your choice</b>" : ""}${k === r.pick ? ` · <b class="pick">what I’d most likely say</b>` : ""}</span><span class="chev" aria-hidden="true"></span></button>
+        ${open ? `<div class="opt-body"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote><p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p><p class="rep-happened"><b>Can fit when:</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
+      <div class="rep-why"><span>Why I’d most likely say that</span><p>${esc(r.why)}</p></div>`;
+    next = `<button class="primary" data-step-next>Next: your words →</button>`; }
+  if (st === 5) { body = `<h2>Now say it your way.</h2><p class="task-sub">Say it out loud first, then write the version you’d actually use with ${esc(name)}.</p>
+      <div class="rep-take"><span>The skill here</span><p>${esc(r.take)}</p></div>
+      <div class="starters">${STARTERS.map(t => `<button type="button" data-starter="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <textarea class="rep-input" data-own rows="3" placeholder="Your response to ${esc(name)}…">${esc(R.own)}</textarea>`;
+    next = `<button class="ghost" data-skip>Skip for now</button>${last ? `<button class="primary" data-finish>See your pattern →</button>` : `<button class="primary" data-next>Next client →</button>`}`; }
+  return `${client}<div class="rep-work">${steps}${body}<div class="rep-actions">${st > 1 ? `<button class="ghost" data-step-back>← Back</button>` : "<span></span>"}<div class="rep-actions-right">${next}</div></div></div>`;
 }
 
 function summaryHTML() {
@@ -130,13 +156,23 @@ function render() {
 
 function bind(host) {
   $$("[data-go]", host).forEach(b => b.onclick = () => window.TCCShowCourseScreen?.(b.dataset.go));
-  const top = () => host.scrollIntoView({ behavior: "smooth", block: "start" });
-  $$("[data-rep]", host).forEach(b => b.onclick = () => { S.i = +b.dataset.rep; S.finished = false; save(); render(); });
-  $$("[data-opt]", host).forEach(b => b.onclick = () => { const R = rec(REPS[S.i].id), k = +b.dataset.opt; if (R.first == null) R.first = k; R.seen = R.seen.filter(x => x !== k).concat(k); save(); render(); });
-  $("[data-own]", host)?.addEventListener("input", e => { rec(REPS[S.i].id).own = e.target.value; save(); });
-  $("[data-next]", host)?.addEventListener("click", () => { S.i++; save(); render(); top(); });
-  $("[data-finish]", host)?.addEventListener("click", () => { S.finished = true; save(); render(); top(); });
-  $("[data-restart]", host)?.addEventListener("click", () => { S = blank(); save(); render(); });
+  const top = () => host.scrollIntoView({ behavior: "smooth", block: "start" }), r = REPS[S.i], R = rec(r.id), rr = () => { save(); render(); };
+  $$("[data-rep]", host).forEach(b => b.onclick = () => { S.i = +b.dataset.rep; S.finished = false; rr(); });
+  $$("[data-gostep]", host).forEach(b => b.onclick = () => { R.step = +b.dataset.gostep; rr(); });
+  $$("[data-cue]", host).forEach(b => b.onclick = () => { const c = b.dataset.cue; R.cues = R.cues.includes(c) ? R.cues.filter(x => x !== c) : [...R.cues, c]; rr(); });
+  $("[data-cue-show]", host)?.addEventListener("click", () => { R.cueShown = true; rr(); });
+  $$("[data-pullpick]", host).forEach(b => b.onclick = () => { R.pull = b.dataset.pullpick; rr(); });
+  $$("[data-first]", host).forEach(b => b.onclick = () => { const k = +b.dataset.first; R.first = k; R.seen = [k]; rr(); });
+  $$("[data-opt]", host).forEach(b => b.onclick = () => { const k = +b.dataset.opt; R.seen = R.seen.filter(x => x !== k).concat(k); rr(); });
+  $$("[data-starter]", host).forEach(b => b.onclick = () => { const t = $("[data-own]", host); t.value = (t.value ? t.value.trimEnd() + " " : "") + b.dataset.starter.replace("…", " "); R.own = t.value; save(); t.focus(); });
+  $("[data-own]", host)?.addEventListener("input", e => { R.own = e.target.value; save(); });
+  $("[data-step-next]", host)?.addEventListener("click", () => { R.step++; rr(); top(); });
+  $("[data-step-back]", host)?.addEventListener("click", () => { R.step = Math.max(1, R.step - 1); rr(); top(); });
+  const advance = () => { if (S.i < REPS.length - 1) { S.i++; rr(); top(); } else { S.finished = true; rr(); top(); } };
+  $("[data-next]", host)?.addEventListener("click", advance);
+  $("[data-skip]", host)?.addEventListener("click", advance);
+  $("[data-finish]", host)?.addEventListener("click", () => { S.finished = true; rr(); top(); });
+  $("[data-restart]", host)?.addEventListener("click", () => { S = blank(); rr(); });
   $("[data-go-profile]", host)?.addEventListener("click", () => window.TCCShowCourseScreen?.("w1-profile"));
 }
 

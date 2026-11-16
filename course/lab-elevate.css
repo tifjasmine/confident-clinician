@@ -472,3 +472,21 @@
 .tr-line i{color:#5d6e64}
 .tr-pull{margin:4px 0 4px 62px;color:#5d6e64;font-size:.88rem}
 .tr-turn .linkish{margin-top:8px;font-size:.85rem}
+
+/* Reps: five calm steps per client */
+.rep-stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:0 0 26px;padding:0;list-style:none;border-bottom:1px solid var(--line)}
+.rep-stepper button{display:flex;align-items:center;gap:8px;width:100%;padding:0 0 12px;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:#9aa49c;font:500 .85rem Jost,sans-serif;cursor:pointer;text-align:left}
+.rep-stepper button:disabled{cursor:default}
+.rep-stepper b{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid currentColor;font-size:.72rem;font-weight:600}
+.rep-stepper li.on button{color:var(--forest);border-bottom-color:var(--terra)}
+.rep-stepper li.on b{background:var(--terra);border-color:var(--terra);color:#fff}
+.rep-stepper li.past button{color:var(--forest)}
+.rep-stepper li.past b{background:var(--forest);border-color:var(--forest);color:#fff}
+.rep-note-box{margin-top:20px;padding:16px 20px;background:#f3ede2;border-left:2px solid var(--terra)}
+.rep-note-box span{display:block;color:var(--terra);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.rep-note-box p{margin:6px 0 0;color:var(--forest)}
+.rep-actions-right{display:flex;gap:10px;margin-left:auto}
+.starters{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
+.starters button{padding:7px 12px;border:1px solid var(--line);background:#fff;color:#4b5d54;font:400 .9rem Jost,sans-serif;cursor:pointer}
+.starters button:hover{border-color:var(--forest);color:var(--forest)}
+@media (max-width:700px){.rep-stepper{grid-template-columns:repeat(5,auto);gap:10px;overflow-x:auto}.rep-stepper button{white-space:nowrap}}
