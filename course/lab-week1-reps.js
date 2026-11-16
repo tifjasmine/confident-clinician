@@ -230,38 +230,44 @@ function railHTML() {
 
 function repHTML() {
   const r = REPS[S.i], R = rec(r.id), N = NOTICE[r.id], name = r.who.split(",")[0], last = S.i === REPS.length - 1, st = R.step;
-  const sel = R.seen[R.seen.length - 1], o = sel != null ? r.options[sel] : null;
-  const client = `<div class="rep-client"><p class="rep-meta"><span>${esc(r.who)}</span>${esc(r.when)}</p><p class="rep-setup">${esc(r.setup)}</p>
-      <blockquote class="rep-line">${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
-  const steps = `<ol class="rep-stepper">${STEP_NAMES.map((t, k) => `<li class="${k + 1 === st ? "on" : k + 1 < st ? "past" : ""}"><button type="button" ${k + 1 < st ? `data-gostep="${k + 1}"` : "disabled"}><b>${k + 1}</b>${t}</button></li>`).join("")}</ol>`;
-  let body = "", next = "";
-  if (st === 1) { body = `<h2>What do you notice?</h2><p class="task-sub">${R.cueShown ? `Here’s what each detail can tell you.` : `Tap anything that stands out in what ${esc(name)} said or did.`}</p>
-      ${R.cueShown ? `<ul class="cue-list">${N.cues.map(([c, m, key]) => { const mine = R.cues.includes(c); return `<li class="${mine ? "mine" : ""}"><span class="cue-tag">${mine ? "You noticed" : "Also here"}${key ? ` · <b>most telling</b>` : ""}</span><strong>${esc(c)}</strong><p>${esc(m)}</p></li>`; }).join("")}</ul>
-        <div class="rep-note-box"><span>Putting it together</span><p>${esc(N.worth)}</p></div>`
-      : `<div class="pick-list inline">${N.cues.map(([c]) => `<button type="button" class="${R.cues.includes(c) ? "selected" : ""}" data-cue="${esc(c)}">${esc(c)}</button>`).join("")}</div>`}`;
-    next = R.cueShown ? `<button class="primary" data-step-next>Next: your pull →</button>` : (R.cues.length ? `<button class="primary" data-cue-show>See what each one tells you</button>` : ""); }
-  if (st === 2) { body = `<h2>What do you feel pulled to do?</h2><p class="task-sub">Before choosing words, be honest about your first impulse.</p>
-      <div class="pick-list inline">${PULL_CHOICES.map(c => `<button type="button" class="${R.pull === c ? "selected" : ""}" data-pullpick="${esc(c)}">${esc(c)}</button>`).join("")}</div>
-      ${R.pull ? `<div class="rep-note-box"><span>About “${esc(R.pull.toLowerCase())}”</span><p>${esc(PULL_NOTES[R.pull])}</p></div>
-        <div class="rep-note-box plain"><span>With ${esc(name)}</span><p>${esc(N.pull)} Noticing it is what gives you a choice.</p></div>` : ""}`;
-    next = R.pull ? `<button class="primary" data-step-next>Next: respond →</button>` : ""; }
-  if (st === 3) { body = `<h2>What would you most likely say?</h2><p class="task-sub">Pick the one closest to what you’d actually say.</p>
-      <div class="rep-options">${r.options.map((op, k) => `<div class="opt${k === R.first ? " open" : ""}"><button type="button" class="opt-head" data-first="${k}"><span class="opt-say">${stage(op[0])}</span></button>
-        ${k === R.first ? `<div class="opt-body"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote><p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p></div>` : ""}</div>`).join("")}</div>`;
-    next = R.first != null ? `<button class="primary" data-step-next>Next: compare all four →</button>` : ""; }
-  if (st === 4) { body = `<h2>How each response lands</h2><p class="task-sub">Open any response to see how ${esc(name)} reacts and when it can fit.</p>
-      <div class="rep-options explained">${r.options.map((op, k) => { const [say, tag] = op, open = k === sel; return `<div class="opt${open ? " open" : ""}">
-        <button type="button" class="opt-head" data-opt="${k}" aria-expanded="${open}"><i class="dot ${op.effect}" aria-hidden="true"></i><span class="opt-say">${stage(say)}</span>
-          <span class="opt-meta">${DOES[tag]} · ${op.effect === "opens" ? "opens it up" : "closes it down"}${R.first === k ? " · <b>your choice</b>" : ""}${k === r.pick ? ` · <b class="pick">what I’d most likely say</b>` : ""}</span><span class="chev" aria-hidden="true"></span></button>
-        ${open ? `<div class="opt-body"><p class="reply-who">${esc(name)} responds</p><blockquote>${stage(op[2])}</blockquote><p class="rep-happened"><b>What happened:</b> ${esc(op[3])}</p><p class="rep-happened"><b>Can fit when:</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
-      <div class="rep-why"><span>Why I’d most likely say that</span><p>${esc(r.why)}</p></div>`;
-    next = `<button class="primary" data-step-next>Next: your words →</button>`; }
-  if (st === 5) { body = `<h2>Now say it your way.</h2><p class="task-sub">Say it out loud first, then write the version you’d actually use with ${esc(name)}.</p>
-      <div class="rep-take"><span>The skill here</span><p>${esc(r.take)}</p></div>
-      <div class="starters">${STARTERS.map(t => `<button type="button" data-starter="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-      <textarea class="rep-input" data-own rows="3" placeholder="Your response to ${esc(name)}…">${esc(R.own)}</textarea>`;
-    next = `<button class="ghost" data-skip>Skip for now</button>${last ? `<button class="primary" data-finish>See your pattern →</button>` : `<button class="primary" data-next>Next client →</button>`}`; }
-  return `${client}<div class="rep-work">${steps}${body}<div class="rep-actions">${st > 1 ? `<button class="ghost" data-step-back>← Back</button>` : "<span></span>"}<div class="rep-actions-right">${next}</div></div></div>`;
+  const sel = R.seen[R.seen.length - 1];
+  const say = t => stage(t).replace(/^“|”$/g, "");
+  const moment = `<div class="rv-moment"><p class="rv-who">${esc(r.who)} · ${esc(r.when)}</p><p class="rv-setup">${esc(r.setup)}</p>
+    <blockquote>${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
+  const progress = `<div class="rv-progress"><p>Step ${st} of 5 · ${STEP_NAMES[st - 1]}</p><span><i style="width:${st * 20}%"></i></span></div>`;
+  const row = (attr, selected, multi, content) => `<button type="button" class="rv-choice${selected ? " on" : ""}" ${attr}><i class="rv-mark${multi ? " sq" : ""}" aria-hidden="true"></i><span>${content}</span></button>`;
+  let q = "", hint = "", body = "", next = "";
+  if (st === 1) { q = "What do you notice?";
+    if (!R.cueShown) { hint = `Choose anything that stands out in what ${esc(name)} said or did.`;
+      body = `<div class="rv-choices">${N.cues.map(([c]) => row(`data-cue="${esc(c)}"`, R.cues.includes(c), true, esc(c))).join("")}</div>`;
+      next = R.cues.length ? `<button class="primary" data-cue-show>See what each one tells you</button>` : ""; }
+    else { hint = "Here’s what each detail can tell you.";
+      body = `<div class="rv-list">${N.cues.map(([c, m, key]) => { const mine = R.cues.includes(c); return `<div class="rv-item${mine ? " mine" : ""}"><i class="rv-mark sq${mine ? " filled" : ""}" aria-hidden="true"></i><div><p class="rv-item-title">${esc(c)}${key ? ` <em>Most telling</em>` : ""}</p><p>${esc(m)}</p></div></div>`; }).join("")}</div>
+        <p class="rv-feedback"><b>Putting it together.</b> ${esc(N.worth)}</p>`;
+      next = `<button class="primary" data-step-next>Next →</button>`; } }
+  if (st === 2) { q = "What do you feel pulled to do?"; hint = "Be honest about your first impulse, before choosing any words.";
+    body = `<div class="rv-choices two">${PULL_CHOICES.map(c => row(`data-pullpick="${esc(c)}"`, R.pull === c, false, esc(c))).join("")}</div>
+      ${R.pull ? `<p class="rv-feedback"><b>${esc(R.pull)}.</b> ${esc(PULL_NOTES[R.pull])}</p><p class="rv-feedback"><b>With ${esc(name)}.</b> ${esc(N.pull)} Noticing it is what gives you a choice.</p>` : ""}`;
+    next = R.pull ? `<button class="primary" data-step-next>Next →</button>` : ""; }
+  if (st === 3) { q = "What would you most likely say?"; hint = "Pick the one closest to what you’d actually say.";
+    const o = R.first != null ? r.options[R.first] : null;
+    body = `<div class="rv-choices">${r.options.map((op, k) => row(`data-first="${k}"`, R.first === k, false, `“${say(op[0])}”`)).join("")}</div>
+      ${o ? `<div class="rv-reply"><p class="rv-who">${esc(name)} responds</p><blockquote>${stage(o[2])}</blockquote></div><p class="rv-feedback"><b>What happened.</b> ${esc(o[3])}</p>` : ""}`;
+    next = o ? `<button class="primary" data-step-next>Next →</button>` : ""; }
+  if (st === 4) { q = "How each response lands"; hint = `Open any response to see how ${esc(name)} reacts.`;
+    body = `<div class="rv-acc">${r.options.map((op, k) => { const open = k === sel; return `<div class="rv-acc-item${open ? " open" : ""}">
+        <button type="button" data-opt="${k}" aria-expanded="${open}"><i class="rv-dot ${op.effect}" aria-hidden="true"></i><span><span class="rv-acc-say">“${say(op[0])}”</span>
+          <span class="rv-acc-meta">${op.effect === "opens" ? "Opens it up" : "Closes it down"}${R.first === k ? " · your choice" : ""}${k === r.pick ? " · <b>what I’d most likely say</b>" : ""}</span></span><i class="rv-chev" aria-hidden="true"></i></button>
+        ${open ? `<div class="rv-acc-body"><blockquote>${stage(op[2])}</blockquote><p><b>What happened.</b> ${esc(op[3])}</p><p><b>Can fit when.</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
+      <p class="rv-feedback"><b>Why I’d most likely say the one marked.</b> ${esc(r.why)}</p>`;
+    next = `<button class="primary" data-step-next>Next →</button>`; }
+  if (st === 5) { q = "Now say it your way."; hint = `Say it out loud first, then write what you’d actually say to ${esc(name)}.`;
+    body = `<p class="rv-feedback first"><b>The skill here.</b> ${esc(r.take)}</p>
+      <div class="rv-starters">${STARTERS.map(t => `<button type="button" data-starter="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <textarea class="rv-input" data-own rows="3" placeholder="Your response to ${esc(name)}">${esc(R.own)}</textarea>`;
+    next = `<button class="ghost" data-skip>Skip</button>${last ? `<button class="primary" data-finish>See your pattern →</button>` : `<button class="primary" data-next>Next client →</button>`}`; }
+  return `<div class="rv">${moment}${progress}<h2 class="rv-q">${q}</h2><p class="rv-hint">${hint}</p>${body}
+    <div class="rv-actions">${st > 1 ? `<button class="rv-back" data-step-back>← Back</button>` : "<span></span>"}<div>${next}</div></div></div>`;
 }
 
 function summaryHTML() {
