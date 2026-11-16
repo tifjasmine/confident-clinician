@@ -1,12 +1,13 @@
-/* Week 1 Reps: six client moments, four steps each: Notice → Your pull → Respond → Your words.
-   The learner picks what they'd most likely say, sees the client react, then compares the other three responses.
+/* Week 1 Reps: six client moments, each worked through Tiffany's P.A.U.S.E. framework so the practice covers all
+   three Week 1 lessons: Pause (your pressure cues and pull), Attend (the client's cues), Use what you know (which
+   confidence gap this is: knowledge, skill, anxiety, role), Say (choose, see the client react, compare), Explore (what next).
    The first pick is tallied to show the learner's most common pull.
    All client moments, options and reactions are fictional DRAFT wording for Tiffany's clinical review. No scores. */
 (() => {
 "use strict";
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const KEY = "tcc-w1-reps-v3";
+const KEY = "tcc-w1-reps-v4";
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 const stage = t => esc(t).replace(/\(([^)]*)\)/g, "<i>($1)</i>");
@@ -202,6 +203,34 @@ const NOTICE = {
   "pull": "Reluctance pulls us to sell therapy, or to push past it."
  }
 };
+/* P.A.U.S.E. content per client: how the pressure tends to feel, which confidence gap it usually is, what you already
+   know, and one example of how to keep exploring after the client opens up. DRAFT wording for Tiffany's review. */
+const GAPS = {
+  knowledge: ["Knowledge", "I don’t know enough about this yet.", "Note the question and look it up or take it to supervision afterward. In the moment, you can still stay present."],
+  skill: ["Skill", "I know what to do, just not how to say it.", "That’s what reps are for. Practice the words until they come out naturally."],
+  anxiety: ["Anxiety", "I know this, but I freeze or rush when it happens.", "Pause first. What you know comes back once your body settles."],
+  role: ["Role", "I’m not sure what my job is in this moment.", "Remind yourself: you don’t have to fix it, defend yourself, or be liked. Your job is to understand."]
+};
+const PAUSE = {
+  sam: { feel: "A jolt of urgency. Leaning forward. The thought “I have to make this better, now.”", gap: "anxiety",
+    use: "You already know panic is common, and that “Am I crazy?” often carries shame. You don’t need a new technique, just room to ask.",
+    next: "Embarrassing. What do you imagine people see when they look at you in those moments?" },
+  priya: { feel: "Fidgeting, a tight chest. The thought “Did I ask the wrong question?”", gap: "anxiety",
+    use: "You already know that silence after a meaningful question often means the client is thinking or deciding whether to say more.",
+    next: "Since her diagnosis. Tell me what the nights have been like." },
+  maya: { feel: "A pang of care. The words “No, you’re doing great!” already on your tongue.", gap: "role",
+    use: "You already know clients often expect from you what they got from others. Her prediction tells you something about that.",
+    next: "That’s a heavy thing to carry. When you didn’t bring it up with your manager, could you hear that voice?" },
+  alex: { feel: "Warmth, a little pride, maybe some awkwardness. The thought “Don’t make this weird.”", gap: "skill",
+    use: "You already know that feedback about the relationship is useful, and that clients will tell you what helps when you ask.",
+    next: "What does it make possible for you, not being rushed?" },
+  chris: { feel: "Heat in your face, your shoulders rising. The thought “Am I failing him?”", gap: "anxiety",
+    use: "You already know that frustration with therapy usually means the client hoped for something. Hopes can become goals.",
+    next: "That matters to you a lot. Walk me through the last time it happened." },
+  devon: { feel: "Bracing yourself. The urge to win him over. The thought “He doesn’t want to be here.”", gap: "role",
+    use: "You already know reluctance is common when someone else pushed for therapy, and that naming it usually helps more than working around it.",
+    next: "Maybe she’s not wrong. What does shutting down look like for you?" }
+};
 const PULL_NOTES = {
   "Reassure": "Reassuring comes from care. The risk is that it answers before you understand what’s underneath.",
   "Fix it": "Fixing comes from wanting to help. The risk is skipping what the client needs to feel first.",
@@ -211,11 +240,11 @@ const PULL_NOTES = {
   "Not sure": "That’s honest. Sometimes the pull shows up as freezing or going blank, and noticing that counts."
 };
 const PULL_CHOICES = ["Reassure", "Fix it", "Move on", "Explain or defend", "Get curious", "Not sure"];
-const STEP_NAMES = ["Notice", "Your pull", "Respond", "Your words"];
+const STEP_NAMES = [["P", "Pause"], ["A", "Attend"], ["U", "Use what you know"], ["S", "Say"], ["E", "Explore"]];
 const STARTERS = ["It sounds like…", "I noticed…", "What’s it like…", "Help me understand…"];
 const blank = () => ({ i: 0, reps: {}, finished: false });   // reps[id] = { first, seen:[], own }
 let S = Object.assign(blank(), load() || {});
-const rec = id => { const R = S.reps[id] || (S.reps[id] = { first: null, seen: [], own: "" }); R.step = Math.min(R.step || 1, 4); R.cues = R.cues || []; return R; };
+const rec = id => { const R = S.reps[id] || (S.reps[id] = { first: null, seen: [], own: "" }); R.step = Math.min(R.step || 1, 5); R.cues = R.cues || []; return R; };
 
 function tally() {
   const t = {}; REPS.forEach(r => { const f = S.reps[r.id]?.first; if (f != null) { const tag = r.options[f][1]; t[tag] = (t[tag] || 0) + 1; } });
@@ -229,28 +258,36 @@ function railHTML() {
 }
 
 function repHTML() {
-  const r = REPS[S.i], R = rec(r.id), N = NOTICE[r.id], name = r.who.split(",")[0], last = S.i === REPS.length - 1, st = R.step;
+  const r = REPS[S.i], R = rec(r.id), N = NOTICE[r.id], P = PAUSE[r.id], name = r.who.split(",")[0], last = S.i === REPS.length - 1, st = R.step;
   const sel = R.seen[R.seen.length - 1];
   const say = t => stage(t).replace(/^“|”$/g, "");
   const said = t => t.startsWith("(") ? stage(t) : `“${say(t)}”`;
   const moment = `<div class="rv-moment"><p class="rv-who">${esc(r.who)} · ${esc(r.when)}</p><p class="rv-setup">${esc(r.setup)}</p>
     <blockquote>${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
-  const progress = `<div class="rv-progress"><p>Step ${st} of 4 · ${STEP_NAMES[st - 1]}</p><span><i style="width:${st * 25}%"></i></span></div>`;
+  const progress = `<ol class="rv-pause" aria-label="P.A.U.S.E. step ${st} of 5">${STEP_NAMES.map(([l, w], k) => `<li class="${k + 1 === st ? "on" : k + 1 < st ? "done" : ""}"${k + 1 === st ? ' aria-current="step"' : ""}><b>${l}</b><span>${w}</span></li>`).join("")}</ol>`;
   const row = (attr, selected, multi, content) => `<button type="button" class="rv-choice${selected ? " on" : ""}" ${attr}><i class="rv-mark${multi ? " sq" : ""}" aria-hidden="true"></i><span>${content}</span></button>`;
+  const go = label => `<button class="primary" data-step-next>${label} →</button>`;
   let q = "", hint = "", body = "", next = "";
-  if (st === 1) { q = "What do you notice?";
+  if (st === 1) { q = "Pause. What’s pulling at you?"; hint = `Before you look closely at ${esc(name)}, check in with yourself. What would you feel pulled to do?`;
+    body = `<p class="rv-feel"><b>You might notice it as:</b> ${esc(P.feel)}</p>
+      <div class="rv-choices two">${PULL_CHOICES.map(c => row(`data-pullpick="${esc(c)}"`, R.pull === c, false, esc(c))).join("")}</div>
+      ${R.pull ? `<p class="rv-feedback"><b>${esc(R.pull)}.</b> ${esc(PULL_NOTES[R.pull])}</p><p class="rv-feedback"><b>With ${esc(name)}.</b> ${esc(N.pull)} Noticing it is what gives you a choice.</p>` : ""}`;
+    next = R.pull ? go("Next: Attend") : ""; }
+  if (st === 2) { q = `Attend. What do you notice in ${esc(name)}?`;
     if (!R.cueShown) { hint = `Choose anything that stands out in what ${esc(name)} said or did.`;
       body = `<div class="rv-choices">${N.cues.map(([c]) => row(`data-cue="${esc(c)}"`, R.cues.includes(c), true, esc(c))).join("")}</div>`;
       next = R.cues.length ? `<button class="primary" data-cue-show>See what each one tells you</button>` : ""; }
     else { hint = "Here’s what each detail can tell you.";
       body = `<div class="rv-list">${N.cues.map(([c, m, key]) => { const mine = R.cues.includes(c); return `<div class="rv-item${mine ? " mine" : ""}"><i class="rv-mark sq${mine ? " filled" : ""}" aria-hidden="true"></i><div><p class="rv-item-title">${esc(c)}${key ? ` <em>Most telling</em>` : ""}</p><p>${esc(m)}</p></div></div>`; }).join("")}</div>
         <p class="rv-feedback"><b>Putting it together.</b> ${esc(N.worth)}</p>`;
-      next = `<button class="primary" data-step-next>Next →</button>`; } }
-  if (st === 2) { q = "What do you feel pulled to do?"; hint = "Be honest about your first impulse, before choosing any words.";
-    body = `<div class="rv-choices two">${PULL_CHOICES.map(c => row(`data-pullpick="${esc(c)}"`, R.pull === c, false, esc(c))).join("")}</div>
-      ${R.pull ? `<p class="rv-feedback"><b>${esc(R.pull)}.</b> ${esc(PULL_NOTES[R.pull])}</p><p class="rv-feedback"><b>With ${esc(name)}.</b> ${esc(N.pull)} Noticing it is what gives you a choice.</p>` : ""}`;
-    next = R.pull ? `<button class="primary" data-step-next>Next →</button>` : ""; }
-  if (st === 3) { q = "What would you most likely say?";
+      next = go("Next: Use what you know"); } }
+  if (st === 3) { q = "Use what you know."; hint = "If you got stuck here, what would most likely be the reason?";
+    const g = R.gap && GAPS[R.gap];
+    body = `<div class="rv-choices">${Object.entries(GAPS).map(([k, [label, line]]) => row(`data-gap="${k}"`, R.gap === k, false, `<b class="rv-gap">${label}</b> ${esc(line)}`)).join("")}</div>
+      ${g ? `<p class="rv-feedback"><b>${g[0]} gap.</b> ${esc(g[2])}</p>
+        <p class="rv-feedback"><b>With ${esc(name)}.</b> ${R.gap === P.gap ? "Many clinicians would name the same gap here." : `Many clinicians would call this mostly a${/^[aeiou]/i.test(GAPS[P.gap][0]) ? "n" : ""} ${GAPS[P.gap][0].toLowerCase()} gap.`} ${esc(P.use)}</p>` : ""}`;
+    next = g ? go("Next: Say") : ""; }
+  if (st === 4) { q = "Say one purposeful thing.";
     const o = R.first != null ? r.options[R.first] : null;
     if (!o) { hint = "Pick the one closest to what you’d actually say. Go with your first instinct.";
       body = `<div class="rv-choices">${r.options.map((op, k) => row(`data-first="${k}"`, false, false, said(op[0]))).join("")}</div>`; }
@@ -269,12 +306,15 @@ function repHTML() {
             <span class="rv-acc-meta">${op.effect === "opens" ? "Opens it up" : "Closes it down"}${k === r.pick ? " · <b>what I’d most likely say</b>" : ""}</span></span><i class="rv-chev" aria-hidden="true"></i></button>
           ${open ? `<div class="rv-acc-body"><blockquote>${stage(op[2])}</blockquote><p><b>What happened.</b> ${esc(op[3])}</p><p><b>Can fit when.</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
         <p class="rv-feedback"><b>${R.first === r.pick ? "Why it works." : "Why I’d most likely choose the one marked."}</b> ${esc(r.why)}</p>`;
-      next = `<button class="primary" data-step-next>Next →</button>`; } }
-  if (st === 4) { q = "Now say it your way."; hint = `Say it out loud first, then write what you’d actually say to ${esc(name)}.`;
-    body = `<p class="rv-feedback first"><b>The skill here.</b> ${esc(r.take)}</p>
+      next = go("Next: Explore"); } }
+  if (st === 5) { const pk = r.options[r.pick]; q = "Explore what follows.";
+    hint = `Say you went with the response I’d most likely choose, and ${esc(name)} opens up a little. What would you say next?`;
+    body = `<div class="rv-reply first"><p class="rv-who">${esc(name)}</p><blockquote>${stage(pk[2])}</blockquote></div>
       <div class="rv-starters">${STARTERS.map(t => `<button type="button" data-starter="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-      <textarea class="rv-input" data-own rows="3" placeholder="Your response to ${esc(name)}">${esc(R.own)}</textarea>`;
-    next = `<button class="ghost" data-skip>Skip</button>${last ? `<button class="primary" data-finish>See your pattern →</button>` : `<button class="primary" data-next>Next client →</button>`}`; }
+      <textarea class="rv-input" data-own rows="3" placeholder="Say it out loud first, then write what you’d say to ${esc(name)}">${esc(R.own)}</textarea>
+      ${R.example ? `<p class="rv-feedback"><b>One way to keep exploring.</b> “${esc(P.next)}”</p><p class="rv-feedback"><b>The skill here.</b> ${esc(r.take)}</p>`
+        : `<button type="button" class="rv-link rv-reveal" data-example>Compare with an example</button>`}`;
+    next = `${R.own.trim() || R.example ? "" : `<button class="ghost" data-skip>Skip</button>`}${last ? `<button class="primary" data-finish>See your pattern →</button>` : `<button class="primary" data-next>Next client →</button>`}`; }
   return `<div class="rv">${moment}${progress}<h2 class="rv-q">${q}</h2><p class="rv-hint">${hint}</p>${body}
     <div class="rv-actions">${st > 1 ? `<button class="rv-back" data-step-back>← Back</button>` : "<span></span>"}<div>${next}</div></div></div>`;
 }
@@ -290,9 +330,13 @@ function summaryHTML() {
   return `<div class="rv rv-sum"><p class="rv-who">Week 1 reps · your pattern</p><h2 class="rv-q">Are you on the right <em>track?</em></h2>
     <p class="rv-lead">Your first choice opened the conversation in <b>${opened.length} of ${done.length}</b> moment${done.length === 1 ? "" : "s"}. That’s the skill this week: noticing the pull, then choosing the response that leaves room for more.</p>
     ${missed.length ? `<p class="rv-hint">Not answered yet: ${missed.map(([r, i]) => `<button type="button" class="rv-link" data-rep="${i}">${nm(r)}</button>`).join(", ")}.</p>` : ""}
-    <h3 class="rv-sub">Your first instincts</h3>
+    <h3 class="rv-sub">What you chose first</h3>
     <div class="rv-tally">${Object.entries(PULLS).map(([k, label]) => { const n = t[k] || 0; return `<div class="${n ? "" : "zero"}${k === "stay" ? " stay" : ""}"><span>${label}</span><i><u style="width:${done.length ? n / done.length * 100 : 0}%"></u></i><b>${n}</b></div>`; }).join("")}</div>
     ${top && top[1] >= 2 ? `<p class="rv-feedback"><b>Your pull to watch: ${PULLS[top[0]].toLowerCase()}.</b> It was your first choice ${top[1]} of ${done.length} times. It isn’t wrong, it’s just automatic. Notice it the next time it shows up in session.</p>` : ""}
+    ${(() => { const g = {}; REPS.forEach(r => { const k = S.reps[r.id]?.gap; if (k) g[k] = (g[k] || 0) + 1; }); const n = Object.values(g).reduce((a, b) => a + b, 0); if (!n) return "";
+      const topg = Object.entries(g).sort((a, b) => b[1] - a[1])[0];
+      return `<h3 class="rv-sub">Where you’d most likely get stuck</h3><div class="rv-tally gaps">${Object.entries(GAPS).map(([k, [label]]) => { const c = g[k] || 0; return `<div class="${c ? "" : "zero"}"><span>${label}</span><i><u style="width:${c / n * 100}%"></u></i><b>${c}</b></div>`; }).join("")}</div>
+        <p class="rv-feedback"><b>Mostly ${GAPS[topg[0]][0].toLowerCase()}.</b> ${esc(GAPS[topg[0]][2])}</p>`; })()}
     <h3 class="rv-sub">What the responses that opened things up had in common</h3>
     <ul class="rv-bullets"><li>They responded to the feeling under the words, not just the question.</li><li>They used something the client actually said or did.</li><li>They left room for the client to say more, instead of wrapping it up.</li></ul>
     ${retry.length ? `<h3 class="rv-sub">Worth another try</h3><div class="rv-list">${retry.map(([r, i]) => `<button type="button" class="rv-item rv-retry" data-rep="${i}" data-retry><div><p class="rv-item-title">${nm(r)}</p><p>${esc(r.take)}</p></div><i class="rv-chev side" aria-hidden="true"></i></button>`).join("")}</div>` : ""}
@@ -303,7 +347,7 @@ function summaryHTML() {
 function render() {
   const host = $("[data-week1-blind-spot]"); if (!host) return;
   host.innerHTML = `<div class="advanced-shell reps-shell"><button class="back-link" data-go="week-1">← Back to Week 1</button>
-    <header class="practice-head"><p class="eyebrow">Week 1 · Reps</p><h1>Notice before you <em>respond.</em></h1><p>Six short client moments. They get harder as you go.</p></header>
+    <header class="practice-head"><p class="eyebrow">Week 1 · Reps</p><h1>Notice before you <em>respond.</em></h1><p>Six client moments. Work each one through P.A.U.S.E. They get harder as you go.</p></header>
     <div class="reps-layout">${railHTML()}<article class="rep-card">${S.finished ? summaryHTML() : repHTML()}</article></div></div>`;
   bind(host);
 }
@@ -312,10 +356,12 @@ function bind(host) {
   $$("[data-go]", host).forEach(b => b.onclick = () => window.TCCShowCourseScreen?.(b.dataset.go));
   const top = () => host.scrollIntoView({ behavior: "smooth", block: "start" }), r = REPS[S.i], R = rec(r.id), rr = () => { save(); render(); };
   $$("[data-rep]", host).forEach(b => b.onclick = () => { S.i = +b.dataset.rep; S.finished = false;
-    if (b.hasAttribute("data-retry")) { const X = rec(REPS[S.i].id); X.first = null; X.seen = []; X.step = 3; } rr(); top(); });
+    if (b.hasAttribute("data-retry")) { const X = rec(REPS[S.i].id); X.first = null; X.seen = []; X.step = 4; } rr(); top(); });
   $$("[data-gostep]", host).forEach(b => b.onclick = () => { R.step = +b.dataset.gostep; rr(); });
   $$("[data-cue]", host).forEach(b => b.onclick = () => { const c = b.dataset.cue; R.cues = R.cues.includes(c) ? R.cues.filter(x => x !== c) : [...R.cues, c]; rr(); });
   $("[data-cue-show]", host)?.addEventListener("click", () => { R.cueShown = true; rr(); });
+  $$("[data-gap]", host).forEach(b => b.onclick = () => { R.gap = b.dataset.gap; rr(); });
+  $("[data-example]", host)?.addEventListener("click", () => { R.example = true; rr(); });
   $$("[data-pullpick]", host).forEach(b => b.onclick = () => { R.pull = b.dataset.pullpick; rr(); });
   $$("[data-first]", host).forEach(b => b.onclick = () => { const k = +b.dataset.first; R.first = k; R.seen = [k]; rr(); });
   $$("[data-opt]", host).forEach(b => b.onclick = () => { const k = +b.dataset.opt; R.seen = R.seen.filter(x => x !== k).concat(k); rr(); });
