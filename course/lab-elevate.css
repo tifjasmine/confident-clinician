@@ -557,4 +557,28 @@
 .rv-actions>div{display:flex;gap:10px}
 .rv-back{padding:0;border:0;background:none;color:#5d6e64;font:500 .95rem Jost,sans-serif;cursor:pointer}
 .rv-back:hover{color:var(--forest)}
-@media (max-width:640px){.rv-choices.two{grid-template-columns:1fr}.course-main .rv blockquote{font-size:1.35rem!important}}
+.rv-picked{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1px solid var(--terra);background:#fdf6f2;font:400 1.02rem/1.5 Jost,sans-serif}
+.rv-picked .rv-dot{flex:none}
+.rv-verdict{margin:18px 0 0;padding:12px 16px;background:#f6f2ea;color:#3f5248}
+.rv-verdict.opens{border-left:3px solid #3f7a5d}.rv-verdict.closes{border-left:3px solid #c06a50}
+.course-main .rv-sub{margin:36px 0 12px!important;font:600 .8rem/1.3 Jost,sans-serif!important;letter-spacing:.14em;text-transform:uppercase;color:var(--sage,#5d6e64)!important}
+.rv-q em{color:var(--terra);font-style:italic}
+.rv-lead{margin:8px 0 0;color:#3f5248}
+.rv-lead b{color:var(--forest);font-weight:600}
+.rv-sum .rv-hint{margin-top:10px}
+.rv-link{padding:0;border:0;background:none;color:var(--terra);font:inherit;text-decoration:underline;cursor:pointer}
+.rv-tally{border-top:1px solid var(--line)}
+.rv-tally div{display:grid;grid-template-columns:minmax(150px,200px) 1fr 28px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.rv-tally span{color:#3f5248;font-size:.98rem}
+.rv-tally i{display:block;height:6px;background:#f1ece3}
+.rv-tally u{display:block;height:6px;background:#c06a50;text-decoration:none}
+.rv-tally .stay u{background:#3f7a5d}
+.rv-tally b{color:var(--forest);font:600 1rem Jost,sans-serif;text-align:right}
+.rv-tally .zero span,.rv-tally .zero b{color:#a7aea8}
+.rv-sum .rv-actions{border-top:0}
+.rv-bullets{margin:0;padding-left:20px;color:#3f5248}
+.rv-bullets li+li{margin-top:6px}
+.rv-retry{width:100%;align-items:center;justify-content:space-between;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;cursor:pointer}
+.rv-retry:hover .rv-item-title{color:var(--terra)}
+.rv-chev.side{flex:none;transform:rotate(-45deg);margin-top:0}
+@media (max-width:640px){.rv-choices.two{grid-template-columns:1fr}.rv-actions{flex-wrap:wrap;gap:14px}.course-main .rv blockquote{font-size:1.35rem!important}}

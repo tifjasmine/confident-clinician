@@ -1,6 +1,6 @@
-/* Week 1 Reps: "choose, see the reaction". For each client moment the learner picks what they'd most likely say,
-   the client reacts to that choice, and a one-line "what happened" explains it. They can try other options and,
-   optionally, put it in their own words. The first pick is tallied to show the learner's most common pull.
+/* Week 1 Reps: six client moments, four steps each: Notice → Your pull → Respond → Your words.
+   The learner picks what they'd most likely say, sees the client react, then compares the other three responses.
+   The first pick is tallied to show the learner's most common pull.
    All client moments, options and reactions are fictional DRAFT wording for Tiffany's clinical review. No scores. */
 (() => {
 "use strict";
@@ -211,11 +211,11 @@ const PULL_NOTES = {
   "Not sure": "That’s honest. Sometimes the pull shows up as freezing or going blank, and noticing that counts."
 };
 const PULL_CHOICES = ["Reassure", "Fix it", "Move on", "Explain or defend", "Get curious", "Not sure"];
-const STEP_NAMES = ["Notice", "Your pull", "Respond", "Compare", "Your words"];
+const STEP_NAMES = ["Notice", "Your pull", "Respond", "Your words"];
 const STARTERS = ["It sounds like…", "I noticed…", "What’s it like…", "Help me understand…"];
 const blank = () => ({ i: 0, reps: {}, finished: false });   // reps[id] = { first, seen:[], own }
 let S = Object.assign(blank(), load() || {});
-const rec = id => { const R = S.reps[id] || (S.reps[id] = { first: null, seen: [], own: "" }); R.step = R.step || 1; R.cues = R.cues || []; return R; };
+const rec = id => { const R = S.reps[id] || (S.reps[id] = { first: null, seen: [], own: "" }); R.step = Math.min(R.step || 1, 4); R.cues = R.cues || []; return R; };
 
 function tally() {
   const t = {}; REPS.forEach(r => { const f = S.reps[r.id]?.first; if (f != null) { const tag = r.options[f][1]; t[tag] = (t[tag] || 0) + 1; } });
@@ -232,9 +232,10 @@ function repHTML() {
   const r = REPS[S.i], R = rec(r.id), N = NOTICE[r.id], name = r.who.split(",")[0], last = S.i === REPS.length - 1, st = R.step;
   const sel = R.seen[R.seen.length - 1];
   const say = t => stage(t).replace(/^“|”$/g, "");
+  const said = t => t.startsWith("(") ? stage(t) : `“${say(t)}”`;
   const moment = `<div class="rv-moment"><p class="rv-who">${esc(r.who)} · ${esc(r.when)}</p><p class="rv-setup">${esc(r.setup)}</p>
     <blockquote>${r.line.startsWith("(") ? `<i>${esc(r.line)}</i>` : `“${esc(r.line)}”`}</blockquote></div>`;
-  const progress = `<div class="rv-progress"><p>Step ${st} of 5 · ${STEP_NAMES[st - 1]}</p><span><i style="width:${st * 20}%"></i></span></div>`;
+  const progress = `<div class="rv-progress"><p>Step ${st} of 4 · ${STEP_NAMES[st - 1]}</p><span><i style="width:${st * 25}%"></i></span></div>`;
   const row = (attr, selected, multi, content) => `<button type="button" class="rv-choice${selected ? " on" : ""}" ${attr}><i class="rv-mark${multi ? " sq" : ""}" aria-hidden="true"></i><span>${content}</span></button>`;
   let q = "", hint = "", body = "", next = "";
   if (st === 1) { q = "What do you notice?";
@@ -249,19 +250,27 @@ function repHTML() {
     body = `<div class="rv-choices two">${PULL_CHOICES.map(c => row(`data-pullpick="${esc(c)}"`, R.pull === c, false, esc(c))).join("")}</div>
       ${R.pull ? `<p class="rv-feedback"><b>${esc(R.pull)}.</b> ${esc(PULL_NOTES[R.pull])}</p><p class="rv-feedback"><b>With ${esc(name)}.</b> ${esc(N.pull)} Noticing it is what gives you a choice.</p>` : ""}`;
     next = R.pull ? `<button class="primary" data-step-next>Next →</button>` : ""; }
-  if (st === 3) { q = "What would you most likely say?"; hint = "Pick the one closest to what you’d actually say.";
+  if (st === 3) { q = "What would you most likely say?";
     const o = R.first != null ? r.options[R.first] : null;
-    body = `<div class="rv-choices">${r.options.map((op, k) => row(`data-first="${k}"`, R.first === k, false, `“${say(op[0])}”`)).join("")}</div>
-      ${o ? `<div class="rv-reply"><p class="rv-who">${esc(name)} responds</p><blockquote>${stage(o[2])}</blockquote></div><p class="rv-feedback"><b>What happened.</b> ${esc(o[3])}</p>` : ""}`;
-    next = o ? `<button class="primary" data-step-next>Next →</button>` : ""; }
-  if (st === 4) { q = "How each response lands"; hint = `Open any response to see how ${esc(name)} reacts.`;
-    body = `<div class="rv-acc">${r.options.map((op, k) => { const open = k === sel; return `<div class="rv-acc-item${open ? " open" : ""}">
-        <button type="button" data-opt="${k}" aria-expanded="${open}"><i class="rv-dot ${op.effect}" aria-hidden="true"></i><span><span class="rv-acc-say">“${say(op[0])}”</span>
-          <span class="rv-acc-meta">${op.effect === "opens" ? "Opens it up" : "Closes it down"}${R.first === k ? " · your choice" : ""}${k === r.pick ? " · <b>what I’d most likely say</b>" : ""}</span></span><i class="rv-chev" aria-hidden="true"></i></button>
-        ${open ? `<div class="rv-acc-body"><blockquote>${stage(op[2])}</blockquote><p><b>What happened.</b> ${esc(op[3])}</p><p><b>Can fit when.</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
-      <p class="rv-feedback"><b>Why I’d most likely say the one marked.</b> ${esc(r.why)}</p>`;
-    next = `<button class="primary" data-step-next>Next →</button>`; }
-  if (st === 5) { q = "Now say it your way."; hint = `Say it out loud first, then write what you’d actually say to ${esc(name)}.`;
+    if (!o) { hint = "Pick the one closest to what you’d actually say. Go with your first instinct.";
+      body = `<div class="rv-choices">${r.options.map((op, k) => row(`data-first="${k}"`, false, false, said(op[0]))).join("")}</div>`; }
+    else { hint = `You chose this. Here’s how ${esc(name)} reacts.`;
+      const verdict = R.first === r.pick ? "It’s what I’d most likely do too."
+        : o.effect === "opens" ? "A strong choice. Compare it with the one I’d most likely choose, below."
+        : "Worth knowing why. See how the others land below.";
+      body = `<div class="rv-picked"><i class="rv-dot ${o.effect}" aria-hidden="true"></i><span>${said(o[0])}</span></div>
+        <div class="rv-reply"><p class="rv-who">${esc(name)} responds</p><blockquote>${stage(o[2])}</blockquote></div>
+        <p class="rv-feedback"><b>What happened.</b> ${esc(o[3])}</p>
+        <p class="rv-feedback"><b>Can fit when.</b> ${esc(o.fit)}</p>
+        <p class="rv-verdict ${o.effect}">${o.effect === "opens" ? "Opens it up" : "Closes it down"}. ${verdict}</p>
+        <h3 class="rv-sub">How the other responses land</h3>
+        <div class="rv-acc">${r.options.map((op, k) => { if (k === R.first) return ""; const open = k === sel; return `<div class="rv-acc-item${open ? " open" : ""}">
+          <button type="button" data-opt="${k}" aria-expanded="${open}"><i class="rv-dot ${op.effect}" aria-hidden="true"></i><span><span class="rv-acc-say">${said(op[0])}</span>
+            <span class="rv-acc-meta">${op.effect === "opens" ? "Opens it up" : "Closes it down"}${k === r.pick ? " · <b>what I’d most likely say</b>" : ""}</span></span><i class="rv-chev" aria-hidden="true"></i></button>
+          ${open ? `<div class="rv-acc-body"><blockquote>${stage(op[2])}</blockquote><p><b>What happened.</b> ${esc(op[3])}</p><p><b>Can fit when.</b> ${esc(op.fit)}</p></div>` : ""}</div>`; }).join("")}</div>
+        <p class="rv-feedback"><b>${R.first === r.pick ? "Why it works." : "Why I’d most likely choose the one marked."}</b> ${esc(r.why)}</p>`;
+      next = `<button class="primary" data-step-next>Next →</button>`; } }
+  if (st === 4) { q = "Now say it your way."; hint = `Say it out loud first, then write what you’d actually say to ${esc(name)}.`;
     body = `<p class="rv-feedback first"><b>The skill here.</b> ${esc(r.take)}</p>
       <div class="rv-starters">${STARTERS.map(t => `<button type="button" data-starter="${esc(t)}">${esc(t)}</button>`).join("")}</div>
       <textarea class="rv-input" data-own rows="3" placeholder="Your response to ${esc(name)}">${esc(R.own)}</textarea>`;
@@ -272,19 +281,23 @@ function repHTML() {
 
 function summaryHTML() {
   const { t, top } = tally();
-  const opened = REPS.filter(r => { const f = S.reps[r.id]?.first; return f != null && r.options[f].effect === "opens"; });
+  const done = REPS.filter(r => S.reps[r.id]?.first != null);
+  const opened = done.filter(r => r.options[S.reps[r.id].first].effect === "opens");
   const retry = REPS.map((r, i) => [r, i]).filter(([r]) => { const f = S.reps[r.id]?.first; return f != null && r.options[f].effect === "closes"; });
+  const missed = REPS.map((r, i) => [r, i]).filter(([r]) => S.reps[r.id]?.first == null);
   const own = REPS.filter(r => (S.reps[r.id]?.own || "").trim());
-  return `<div class="rep-summary"><p class="eyebrow">Week 1 reps · your pattern</p><h2>Are you on the right <em>track?</em></h2>
-    <div class="rep-score"><b>${opened.length} of ${REPS.length}</b><p>Your first choice opened the conversation in ${opened.length} of ${REPS.length} moments. That’s the skill this week: noticing the pull, and choosing the response that leaves room for more.</p></div>
-    <p class="sum-label">Your first instincts</p>
-    <div class="rep-tally">${Object.entries(PULLS).map(([k, label]) => { const n = t[k] || 0; return `<div class="${n ? "" : "zero"}"><span>${label}</span><b>${n}</b></div>`; }).join("")}</div>
-    ${top && top[1] >= 2 ? `<div class="rep-edge"><span>Your pull to watch</span><p>${PULLS[top[0]]}</p><small>Your first choice ${top[1]} of ${REPS.length} times. It isn’t wrong, it’s just automatic. Notice it next time it shows up in session.</small></div>` : ""}
-    <p class="sum-label">What the responses that opened things up had in common</p>
-    <ul class="sum-list"><li>They responded to the feeling under the words, not just the question.</li><li>They used something the client actually said or did.</li><li>They left room for the client to say more, instead of wrapping it up.</li></ul>
-    ${retry.length ? `<p class="sum-label">Worth another try</p><div class="sum-retry">${retry.map(([r, i]) => `<button type="button" data-rep="${i}"><b>${esc(r.who.split(",")[0])}</b><span>${esc(r.take)}</span></button>`).join("")}</div>` : ""}
-    ${own.length ? `<p class="sum-label">In your own words</p><div class="sum-own">${own.map(r => `<div><span>${esc(r.who.split(",")[0])}</span><p>“${esc(S.reps[r.id].own)}”</p></div>`).join("")}</div>` : ""}
-    <div class="rep-actions"><button class="ghost" data-restart>Practice all six again</button><button class="primary" data-go-profile>Add to my Confidence Profile →</button></div></div>`;
+  const nm = r => esc(r.who.split(",")[0]);
+  return `<div class="rv rv-sum"><p class="rv-who">Week 1 reps · your pattern</p><h2 class="rv-q">Are you on the right <em>track?</em></h2>
+    <p class="rv-lead">Your first choice opened the conversation in <b>${opened.length} of ${done.length}</b> moment${done.length === 1 ? "" : "s"}. That’s the skill this week: noticing the pull, then choosing the response that leaves room for more.</p>
+    ${missed.length ? `<p class="rv-hint">Not answered yet: ${missed.map(([r, i]) => `<button type="button" class="rv-link" data-rep="${i}">${nm(r)}</button>`).join(", ")}.</p>` : ""}
+    <h3 class="rv-sub">Your first instincts</h3>
+    <div class="rv-tally">${Object.entries(PULLS).map(([k, label]) => { const n = t[k] || 0; return `<div class="${n ? "" : "zero"}${k === "stay" ? " stay" : ""}"><span>${label}</span><i><u style="width:${done.length ? n / done.length * 100 : 0}%"></u></i><b>${n}</b></div>`; }).join("")}</div>
+    ${top && top[1] >= 2 ? `<p class="rv-feedback"><b>Your pull to watch: ${PULLS[top[0]].toLowerCase()}.</b> It was your first choice ${top[1]} of ${done.length} times. It isn’t wrong, it’s just automatic. Notice it the next time it shows up in session.</p>` : ""}
+    <h3 class="rv-sub">What the responses that opened things up had in common</h3>
+    <ul class="rv-bullets"><li>They responded to the feeling under the words, not just the question.</li><li>They used something the client actually said or did.</li><li>They left room for the client to say more, instead of wrapping it up.</li></ul>
+    ${retry.length ? `<h3 class="rv-sub">Worth another try</h3><div class="rv-list">${retry.map(([r, i]) => `<button type="button" class="rv-item rv-retry" data-rep="${i}" data-retry><div><p class="rv-item-title">${nm(r)}</p><p>${esc(r.take)}</p></div><i class="rv-chev side" aria-hidden="true"></i></button>`).join("")}</div>` : ""}
+    ${own.length ? `<h3 class="rv-sub">In your own words</h3><div class="rv-list">${own.map(r => `<div class="rv-item"><div><p class="rv-item-title">${nm(r)}</p><p>“${esc(S.reps[r.id].own)}”</p></div></div>`).join("")}</div>` : ""}
+    <div class="rv-actions"><button class="rv-back" data-restart>Start all six again</button><div><button class="primary" data-go-profile>Add to my Confidence Profile →</button></div></div></div>`;
 }
 
 function render() {
@@ -298,7 +311,8 @@ function render() {
 function bind(host) {
   $$("[data-go]", host).forEach(b => b.onclick = () => window.TCCShowCourseScreen?.(b.dataset.go));
   const top = () => host.scrollIntoView({ behavior: "smooth", block: "start" }), r = REPS[S.i], R = rec(r.id), rr = () => { save(); render(); };
-  $$("[data-rep]", host).forEach(b => b.onclick = () => { S.i = +b.dataset.rep; S.finished = false; rr(); });
+  $$("[data-rep]", host).forEach(b => b.onclick = () => { S.i = +b.dataset.rep; S.finished = false;
+    if (b.hasAttribute("data-retry")) { const X = rec(REPS[S.i].id); X.first = null; X.seen = []; X.step = 3; } rr(); top(); });
   $$("[data-gostep]", host).forEach(b => b.onclick = () => { R.step = +b.dataset.gostep; rr(); });
   $$("[data-cue]", host).forEach(b => b.onclick = () => { const c = b.dataset.cue; R.cues = R.cues.includes(c) ? R.cues.filter(x => x !== c) : [...R.cues, c]; rr(); });
   $("[data-cue-show]", host)?.addEventListener("click", () => { R.cueShown = true; rr(); });
