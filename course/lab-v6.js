@@ -63,24 +63,29 @@
 
     const views = { home: homeView, week: weekView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
-    $("[data-head]").innerHTML = headHTML(scr, v);
+    const head = $("[data-head]");
+    head.innerHTML = v.hero || headHTML(scr, v);
+    head.className = v.hero ? "v6-head is-hero" : "v6-head";
+    $(".v6-shell").classList.toggle("solo", !!v.solo);
     const col = $("[data-view]");
     col.className = "v6-col" + (v.tight ? " tight" : "");
     col.innerHTML = v.html;
-    $("[data-aside]").innerHTML = asideHTML(scr, v);
+    $("[data-aside]").innerHTML = v.solo ? "" : asideHTML(scr, v);
     if (scr !== lastScr) scrollTo({ top: 0 });
     lastScr = scr;
     bind(scr, arg);
     if (v.after) v.after();
   }
 
+  /* Italic terracotta accent on the last word of a heading */
+  const accent = t => { const m = String(t).match(/^(.*\s)(\S+)$/); return m ? `${esc(m[1])}<em>${esc(m[2])}</em>` : esc(t); };
   function headHTML(scr, v) {
     const h = D.HEADS[scr];
     let title = v.title || h[0];
     if (scr === "home") title = anyProgress() ? "Welcome back" : "Welcome to the Lab";
     const crumb = v.crumb ? `<div class="v6-crumb"><button type="button" data-go="${v.crumb[2]}">${esc(v.crumb[0])}</button> <span aria-hidden="true">/</span> ${esc(v.crumb[1])}</div>` : "";
     const principle = scr === "home" ? `<div class="v6-principle"><span>Learn</span><i aria-hidden="true">→</i><span>Practice</span><i aria-hidden="true">→</i><span>Reflect</span><i aria-hidden="true">→</i><span>Improve</span></div>` : "";
-    return `<div>${crumb}<h1>${esc(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
+    return `<div>${crumb}<h1>${accent(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
   }
 
   /* ---------- Aside ---------- */
@@ -124,35 +129,45 @@
     return { tag: s.kind, title: s.title, meta: s.meta, cta: "Continue", go: "week/" + s.key };
   }
   function homeView() {
-    const n = nextInfo(), d = doneCount(), t = D.WEEK1.length, w1 = D.WEEKS[0];
-    const html = `
-      <div class="card up-next">
-        <div class="main">
-          <div class="pills"><span class="v6-pill sage">Week 1 · Notice</span><span class="v6-pill blush">${esc(n.tag)}</span></div>
-          <div><div class="note">Up next</div><div class="title">${esc(n.title)}</div><div class="note" style="font-size:14.5px;margin-top:4px">${esc(n.meta)}</div></div>
-          <div><div class="v6-row-between note" style="margin-bottom:6px"><span>Week 1 progress</span><b style="color:var(--ink);font-weight:600">${d} of ${t}</b></div><div class="bar"><i style="width:${Math.round(d / t * 100)}%"></i></div></div>
-          <div class="actions"><button type="button" class="v6-btn primary" data-go="${n.go}">${esc(n.cta)}</button><button type="button" class="v6-btn secondary" data-go="week">View Week 1</button></div>
+    const n = nextInfo(), d = doneCount(), t = D.WEEK1.length;
+    const hero = `
+      <section class="hero">
+        <div class="hero-text">
+          <div class="v6-label">${anyProgress() ? "Welcome back" : "Welcome"} · Week 1 of 4</div>
+          <h1 class="display">Build confidence through <em>practice,</em> not performance.</h1>
+          <p class="lede">One client moment at a time. Notice what shaped your answer, and leave with something specific to try again.</p>
+          <button type="button" class="next-card" data-go="${n.go}">
+            <span class="tt"><small>Up next · ${esc(n.tag)}</small><b>${esc(n.title)}</b><span>${esc(n.meta)}</span></span>
+            <i aria-hidden="true">→</i><span class="sr-only">${esc(n.cta)}</span></button>
+          <div class="hero-prog"><div class="v6-row-between"><span>Week 1 progress</span><b>${d} of ${t} steps</b></div><div class="bar"><i style="width:${Math.round(d / t * 100)}%"></i></div></div>
         </div>
-        <div class="q-card"><div><div class="v6-label forest">This week’s question</div><div class="q">${esc(w1.question)}</div></div>
-          <div class="anchor"><div class="v6-label grey">Anchor · ${esc(w1.anchor)}</div><div style="margin-top:2px">${esc(w1.anchorLine)}</div></div></div>
-      </div>
+        <figure class="hero-photo"><img src="${D.IMG.d}" alt="Tiffany McGilloway, LPC">
+          <figcaption><small>A note from Tiffany</small><q>${esc(D.TIPS.home)}</q></figcaption></figure>
+      </section>`;
+    const html = `
+      <section class="band">
+        <div class="band-head"><h2>Four weeks. <em>One week at a time.</em></h2><p>Each week opens once the last week’s practice is done. Your work saves as you go.</p></div>
+        <ol class="band-weeks">${D.WEEKS.map(w => {
+          const cur = w.n === 1, open = weekOpen(w.n);
+          const status = cur ? (d ? `${d} of ${t} done · Continue →` : "Open now →") : open ? "Preview open" : `Opens after Week ${w.n - 1}`;
+          return `<li class="${cur ? "cur" : ""}"><span class="n">0${w.n}</span><b>${esc(w.title)}</b><small>${esc(w.theme)} · ${esc(w.question)}</small>
+            ${cur ? `<button type="button" class="st" data-go="week">${status}</button>` : `<span class="st">${status}</span>`}</li>`;
+        }).join("")}</ol>
+      </section>
       <div class="card rep-intro">
-        <div><div class="v6-label">How you’ll practice</div><div class="t">Every lesson ends with a Rep</div><div class="note" style="font-size:14px">A 3–5 minute practice of one real client moment, in your own words.</div>
+        <div><div class="v6-label">How you’ll practice</div><div class="t">Every lesson ends with a <em>Rep.</em></div><div class="note" style="font-size:14px">A 3–5 minute practice of one real client moment, in your own words.</div>
           <button type="button" class="v6-link" style="margin-top:12px" data-go="rep/1.1">Try an example Rep →</button></div>
         <div class="rep-steps">${D.REP_STEPS.map((t, i) => `<div><span class="num">${i + 1}</span>${esc(t)}</div>`).join("")}</div>
       </div>
-      <div class="card">
-        <div class="between"><h2 class="h">Your four weeks</h2><span class="note">Each week opens after the last</span></div>
-        <div class="grid2">${D.WEEKS.map(w => {
-          const cur = w.n === 1;
-          const status = cur ? (d ? `${d} of ${t} done` : "Open now") : weekOpen(w.n) ? "Preview open" : "🔒 Locked";
-          const sc = cur ? (d ? "var(--forest)" : "var(--terra-t)") : "var(--muted)";
-          return `<div class="week-tile${cur ? " current" : ""}"><div class="top"><span class="theme">Week ${w.n} · ${esc(w.theme)}</span><span style="color:${sc}">${status}</span></div>
-            <span class="title">${esc(w.title)}</span><span class="q">${esc(w.question)}</span><span class="meta">Anchor: ${esc(w.anchor)} · Client: ${esc(w.client)}</span>
-            <span class="keep">You’ll keep: <b>${esc(w.keep)}</b></span></div>`;
-        }).join("")}</div>
+      <div class="pick">
+        <h2>Pick up where you <em>left off.</em></h2>
+        <div class="pick-grid">${[
+          ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
+          ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
+          ["growth", D.IMG.c, "My growth", "Your Day 1 answers, waiting for the Week 4 Showcase.", "See your growth"]
+        ].map(([k, img, t, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>
       </div>`;
-    return { html };
+    return { html, hero, solo: true };
   }
 
   /* ---------- My week ---------- */
@@ -234,7 +249,14 @@
         <div class="words"><span class="t">The Pull</span><span class="d">The automatic urge that grabs you under pressure.</span><div class="chips">${D.PULLS.map(([t, d]) => `<span title="${esc(d)}">${esc(t)}</span>`).join("")}</div></div>
         <div class="words"><span class="t">P.A.U.S.E.</span><span class="d">Your way back in when you go blank.</span><div class="pause">${D.PAUSE.map(([l, t]) => `<span><b>${l}</b> · ${esc(t)}</span>`).join("")}</div></div>
       </div></div>`;
-    return { html, sel, crumb: ["Home", "Week 1", "home"] };
+    const w = D.WEEKS[0];
+    const hero = `<section class="week-hero"><div class="in">
+      <button type="button" class="back" data-go="home">← Home</button>
+      <div class="v6-label">Week 1 of 4 · ${esc(w.theme)}</div>
+      <h1>${accent(w.title)}<em>.</em></h1>
+      <p>${esc(w.question)} <span>· ${doneCount()} of ${D.WEEK1.length} steps done</span></p></div>
+      <span class="big" aria-hidden="true">01</span></section>`;
+    return { html, sel, hero };
   }
 
   /* ---------- Rep ---------- */

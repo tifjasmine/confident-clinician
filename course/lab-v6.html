@@ -20,26 +20,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/course/lab-v6.css?v=20261117a">
+  <link rel="stylesheet" href="/course/lab-v6.css?v=20261117b">
 </head>
 <body>
   <!-- Preview sign-in. Client-side test gate only (same preview credential as the existing Lab preview). -->
   <section class="v6-login" data-login hidden>
     <div class="v6-login-card">
-      <div class="v6-login-form">
-        <div class="v6-brand"><span class="v6-mark" aria-hidden="true">C</span><span>The Clinical Confidence Lab</span></div>
-        <div>
-          <h1 class="v6-serif">Welcome back</h1>
-          <p class="v6-muted">You’ll leave with the words, not just the ideas.</p>
-        </div>
-        <form data-login-form novalidate>
-          <label>Email<input type="email" name="email" autocomplete="username" placeholder="you@practice.com" required></label>
-          <label><span class="v6-row-between">Password <a href="/course/set-password.html">Forgot?</a></span><input type="password" name="password" autocomplete="current-password" required></label>
-          <p class="v6-error" role="alert" data-login-error></p>
-          <button type="submit" class="v6-btn primary">Sign in</button>
-        </form>
-        <div class="v6-preview-note"><span aria-hidden="true"></span>Preview account · no real student records</div>
-      </div>
       <div class="v6-login-photo">
         <img src="/assets/optimized/tiffany-mcgilloway-clinical-educator-900.jpg" alt="Tiffany McGilloway">
         <figure>
@@ -47,13 +33,27 @@
           <figcaption>Tiffany McGilloway, LPC · Founder</figcaption>
         </figure>
       </div>
+      <div class="v6-login-form">
+        <div class="v6-wordmark">The Confident Clinician</div>
+        <div>
+          <h1 class="v6-display">Practice making decisions you can <em>explain.</em></h1>
+          <p class="v6-muted">The Clinical Confidence Lab · You’ll leave with the words, not just the ideas.</p>
+        </div>
+        <form data-login-form novalidate>
+          <label>Email<input type="email" name="email" autocomplete="username" placeholder="you@practice.com" required></label>
+          <label><span class="v6-row-between">Password <a href="/course/set-password.html">Forgot?</a></span><input type="password" name="password" autocomplete="current-password" required></label>
+          <p class="v6-error" role="alert" data-login-error></p>
+          <button type="submit" class="v6-btn primary">Enter the Lab <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="v6-preview-note"><span aria-hidden="true"></span>Preview account · no real student records</div>
+      </div>
     </div>
   </section>
 
   <div class="v6-app" data-app hidden>
     <header class="v6-top">
       <div class="v6-top-in">
-        <div class="v6-brand"><span class="v6-mark" aria-hidden="true">C</span><span class="v6-brand-long">The Clinical Confidence Lab</span><span class="v6-brand-short">Confidence Lab</span></div>
+        <div class="v6-brand"><span class="v6-brand-long">The Confident Clinician</span><span class="v6-brand-short">The Confident Clinician</span></div>
         <nav class="v6-tabs" aria-label="Lab sections" data-tabs></nav>
         <div class="v6-top-right">
           <button type="button" class="v6-pill blush v6-preview-toggle" data-preview-toggle title="Reviewer mode: open every step and week">Preview</button>
@@ -73,7 +73,7 @@
     <nav class="v6-bottom" aria-label="Lab sections" data-bottom></nav>
   </div>
 
-  <script src="/course/lab-v6-data.js?v=20261117a"></script>
-  <script src="/course/lab-v6.js?v=20261117a"></script>
+  <script src="/course/lab-v6-data.js?v=20261117b"></script>
+  <script src="/course/lab-v6.js?v=20261117b"></script>
 </body>
 </html>
