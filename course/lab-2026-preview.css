@@ -2,3 +2,154 @@
 body:not(.preview-authenticated)>.preview-banner,body:not(.preview-authenticated)>.mobile-menu,body:not(.preview-authenticated)>.academy-shell{display:none}.preview-login{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr}.preview-login-story{display:flex;flex-direction:column;justify-content:center;padding:clamp(40px,8vw,120px);background:var(--forest);color:#fff}.preview-login-story .brand{margin:0 0 80px}.preview-login-story h1{color:#fff}.preview-login-story>p:last-child{max-width:650px}.preview-login-card{align-self:center;width:min(480px,calc(100% - 40px));margin:auto;padding:clamp(28px,5vw,56px);border:1px solid var(--line);background:var(--paper)}.preview-login-card input{display:block;width:100%;height:50px;margin:7px 0 20px;padding:10px 12px;border:1px solid #b8beb5;background:#fff}.preview-login-card .primary{width:100%}.preview-signout{margin-top:18px;padding:8px 0;border:0;background:transparent;color:#fff;text-decoration:underline}.preview-authenticated .preview-login{display:none}
 @media(max-width:850px){body{font-size:16px}.preview-login{grid-template-columns:1fr}.preview-login-story{min-height:45vh;padding:38px 25px}.preview-login-story .brand{margin-bottom:42px}.preview-login-card{margin:28px auto}.academy-shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:20;width:100%;padding:13px 18px;border:0;background:var(--forest);color:#fff;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:.12em}.course-sidebar{display:none;position:fixed;z-index:30;inset:44px 0 0;width:100%;height:auto}.course-sidebar.open{display:block}.course-main{padding:32px 18px}.hero,.section-heading,.week-overview{align-items:flex-start;flex-direction:column}.dashboard-stats,.module-grid,.feature-grid,.lesson-layout{grid-template-columns:1fr}.dashboard-stats article{padding:17px}.lesson-aside{position:static}.activity-card{grid-template-columns:38px 1fr}.activity-card button{grid-column:1/-1;width:100%}.option-grid,.review-sequence{grid-template-columns:1fr}h1{font-size:3rem}.page-head h1{font-size:2.8rem}.video-card>div:last-child{padding:22px}.save-note{display:block;margin:10px 0}.case-progress i{flex:1;width:auto}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* Course page redesign */
+.redesigned-login{grid-template-columns:1fr 1fr;background:var(--cream)}
+.preview-login-photo{position:relative;min-height:100vh;overflow:hidden;background:var(--forest)}
+.preview-login-photo>img{width:100%;height:100%;object-fit:cover;object-position:center 24%}
+.preview-login-photo>div{position:absolute;right:0;bottom:0;left:0;padding:clamp(28px,5vw,62px);background:#173d30e8;color:#fff}
+.preview-login-photo blockquote{margin:0;padding:0;border:0;background:transparent;color:#fff;font:italic 500 clamp(1.7rem,2.8vw,2.7rem)/1.25 "Cormorant Garamond",serif}
+.preview-login-photo span{display:block;margin-top:10px;color:#d8ddd6;font-size:.8rem}
+.redesigned-login .preview-login-card{width:min(560px,calc(100% - 48px));padding:clamp(32px,5vw,66px)}
+.login-brand{margin:0 0 56px;color:var(--forest);font-size:1.35rem}
+.redesigned-login .preview-login-card h1{font-size:clamp(3rem,5vw,5rem)}
+.redesigned-login .preview-login-card h1 em{color:var(--terra)}
+.redesigned-login .preview-login-card h2{margin:28px 0 18px;font-size:1.8rem}
+.redesigned-login .preview-login-card .primary{justify-content:space-between}
+.redesign-home-hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);min-height:570px;border-bottom:1px solid var(--line);background:var(--paper)}
+.redesign-home-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(38px,6vw,76px)}
+.redesign-home-copy h1{max-width:720px;font-size:clamp(3.2rem,5.3vw,5.8rem)}.redesign-home-copy h1 em{color:var(--terra)}
+.redesign-home-copy>p:not(.eyebrow){max-width:610px;font-size:1.08rem}
+.redesign-next{position:relative;display:grid;gap:2px;width:min(500px,100%);margin-top:25px;padding:22px 78px 22px 24px;border:0;background:var(--terra);color:#fff;text-align:left}
+.redesign-next span{color:#fde3d9;font-size:.67rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase}.redesign-next strong{font:600 1.7rem "Cormorant Garamond",serif}.redesign-next small{color:#fde3d9}.redesign-next b{position:absolute;top:50%;right:20px;display:grid;place-items:center;width:48px;height:48px;transform:translateY(-50%);border-radius:50%;background:#fff;color:var(--terra);font-size:1.2rem}
+.redesign-home-photo{position:relative;min-height:500px;overflow:hidden;background:var(--forest)}.redesign-home-photo>img{width:100%;height:100%;object-fit:cover;object-position:center top}.redesign-home-photo>div{position:absolute;right:20px;bottom:20px;left:20px;padding:19px 20px;background:#fffdf8eF;box-shadow:0 12px 32px #1e463626}.redesign-home-photo span,.redesign-home-photo strong{display:block}.redesign-home-photo span{color:var(--terra);font-size:.67rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase}.redesign-home-photo strong{margin-top:4px;font:600 1.45rem/1.15 "Cormorant Garamond",serif;color:var(--forest)}
+.redesign-roadmap{margin-top:44px;padding:clamp(32px,5vw,58px);background:var(--forest);color:#fff}.redesign-roadmap h2,.redesign-roadmap .eyebrow{color:#fff}.redesign-roadmap h2 em{color:#e9a68f}.redesign-roadmap .section-heading>p{color:#c8d0c7}.redesign-roadmap .module-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#ffffff24}.redesign-roadmap .module-card{min-height:315px;border:0;background:var(--forest);color:#fff}.redesign-roadmap .module-card h3{color:#fff;font-size:1.7rem}.redesign-roadmap .module-card p:not(.eyebrow){min-height:0;color:#c8d0c7}.redesign-roadmap .module-card .secondary{width:100%;margin-top:auto;border-color:#fff;color:#fff}.redesign-roadmap .module-card .secondary:hover{background:#fff;color:var(--forest)}
+.redesign-features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}.redesign-features>article{overflow:hidden;border:1px solid var(--line);background:var(--paper)}.redesign-features img{display:block;width:100%;height:220px;object-fit:cover}.redesign-features article>div{padding:24px}.redesign-features h3{font-size:2rem}.redesign-features p:not(.eyebrow){min-height:82px}
+.brand-button{display:block;padding:0;border:0;background:transparent;text-align:left}.start-flow{max-width:850px;margin:0 auto}.module-locked{opacity:.58}.module-locked .secondary{border-color:#b8c1ba;color:#b8c1ba}
+@media(max-width:1050px){.redesign-roadmap .module-grid{grid-template-columns:repeat(2,1fr)}.redesign-features{grid-template-columns:1fr 1fr}.redesign-features>article:last-child{grid-column:1/-1}}
+@media(max-width:850px){.redesigned-login{grid-template-columns:1fr}.preview-login-photo{min-height:45vh}.preview-login-photo>div{padding:24px}.redesigned-login .preview-login-card{margin:28px auto}.login-brand{margin-bottom:32px}.redesign-home-hero{grid-template-columns:1fr}.redesign-home-copy{padding:34px 24px}.redesign-home-copy h1{font-size:clamp(2.8rem,11vw,4rem)}.redesign-home-photo{min-height:420px}.redesign-roadmap{margin-right:-18px;margin-left:-18px;padding:34px 18px}.redesign-roadmap .section-heading{display:block}.redesign-features{grid-template-columns:1fr}.redesign-features>article:last-child{grid-column:auto}.redesign-features p:not(.eyebrow){min-height:0}}
+@media(max-width:600px){.preview-login-photo{min-height:390px}.redesigned-login .preview-login-card{width:calc(100% - 28px);padding:28px 20px}.redesigned-login .preview-login-card h1{font-size:2.65rem}.redesign-home-photo{min-height:350px}.redesign-roadmap .module-grid{grid-template-columns:1fr}.redesign-roadmap .module-card{min-height:0}.redesign-features img{height:200px}.redesign-features article>div{padding:22px 18px}}
+
+/* Course-interface typography: readable, compact, and content-first. */
+.course-main{padding:38px clamp(22px,4vw,58px)}
+.course-main h1{font-size:clamp(2.35rem,3.7vw,3.75rem);line-height:1.04}
+.course-main h2{font-size:clamp(1.65rem,2.35vw,2.35rem);line-height:1.08}
+.course-main h3{font-size:1.35rem;line-height:1.15}
+.page-head{margin-bottom:26px;padding-bottom:22px}.page-head h1{font-size:clamp(2.35rem,3.6vw,3.55rem)}
+.redesigned-login .preview-login-card h1{font-size:clamp(2.6rem,3.6vw,3.7rem);max-width:560px}
+.redesigned-login .preview-login-card{padding:clamp(30px,4vw,52px)}
+.login-brand{margin-bottom:34px}
+.redesign-home-hero{min-height:440px}
+.redesign-home-copy{padding:clamp(30px,4vw,52px)}
+.redesign-home-copy h1{max-width:650px;font-size:clamp(2.65rem,3.8vw,4rem);line-height:1.02}
+.redesign-home-copy>p:not(.eyebrow){font-size:1rem}
+.redesign-home-photo{min-height:420px}
+.redesign-roadmap{margin-top:32px;padding:clamp(28px,4vw,44px)}
+.redesign-roadmap{padding-top:0;padding-bottom:0;background:transparent;color:var(--ink)}
+.redesign-roadmap .module-grid{margin-top:0;gap:10px;background:transparent}
+.redesign-roadmap .module-card{min-height:190px;border:1px solid var(--line);background:var(--paper);color:var(--forest)}
+.redesign-roadmap .module-card h3{color:var(--forest)}
+.redesign-roadmap .module-card .secondary{border-color:var(--forest);color:var(--forest)}
+.redesign-roadmap .module-card .secondary:hover{background:var(--forest);color:#fff}
+.redesign-roadmap .module-card{min-height:270px;padding:22px}.redesign-roadmap .module-card h3{font-size:1.45rem}
+.video-card>div:last-child{padding:22px}.content-card,.response-card,.breakdown-card,.completion-card{padding:clamp(22px,3vw,34px)}
+@media(max-width:850px){.course-main{padding:26px 16px 42px}.course-main h1,.page-head h1{font-size:clamp(2.15rem,8.5vw,2.75rem)}.course-main h2{font-size:clamp(1.55rem,6.5vw,2rem)}.redesign-home-copy h1{font-size:clamp(2.3rem,9vw,3rem)}.redesign-home-hero{min-height:0}.redesign-home-photo{min-height:320px}.redesign-roadmap{margin-right:-16px;margin-left:-16px;padding:30px 16px}}
+@media(max-width:600px){.redesigned-login .preview-login-card h1{font-size:2.3rem}.preview-login-photo{min-height:330px}.preview-login-photo blockquote{font-size:1.55rem}.redesign-home-photo{min-height:280px}.redesign-next{padding:18px 68px 18px 18px}.redesign-next strong{font-size:1.45rem}.redesign-roadmap .module-card{min-height:0;padding:20px}}
+
+/* Guided pre-Lab baseline assessment. */
+.baseline-card{border-left:4px solid var(--terra)}
+.baseline-card h2{max-width:700px}.baseline-card>div>p:not(.eyebrow):not(.form-error){max-width:700px}
+.baseline-progress{height:5px;margin-bottom:28px;background:var(--soft);overflow:hidden}
+.baseline-progress i{display:block;height:100%;background:var(--terra);transition:width .2s ease}
+.baseline-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:22px 0 28px}
+.baseline-options button{min-height:54px;padding:13px 15px;border:1px solid var(--line);background:var(--cream);color:var(--forest);text-align:left;line-height:1.3}
+.baseline-options button:hover{border-color:var(--terra)}
+.baseline-options button.selected{border-color:var(--terra);background:#f3ddd4;box-shadow:inset 0 0 0 1px var(--terra)}
+.baseline-actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}.baseline-actions .primary{margin-left:auto}
+.baseline-summary{display:grid;margin:24px 0 8px;border-top:1px solid var(--line)}
+.baseline-summary section{display:grid;grid-template-columns:190px minmax(0,1fr);gap:22px;padding:15px 0;border-bottom:1px solid var(--line)}
+.baseline-summary span{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage)}
+.baseline-summary strong{font-weight:500;line-height:1.45}
+@media(max-width:600px){.baseline-options{grid-template-columns:1fr}.baseline-actions{align-items:stretch;flex-direction:column-reverse}.baseline-actions .primary{width:100%;margin-left:0}.baseline-actions .secondary{width:100%}.baseline-summary section{grid-template-columns:1fr;gap:5px}.baseline-card{padding:22px 18px}}
+
+/* Final course-wide type guardrails.
+   These deliberately sit last so no activity can fall back to oversized display type. */
+.course-main,
+.course-main button,
+.course-main input,
+.course-main textarea,
+.course-main select{font-size:1rem}
+.course-main h1,
+.course-main .page-head h1,
+.course-main .advanced-head h1,
+.course-main .detective-page-head h1,
+.course-main .welcome-case h1,
+.course-main .redesign-home-copy h1{
+  max-width:48rem;
+  font-size:clamp(2rem,3vw,2.75rem);
+  line-height:1.08;
+  text-wrap:balance;
+}
+.course-main h2,
+.course-main .stage-intro h2,
+.course-main .classic-practice-panels h2,
+.course-main .classic-saved-output h2,
+.course-main .lesson h2,
+.course-main .profile-output h2{
+  max-width:48rem;
+  font-size:clamp(1.55rem,2.15vw,1.95rem);
+  line-height:1.15;
+  text-wrap:balance;
+}
+.course-main h3,
+.course-main .response-practice h3,
+.course-main .detective-board-head h3{
+  font-size:clamp(1.15rem,1.5vw,1.35rem);
+  line-height:1.25;
+}
+.course-main blockquote,
+.course-main .simulation-media blockquote,
+.course-main .client-message blockquote,
+.course-main .welcome-case blockquote,
+.course-main .coaching-panel blockquote,
+.course-main .practice-card blockquote{
+  margin:1rem 0 0;
+  padding:1rem 1.1rem;
+  font:500 clamp(1.05rem,1.45vw,1.25rem)/1.5 Jost,sans-serif;
+  letter-spacing:0;
+}
+.course-main .map-path blockquote{
+  margin:.75rem 0 0;
+  padding:.85rem 1rem;
+  border-left-width:3px;
+  font:400 1rem/1.55 Jost,sans-serif;
+}
+.course-main .twist-envelope strong{font-size:clamp(1.55rem,2.2vw,2rem);line-height:1.15}
+.course-main .redesign-roadmap h2{max-width:42rem}
+.preview-login-story h1,
+.redesigned-login .preview-login-card h1{
+  font-size:clamp(2rem,3vw,2.75rem);
+  line-height:1.08;
+}
+.preview-login-photo blockquote{font-size:clamp(1.2rem,1.8vw,1.55rem);line-height:1.4}
+
+@media(max-width:850px){
+  .course-main h1,
+  .course-main .page-head h1,
+  .course-main .advanced-head h1,
+  .course-main .detective-page-head h1,
+  .course-main .welcome-case h1,
+  .course-main .redesign-home-copy h1{font-size:clamp(1.8rem,7.2vw,2.2rem)}
+  .course-main h2,
+  .course-main .stage-intro h2,
+  .course-main .classic-practice-panels h2,
+  .course-main .classic-saved-output h2,
+  .course-main .lesson h2,
+  .course-main .profile-output h2{font-size:clamp(1.4rem,5.6vw,1.7rem)}
+  .course-main blockquote,
+  .course-main .simulation-media blockquote,
+  .course-main .client-message blockquote,
+  .course-main .welcome-case blockquote,
+  .course-main .coaching-panel blockquote,
+  .course-main .practice-card blockquote{font-size:1rem;line-height:1.5}
+}
