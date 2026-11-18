@@ -184,7 +184,8 @@
     const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}</span>`;
     return `<li class="${who === "Jordan" ? "client" : "ther"}${picked ? " picked" : ""}${isTurn ? " turn" : ""}">${pickable ? `<button type="button" data-lab-turn="${n}" aria-pressed="${picked}">${inner}</button>` : `<div>${inner}</div>`}</li>`;
   }).join("")}</ol>`;
-  const chipsHTML = (attr, opts, cur) => `<div class="chips-row">${opts.map(([k, l]) => `<button type="button" class="chip" ${attr}="${k}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`;
+  const chipsHTML = (attr, opts, cur, ans) => `<div class="chips-row">${opts.map(([k, l]) => `<button type="button" class="chip${cur === k && ans ? (k === ans ? " right" : " wrong") : ""}" ${attr}="${k}" aria-pressed="${cur === k}">${cur === k && k === ans ? "✓ " : ""}${esc(l)}</button>`).join("")}</div>`;
+  const fb = (pick, ans, label) => pick ? `<span class="ans${pick === ans ? "" : " miss"}">${pick === ans ? `Yes, ${esc(label)}.` : `Closer to ${esc(label)}.`}</span>` : "";
   function labHTML() {
     const L = S.lab, st = Math.min(L.step || 0, 3), A = D.LAB;
     const head = `<div class="flow-head"><span class="v6-pill blush">${st + 1} of 4 · ${LAB_STEPS[st]}</span><div class="flow-dots" aria-hidden="true">${LAB_STEPS.map((_, i) => `<span class="${i < st ? "done" : i === st ? "on" : ""}"></span>`).join("")}</div></div>`;
@@ -200,18 +201,17 @@
       body = `<p class="flow-q">Did Jordan say it, or did the therapist fill it in?</p><p class="flow-sub"><b>Seen</b> means Jordan actually said or showed it. <b>Supplied</b> means the therapist assumed it.</p>${peek}
         <div class="sort">${A.sort.map(([t, ans, note], i) => {
           const pick = so[i];
-          return `<div class="sort-row${pick ? " answered" : ""}"><span class="st">${esc(t)}</span><span class="sb">${["seen", "supplied"].map(k => `<button type="button" class="chip" data-lab-sort="${i}" data-v="${k}" aria-pressed="${pick === k}">${k === "seen" ? "Seen" : "Supplied"}</button>`).join("")}</span>
-            ${pick ? `<span class="ans">${pick === ans ? "✓" : "→"} ${ans === "seen" ? "Seen" : "Supplied"}${note ? ` (${esc(note)})` : ""}</span>` : ""}</div>`;
+          return `<div class="sort-row${pick ? " answered" : ""}"><span class="st">${esc(t)}</span><span class="sb">${["seen", "supplied"].map(k => `<button type="button" class="chip${pick === k ? (k === ans ? " right" : " wrong") : ""}" data-lab-sort="${i}" data-v="${k}" aria-pressed="${pick === k}">${pick === k && k === ans ? "✓ " : ""}${k === "seen" ? "Seen" : "Supplied"}</button>`).join("")}</span>
+            ${pick && pick !== ans ? `<span class="ans miss">Actually ${ans === "seen" ? "Seen" : "Supplied"}${note ? `: ${esc(note)}` : ""}.</span>` : pick && note ? `<span class="ans">${esc(note[0].toUpperCase() + note.slice(1))}.</span>` : ""}</div>`;
         }).join("")}</div>`;
       ok = A.sort.every((_, i) => so[i]);
     }
     if (st === 2) {
       const pulls = D.PULLS.map(([t]) => [t, t]);
       body = `<p class="flow-q">What was driving the therapist?</p>${peek}
-        <div class="field">Which Pull drove line 4? <small>${q(A.lines[3][1])}</small>${chipsHTML("data-lab-p4", pulls, L.p4)}</div>
-        <div class="field">Which Pull drove line 8? <small>${q(A.lines[7][1])}</small>${chipsHTML("data-lab-p8", pulls, L.p8)}</div>
-        <div class="field">Which gap? <small>Knowledge, skill, pressure, or support</small>${chipsHTML("data-lab-gap", D.GAPS.map(([k, l]) => [k, l]), L.gap)}</div>
-        ${L.p4 && L.p8 && L.gap ? `<div class="reveal"><b>Line 4: ${A.pull4}. Line 8: ${A.pull8}.</b> ${esc(A.gapWhy)}</div>` : ""}`;
+        <div class="field">Which Pull drove line 4? <small>${q(A.lines[3][1])}</small>${chipsHTML("data-lab-p4", pulls, L.p4, A.pull4)}${fb(L.p4, A.pull4, A.pull4)}</div>
+        <div class="field">Which Pull drove line 8? <small>${q(A.lines[7][1])}</small>${chipsHTML("data-lab-p8", pulls, L.p8, A.pull8)}${fb(L.p8, A.pull8, A.pull8)}</div>
+        <div class="field">Which gap? <small>Knowledge, skill, pressure, or support</small>${chipsHTML("data-lab-gap", D.GAPS.map(([k, l]) => [k, l]), L.gap, A.gap)}${L.gap ? `<span class="ans${L.gap === A.gap ? "" : " miss"}">${esc(A.gapWhy)}</span>` : ""}</div>`;
       ok = !!(L.p4 && L.p8 && L.gap);
     }
     if (st === 3) {
@@ -229,7 +229,7 @@
     if (st < 3) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
     else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>Compare with Tiffany’s →</button>`;
     else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary" data-go="week/sim">Next: Jordan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
-    return `<div class="flow">${head}<div class="fiction">Fictional practice scenario. Never enter real client details.</div>${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
+    return `<div class="flow">${head}${st === 0 ? `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>` : ""}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
 
   /* ---------- Week 1 Reflect & Redo ---------- */
@@ -293,17 +293,17 @@
       let body = `${d.bridge ? `<p class="bridge">${esc(d.bridge)}</p>` : ""}${d.banner ? `<div class="banner-new">${esc(d.banner)}</div>` : ""}${jordan(d.line)}`;
       if (p == null) {
         body += `<p class="flow-q">${esc(d.prompt)}</p><div class="choices">${d.choices.map((c, k) => `<button type="button" class="choice" data-sim-pick="${k}"><span>${q(c[1])}</span></button>`).join("")}</div>`;
-        return `<div class="flow">${head}${fiction}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
+        return `<div class="flow">${head}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
       }
       const c = d.choices[p];
       body += `<div class="you-said"><small>You</small>${q(c[1])}</div>${jordan(c[2], true)}<div class="coach"><small>Why it landed that way</small>${esc(c[3])}</div>`;
-      return `<div class="flow">${head}${fiction}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button>
+      return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button>
         <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "Your turn →" : "Next moment →"}</button></div></div>`;
     }
     if (i === n) {
       const P = M.practice = M.practice || { text: "", aloud: false, purposes: [] }, X = A.practice;
       const ok = !!(P.text.trim() || P.aloud) && P.purposes.length;
-      return `<div class="flow">${head}${fiction}<p class="flow-q">${esc(X.title)}</p>${jordan(X.quote)}<p class="flow-sub" style="margin:0">${esc(X.prompt)}</p>
+      return `<div class="flow">${head}<p class="flow-q">${esc(X.title)}</p>${jordan(X.quote)}<p class="flow-sub" style="margin:0">${esc(X.prompt)}</p>
         <label class="field">What I might say… <small>Type it, or practice it out loud below.</small><textarea class="v6-ta" rows="3" data-sim-text placeholder="Your words">${esc(P.text)}</textarea></label>
         <label class="check"><input type="checkbox" data-sim-aloud${P.aloud ? " checked" : ""}> I practiced it out loud</label>
         <div class="field">What is the purpose of your response? <small>Choose one or two.</small><div class="chips-row">${X.purposes.map(t => `<button type="button" class="chip" data-sim-purpose="${esc(t)}" aria-pressed="${P.purposes.includes(t)}">${esc(t)}</button>`).join("")}</div></div>
@@ -312,7 +312,7 @@
     const R = M.ref = M.ref || {}, X = A.debrief;
     const rows = A.decisions.map((d, k) => { const c = d.choices[picks[k]]; return c ? `<div class="bd-row"><span class="v6-label grey">Moment ${k + 1}</span><div class="bd-line">Jordan: ${q(d.line)}</div><div class="you-said sm"><small>You</small>${q(c[1])}</div><div class="bd-line">Jordan: ${q(c[2])}</div><div class="coach"><small>Why it landed that way</small>${esc(c[3])}</div><button type="button" class="v6-link" data-sim-rewind="${k}">↺ Redo this moment</button></div>` : ""; }).join("");
     const ok = !!((R.pull || "").trim() || R.pullNS) && !!(R.shift || "").trim();
-    return `<div class="flow">${head}${fiction}<p class="flow-q">${esc(X.title)}</p><div class="breakdown">${rows}</div>
+    return `<div class="flow">${head}<p class="flow-q">${esc(X.title)}</p><div class="breakdown">${rows}</div>
       <label class="field">${esc(X.pull)}<textarea class="v6-ta" rows="2" data-sim-ref="pull"${R.pullNS ? " disabled" : ""}>${esc(R.pull)}</textarea></label>
       <label class="check"><input type="checkbox" data-sim-ns${R.pullNS ? " checked" : ""}> Not sure yet</label>
       <label class="field">${esc(X.shift)}<textarea class="v6-ta" rows="2" data-sim-ref="shift">${esc(R.shift)}</textarea></label>

@@ -31,7 +31,7 @@
   ];
 
   const PULLS = [["Rescue", "Make the feeling stop"], ["Fix", "Solve the problem"], ["Fill", "End the silence"], ["Defend", "Explain yourself"], ["Prove", "Sound like a good therapist"]];
-  const PAUSE = [["P", "Pause the urge to perform"], ["A", "Attend to what’s happening"], ["U", "Use what they gave you"], ["S", "Say one grounded thing"], ["E", "Explore before explaining"]];
+  const PAUSE = [["P", "Pause: Slow down instead of rushing to respond."], ["A", "Attend: Notice what’s happening with the client and within yourself."], ["U", "Use: Use the clinical information you already have."], ["S", "Say: Choose one intentional, clinically appropriate response."], ["E", "Explore: Notice what happens next and let the client’s response guide your next move."]];
 
   const BASELINE_PROMPT = "What would you say next? There’s no feedback today, so just be honest about what you’d actually say.";
   const BASELINE = [
@@ -268,7 +268,7 @@
     ],
     pull4: "Fix", pull8: "Rescue", gap: "pressure",
     gapWhy: "Most likely pressure: the therapist knew how to explore but rushed.",
-    pause: [["P", "Pause", "What’s the Pull?"], ["A", "Attend", "What did Jordan feel?"], ["U", "Use", "Which words will you use?"], ["S", "Say", "One thing."], ["E", "Explore", "What do you want to understand?"]],
+    pause: [["P", "Pause", "Slow down. What’s rushing you?"], ["A", "Attend", "What’s happening with Jordan, and in you?"], ["U", "Use", "What clinical information do you already have?"], ["S", "Say", "One intentional, clinically appropriate response."], ["E", "Explore", "What will you watch for in Jordan’s response?"]],
     take: "The bad guy. Tell me more about what that’s like.",
     closing: "Notice line 8. When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3."
   };
