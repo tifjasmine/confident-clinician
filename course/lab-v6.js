@@ -186,8 +186,7 @@
       const answered = D.BASELINE.filter(b => S.base[b.id] && S.base[b.id].aim).length;
       body = howHTML("What you’ll do today", [
         ["Watch my welcome", "What the Lab is, and how it works."],
-        ["Meet four clients", `${D.BASELINE.map(b => b.client).join(", ")}. Each one says something that’s hard to answer.`],
-        ["Write what you’d say", "Then pick what you were going for. No right answers and no feedback today."]
+        ["Answer four client moments", `${D.BASELINE.map(b => b.client).join(", ")} each say something hard to answer. For each one, write what you’d say, then pick what you were going for. No right answers and no feedback today.`]
       ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
       if (S.sealed) body += `<div class="done-note">✓ Your four Day 1 answers are saved and sealed until the Week 4 Showcase.</div>`;
       const watch = S.welcome ? `<button type="button" class="v6-btn secondary" data-act="welcome">Welcome watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="welcome">${D.VIDEOS.welcome ? "I’ve watched the welcome" : "Mark the welcome watched"}</button>`;
