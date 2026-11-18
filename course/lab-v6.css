@@ -726,3 +726,83 @@ body { background: var(--bg); }
 .v6-head .week-hero h1 em { color: var(--terra-l); }
 .sb-item.dim { color: var(--muted); }
 .sb-item.dim i { background: var(--line); }
+
+/* ============ Revamp: Playfair headings, Inter text, crisp workspace UI ============ */
+:root { --serif: "Playfair Display", Georgia, serif; --ink: #1b1f1d; }
+body { font-family: Inter, system-ui, -apple-system, sans-serif; font-size: 15px; color: var(--ink); -webkit-font-smoothing: antialiased; }
+/* headings: dark ink, Playfair, one italic accent */
+.v6-head h1, .display, .floor h2, .week-hero h1, .flow-q, .how-h, .pf-h, .detail-title, .w4-head h2, .pick h2, .band-head h2, .rep-intro .t, h2.h, .card .h { font-family: var(--serif); letter-spacing: -.01em; }
+.v6-head h1 { font-size: 42px; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.hm-head .display { font-size: 48px; line-height: 1.08; }
+.floor h2 { font-size: 36px; }
+.week-hero h1 { font-size: 44px; line-height: 1.08; }
+.flow-q, .how-h, .pf-h, .detail-title { color: var(--ink); font-weight: 700; }
+.flow-q { font-size: 22px; }
+.detail-title { font-size: 30px; }
+.v6-head .sub { font-size: 16px; color: var(--muted); }
+h1 em, h2 em, .display em, .v6-head h1 em { font-style: italic; font-weight: 600; color: var(--terra); }
+/* eyebrow tag above page titles */
+.eyebrow { display: inline-block; margin-bottom: 14px; padding: 6px 14px; border-radius: 999px; background: var(--sage); color: var(--forest); font-size: 11.5px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+.v6-label { letter-spacing: .2em; font-weight: 700; }
+/* tags/pills: small caps, letter-spaced */
+.v6-pill { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 6px 12px; }
+.v6-preview-toggle, .v6-reset { letter-spacing: .04em; text-transform: none; font-size: 12.5px; }
+/* client words: clean italic serif in ink */
+.speaker .said { font-family: var(--serif); font-style: italic; font-weight: 600; color: var(--ink); font-size: 24px; line-height: 1.35; }
+.speaker .said.md { font-size: 19px; }
+.choice span, .rf-rep .cl, .bd-q, .compare-2 .tk, .you-said, .take .say, .tip q, .fl-note q, .hero-photo q { font-family: var(--serif); }
+.choice span { font-size: 17.5px; font-weight: 600; font-style: normal; line-height: 1.4; color: var(--ink); }
+.you-said { font-size: 17px; font-style: normal; }
+/* buttons */
+.v6-btn { border-radius: 12px; font-weight: 600; letter-spacing: .01em; }
+.btn-gold { font-family: Inter, sans-serif; }
+/* segmented groups instead of loose chips */
+.chips-row, .sort-row .sb { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.chips-row .chip, .sort-row .sb .chip { border: 0; border-radius: 9px; background: transparent; min-height: 38px; padding: 0 14px; font-weight: 500; color: var(--ink-2); box-shadow: none; }
+.chips-row .chip:hover, .sort-row .sb .chip:hover { background: var(--soft); }
+.chips-row .chip[aria-pressed="true"], .sort-row .sb .chip[aria-pressed="true"] { background: var(--sage); color: var(--forest); font-weight: 700; }
+.chips-row .chip.right, .sort-row .sb .chip.right { background: var(--forest); color: #fff; }
+.chips-row .chip.wrong, .sort-row .sb .chip.wrong { background: var(--blush); color: var(--terra-t); box-shadow: none; }
+/* cards + rows */
+.card { border-radius: 18px; }
+.sort-row, .bd-row, .how, .peek, .next-note, .orig, .intent, .banner-soft, .quote-box, .items, .bank-item { border-radius: 14px; }
+.items .row, .weeks4 li, .rail-row { border-color: var(--line-3); }
+/* aside stats as number tiles */
+.stats > div { padding: 12px 0; border-top: 1px solid var(--line-3); }
+.stats > div:first-child { border-top: 0; padding-top: 0; }
+.stats .row b { font-family: var(--serif); font-size: 22px; font-weight: 700; }
+/* week hero: cleaner, no giant numeral */
+.week-hero { padding: 32px 40px 34px; border-radius: 20px; }
+.week-hero .big { display: none; }
+
+/* Sidebar: collapsible sections + collapse button */
+.sb-brand { position: relative; }
+.sb-min { position: absolute; top: 22px; right: 16px; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); font-size: 18px; line-height: 1; cursor: pointer; }
+.sb-min:hover { border-color: var(--forest); color: var(--forest); }
+.sb-w { font-family: var(--serif); font-size: 30px; }
+button.sb-sec { width: calc(100% - 0px); margin: 14px 0 4px; padding: 8px 12px; border: 0; border-radius: 8px; background: none; display: flex; align-items: center; gap: 8px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+button.sb-sec > span { flex: 1; text-align: left; }
+button.sb-sec b { font-weight: 600; letter-spacing: .04em; }
+button.sb-sec i { font-style: normal; width: 18px; text-align: center; font-size: 15px; letter-spacing: 0; color: var(--ink-2); }
+button.sb-sec:hover { background: var(--soft); color: var(--ink-2); }
+.sb-group[hidden] { display: none; }
+.sb-group { display: flex; flex-direction: column; }
+@media (min-width: 1100px) {
+  .v6-frame { transition: grid-template-columns .2s ease; }
+  .v6-frame.side-min { grid-template-columns: 64px minmax(0, 1fr); }
+  .side-min .sb-brand { padding: 22px 0; border-bottom: 0; align-items: center; }
+  .side-min .sb-brand > span, .side-min .sb-nav, .side-min .sb-foot { display: none; }
+  .side-min .sb-min { position: static; }
+}
+@media (max-width: 720px) {
+  .v6-head h1 { font-size: 32px; }
+  .hm-head .display { font-size: 36px; }
+  .week-hero { padding: 24px 20px 26px; }
+  .week-hero h1 { font-size: 32px; }
+  .floor h2 { font-size: 28px; }
+  .speaker .said { font-size: 20px; }
+  .detail-title { font-size: 24px; }
+}
+@media (max-width: 720px) { .v6-top-right { gap: 6px; } .v6-top-in { gap: 10px; } }
+.card .h, h2.h { font-size: 21px; font-weight: 700; color: var(--ink); }
+.v6-frame.side-min .v6-wrap { margin: 0 auto; }

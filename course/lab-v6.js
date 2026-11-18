@@ -62,6 +62,8 @@
     const views = { home: homeView, week: weekView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
     $("[data-side]").innerHTML = sideHTML(navKey, scr === "week" ? v.sel : -1);
+    $(".v6-frame").classList.toggle("side-min", !!SB.min);
+    const mb = $("[data-sb-min]"); mb.textContent = SB.min ? "›" : "‹"; mb.setAttribute("aria-label", SB.min ? "Expand menu" : "Collapse menu"); mb.title = mb.getAttribute("aria-label");
     const head = $("[data-head]");
     head.innerHTML = v.hero || headHTML(scr, v);
     head.className = v.hero ? "v6-head is-hero" : "v6-head";
@@ -84,21 +86,28 @@
     if (scr === "home") title = anyProgress() ? "Welcome back" : "Welcome to the Lab";
     const crumb = v.crumb ? `<div class="v6-crumb"><button type="button" data-go="${v.crumb[2]}">${esc(v.crumb[0])}</button> <span aria-hidden="true">/</span> ${esc(v.crumb[1])}</div>` : "";
     const principle = scr === "home" ? `<div class="v6-principle"><span>Learn</span><i aria-hidden="true">→</i><span>Practice</span><i aria-hidden="true">→</i><span>Reflect</span><i aria-hidden="true">→</i><span>Improve</span></div>` : "";
-    return `<div>${crumb}<h1>${v.plain ? esc(title) : accent(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
+    const eyebrow = { rep: "Practice · Rep", baseline: "Day 1 · Your starting point", reproom: "Practice", playbook: "Your work", growth: "Your work" }[scr];
+    return `<div>${crumb}${eyebrow && !crumb ? `<span class="eyebrow">${esc(eyebrow)}</span>` : ""}<h1>${v.plain ? esc(title) : accent(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
   }
 
   /* ---------- Sidebar (desktop) ---------- */
+  /* Sidebar open/closed state: a per-viewer convenience only */
+  const SBKEY = "tcc-v6-sidebar";
+  let SB = { min: false, closed: { later: true } };
+  try { SB = Object.assign(SB, JSON.parse(localStorage.getItem(SBKEY) || "{}")); } catch (e) { /* storage unavailable */ }
+  const sbSave = () => { try { localStorage.setItem(SBKEY, JSON.stringify(SB)); } catch (e) { /* ignore */ } };
   function sideHTML(navKey, sel) {
     const cur = curIdx();
     const item = (go, label, on, chip, chipCls) => `<button type="button" class="sb-item${on ? " on" : ""}" data-go="${go}"${on ? ' aria-current="page"' : ""}><i aria-hidden="true"></i><span>${esc(label)}</span>${chip ? `<em class="${chipCls || ""}">${chip}</em>` : ""}</button>`;
+    const sec = (key, label, count, body) => { const open = !SB.closed[key]; return `<button type="button" class="sb-sec" data-sb-sec="${key}" aria-expanded="${open}"><span>${esc(label)}</span>${count ? `<b>${count}</b>` : ""}<i aria-hidden="true">${open ? "−" : "+"}</i></button><div class="sb-group"${open ? "" : " hidden"}>${body}</div>`; };
     const steps = D.WEEK1.map((st, i) => {
       const done = stepDone(st), locked = !unlocked(i);
       return item("week/" + st.key, st.short, navKey === "week" && sel === i, done ? "✓" : i === cur ? "Next" : "", done ? "done" : "next").replace('class="sb-item', `class="sb-item${locked ? " dim" : ""}`);
     }).join("");
-    return `<div class="sb-sec">Today</div>${item("home", "Home", navKey === "home")}
-      <div class="sb-sec">Week 1 · Notice <span>${doneCount()}/${D.WEEK1.length}</span></div>${steps}
-      <div class="sb-sec">Practice</div>${item("reproom", "Rep Room", navKey === "reproom")}${item("playbook", "Clinical Playbook", navKey === "playbook")}${item("growth", "My growth", navKey === "growth")}
-      <div class="sb-sec">Coming up</div>${D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>Soon</em></div>`).join("")}`;
+    return sec("today", "Today", "", item("home", "Home", navKey === "home"))
+      + sec("week1", "Week 1 · Notice", `${doneCount()}/${D.WEEK1.length}`, steps)
+      + sec("practice", "Practice", "", item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
+      + sec("later", "Coming up", "", D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>Soon</em></div>`).join(""));
   }
 
   /* ---------- Aside ---------- */
@@ -427,7 +436,7 @@
       <div class="v6-label">Week 1 of 4 · ${esc(w.theme)}</div>
       <h1>${accent(w.title)}<em>.</em></h1>
       <p>${esc(w.question)} <span>· ${doneCount()} of ${D.WEEK1.length} steps done</span></p></div>
-      <span class="big" aria-hidden="true">01</span></section>`;
+      </section>`;
     return { html, sel, hero };
   }
 
@@ -592,6 +601,7 @@
   function bind(scr, arg) {
     const app = $("[data-app]");
     $$("[data-go]", app).forEach(b => b.onclick = () => go(b.dataset.go));
+    $$("[data-sb-sec]", app).forEach(b => b.onclick = () => { const k = b.dataset.sbSec; SB.closed[k] = !SB.closed[k]; sbSave(); const open = !SB.closed[k]; b.setAttribute("aria-expanded", open); b.querySelector("i").textContent = open ? "−" : "+"; b.nextElementSibling.hidden = !open; });
     if (scr === "week") {
       $$("[data-act]", app).forEach(b => b.onclick = () => {
         const k = b.dataset.key, act = b.dataset.act;
@@ -694,6 +704,7 @@
     if (email === PREVIEW_EMAIL && pw === PREVIEW_PASSWORD) { sessionStorage.setItem(PREVIEW_SESSION, "1"); err.textContent = ""; f.reset(); render(); }
     else err.textContent = "That email and password don’t match the preview account.";
   });
+  $("[data-sb-min]").onclick = () => { SB.min = !SB.min; sbSave(); render(); };
   $$("[data-signout]").forEach(b => b.onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); render(); });
   $$("[data-preview-toggle]").forEach(b => b.onclick = () => { S.reviewer = !S.reviewer; save(); render(); });
   /* Preview only: wipe this browser's progress and start over */
