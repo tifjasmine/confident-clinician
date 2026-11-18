@@ -928,3 +928,47 @@ button, input, textarea, select { font-family: inherit; }
 @media (max-width: 720px) { .floor::before, .week-hero::before { width: 38px; height: 38px; right: 22px; top: 20px; } .floor::after, .week-hero::after { width: 220px; height: 220px; right: -90px; top: -100px; } }
 .floor::after, .week-hero::after { z-index: -2; }
 .floor::before, .week-hero::before { z-index: -1; }
+
+/* ============ Mobile polish ============ */
+html { scroll-padding-top: 76px; scroll-padding-bottom: 88px; }
+.mob-tools { display: none; }
+@media (max-width: 1099px) {
+  /* top bar: brand only; preview tools move to the bottom of the page */
+  .v6-top-right { display: none; }
+  .mob-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 4px; }
+  .mob-tools .v6-pill, .mob-tools .sb-out { min-height: 44px; padding: 0 16px; }
+}
+@media (max-width: 720px) {
+  .v6-main { padding-bottom: 96px; }
+  .v6-top-in { height: 58px; }
+  .v6-brand-short { font-size: 19px; }
+  /* comfortable tap targets for inline links and toggles */
+  .v6-link, .v6-crumb button, .v6-login-form a, .peek summary, .coach-d summary, .weeks4 .v6-link, .bd-row .v6-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .peek, .coach-d { padding-top: 2px; padding-bottom: 2px; }
+  .peek[open], .coach-d[open] { padding-bottom: 14px; }
+  .v6-bottom button { min-height: 62px; font-size: 12px; }
+  /* buttons go full width in action rows so they're easy to hit */
+  .flow .actions, .card .actions { flex-direction: column; align-items: stretch; }
+  .flow .actions > *, .card .actions > .v6-btn { width: 100%; justify-content: center; }
+  .flow .actions > span:empty { display: none; }
+  .flow .actions > span { display: flex; flex-direction: column-reverse; align-items: stretch; gap: 8px; }
+  .flow .actions > span .v6-btn { width: 100%; }
+  .v6-btn { min-height: 50px; }
+  /* breathing room */
+  .card { padding-left: 18px; padding-right: 18px; }
+  .speaker.boxed { padding: 14px 0; }
+  .choice { padding: 14px; }
+  .chips-row, .sort-row .sb { width: 100%; }
+  .chips-row .chip, .sort-row .sb .chip { flex: 1 1 auto; min-height: 44px; }
+}
+@media (max-width: 720px) {
+  .floor::before { display: none; }
+  .week-hero { padding: 20px 20px 22px; }
+  .week-hero h1 { font-size: 26px; }
+  .week-hero p { font-size: 14px; }
+  .week-hero::before { width: 30px; height: 30px; right: 18px; top: 18px; }
+  .chips-row, .sort-row .sb { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
+  .chips-row .chip, .sort-row .sb .chip { padding: 0 8px; }
+  .pills { gap: 6px; }
+  .pills .v6-pill { font-size: 10.5px; padding: 5px 10px; }
+}

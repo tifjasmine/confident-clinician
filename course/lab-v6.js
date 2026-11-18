@@ -14,7 +14,7 @@
   const PREVIEW_EMAIL = "studentpreview@theconfidentclinician.me";
   const PREVIEW_PASSWORD = "LabPreview2026!";
 
-  const KEY = "tcc-v6-v1";
+  const KEY = "tcc-v6-v2";
   const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, reviewer: false });
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
