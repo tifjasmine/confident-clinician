@@ -232,6 +232,51 @@
     return `<div class="flow">${head}<div class="fiction">Fictional practice scenario. Never enter real client details.</div>${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
 
+  /* ---------- Week 1 Reflect & Redo ---------- */
+  const RF_STEPS = ["Your Pull", "Pick a Rep", "Three Checks", "Redo it"];
+  function reflectHTML() {
+    const F = S.reflect, st = Math.min(F.step || 0, 3);
+    const reps = D.REPS.filter(r => r.week === 1 && repSaved(r.id));
+    const first = r => { const x = S.reps[r.id]; return (x.attempts[0] && x.attempts[0].move) || x.move || x.line || ""; };
+    const r = reps.find(z => z.id === F.rep);
+    const head = `<div class="flow-head"><span class="v6-pill blush">${st + 1} of 4 · ${RF_STEPS[st]}</span><div class="flow-dots" aria-hidden="true">${RF_STEPS.map((_, i) => `<span class="${i < st ? "done" : i === st ? "on" : ""}"></span>`).join("")}</div></div>`;
+    let body = "", ok = false;
+    if (st === 0) {
+      body = `<p class="flow-q">${esc(D.REFLECT[0][1])}</p>
+        <div class="pull-grid">${D.PULLS.map(([t, d]) => `<button type="button" class="aim" data-rf-pull="${t}" aria-pressed="${F.pullPick === t}"><span>${esc(t)}</span><small>${esc(d)}</small></button>`).join("")}</div>
+        ${F.pullPick ? `<label class="field">Where did ${esc(F.pullPick)} show up, and what did you notice first? <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="A Rep, the Lab, the Simulation…">${esc(F.pull)}</textarea></label>` : ""}`;
+      ok = !!F.pullPick;
+    }
+    if (st === 1) {
+      body = `<p class="flow-q">Pick your weakest Rep.</p><p class="flow-sub">The one you’d most like a do-over on. Here’s your first answer to each.</p>
+        ${reps.length ? `<div class="choices">${reps.map(z => `<button type="button" class="choice rf-rep" data-rf-rep="${z.id}" aria-pressed="${F.rep === z.id}"><small>Rep ${z.id} · ${esc(z.client)}</small><span class="cl">${z.line ? q(z.line) : esc(z.stageLine)}</span><span class="mine">You: ${q(first(z))}</span></button>`).join("")}</div>`
+          : `<div class="empty">Save at least one Week 1 Rep first. <button type="button" class="v6-link" data-go="rep/1.1">Go to Rep 1.1 →</button></div>`}`;
+      ok = !!r;
+    }
+    if (st === 2 && r) {
+      const ck = F.ck || {};
+      body = `<p class="flow-q">Run the Three Checks on your first answer.</p>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">${r.client[0]}</span><span class="col"><span class="who">${esc(r.client)}</span><span class="said md">${r.line ? q(r.line) : esc(r.stageLine)}</span></span></div>
+        <div class="you-said sm"><small>Your first answer</small>${q(first(r))}</div>
+        <div class="sort">${D.CHECKS.map(([t, d], i) => `<div class="sort-row"><span class="st"><b>${i + 1}. ${esc(t)}</b><br><small style="color:var(--muted)">${esc(d)}</small></span><span class="sb">${["Yes", "Not quite", "Not sure"].map(v => `<button type="button" class="chip" data-rf-ck="${i}" data-v="${v}" aria-pressed="${ck[i] === v}">${v}</button>`).join("")}</span></div>`).join("")}</div>
+        ${D.CHECKS.every((_, i) => ck[i]) ? `<div class="reveal">${D.CHECKS.filter((_, i) => ck[i] !== "Yes").length ? `<b>Your redo target:</b> ${D.CHECKS.map(([t], i) => ck[i] !== "Yes" ? esc(t) : "").filter(Boolean).join(" · ")}` : `<b>All three held up.</b> Redo it anyway and try a different route.`}</div>` : ""}`;
+      ok = D.CHECKS.every((_, i) => ck[i]);
+    }
+    if (st === 3 && r) {
+      body = `<p class="flow-q">${esc(D.REFLECT[2][1])} Then name the one thing you changed.</p>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">${r.client[0]}</span><span class="col"><span class="who">${esc(r.client)}</span><span class="said md">${r.line ? q(r.line) : esc(r.stageLine)}</span></span></div>
+        <label class="field">Your redo<textarea class="v6-ta" rows="3" data-rf="redoLine" placeholder="Say it out loud first, then write it">${esc(F.redoLine)}</textarea></label>
+        <label class="field">${esc(D.REFLECT[2][2])}<textarea class="v6-ta" rows="2" data-rf="redo" placeholder="The one thing I changed…">${esc(F.redo)}</textarea></label>
+        ${S.steps.reflect ? `<div class="bd-paths"><div class="bd-p"><small>Before</small>${q(first(r))}</div><div class="bd-p t"><small>After</small>${q(F.redoLine)}</div></div>
+          ${S.reps[r.id].line === F.redoLine ? `<div class="hint">✓ This is now your Playbook line for Rep ${r.id}.</div>` : `<button type="button" class="v6-link" data-rf-useline>Make this my Playbook line for Rep ${r.id} →</button>`}` : ""}`;
+      ok = !!(F.redoLine || "").trim() && !!(F.redo || "").trim();
+    }
+    const back = st ? `<button type="button" class="v6-btn secondary" data-rf-nav="-1">← Back</button>` : "<span></span>";
+    const fwd = st < 3 ? `<button type="button" class="v6-btn primary" data-rf-nav="1"${ok ? "" : " disabled"}>Next: ${RF_STEPS[st + 1]} →</button>`
+      : S.steps.reflect ? `<button type="button" class="v6-btn primary" data-go="week/save">Next: Your Profile →</button>` : `<button type="button" class="v6-btn primary" data-rf-save${ok ? "" : " disabled"}>Save my redo ✓</button>`;
+    return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between">${back}<span style="display:flex;align-items:center;gap:12px"><span class="saved-flag" data-flag></span>${fwd}</span></div></div>`;
+  }
+
   /* ---------- Week 1 Simulation: Jordan’s Advice Request ---------- */
   const SIM_STAGES = ["Moment 1", "Moment 2", "Moment 3", "Moment 4", "Your turn", "Debrief"];
   function simHTML() {
@@ -313,21 +358,7 @@
       body = locked ? itemsHTML(s.itemsLabel, s.items) : s.type === "lab" ? labHTML() : simHTML();
       cta = "";
     }
-    if (s.type === "reflect") {
-      const practiced = D.REPS.filter(r => r.week === 1 && repSaved(r.id));
-      const pick = S.reflect.rep || (practiced[0] && practiced[0].id) || "";
-      body = `<form class="card-form" data-form="reflect" style="display:flex;flex-direction:column;gap:16px">
-        <label class="field">1. ${esc(D.REFLECT[0][1])}<div class="words" style="padding:0;background:none"><div class="chips">${D.PULLS.map(([t]) => `<button type="button" class="chip" data-pullchip="${t}" aria-pressed="${S.reflect.pullPick === t}">${t}</button>`).join("")}</div></div>
-          <textarea rows="2" data-r="pull" placeholder="Where did it show up, and what did you notice first?">${esc(S.reflect.pull)}</textarea></label>
-        <label class="field">2. ${esc(D.REFLECT[1][1])}
-          ${practiced.length ? `<select data-r="rep">${practiced.map(r => `<option value="${r.id}"${r.id === pick ? " selected" : ""}>Rep ${r.id} · ${esc(r.client)}</option>`).join("")}</select>` : `<small>Save at least one Week 1 Rep first.</small>`}
-          <textarea rows="3" data-r="checks" placeholder="Did I use what they gave me? Could they disagree with me? Do I know why I said it?">${esc(S.reflect.checks)}</textarea></label>
-        <label class="field">3. ${esc(D.REFLECT[2][1])} <small>${esc(D.REFLECT[2][2])}</small>
-          <textarea rows="2" data-r="redo" placeholder="The one thing I changed…">${esc(S.reflect.redo)}</textarea></label>
-        ${pick ? `<div><button type="button" class="v6-link" data-go="rep/${pick}">Redo Rep ${pick} →</button></div>` : ""}
-      </form>`;
-      cta = `<button type="button" class="v6-btn primary" data-act="step" data-key="reflect">${done ? "Saved ✓" : "Save my reflection"}</button><span class="saved-flag" data-flag></span>`;
-    }
+    if (s.type === "reflect") { body = reflectHTML(); cta = ""; }
     if (s.type === "save") {
       const pf = S.profile, M = S.sim, L = S.lab, P = pf.plan = pf.plan || {};
       const g = S.reps["1.1"] && S.reps["1.1"].gap;
@@ -363,10 +394,10 @@
       cta = `<button type="button" class="v6-btn primary" data-act="saveprofile"${planOk ? "" : " disabled"}>${done ? "Profile saved ✓" : "Save my profile"}</button><button type="button" class="v6-btn secondary" data-act="copyprofile">Copy</button><button type="button" class="v6-btn secondary" data-act="printprofile">Print</button><span class="saved-flag" data-flag></span>`;
     }
 
-    const media = s.type === "lab" || s.type === "sim" || s.type === "save" ? "" : video(s.video, s.img, !!s.video);
+    const media = ["lab", "sim", "save", "reflect"].includes(s.type) ? "" : video(s.video, s.img, !!s.video);
     const lockedNote = locked ? `<div class="locked-note"><span aria-hidden="true">🔒</span>Opens when you finish ${esc(prev)}.</div>` : "";
     const nxt = D.WEEK1[sel + 1];
-    const nextBtn = done && nxt && s.type !== "lab" && s.type !== "sim" ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
+    const nextBtn = done && nxt && !["lab", "sim", "reflect"].includes(s.type) ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
     const actions = locked ? `<div class="actions"><button type="button" class="v6-btn primary" disabled>${esc(s.type === "lesson" ? "Watch lesson" : "Locked")}</button></div>` : `<div class="actions">${cta}${nextBtn}</div>`;
     const html = `
       <div class="card stack">${media}
@@ -577,6 +608,15 @@
       $$("[data-lab-nav]", app).forEach(b => b.onclick = () => { L.step = Math.max(0, Math.min(3, (L.step || 0) + +b.dataset.labNav)); save(); render(); top(); });
       const lc = $("[data-lab-compare]", app); if (lc) lc.onclick = () => { L.compared = true; save(); render(); };
       const lf = $("[data-lab-finish]", app); if (lf) lf.onclick = () => { S.steps.lab = true; save(); render(); };
+      /* Reflect & Redo */
+      const F = S.reflect;
+      $$("[data-rf-pull]", app).forEach(b => b.onclick = () => { F.pullPick = b.dataset.rfPull; save(); render(); });
+      $$("[data-rf-rep]", app).forEach(b => b.onclick = () => { if (F.rep !== b.dataset.rfRep) { F.rep = b.dataset.rfRep; F.ck = {}; } save(); render(); });
+      $$("[data-rf-ck]", app).forEach(b => b.onclick = () => { F.ck = F.ck || {}; F.ck[b.dataset.rfCk] = b.dataset.v; save(); render(); });
+      $$("[data-rf]", app).forEach(t => t.oninput = () => { F[t.dataset.rf] = t.value; save(); const sv = $("[data-rf-save]", app); if (sv) sv.disabled = !((F.redoLine || "").trim() && (F.redo || "").trim()); });
+      $$("[data-rf-nav]", app).forEach(b => b.onclick = () => { F.step = Math.max(0, Math.min(3, (F.step || 0) + +b.dataset.rfNav)); save(); render(); top(); });
+      const rfs = $("[data-rf-save]", app); if (rfs) rfs.onclick = () => { S.steps.reflect = true; save(); render(); flash("Saved"); };
+      const rfu = $("[data-rf-useline]", app); if (rfu) rfu.onclick = () => { const x = S.reps[F.rep]; if (x) { x.line = F.redoLine; x.saved = true; } save(); render(); flash("Playbook updated"); };
       /* Simulation */
       const M = S.sim; M.picks = M.picks || {};
       $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { M.picks[M.i] = +b.dataset.simPick; save(); render(); });
