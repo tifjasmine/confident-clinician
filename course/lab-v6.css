@@ -542,3 +542,29 @@ h1 em, h2 em, .t em, .display em, .v6-display em { font-style: italic; color: va
 }
 .rail-row.future .ico.done { background: var(--forest); border-color: var(--forest); color: #fff; }
 .bd-q .v6-label { font: 600 11.5px/1.2 Inter, sans-serif; font-style: normal; }
+
+/* Simulation v2 + Profile */
+.fiction { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: -6px; }
+.fiction::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--terra); }
+.bridge { margin: 0; font-size: 14.5px; font-style: italic; color: var(--ink-2); }
+.banner-new { padding: 10px 14px; border-radius: 10px; background: var(--blush); color: var(--terra-t); font-weight: 600; font-size: 14px; }
+.coach { padding: 14px 16px; border-radius: 12px; background: var(--sage); font-size: 14.5px; line-height: 1.5; display: flex; flex-direction: column; gap: 4px; }
+.coach small { font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--forest); }
+.you-said.sm { font-size: 16px; align-self: stretch; max-width: none; border-radius: 12px; }
+.bd-line { font-size: 14px; color: var(--ink-2); }
+.bd-row { gap: 8px; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 14.5px; min-height: 44px; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--forest); }
+.compare { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; line-height: 1.5; }
+.orig { padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--dash); font-size: 14.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 2px; }
+.orig small { font-size: 12px; font-weight: 600; color: var(--muted); }
+.profile { display: flex; flex-direction: column; gap: 14px; }
+.banner-soft { padding: 14px 16px; border-radius: 12px; background: var(--soft); border: 1px solid var(--line-2); font-size: 14px; color: var(--ink-2); }
+.pf-h { margin: 10px 0 0; font: 600 22px/1.2 var(--serif); color: var(--forest); }
+.pf-path { padding: 12px 14px; border-radius: 12px; background: var(--soft); font-size: 14px; line-height: 1.55; }
+.v6-in { width: 100%; box-sizing: border-box; min-height: 44px; margin-top: 8px; padding: 10px 12px; border: 1px solid var(--input); border-radius: 10px; background: #fff; font: inherit; font-size: 14.5px; }
+.v6-in:focus { outline: 2px solid var(--forest); outline-offset: 1px; }
+@media print {
+  .v6-top, .v6-bottom, .v6-aside, .week-hero, .actions, .pills, .v6-media { display: none !important; }
+  body { background: #fff; }
+}

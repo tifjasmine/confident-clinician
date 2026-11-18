@@ -172,15 +172,15 @@
       desc: "Watch Tiffany give a rushed take, see why it misses, then watch the steady take. Don’t memorize the words. Watch the decision underneath them.", meta: "Video demo", img: IMG.c, video: "w1-demo",
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
-      desc: "Read Jordan’s session 2 with another therapist and find the moment it went sideways. Then rewrite it your way.", meta: "30–35 min", img: IMG.b,
+      desc: "Read Jordan’s session 2 with another therapist and find the moment it went sideways. Then rewrite it your way.", meta: "10–15 min", img: IMG.b,
       itemsLabel: "Five steps", items: [["1", "Spot It", "Tap the line where the session turned."], ["2", "Seen vs. Supplied", "Did Jordan say it, or did the therapist fill it in?"], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "P.A.U.S.E. it", "Rewrite line 4 with one prompt per letter."], ["5", "Your move", "Say your new line 4, then compare it with Tiffany’s."]] },
-    { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "The Advice Request", title: "Simulation: The Advice Request",
-      desc: "Now you’re the therapist in session 3 with Jordan. Pick what you’d say at three key moments and see how Jordan responds. Rewind anytime to try another path.", meta: "20–25 min", img: IMG.c,
+    { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Jordan’s Advice Request", title: "Simulation: Jordan’s Advice Request",
+      desc: "Now you’re in the chair for session 3. Pick what you’d say at four moments, see how Jordan responds, and adjust when new information changes things.", meta: "10–15 min", img: IMG.c,
       itemsLabel: "Three decision points", items: [["1", "“Just tell me what to do. You’re the therapist. Should I break up with them?”", "Advise · Reassure · Hand it back · Check safety"], ["2", "“I’m paying you because I can’t make decisions on my own.”", "Defend · Reflect · Offer structure"], ["3", "“So… what do I do this week?”", "Assign · Collaborate"]] },
     { key: "reflect", type: "reflect", label: "Reflect", kind: "Reflect & Redo", short: "Reflect & Redo", title: "Reflect & Redo",
       desc: "Look back at the week with the Three Checks, then redo one Rep.", meta: "10 min", img: IMG.b },
-    { key: "save", type: "save", label: "Save", kind: "Save it", short: "Clinical Confidence Profile", title: "Save: Clinical Confidence Profile",
-      desc: "This week’s tool, plus your 3 new lines for the “What I Say When…” bank. Editable, and it carries into your Playbook.", meta: "Yours to keep", img: IMG.d }
+    { key: "save", type: "save", label: "Save", kind: "Save it", short: "Clinical Confidence Profile", title: "Your Clinical Confidence Profile",
+      desc: "A practical snapshot of what you noticed, what needs practice, and how you’ll respond more intentionally next time. Then pick one small thing to practice this week.", meta: "Yours to keep", img: IMG.d }
   ];
 
   const REFLECT = [
@@ -273,32 +273,75 @@
     closing: "Notice line 8. When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3."
   };
 
-  /* Week 1 Simulation: The Advice Request. Copied from the scripts doc (draft pending clinical review).
-     best = the path shown as "Tiffany’s path" on the breakdown (needs Tiffany’s confirmation). */
+  /* Week 1 Simulation: Jordan’s Advice Request. Word for word from the Week 1 Clinical Content Master v1.0
+     (Part C). Clinical/editorial approval required before publishing. No "best answer" is marked. */
   const SIM = {
-    context: "Session 3 with Jordan, 29. They’ve just described another fight with their partner.",
+    intro: "You’re in the therapist chair. Jordan asks for help with a decision that feels too big to make alone. You’ll make several choices, see one plausible client reaction to each, and practice adjusting when new information appears.",
+    client: "Jordan, 29 · third appointment",
     decisions: [
-      { line: "Just tell me what to do. You’re the therapist. Should I break up with them?", best: 2, choices: [
-        ["Advise", "It sounds like you should leave.", "Okay… but what if I regret it?", "The decision is now yours."],
-        ["Reassure", "You’ll know when you know.", "That’s what everyone says.", "Kind, but empty."],
-        ["Hand it back", "I can help you sort through it, but I don’t want to decide this for you. What feels hardest about staying or leaving?", "I’m scared I’ll make the wrong choice.", ""],
-        ["Check safety", "Before we weigh it, do you feel safe and free to make choices in this relationship?", "Yeah, it’s not like that. They’re not scary. It’s just… draining.", "A good question to normalize asking."]
-      ] },
-      { line: "I’m paying you because I can’t make decisions on my own.", best: 1, choices: [
-        ["Defend", "My role isn’t to make decisions for you.", "Wow. Okay.", "Rupture risk."],
-        ["Reflect", "It’s exhausting not to trust your own choices.", "Yeah. I end up asking everybody. My mom, my friends, now you.", ""],
-        ["Offer structure", "Would it help to look at what each choice would cost you and give you?", "Maybe. I’ve made lists. They don’t help.", "Useful later, but it came before Jordan felt heard."]
-      ] },
-      { line: "So… what do I do this week?", best: 1, choices: [
-        ["Assign", "Make a pros and cons list.", "Sure.", "Compliance, not ownership."],
-        ["Collaborate", "What would be useful to notice before next time?", "Maybe when I start feeling like the bad guy. That’s when I want to leave.", ""]
-      ] }
+      { id: "J1", prompt: "What would you say FIRST?",
+        line: "Just tell me what to do. You’re the therapist. Should I break up with them?",
+        choices: [
+          ["J1-A", "Honestly, it sounds like leaving might be the healthiest option.", "Okay… but what if I regret it? Then it’ll be because I listened to you.", "You offered certainty, but you now hold part of a choice Jordan must live with. There’s too much you don’t know. Notice whether urgency to help moved you into deciding for them."],
+          ["J1-B", "I can hear how stuck and tired you are. We can sort through this together, but I don’t want to make the decision for you. What’s hardest about it right now?", "I think I’m scared that whichever choice I make, it’ll be the wrong one.", "This combines attunement with autonomy and opens a clinically useful fear. You still need context—including whether Jordan has freedom to choose safely."],
+          ["J1-C", "Before we weigh your options, can I ask whether you feel safe and free to make choices in this relationship?", "I mean… mostly. It’s complicated. Why do you ask?", "You opened an appropriate assessment door without making a conclusion. Explain the purpose and use Jordan’s answer to explore, rather than assuming the answer is either yes or no."]
+        ] },
+      { id: "J2", bridge: "Jordan takes a breath and looks at you again.", prompt: "The pressure is rising. What is your next move?",
+        line: "But I’m paying you because I can’t make decisions on my own. I thought you’d know what I should do.",
+        choices: [
+          ["J2-A", "I do know. I just don’t want to tell you yet.", "That makes it sound like you’re testing me. I already feel stupid about this.", "This may intensify shame and position you as the keeper of a secret answer. Repairing the relationship and clarifying your collaborative role may help."],
+          ["J2-B", "I get why you’d want a clear answer. My role is to help you understand your options and what matters to you, not decide your life for you. What would you hope my answer gives you?", "Relief, I guess. Like maybe I wouldn’t be responsible if things go badly.", "You explore what certainty would do for Jordan rather than debating whether a therapist should give advice. That meaning can inform the next step."],
+          ["J2-C", "I hear how hard this is. What happens between you and your partner when you disagree or try to make a decision they don’t like?", "They get really angry. I usually stop arguing because it doesn’t feel worth it.", "You begin gathering relevant relationship context. The answer can raise further questions about control, danger, and freedom to make decisions."]
+        ] },
+      { id: "J3", bridge: "As you keep talking about the relationship, Jordan shares something you haven’t heard before.", banner: "New information: reassess the priority.", prompt: "What needs attention FIRST now?",
+        line: "They check my phone sometimes. Last week I said I might need space, and they told me I’d regret it if I left. I don’t even know what they meant, but it scared me.",
+        choices: [
+          ["J3-A", "That’s a red flag. You need to break up with them tonight.", "Tonight? They’d see my messages. I don’t think you understand what I’m worried about.", "A directive to leave immediately can escalate danger or undermine trust when safety isn’t understood. Return to assessment and client-defined priorities; don’t impose a plan."],
+          ["J3-B", "I’m glad you told me. Hearing that they check your phone and that the comment frightened you makes me want to understand your safety. Are you safe right now, and are you able to talk privately today?", "I’m alone right now. I don’t think they’re coming here, but I’m worried they’ll go through my phone later.", "You acknowledge the disclosure and begin checking current safety and privacy. The next step is a fuller assessment, guided by setting protocols and the client’s situation—not a generic coping worksheet."],
+          ["J3-C", "Let’s make a pros-and-cons list of staying versus leaving.", "That’s what I’ve been doing in my head. It doesn’t change the fact that I’m scared of how they’ll react.", "Decision tools may be useful later, but this response bypasses a possible safety issue. Shift priorities to understanding risk, privacy, supports, and applicable procedures."]
+        ] },
+      { id: "J4", prompt: "What is a responsible next response?",
+        line: "I don’t want to make things worse. And I don’t want you to tell me I have to leave. I just need to know what I can do.",
+        choices: [
+          ["J4-A", "You don’t have to decide about leaving right now. Can we first talk about what feels safe for you today and what support or resources you might want?", "That would help. I can talk here, but I don’t want anything sent to my phone.", "This preserves choice, prioritizes safety and privacy, and invites collaboration. Review confidentiality and communication practices that fit the setting, and follow relevant protocols."],
+          ["J4-B", "If you aren’t ready to leave, maybe we should work on your communication skills with your partner.", "I do try to explain myself. That’s usually when they get angrier.", "Ordinary communication-skills framing can miss coercion and danger. A client’s reluctance to leave does not justify pushing mutual-conflict exercises without adequate assessment."],
+          ["J4-C", "We need to call the police together immediately.", "Please don’t do that without talking to me. I’m scared of what would happen afterward.", "Emergency action can be required when an imminent danger or legal duty applies, but this vignette does not establish that threshold. Assess immediacy, explain confidentiality and its limits, consult policy, and collaborate where possible."]
+        ] }
     ],
-    closing: "Did you notice ‘the bad guy’ came back? That’s a thread. Next week is all about threads."
+    practice: {
+      title: "Your turn—one grounded response",
+      quote: "I don’t want to make things worse… I just need to know what I can do.",
+      prompt: "Try a 20–30-second response in your own words. You can speak it privately or type it. You do not need to submit a recording.",
+      purposes: ["Immediate safety", "Privacy and communication", "Client autonomy", "Support/resource options", "Repair after a missed response", "Other"]
+    },
+    debrief: {
+      title: "What changed when you learned more?",
+      pull: "What did you feel pulled to do when Jordan asked you to decide?",
+      shift: "When Jordan described phone monitoring and a threatening comment, what changed about your clinical priority?",
+      redo: "One response I would redo, and how I would say it instead…",
+      compare: [
+        "Early in the conversation, collaborative exploration and a check on Jordan’s freedom to choose are defensible directions.",
+        "After the new disclosure, safety and privacy assessment become a priority. Don’t assume a complete risk picture, promise safety, or decide for the client.",
+        "P.A.U.S.E. helps you orient; it does not override risk assessment, mandated procedures, consultation, or scope of practice.",
+        "If your first move missed something, you can acknowledge it and redirect: ‘I think I moved too quickly toward options. I want to understand what feels safe for you first.’"
+      ]
+    }
+  };
+
+  /* Week 1 Clinical Confidence Profile: seven-day practice builder (Content Master Part D). */
+  const PLAN = {
+    intro: "Choose one small skill you can actually rehearse this week. You’re looking for observable practice, not a feeling of confidence.",
+    fields: [
+      ["skill", "One skill", ["Pause before answering a client’s request for advice.", "Separate observations from assumptions.", "Notice a pressure cue and give myself one breath.", "Ask a purposeful clarification question.", "Recognize when I need consultation or further assessment."]],
+      ["rehearse", "How I’ll rehearse", ["Three 2-minute fictional practice reps", "Two 5-minute role-plays", "My own plan"]],
+      ["evidence", "How I’ll know it’s working", ["I can say one grounded response and explain its purpose", "I can name one observation and one hypothesis", "I can notice and interrupt my rush to reassure"]],
+      ["support", "Support plan", ["Consult supervisor/clinical mentor", "Review an assessment or practice protocol", "Seek focused training", "Peer role-play with fictional cases", "Not needed for this selected practice rep"]],
+      ["adjust", "One adjustment I will test next time", null]
+    ]
   };
 
   /* Wistia IDs go here when videos are recorded, e.g. VIDEOS["w1-l1"] = "abc123xyz". */
   const VIDEOS = {};
 
-  window.TCC6 = { IMG, AIMS, REP_STEPS, CHECKS, PULLS, PAUSE, BASELINE_PROMPT, BASELINE, GAPS, REPS, WEEKS, WEEK1, REFLECT, PROFILE, STRUCTURE, DELIVERABLES, HEADS, TIPS, BONUS, VIDEOS, LAB, SIM };
+  window.TCC6 = { IMG, AIMS, REP_STEPS, CHECKS, PULLS, PAUSE, BASELINE_PROMPT, BASELINE, GAPS, REPS, WEEKS, WEEK1, REFLECT, PROFILE, STRUCTURE, DELIVERABLES, HEADS, TIPS, BONUS, VIDEOS, LAB, SIM, PLAN };
 })();

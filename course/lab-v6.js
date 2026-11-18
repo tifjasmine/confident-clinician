@@ -15,9 +15,10 @@
   const PREVIEW_PASSWORD = "LabPreview2026!";
 
   const KEY = "tcc-v6-v1";
-  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: {}, reviewer: false });
+  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 2 }, reviewer: false });
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
+  if (!S.sim || S.sim.v !== 2) S.sim = { v: 2 }; /* simulation content changed (Content Master v1.0): start it fresh */
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -177,7 +178,7 @@
 
   const howHTML = (title, steps, foot) => `<div class="how"><div class="how-h">${esc(title)}</div><ol>${steps.map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol>${foot ? `<div class="how-f">${esc(foot)}</div>` : ""}</div>`;
   /* ---------- Week 1 Lab: The Clinical Blind Spot ---------- */
-  const LAB_STEPS = ["Spot It", "Seen vs. Supplied", "The Pull", "P.A.U.S.E. it", "Your move"];
+  const LAB_STEPS = ["Spot It", "Seen vs. Supplied", "The Pull", "Rewrite line 4"];
   const transcriptHTML = (L, pickable) => `<ol class="transcript">${D.LAB.lines.map(([who, text, act], i) => {
     const n = i + 1, picked = L.turnPick === n, isTurn = L.turnPick && n === D.LAB.turn;
     const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}</span>`;
@@ -185,8 +186,8 @@
   }).join("")}</ol>`;
   const chipsHTML = (attr, opts, cur) => `<div class="chips-row">${opts.map(([k, l]) => `<button type="button" class="chip" ${attr}="${k}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`;
   function labHTML() {
-    const L = S.lab, st = L.step || 0, A = D.LAB;
-    const head = `<div class="flow-head"><span class="v6-pill blush">${st + 1} of 5 · ${LAB_STEPS[st]}</span><div class="flow-dots" aria-hidden="true">${LAB_STEPS.map((_, i) => `<span class="${i < st ? "done" : i === st ? "on" : ""}"></span>`).join("")}</div></div>`;
+    const L = S.lab, st = Math.min(L.step || 0, 3), A = D.LAB;
+    const head = `<div class="flow-head"><span class="v6-pill blush">${st + 1} of 4 · ${LAB_STEPS[st]}</span><div class="flow-dots" aria-hidden="true">${LAB_STEPS.map((_, i) => `<span class="${i < st ? "done" : i === st ? "on" : ""}"></span>`).join("")}</div></div>`;
     const peek = `<details class="peek"><summary>Show the session again</summary>${transcriptHTML(L, false)}</details>`;
     let body = "", ok = false;
     if (st === 0) {
@@ -214,57 +215,66 @@
       ok = !!(L.p4 && L.p8 && L.gap);
     }
     if (st === 3) {
-      const pz = L.pause || {};
-      body = `<p class="flow-q">Rewrite line 4, one letter at a time.</p>
-        <div class="quote-box"><span class="v6-label">Line 4 · the original</span><span class="line">${q(A.lines[3][1])}</span><span class="ctx">Right after Jordan said: ${q(A.lines[2][1])}</span></div>
-        <div class="pause-form">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="${l === "S" ? 2 : 1}" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div>`;
-      ok = !!(pz.S || "").trim();
-    }
-    if (st === 4) {
-      const mv = L.move != null ? L.move : ((L.pause || {}).S || "");
-      body = `<p class="flow-q">Say your new line 4 out loud. Then write it here.</p>
-        <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(A.lines[2][1])}</span></span></div>
-        <label class="field">Your new line 4<textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
+      const pz = L.pause || {}, mv = L.move || "";
+      body = `<p class="flow-q">Now you’re the therapist. Rewrite line 4.</p>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan · line 3</span><span class="said md">${q(A.lines[2][1])}</span></span></div>
+        <div class="orig"><small>What the therapist said (line 4)</small>${q(A.lines[3][1])}</div>
+        <details class="peek"${Object.values(pz).some(v => (v || "").trim()) ? " open" : ""}><summary>Stuck? Use P.A.U.S.E. to get there</summary><div class="pause-form" style="margin-top:10px">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="1" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div></details>
+        <label class="field">Your new line 4 <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
         ${L.compared ? `<div class="card sage stack-12 take" style="box-shadow:none"><span class="v6-label forest">Tiffany’s line 4</span><div class="say"><div>${q(A.take)}</div></div><div class="why">${esc(A.closing)}</div></div>` : ""}`;
-      ok = !!(mv || "").trim();
+      ok = !!mv.trim();
     }
     const back = st ? `<button type="button" class="v6-btn secondary" data-lab-nav="-1">← Back</button>` : "<span></span>";
     let fwd;
-    if (st < 4) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
+    if (st < 3) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
     else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>Compare with Tiffany’s →</button>`;
-    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary" data-go="week/sim">Next: The Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
-    return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
+    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary" data-go="week/sim">Next: Jordan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
+    return `<div class="flow">${head}<div class="fiction">Fictional practice scenario. Never enter real client details.</div>${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
 
-  /* ---------- Week 1 Simulation: The Advice Request ---------- */
+  /* ---------- Week 1 Simulation: Jordan’s Advice Request ---------- */
+  const SIM_STAGES = ["Moment 1", "Moment 2", "Moment 3", "Moment 4", "Your turn", "Debrief"];
   function simHTML() {
-    const M = S.sim, picks = M.picks || {}, A = D.SIM, n = A.decisions.length;
-    const i = Math.min(M.i || 0, n);
-    const head = `<div class="flow-head"><span class="v6-pill blush">${i < n ? `Decision ${i + 1} of ${n}` : "Your breakdown"}</span><div class="flow-dots" aria-hidden="true">${A.decisions.map((_, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}<span class="${i === n ? "on" : ""}"></span></div></div>`;
+    const M = S.sim, A = D.SIM, picks = M.picks || {}, n = A.decisions.length;
+    const fiction = `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>`;
+    if (M.i == null) return `<div class="flow">${fiction}<p class="flow-q">You’re in the therapist chair.</p><p class="flow-sub" style="margin:0">${esc(A.intro)}</p>
+      <div class="actions"><button type="button" class="v6-btn primary" data-sim-go="0">Start simulation →</button></div>
+      ${(M.history || []).length ? `<div class="hint">You’ve completed ${M.history.length} earlier ${M.history.length === 1 ? "attempt" : "attempts"}. They’re saved.</div>` : ""}</div>`;
+    const i = Math.min(M.i, n + 1);
+    const head = `<div class="flow-head"><span class="v6-pill blush">${i < n ? `Moment ${i + 1} of ${n}` : SIM_STAGES[i]}</span><div class="flow-dots" aria-hidden="true">${SIM_STAGES.map((_, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}</div></div>`;
     const jordan = (txt, md) => `<div class="speaker${md ? "" : " boxed"}"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said${md ? " md" : ""}">${q(txt)}</span></span></div>`;
     if (i < n) {
       const d = A.decisions[i], p = picks[i];
-      let body = (i === 0 ? `<p class="flow-sub">${esc(A.context)}</p>` : "") + jordan(d.line);
+      let body = `${d.bridge ? `<p class="bridge">${esc(d.bridge)}</p>` : ""}${d.banner ? `<div class="banner-new">${esc(d.banner)}</div>` : ""}${jordan(d.line)}`;
       if (p == null) {
-        body += `<p class="flow-q">What do you say?</p><div class="choices">${d.choices.map(([aim, say], k) => `<button type="button" class="choice" data-sim-pick="${k}"><small>${esc(aim)}</small><span>${q(say)}</span></button>`).join("")}</div>`;
-        return `<div class="flow">${head}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
+        body += `<p class="flow-q">${esc(d.prompt)}</p><div class="choices">${d.choices.map((c, k) => `<button type="button" class="choice" data-sim-pick="${k}"><span>${q(c[1])}</span></button>`).join("")}</div>`;
+        return `<div class="flow">${head}${fiction}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
       }
-      const [aim, say, reply, note] = d.choices[p];
-      body += `<div class="you-said"><small>You · ${esc(aim)}</small>${q(say)}</div>${jordan(reply, true)}${note ? `<div class="sim-note">${esc(note)}</div>` : ""}`;
-      return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Rewind and try another</button>
-        <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "See your breakdown →" : "Next decision →"}</button></div></div>`;
+      const c = d.choices[p];
+      body += `<div class="you-said"><small>You</small>${q(c[1])}</div>${jordan(c[2], true)}<div class="coach"><small>Why it landed that way</small>${esc(c[3])}</div>`;
+      return `<div class="flow">${head}${fiction}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button>
+        <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "Your turn →" : "Next moment →"}</button></div></div>`;
     }
-    const rows = A.decisions.map((d, k) => {
-      const p = picks[k], mine = d.choices[p], best = d.choices[d.best];
-      return `<div class="bd-row"><div class="bd-q"><span class="v6-label grey">Decision ${k + 1}</span>${q(d.line)}</div>
-        <div class="bd-paths"><div class="bd-p"><small>Your path · ${esc(mine[0])}</small>${q(mine[1])}<span class="r">Jordan: ${q(mine[2])}</span></div>
-        <div class="bd-p t"><small>Tiffany’s path · ${esc(best[0])}</small>${q(best[1])}<span class="r">Jordan: ${q(best[2])}</span></div></div>
-        <button type="button" class="v6-link" data-sim-rewind="${k}">↺ Rewind decision ${k + 1}</button></div>`;
-    }).join("");
-    return `<div class="flow">${head}<p class="flow-q">Your path, next to mine.</p><div class="breakdown">${rows}</div>
-      <div class="how"><div class="how-h">Run the Three Checks on your path</div><ol>${D.CHECKS.map(([t, d2], k) => `<li><span class="num lg">${k + 1}</span><span><b>${esc(t)}</b><small>${esc(d2)}</small></span></li>`).join("")}</ol></div>
-      <div class="quote-box"><span class="line" style="font-size:20px">${q(A.closing)}</span></div>
-      <div class="actions">${S.steps.sim ? `<button type="button" class="v6-btn primary" data-go="week/reflect">Next: Reflect & Redo →</button>` : `<button type="button" class="v6-btn primary" data-sim-finish>Finish the simulation ✓</button>`}</div></div>`;
+    if (i === n) {
+      const P = M.practice = M.practice || { text: "", aloud: false, purposes: [] }, X = A.practice;
+      const ok = !!(P.text.trim() || P.aloud) && P.purposes.length;
+      return `<div class="flow">${head}${fiction}<p class="flow-q">${esc(X.title)}</p>${jordan(X.quote)}<p class="flow-sub" style="margin:0">${esc(X.prompt)}</p>
+        <label class="field">What I might say… <small>Type it, or practice it out loud below.</small><textarea class="v6-ta" rows="3" data-sim-text placeholder="Your words">${esc(P.text)}</textarea></label>
+        <label class="check"><input type="checkbox" data-sim-aloud${P.aloud ? " checked" : ""}> I practiced it out loud</label>
+        <div class="field">What is the purpose of your response? <small>Choose one or two.</small><div class="chips-row">${X.purposes.map(t => `<button type="button" class="chip" data-sim-purpose="${esc(t)}" aria-pressed="${P.purposes.includes(t)}">${esc(t)}</button>`).join("")}</div></div>
+        <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-go="${n - 1}">← Back</button><button type="button" class="v6-btn primary" data-sim-go="${n + 1}"${ok ? "" : " disabled"}>Review my clinical decisions →</button></div></div>`;
+    }
+    const R = M.ref = M.ref || {}, X = A.debrief;
+    const rows = A.decisions.map((d, k) => { const c = d.choices[picks[k]]; return c ? `<div class="bd-row"><span class="v6-label grey">Moment ${k + 1}</span><div class="bd-line">Jordan: ${q(d.line)}</div><div class="you-said sm"><small>You</small>${q(c[1])}</div><div class="bd-line">Jordan: ${q(c[2])}</div><div class="coach"><small>Why it landed that way</small>${esc(c[3])}</div><button type="button" class="v6-link" data-sim-rewind="${k}">↺ Redo this moment</button></div>` : ""; }).join("");
+    const ok = !!((R.pull || "").trim() || R.pullNS) && !!(R.shift || "").trim();
+    return `<div class="flow">${head}${fiction}<p class="flow-q">${esc(X.title)}</p><div class="breakdown">${rows}</div>
+      <label class="field">${esc(X.pull)}<textarea class="v6-ta" rows="2" data-sim-ref="pull"${R.pullNS ? " disabled" : ""}>${esc(R.pull)}</textarea></label>
+      <label class="check"><input type="checkbox" data-sim-ns${R.pullNS ? " checked" : ""}> Not sure yet</label>
+      <label class="field">${esc(X.shift)}<textarea class="v6-ta" rows="2" data-sim-ref="shift">${esc(R.shift)}</textarea></label>
+      <label class="field">${esc(X.redo)} <small>Optional</small><textarea class="v6-ta" rows="2" data-sim-ref="redo">${esc(R.redo)}</textarea></label>
+      ${ok || M.saved ? `<div class="how"><div class="how-h">The clinical picture</div><ul class="compare">${X.compare.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : `<div class="hint">Answer the first two questions to see the clinical picture.</div>`}
+      <div class="actions">${M.saved ? `<button type="button" class="v6-btn primary" data-go="week/save">Open my Confidence Profile →</button><button type="button" class="v6-btn secondary" data-sim-again>Try a different path</button>`
+        : `<button type="button" class="v6-btn primary" data-sim-save${ok ? "" : " disabled"}>Save this practice attempt</button><button type="button" class="v6-btn secondary" data-sim-again>Try a different path</button>`}<span class="saved-flag" data-flag></span></div></div>`;
   }
 
   function weekView(arg) {
@@ -319,18 +329,41 @@
       cta = `<button type="button" class="v6-btn primary" data-act="step" data-key="reflect">${done ? "Saved ✓" : "Save my reflection"}</button><span class="saved-flag" data-flag></span>`;
     }
     if (s.type === "save") {
-      const g = S.reps["1.1"] && S.reps["1.1"].gap ? D.GAPS.find(x => x[0] === S.reps["1.1"].gap) : null;
-      if (g && !S.profile.gap) S.profile.gap = `${g[1]}. From Rep 1.1: ${g[2].replace(/[“”]/g, "")}.`;
+      const pf = S.profile, M = S.sim, L = S.lab, P = pf.plan = pf.plan || {};
+      const g = S.reps["1.1"] && S.reps["1.1"].gap;
+      const gp = g && g !== "none" ? D.GAPS.find(x => x[0] === g) : null;
+      const path = (M.picks && Object.keys(M.picks).length === 4) ? D.SIM.decisions.map((d, k) => `Moment ${k + 1}: ${(d.choices[M.picks[k]] || [])[1] || ""}`).join("\n") : "";
+      const auto = {
+        gap: gp ? `${gp[1]}: ${gp[2].replace(/[“”]/g, "")} (from Rep 1.1)` : "",
+        pull: [S.reflect.pullPick, (M.ref || {}).pull].filter(Boolean).join(". "),
+        move: L.move || "",
+        shift: (M.ref || {}).shift || "",
+        adjust: (M.ref || {}).redo || ""
+      };
+      const sec = (k, label, hint, ph) => { const v = pf[k] != null ? pf[k] : auto[k]; return `<label class="field">${esc(label)}${hint ? ` <small>${esc(hint)}</small>` : ""}<textarea class="v6-ta" rows="2" data-p="${k}" placeholder="${esc(ph)}">${esc(v)}</textarea></label>`; };
       const lines = D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim());
-      body = `<form data-form="profile" style="display:flex;flex-direction:column;gap:16px">
-        ${D.PROFILE.map(([k, a, b], i) => `<label class="field">${i + 1}. ${esc(a)}${b ? ` <small>${esc(b)}</small>` : ""}<textarea rows="2" data-p="${k}">${esc(S.profile[k])}</textarea></label>`).join("")}
-        <div class="field">8. “What I Say When…” <small>My 3 lines from Reps 1.1–1.3</small>
-          ${lines.length ? `<div class="bank">${lines.map(r => `<div class="bank-item"><span class="w">${esc(r.bank)}…</span><span class="l">${q(S.reps[r.id].line)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here after you save Reps 1.1–1.3.</div>`}
-        </div></form>`;
-      cta = `<button type="button" class="v6-btn primary" data-act="step" data-key="save">${done ? "Profile saved ✓" : "Save my profile"}</button><span class="saved-flag" data-flag></span>`;
+      body = `<div class="profile">
+        <div class="banner-soft">Not a personality test. Filled in from your Week 1 choices. Edit anything.</div>
+        <h3 class="pf-h">What I noticed</h3>
+        ${sec("gap", "The gap I want to investigate", "A hypothesis, not a diagnosis", "Add the gap you want to look into")}
+        ${sec("pull", "My Pull, and the cue I notice first", "", "Add the Pull that grabs you, and what you notice first")}
+        ${sec("move", "My grounded first move", "From the Lab", "Add one line you’d actually say")}
+        <h3 class="pf-h">My Jordan practice</h3>
+        ${path ? `<div class="pf-path">${esc(path).replace(/\n/g, "<br>")}</div>` : `<div class="empty">Your path shows up here after the simulation.</div>`}
+        ${sec("shift", "When the priority changed", "", "Add what changed when Jordan shared new information")}
+        ${sec("adjust", "What I would adjust", "", "Add one thing you’d do differently")}
+        <h3 class="pf-h">“What I Say When…”</h3>
+        ${lines.length ? `<div class="bank">${lines.map(r => `<div class="bank-item"><span class="w">${esc(r.bank)}…</span><span class="l">${q(S.reps[r.id].line)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here after you save Reps 1.1–1.3.</div>`}
+        <h3 class="pf-h">My seven-day practice target</h3>
+        <p class="flow-sub" style="margin:0">${esc(D.PLAN.intro)}</p>
+        ${D.PLAN.fields.map(([k, label, opts]) => `<div class="field">${esc(label)}${opts ? `<div class="chips-row">${opts.map(o => `<button type="button" class="chip" data-plan="${k}" data-v="${esc(o)}" aria-pressed="${P[k] === o}">${esc(o)}</button>`).join("")}</div>` : ""}
+          <input class="v6-in" type="text" data-plan-own="${k}" placeholder="${opts ? "Or write your own" : "Your adjustment"}" value="${esc(opts && opts.includes(P[k]) ? "" : P[k] || "")}"></div>`).join("")}
+      </div>`;
+      const planOk = !!(P.skill && P.rehearse && P.evidence);
+      cta = `<button type="button" class="v6-btn primary" data-act="saveprofile"${planOk ? "" : " disabled"}>${done ? "Profile saved ✓" : "Save my profile"}</button><button type="button" class="v6-btn secondary" data-act="copyprofile">Copy</button><button type="button" class="v6-btn secondary" data-act="printprofile">Print</button><span class="saved-flag" data-flag></span>`;
     }
 
-    const media = s.type === "lab" || s.type === "sim" ? "" : video(s.video, s.img, !!s.video);
+    const media = s.type === "lab" || s.type === "sim" || s.type === "save" ? "" : video(s.video, s.img, !!s.video);
     const lockedNote = locked ? `<div class="locked-note"><span aria-hidden="true">🔒</span>Opens when you finish ${esc(prev)}.</div>` : "";
     const nxt = D.WEEK1[sel + 1];
     const nextBtn = done && nxt && s.type !== "lab" && s.type !== "sim" ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
@@ -518,6 +551,13 @@
         const k = b.dataset.key, act = b.dataset.act;
         if (act === "welcome") { S.welcome = !S.welcome; }
         if (act === "watch") { S.watched[k] = !S.watched[k]; }
+        if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); render(); flash("Saved"); return; }
+        if (act === "copyprofile" || act === "printprofile") {
+          const txt = $$(".profile .field, .profile .pf-h, .profile .pf-path", app).map(el => el.matches(".pf-h") ? "\n" + el.textContent.toUpperCase() : el.matches(".pf-path") ? el.innerText : (el.querySelector("textarea, input") ? `${el.firstChild.textContent.trim()}: ${(el.querySelector("[aria-pressed=true]") || {}).textContent || el.querySelector("textarea, input").value || "—"}` : "")).join("\n");
+          if (act === "copyprofile") { (navigator.clipboard ? navigator.clipboard.writeText("My Clinical Confidence Profile\n" + txt) : Promise.reject()).then(() => flash("Copied"), () => flash("Couldn’t copy")); }
+          else window.print();
+          return;
+        }
         if (act === "step") {
           if (k === "reflect" || k === "save") { S.steps[k] = true; save(); render(); flash("Saved"); return; }
           S.steps[k] = !S.steps[k];
@@ -534,15 +574,25 @@
       [["p4", "labP4"], ["p8", "labP8"], ["gap", "labGap"]].forEach(([k, d]) => $$(`[data-lab-${k}]`, app).forEach(b => b.onclick = () => { L[k] = b.dataset[d]; save(); render(); }));
       $$("[data-lab-pause]", app).forEach(t => t.oninput = () => { L.pause = L.pause || {}; L.pause[t.dataset.labPause] = t.value; save(); const n = $('[data-lab-nav="1"]', app); if (n) n.disabled = !(L.pause.S || "").trim(); });
       const lm = $("[data-lab-move]", app); if (lm) lm.oninput = () => { L.move = lm.value; save(); const c = $("[data-lab-compare]", app); if (c) c.disabled = !lm.value.trim(); };
-      $$("[data-lab-nav]", app).forEach(b => b.onclick = () => { L.step = Math.max(0, Math.min(4, (L.step || 0) + +b.dataset.labNav)); save(); render(); top(); });
+      $$("[data-lab-nav]", app).forEach(b => b.onclick = () => { L.step = Math.max(0, Math.min(3, (L.step || 0) + +b.dataset.labNav)); save(); render(); top(); });
       const lc = $("[data-lab-compare]", app); if (lc) lc.onclick = () => { L.compared = true; save(); render(); };
       const lf = $("[data-lab-finish]", app); if (lf) lf.onclick = () => { S.steps.lab = true; save(); render(); };
       /* Simulation */
       const M = S.sim; M.picks = M.picks || {};
-      $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { M.picks[M.i || 0] = +b.dataset.simPick; save(); render(); });
+      $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { M.picks[M.i] = +b.dataset.simPick; save(); render(); });
       $$("[data-sim-go]", app).forEach(b => b.onclick = () => { M.i = +b.dataset.simGo; save(); render(); top(); });
-      $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete M.picks[k]; M.i = k; save(); render(); top(); });
-      const sf = $("[data-sim-finish]", app); if (sf) sf.onclick = () => { S.steps.sim = true; save(); render(); };
+      $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete M.picks[k]; M.i = k; M.saved = false; save(); render(); top(); });
+      const stx = $("[data-sim-text]", app), syncP = () => { const P = M.practice, n = $(`[data-sim-go="${D.SIM.decisions.length + 1}"]`, app); if (n) n.disabled = !((P.text.trim() || P.aloud) && P.purposes.length); };
+      if (stx) stx.oninput = () => { M.practice.text = stx.value; save(); syncP(); };
+      const sal = $("[data-sim-aloud]", app); if (sal) sal.onchange = () => { M.practice.aloud = sal.checked; save(); syncP(); };
+      $$("[data-sim-purpose]", app).forEach(b => b.onclick = () => { const P = M.practice, t = b.dataset.simPurpose, ix = P.purposes.indexOf(t); if (ix >= 0) P.purposes.splice(ix, 1); else { P.purposes.push(t); if (P.purposes.length > 2) P.purposes.shift(); } save(); render(); });
+      $$("[data-sim-ref]", app).forEach(t => t.oninput = () => { M.ref[t.dataset.simRef] = t.value; save(); const ok = !!((M.ref.pull || "").trim() || M.ref.pullNS) && !!(M.ref.shift || "").trim(); const sv = $("[data-sim-save]", app); if (sv) sv.disabled = !ok; });
+      const sns = $("[data-sim-ns]", app); if (sns) sns.onchange = () => { M.ref.pullNS = sns.checked; save(); render(); };
+      const ssv = $("[data-sim-save]", app); if (ssv) ssv.onclick = () => { M.saved = true; S.steps.sim = true; S.profile.shift = S.profile.adjust = undefined; save(); render(); flash("Saved"); };
+      const sag = $("[data-sim-again]", app); if (sag) sag.onclick = () => { M.history = M.history || []; M.history.push({ picks: M.picks, practice: M.practice, ref: M.ref, at: Date.now() }); M.picks = {}; M.practice = null; M.ref = {}; M.saved = false; M.i = 0; save(); render(); top(); };
+      /* Profile */
+      $$("[data-plan]", app).forEach(b => b.onclick = () => { const P = S.profile.plan = S.profile.plan || {}; P[b.dataset.plan] = b.dataset.v; save(); render(); });
+      $$("[data-plan-own]", app).forEach(t => t.oninput = () => { const P = S.profile.plan = S.profile.plan || {}; P[t.dataset.planOwn] = t.value; save(); $$(`[data-plan="${t.dataset.planOwn}"]`, app).forEach(c => c.setAttribute("aria-pressed", "false")); const sv = $('[data-act="saveprofile"]', app); if (sv) sv.disabled = !(P.skill && P.rehearse && P.evidence); });
     }
     if (scr === "rep") {
       const r = REP(arg) || REP("1.1"); if (r.pending || !weekOpen(r.week)) return;
@@ -560,7 +610,7 @@
         if (first) { const c = $$(".v6-col .card", app)[1]; if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }
       });
       const b2 = $("[data-beat2]", app); if (b2) b2.oninput = () => { x.beat2 = b2.value; save(); };
-      $$("[data-gap]", app).forEach(b => b.onclick = () => { x.gap = b.dataset.gap; S.profile.gap = ""; save(); render(); });
+      $$("[data-gap]", app).forEach(b => b.onclick = () => { x.gap = b.dataset.gap; delete S.profile.gap; save(); render(); });
       const line = $("[data-line]", app);
       if (line) line.oninput = () => { x.line = line.value; save(); const s = $('[data-act="saveline"]', app); if (s) s.disabled = !x.line.trim(); };
       $$("[data-act]", app).forEach(b => b.onclick = () => {
