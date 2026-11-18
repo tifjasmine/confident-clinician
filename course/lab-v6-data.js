@@ -172,10 +172,10 @@
       desc: "Watch Tiffany give a rushed take, see why it misses, then watch the steady take. Don’t memorize the words. Watch the decision underneath them.", meta: "Video demo", img: IMG.c, video: "w1-demo",
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
-      desc: "Read Jordan’s session 2 with another therapist, line by line, and find the moment it went sideways. It’s easier to spot a Pull in someone else first.", meta: "30–35 min", img: IMG.b,
+      desc: "Read Jordan’s session 2 with another therapist and find the moment it went sideways. Then rewrite it your way.", meta: "30–35 min", img: IMG.b,
       itemsLabel: "Five steps", items: [["1", "Spot It", "Tap the line where the session turned."], ["2", "Seen vs. Supplied", "Did Jordan say it, or did the therapist fill it in?"], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "P.A.U.S.E. it", "Rewrite line 4 with one prompt per letter."], ["5", "Your move", "Say your new line 4, then compare it with Tiffany’s."]] },
     { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "The Advice Request", title: "Simulation: The Advice Request",
-      desc: "Session 3 with Jordan. Three decision points, each branching by your aim. Rewind any point and try another path. The breakdown shows your path and the Three Checks.", meta: "20–25 min", img: IMG.c,
+      desc: "Now you’re the therapist in session 3 with Jordan. Pick what you’d say at three key moments and see how Jordan responds. Rewind anytime to try another path.", meta: "20–25 min", img: IMG.c,
       itemsLabel: "Three decision points", items: [["1", "“Just tell me what to do. You’re the therapist. Should I break up with them?”", "Advise · Reassure · Hand it back · Check safety"], ["2", "“I’m paying you because I can’t make decisions on my own.”", "Defend · Reflect · Offer structure"], ["3", "“So… what do I do this week?”", "Assign · Collaborate"]] },
     { key: "reflect", type: "reflect", label: "Reflect", kind: "Reflect & Redo", short: "Reflect & Redo", title: "Reflect & Redo",
       desc: "Look back at the week with the Three Checks, then redo one Rep.", meta: "10 min", img: IMG.b },
@@ -224,8 +224,8 @@
     week: ["The Therapist Behind the Therapy", "Week 1 · Notice · What’s happening in me right now?"],
     rep: ["", "One client moment, your words, the client’s reaction, Tiffany’s take, and a redo."],
     baseline: ["Day 1 Baseline", "Four client moments, before any teaching. Just answer like you would today."],
-    reproom: ["Rep Room", "Optional extra Reps, in the same format as everything else. Never blocks your progress."],
-    playbook: ["Clinical Playbook", "Everything you build flows here, including your own words."],
+    reproom: ["Rep Room", "Extra practice whenever you want it. Totally optional, and it never blocks your progress."],
+    playbook: ["Clinical Playbook", "Everything you write and save in the Lab, in one place. Come back to it anytime."],
     growth: ["My growth", "Your four Day 1 answers live here. In Week 4 you’ll answer the same moments again and see both side by side."]
   };
 
@@ -241,8 +241,64 @@
 
   const BONUS = "Taylor, Casey, Alex, Mo, June and Deshawn. Mixed settings, extra practice whenever you want it.";
 
+
+  /* Week 1 Lab: The Clinical Blind Spot. Copied from the scripts doc (draft pending clinical review). */
+  const LAB = {
+    intro: "Jordan’s session 2, with another therapist. It’s far easier to spot a Pull in someone else first. Then you’ll turn the lens on yourself, and this session explains why Jordan asks for advice in session 3.",
+    lines: [
+      ["Jordan", "We had another fight Sunday. It was about the dishes, but it’s never about the dishes."],
+      ["Therapist", "What’s it usually about?"],
+      ["Jordan", "I don’t know. I feel like I’m always the one who has to bring stuff up. And then I’m the bad guy."],
+      ["Therapist", "That sounds really unfair. Have you tried ‘I’ statements? Like, ‘I feel hurt when…’"],
+      ["Jordan", "I guess. I’ve read about those."],
+      ["Therapist", "They really help. And maybe set up a weekly check-in so things don’t build up."],
+      ["Jordan", "Yeah, maybe.", "looks at phone"],
+      ["Therapist", "You deserve someone who actually listens to you."],
+      ["Jordan", "…Do you think I should leave?"]
+    ],
+    turn: 4,
+    turnWhy: "Jordan offered something tender (“I’m the bad guy”), and the therapist went straight to a tool.",
+    sort: [
+      ["Jordan feels like the bad guy for bringing things up", "seen"],
+      ["“It’s never about the dishes”", "seen"],
+      ["Jordan pulled back after the advice (“Yeah, maybe” + phone)", "seen"],
+      ["Jordan’s partner doesn’t listen", "supplied"],
+      ["Jordan needs communication skills", "supplied"],
+      ["Jordan is thinking about leaving", "supplied", "until line 9, which the therapist invited with line 8"]
+    ],
+    pull4: "Fix", pull8: "Rescue", gap: "pressure",
+    gapWhy: "Most likely pressure: the therapist knew how to explore but rushed.",
+    pause: [["P", "Pause", "What’s the Pull?"], ["A", "Attend", "What did Jordan feel?"], ["U", "Use", "Which words will you use?"], ["S", "Say", "One thing."], ["E", "Explore", "What do you want to understand?"]],
+    take: "The bad guy. Tell me more about what that’s like.",
+    closing: "Notice line 8. When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3."
+  };
+
+  /* Week 1 Simulation: The Advice Request. Copied from the scripts doc (draft pending clinical review).
+     best = the path shown as "Tiffany’s path" on the breakdown (needs Tiffany’s confirmation). */
+  const SIM = {
+    context: "Session 3 with Jordan, 29. They’ve just described another fight with their partner.",
+    decisions: [
+      { line: "Just tell me what to do. You’re the therapist. Should I break up with them?", best: 2, choices: [
+        ["Advise", "It sounds like you should leave.", "Okay… but what if I regret it?", "The decision is now yours."],
+        ["Reassure", "You’ll know when you know.", "That’s what everyone says.", "Kind, but empty."],
+        ["Hand it back", "I can help you sort through it, but I don’t want to decide this for you. What feels hardest about staying or leaving?", "I’m scared I’ll make the wrong choice.", ""],
+        ["Check safety", "Before we weigh it, do you feel safe and free to make choices in this relationship?", "Yeah, it’s not like that. They’re not scary. It’s just… draining.", "A good question to normalize asking."]
+      ] },
+      { line: "I’m paying you because I can’t make decisions on my own.", best: 1, choices: [
+        ["Defend", "My role isn’t to make decisions for you.", "Wow. Okay.", "Rupture risk."],
+        ["Reflect", "It’s exhausting not to trust your own choices.", "Yeah. I end up asking everybody. My mom, my friends, now you.", ""],
+        ["Offer structure", "Would it help to look at what each choice would cost you and give you?", "Maybe. I’ve made lists. They don’t help.", "Useful later, but it came before Jordan felt heard."]
+      ] },
+      { line: "So… what do I do this week?", best: 1, choices: [
+        ["Assign", "Make a pros and cons list.", "Sure.", "Compliance, not ownership."],
+        ["Collaborate", "What would be useful to notice before next time?", "Maybe when I start feeling like the bad guy. That’s when I want to leave.", ""]
+      ] }
+    ],
+    closing: "Did you notice ‘the bad guy’ came back? That’s a thread. Next week is all about threads."
+  };
+
   /* Wistia IDs go here when videos are recorded, e.g. VIDEOS["w1-l1"] = "abc123xyz". */
   const VIDEOS = {};
 
-  window.TCC6 = { IMG, AIMS, REP_STEPS, CHECKS, PULLS, PAUSE, BASELINE_PROMPT, BASELINE, GAPS, REPS, WEEKS, WEEK1, REFLECT, PROFILE, STRUCTURE, DELIVERABLES, HEADS, TIPS, BONUS, VIDEOS };
+  window.TCC6 = { IMG, AIMS, REP_STEPS, CHECKS, PULLS, PAUSE, BASELINE_PROMPT, BASELINE, GAPS, REPS, WEEKS, WEEK1, REFLECT, PROFILE, STRUCTURE, DELIVERABLES, HEADS, TIPS, BONUS, VIDEOS, LAB, SIM };
 })();

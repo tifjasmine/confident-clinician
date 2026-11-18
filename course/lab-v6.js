@@ -15,7 +15,7 @@
   const PREVIEW_PASSWORD = "LabPreview2026!";
 
   const KEY = "tcc-v6-v1";
-  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, reviewer: false });
+  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: {}, reviewer: false });
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
@@ -157,7 +157,7 @@
         }).join("")}</ol>
       </section>
       <div class="pick">
-        <h2>Pick up where you <em>left off.</em></h2>
+        <h2>${anyProgress() ? "Pick up where you <em>left off.</em>" : "Everything else, <em>in one place.</em>"}</h2>
         <div class="pick-grid">${[
           ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
           ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
@@ -176,6 +176,97 @@
   const itemsHTML = (label, items) => `<div class="items"><div class="lab">${esc(label)}</div>${items.map(([k, a, b, done]) => `<div class="row"><span class="k${done ? " done" : ""}">${done ? "✓" : esc(k)}</span><span class="t"><b>${esc(a)}</b>${b ? `<small>${esc(b)}</small>` : ""}</span></div>`).join("")}</div>`;
 
   const howHTML = (title, steps, foot) => `<div class="how"><div class="how-h">${esc(title)}</div><ol>${steps.map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol>${foot ? `<div class="how-f">${esc(foot)}</div>` : ""}</div>`;
+  /* ---------- Week 1 Lab: The Clinical Blind Spot ---------- */
+  const LAB_STEPS = ["Spot It", "Seen vs. Supplied", "The Pull", "P.A.U.S.E. it", "Your move"];
+  const transcriptHTML = (L, pickable) => `<ol class="transcript">${D.LAB.lines.map(([who, text, act], i) => {
+    const n = i + 1, picked = L.turnPick === n, isTurn = L.turnPick && n === D.LAB.turn;
+    const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}</span>`;
+    return `<li class="${who === "Jordan" ? "client" : "ther"}${picked ? " picked" : ""}${isTurn ? " turn" : ""}">${pickable ? `<button type="button" data-lab-turn="${n}" aria-pressed="${picked}">${inner}</button>` : `<div>${inner}</div>`}</li>`;
+  }).join("")}</ol>`;
+  const chipsHTML = (attr, opts, cur) => `<div class="chips-row">${opts.map(([k, l]) => `<button type="button" class="chip" ${attr}="${k}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`;
+  function labHTML() {
+    const L = S.lab, st = L.step || 0, A = D.LAB;
+    const head = `<div class="flow-head"><span class="v6-pill blush">${st + 1} of 5 · ${LAB_STEPS[st]}</span><div class="flow-dots" aria-hidden="true">${LAB_STEPS.map((_, i) => `<span class="${i < st ? "done" : i === st ? "on" : ""}"></span>`).join("")}</div></div>`;
+    const peek = `<details class="peek"><summary>Show the session again</summary>${transcriptHTML(L, false)}</details>`;
+    let body = "", ok = false;
+    if (st === 0) {
+      body = `<p class="flow-q">Read the session. Then tap the line where it turned.</p><p class="flow-sub">${esc(A.intro)}</p>${transcriptHTML(L, true)}
+        ${L.turnPick ? `<div class="reveal"><b>The turn: line ${A.turn}.</b> ${esc(A.turnWhy)}${L.turnPick !== A.turn ? `<span class="you">You picked line ${L.turnPick}.</span>` : ""}</div>` : ""}`;
+      ok = !!L.turnPick;
+    }
+    if (st === 1) {
+      const so = L.sort || {};
+      body = `<p class="flow-q">Did Jordan say it, or did the therapist fill it in?</p><p class="flow-sub"><b>Seen</b> means Jordan actually said or showed it. <b>Supplied</b> means the therapist assumed it.</p>${peek}
+        <div class="sort">${A.sort.map(([t, ans, note], i) => {
+          const pick = so[i];
+          return `<div class="sort-row${pick ? " answered" : ""}"><span class="st">${esc(t)}</span><span class="sb">${["seen", "supplied"].map(k => `<button type="button" class="chip" data-lab-sort="${i}" data-v="${k}" aria-pressed="${pick === k}">${k === "seen" ? "Seen" : "Supplied"}</button>`).join("")}</span>
+            ${pick ? `<span class="ans">${pick === ans ? "✓" : "→"} ${ans === "seen" ? "Seen" : "Supplied"}${note ? ` (${esc(note)})` : ""}</span>` : ""}</div>`;
+        }).join("")}</div>`;
+      ok = A.sort.every((_, i) => so[i]);
+    }
+    if (st === 2) {
+      const pulls = D.PULLS.map(([t]) => [t, t]);
+      body = `<p class="flow-q">What was driving the therapist?</p>${peek}
+        <div class="field">Which Pull drove line 4? <small>${q(A.lines[3][1])}</small>${chipsHTML("data-lab-p4", pulls, L.p4)}</div>
+        <div class="field">Which Pull drove line 8? <small>${q(A.lines[7][1])}</small>${chipsHTML("data-lab-p8", pulls, L.p8)}</div>
+        <div class="field">Which gap? <small>Knowledge, skill, pressure, or support</small>${chipsHTML("data-lab-gap", D.GAPS.map(([k, l]) => [k, l]), L.gap)}</div>
+        ${L.p4 && L.p8 && L.gap ? `<div class="reveal"><b>Line 4: ${A.pull4}. Line 8: ${A.pull8}.</b> ${esc(A.gapWhy)}</div>` : ""}`;
+      ok = !!(L.p4 && L.p8 && L.gap);
+    }
+    if (st === 3) {
+      const pz = L.pause || {};
+      body = `<p class="flow-q">Rewrite line 4, one letter at a time.</p>
+        <div class="quote-box"><span class="v6-label">Line 4 · the original</span><span class="line">${q(A.lines[3][1])}</span><span class="ctx">Right after Jordan said: ${q(A.lines[2][1])}</span></div>
+        <div class="pause-form">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="${l === "S" ? 2 : 1}" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div>`;
+      ok = !!(pz.S || "").trim();
+    }
+    if (st === 4) {
+      const mv = L.move != null ? L.move : ((L.pause || {}).S || "");
+      body = `<p class="flow-q">Say your new line 4 out loud. Then write it here.</p>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(A.lines[2][1])}</span></span></div>
+        <label class="field">Your new line 4<textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
+        ${L.compared ? `<div class="card sage stack-12 take" style="box-shadow:none"><span class="v6-label forest">Tiffany’s line 4</span><div class="say"><div>${q(A.take)}</div></div><div class="why">${esc(A.closing)}</div></div>` : ""}`;
+      ok = !!(mv || "").trim();
+    }
+    const back = st ? `<button type="button" class="v6-btn secondary" data-lab-nav="-1">← Back</button>` : "<span></span>";
+    let fwd;
+    if (st < 4) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
+    else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>Compare with Tiffany’s →</button>`;
+    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary" data-go="week/sim">Next: The Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
+    return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
+  }
+
+  /* ---------- Week 1 Simulation: The Advice Request ---------- */
+  function simHTML() {
+    const M = S.sim, picks = M.picks || {}, A = D.SIM, n = A.decisions.length;
+    const i = Math.min(M.i || 0, n);
+    const head = `<div class="flow-head"><span class="v6-pill blush">${i < n ? `Decision ${i + 1} of ${n}` : "Your breakdown"}</span><div class="flow-dots" aria-hidden="true">${A.decisions.map((_, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}<span class="${i === n ? "on" : ""}"></span></div></div>`;
+    const jordan = (txt, md) => `<div class="speaker${md ? "" : " boxed"}"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said${md ? " md" : ""}">${q(txt)}</span></span></div>`;
+    if (i < n) {
+      const d = A.decisions[i], p = picks[i];
+      let body = (i === 0 ? `<p class="flow-sub">${esc(A.context)}</p>` : "") + jordan(d.line);
+      if (p == null) {
+        body += `<p class="flow-q">What do you say?</p><div class="choices">${d.choices.map(([aim, say], k) => `<button type="button" class="choice" data-sim-pick="${k}"><small>${esc(aim)}</small><span>${q(say)}</span></button>`).join("")}</div>`;
+        return `<div class="flow">${head}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
+      }
+      const [aim, say, reply, note] = d.choices[p];
+      body += `<div class="you-said"><small>You · ${esc(aim)}</small>${q(say)}</div>${jordan(reply, true)}${note ? `<div class="sim-note">${esc(note)}</div>` : ""}`;
+      return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Rewind and try another</button>
+        <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "See your breakdown →" : "Next decision →"}</button></div></div>`;
+    }
+    const rows = A.decisions.map((d, k) => {
+      const p = picks[k], mine = d.choices[p], best = d.choices[d.best];
+      return `<div class="bd-row"><div class="bd-q"><span class="v6-label grey">Decision ${k + 1}</span>${q(d.line)}</div>
+        <div class="bd-paths"><div class="bd-p"><small>Your path · ${esc(mine[0])}</small>${q(mine[1])}<span class="r">Jordan: ${q(mine[2])}</span></div>
+        <div class="bd-p t"><small>Tiffany’s path · ${esc(best[0])}</small>${q(best[1])}<span class="r">Jordan: ${q(best[2])}</span></div></div>
+        <button type="button" class="v6-link" data-sim-rewind="${k}">↺ Rewind decision ${k + 1}</button></div>`;
+    }).join("");
+    return `<div class="flow">${head}<p class="flow-q">Your path, next to mine.</p><div class="breakdown">${rows}</div>
+      <div class="how"><div class="how-h">Run the Three Checks on your path</div><ol>${D.CHECKS.map(([t, d2], k) => `<li><span class="num lg">${k + 1}</span><span><b>${esc(t)}</b><small>${esc(d2)}</small></span></li>`).join("")}</ol></div>
+      <div class="quote-box"><span class="line" style="font-size:20px">${q(A.closing)}</span></div>
+      <div class="actions">${S.steps.sim ? `<button type="button" class="v6-btn primary" data-go="week/reflect">Next: Reflect & Redo →</button>` : `<button type="button" class="v6-btn primary" data-sim-finish>Finish the simulation ✓</button>`}</div></div>`;
+  }
+
   function weekView(arg) {
     const sel = Math.max(0, arg ? D.WEEK1.findIndex(s => s.key === arg) : Math.min(curIdx(), D.WEEK1.length - 1));
     const s = D.WEEK1[sel], locked = !unlocked(sel), done = stepDone(s);
@@ -209,8 +300,8 @@
       cta = done ? `<button type="button" class="v6-btn secondary" data-act="step" data-key="demo">Demo watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="step" data-key="demo">Mark demo watched</button>`;
     }
     if (s.type === "lab" || s.type === "sim") {
-      body = itemsHTML(s.itemsLabel, s.items) + `<div class="soon-note">The interactive ${s.type === "lab" ? "Lab" : "simulation"} is the next build. For this preview, mark it done to keep going.</div>`;
-      cta = done ? `<button type="button" class="v6-btn secondary" data-act="step" data-key="${s.key}">Done ✓</button>` : `<button type="button" class="v6-btn primary" data-act="step" data-key="${s.key}">Mark as done</button>`;
+      body = locked ? itemsHTML(s.itemsLabel, s.items) : s.type === "lab" ? labHTML() : simHTML();
+      cta = "";
     }
     if (s.type === "reflect") {
       const practiced = D.REPS.filter(r => r.week === 1 && repSaved(r.id));
@@ -239,10 +330,10 @@
       cta = `<button type="button" class="v6-btn primary" data-act="step" data-key="save">${done ? "Profile saved ✓" : "Save my profile"}</button><span class="saved-flag" data-flag></span>`;
     }
 
-    const media = video(s.video, s.img, !!s.video);
+    const media = s.type === "lab" || s.type === "sim" ? "" : video(s.video, s.img, !!s.video);
     const lockedNote = locked ? `<div class="locked-note"><span aria-hidden="true">🔒</span>Opens when you finish ${esc(prev)}.</div>` : "";
     const nxt = D.WEEK1[sel + 1];
-    const nextBtn = done && nxt ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
+    const nextBtn = done && nxt && s.type !== "lab" && s.type !== "sim" ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
     const actions = locked ? `<div class="actions"><button type="button" class="v6-btn primary" disabled>${esc(s.type === "lesson" ? "Watch lesson" : "Locked")}</button></div>` : `<div class="actions">${cta}${nextBtn}</div>`;
     const html = `
       <div class="card stack">${media}
@@ -303,7 +394,7 @@
       html += `<div class="card stack-12"><span class="v6-label">4 · ${esc(name)} reacts</span>${reacts.length ? reacts.map(z => `<div class="reaction-alt">${z.move ? `<p class="move-label" style="margin:0 0 8px">${reacts.length > 1 ? "If your move sounded like" : "A move like"} <b>${esc(z.move)}</b></p>` : ""}
         <div class="speaker"><span class="av" aria-hidden="true">${name[0]}</span><span class="col">${z.stage ? `<span class="stage">${esc(z.stage)}</span>` : ""}<span class="said md">${q(z.says)}</span>${z.after ? `<span class="stage">${esc(z.after)}</span>` : ""}<span class="shows">${esc(z.shows)}</span></span></div></div>`).join("")
         : `<div style="font-size:15px;color:var(--ink-2)">Let’s see what Tiffany would do with this.</div>`}
-        ${beat2 ? `<label class="field" style="margin-top:8px;padding-top:14px;border-top:1px solid var(--line-2)"><span class="v6-label">Beat 2 · ${esc(r.beat2.prompt)}</span>${r.beat2.note ? `<small>${esc(r.beat2.note)}</small>` : ""}<textarea class="v6-ta" rows="2" data-beat2 placeholder="Your next move, in your own words">${esc(x.beat2)}</textarea></label>` : ""}
+        ${beat2 ? `<label class="field" style="margin-top:8px;padding-top:14px;border-top:1px solid var(--line-2)"><span class="v6-label">Keep going · ${esc(r.beat2.prompt)}</span>${r.beat2.note ? `<small>${esc(r.beat2.note)}</small>` : ""}<textarea class="v6-ta" rows="2" data-beat2 placeholder="Your next move, in your own words">${esc(x.beat2)}</textarea></label>` : ""}
       </div>
       <div class="card sage stack-12 take"><div class="speaker" style="align-items:center;gap:10px"><span class="av t" aria-hidden="true">T</span><span class="col" style="gap:0"><span class="v6-label forest">5 · Tiffany’s take</span><span style="font-size:12.5px;color:var(--ink-2)">One good option, never “the answer”</span></span></div>
         <div class="pull"><b>The Pull: ${esc(r.take.pull)}.</b> ${esc(r.take.text)}</div>
@@ -315,9 +406,9 @@
         <div class="aims">${D.GAPS.map(([k, label, hint]) => `<button type="button" class="aim" data-gap="${k}" aria-pressed="${x.gap === k}"><span>${esc(label)}</span><small>${esc(hint)}</small></button>`).join("")}</div>
         <button type="button" class="aim none" data-gap="none" aria-pressed="${x.gap === "none"}"><span>None of these showed up for me</span><small>That’s useful to know too</small></button>
         <span class="hint">${x.gap === "none" ? "Got it. You can come back and pick one if something clicks later." : "Your answer pre-fills your Clinical Confidence Profile."}</span></div>`;
-      html += `<div class="card stack-12"><span class="v6-label">6 · Run it back</span><div style="font-size:14px;color:var(--ink-2)">Try again, run the Three Checks, then save your best line.</div>
+      html += `<div class="card stack-12"><span class="v6-label">6 · Run it back</span><div style="font-size:14px;color:var(--ink-2)">Want another go? Try it again and test it with the Three Checks. Then write the line you’d want to remember next time this happens.</div>
         ${x.attempts.length ? `<div class="attempts">${x.attempts.map((a, i) => `<div><small>Try ${i + 1}</small>${q(a.move)}${a.aim ? ` · ${esc((aims.find(z => z[0] === a.aim) || [])[1] || "")}` : ""}</div>`).join("")}</div>` : ""}
-        <label class="field">${esc(r.bank)}…<textarea class="v6-ta" rows="2" data-line placeholder="Your best line, in your own words">${esc(x.line)}</textarea></label>
+        <label class="field">Your line to keep <small>${esc(r.bank)}…</small><textarea class="v6-ta" rows="2" data-line placeholder="Your best line, in your own words">${esc(x.line)}</textarea></label>
         ${x.saved ? `<div class="saved-box"><span><b>✓ Saved</b> to your Playbook. ${esc(nextLine)}</span><button type="button" class="v6-link" data-go="playbook">Open Playbook →</button></div>
           <div class="actions"><button type="button" class="v6-btn secondary" data-act="again">↺ Try again</button>${r.week === 1 ? `<button type="button" class="v6-btn secondary" data-go="week/${D.WEEK1[D.WEEK1.findIndex(s => s.rep === r.id) + 1].key}">Continue Week 1 →</button>` : ""}</div>`
         : `<div class="actions"><button type="button" class="v6-btn secondary" data-act="again">↺ Try again</button><button type="button" class="v6-btn primary" data-act="saveline"${(x.line || "").trim() ? "" : " disabled"}>Save to “What I Say When…”</button></div>`}
@@ -346,7 +437,7 @@
     const i = Math.min(S.baseIdx || 0, 3), b = D.BASELINE[i], a = S.base[b.id] || { move: "", aim: null };
     const canAim = (a.move || "").trim().length >= 3;
     const html = `<div class="card stack">
-      <div class="rep-top"><span class="v6-pill blush">Baseline · ${b.id} of 4 · ${esc(b.skill)}</span><span class="lesson">No feedback today</span></div>
+      <div class="rep-top"><span class="v6-pill blush">Moment ${i + 1} of 4</span><span class="lesson">No feedback today</span></div>
       <div class="baseline-steps" aria-hidden="true">${D.BASELINE.map((z, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}</div>
       <div class="rep-ctx">${esc(b.context)}</div>
       <div class="speaker boxed"><span class="av" aria-hidden="true">${b.client[0]}</span><span class="col"><span class="who">${esc(b.client)}</span><span class="said">${q(b.line)}</span></span></div>
@@ -436,6 +527,22 @@
       $$("[data-r]", app).forEach(t => t.oninput = t.onchange = () => { S.reflect[t.dataset.r] = t.value; save(); });
       $$("[data-pullchip]", app).forEach(b => b.onclick = () => { S.reflect.pullPick = b.dataset.pullchip; save(); $$("[data-pullchip]", app).forEach(c => c.setAttribute("aria-pressed", c === b)); });
       $$("[data-p]", app).forEach(t => t.oninput = () => { S.profile[t.dataset.p] = t.value; save(); });
+      /* Lab */
+      const L = S.lab, top = () => { const f = $(".flow", app); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); };
+      $$("[data-lab-turn]", app).forEach(b => b.onclick = () => { L.turnPick = +b.dataset.labTurn; save(); render(); });
+      $$("[data-lab-sort]", app).forEach(b => b.onclick = () => { L.sort = L.sort || {}; L.sort[b.dataset.labSort] = b.dataset.v; save(); render(); });
+      [["p4", "labP4"], ["p8", "labP8"], ["gap", "labGap"]].forEach(([k, d]) => $$(`[data-lab-${k}]`, app).forEach(b => b.onclick = () => { L[k] = b.dataset[d]; save(); render(); }));
+      $$("[data-lab-pause]", app).forEach(t => t.oninput = () => { L.pause = L.pause || {}; L.pause[t.dataset.labPause] = t.value; save(); const n = $('[data-lab-nav="1"]', app); if (n) n.disabled = !(L.pause.S || "").trim(); });
+      const lm = $("[data-lab-move]", app); if (lm) lm.oninput = () => { L.move = lm.value; save(); const c = $("[data-lab-compare]", app); if (c) c.disabled = !lm.value.trim(); };
+      $$("[data-lab-nav]", app).forEach(b => b.onclick = () => { L.step = Math.max(0, Math.min(4, (L.step || 0) + +b.dataset.labNav)); save(); render(); top(); });
+      const lc = $("[data-lab-compare]", app); if (lc) lc.onclick = () => { L.compared = true; save(); render(); };
+      const lf = $("[data-lab-finish]", app); if (lf) lf.onclick = () => { S.steps.lab = true; save(); render(); };
+      /* Simulation */
+      const M = S.sim; M.picks = M.picks || {};
+      $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { M.picks[M.i || 0] = +b.dataset.simPick; save(); render(); });
+      $$("[data-sim-go]", app).forEach(b => b.onclick = () => { M.i = +b.dataset.simGo; save(); render(); top(); });
+      $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete M.picks[k]; M.i = k; save(); render(); top(); });
+      const sf = $("[data-sim-finish]", app); if (sf) sf.onclick = () => { S.steps.sim = true; save(); render(); };
     }
     if (scr === "rep") {
       const r = REP(arg) || REP("1.1"); if (r.pending || !weekOpen(r.week)) return;
