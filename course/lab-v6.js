@@ -57,13 +57,11 @@
     const tabs = NAV.map(([k, label, short], i) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${i === -1 ? short : label}</button>`).join("");
     $("[data-tabs]").innerHTML = tabs;
     $("[data-bottom]").innerHTML = NAV.map(([k, , short]) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${short}</button>`).join("");
-    const pv = $("[data-preview-toggle]");
-    pv.textContent = S.reviewer ? "Preview · all open" : "Preview";
-    pv.classList.toggle("on", S.reviewer);
-    pv.setAttribute("aria-pressed", S.reviewer);
+    $$("[data-preview-toggle]").forEach(pv => { pv.textContent = S.reviewer ? "Preview · all open" : "Preview"; pv.classList.toggle("on", S.reviewer); pv.setAttribute("aria-pressed", S.reviewer); });
 
     const views = { home: homeView, week: weekView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
+    $("[data-side]").innerHTML = sideHTML(navKey, scr === "week" ? v.sel : -1);
     const head = $("[data-head]");
     head.innerHTML = v.hero || headHTML(scr, v);
     head.className = v.hero ? "v6-head is-hero" : "v6-head";
@@ -87,6 +85,20 @@
     const crumb = v.crumb ? `<div class="v6-crumb"><button type="button" data-go="${v.crumb[2]}">${esc(v.crumb[0])}</button> <span aria-hidden="true">/</span> ${esc(v.crumb[1])}</div>` : "";
     const principle = scr === "home" ? `<div class="v6-principle"><span>Learn</span><i aria-hidden="true">→</i><span>Practice</span><i aria-hidden="true">→</i><span>Reflect</span><i aria-hidden="true">→</i><span>Improve</span></div>` : "";
     return `<div>${crumb}<h1>${v.plain ? esc(title) : accent(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
+  }
+
+  /* ---------- Sidebar (desktop) ---------- */
+  function sideHTML(navKey, sel) {
+    const cur = curIdx();
+    const item = (go, label, on, chip, chipCls) => `<button type="button" class="sb-item${on ? " on" : ""}" data-go="${go}"${on ? ' aria-current="page"' : ""}><i aria-hidden="true"></i><span>${esc(label)}</span>${chip ? `<em class="${chipCls || ""}">${chip}</em>` : ""}</button>`;
+    const steps = D.WEEK1.map((st, i) => {
+      const done = stepDone(st), locked = !unlocked(i);
+      return item("week/" + st.key, st.short, navKey === "week" && sel === i, done ? "✓" : i === cur ? "Next" : "", done ? "done" : "next").replace('class="sb-item', `class="sb-item${locked ? " dim" : ""}`);
+    }).join("");
+    return `<div class="sb-sec">Today</div>${item("home", "Home", navKey === "home")}
+      <div class="sb-sec">Week 1 · Notice <span>${doneCount()}/${D.WEEK1.length}</span></div>${steps}
+      <div class="sb-sec">Practice</div>${item("reproom", "Rep Room", navKey === "reproom")}${item("playbook", "Clinical Playbook", navKey === "playbook")}${item("growth", "My growth", navKey === "growth")}
+      <div class="sb-sec">Coming up</div>${D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>Soon</em></div>`).join("")}`;
   }
 
   /* ---------- Aside ---------- */
@@ -117,7 +129,7 @@
   function asideHTML(scr, v) {
     let top = "";
     if (scr === "rep") top = v.rail || "";
-    else top = scr === "week" ? stepperHTML(v.sel) : statsHTML();
+    else top = scr === "week" ? `<div class="only-narrow">${stepperHTML(v.sel)}</div>` : statsHTML();
     const tip = `<div class="card sage tip"><div class="me"><img src="/assets/optimized/tiffany-mcgilloway-lpc-900.jpg" alt="Tiffany McGilloway"><span>Tiffany McGilloway<small>Your instructor</small></span></div><q>${esc(D.TIPS[scr] || D.TIPS.home)}</q></div>`;
     return top + tip + `<div class="disclaimer">Use fictional or generalized examples only. Never enter identifiable client information. This course is professional education and does not replace clinical supervision or independent clinical judgment.</div>`;
   }
@@ -133,28 +145,25 @@
   }
   function homeView() {
     const n = nextInfo(), d = doneCount(), t = D.WEEK1.length;
-    const hero = `
-      <section class="hero">
-        <div class="hero-text">
-          <div class="v6-label">${anyProgress() ? "Welcome back" : "Welcome"} · Week 1 of 4</div>
-          <h1 class="display">Build confidence through <em>practice,</em> not performance.</h1>
-          <p class="lede">One client moment at a time. Notice what shaped your answer, and leave with something specific to try again.</p>
-          <button type="button" class="next-card" data-go="${n.go}">
-            <span class="tt"><small>Up next · ${esc(n.tag)}</small><b>${esc(n.title)}</b><span>${esc(n.meta)}</span></span>
-            <i aria-hidden="true">→</i><span class="sr-only">${esc(n.cta)}</span></button>
-          <div class="hero-prog"><div class="v6-row-between"><span>Week 1 progress</span><b>${d} of ${t} steps</b></div><div class="bar"><i style="width:${Math.round(d / t * 100)}%"></i></div></div>
-        </div>
-        <figure class="hero-photo"><img src="${D.IMG.d}" alt="Tiffany McGilloway, LPC">
-          <figcaption><small>A note from Tiffany</small><q>${esc(D.TIPS.home)}</q></figcaption></figure>
-      </section>`;
+    const hero = `<div class="hm-head"><div class="v6-label">${anyProgress() ? "Welcome back" : "Welcome"} · Week 1 of 4</div>
+      <h1 class="display">Build confidence through <em>practice,</em> not performance.</h1>
+      <p class="lede">One client moment at a time. Notice what shaped your answer, and leave with something specific to try again.</p></div>`;
     const html = `
-      <section class="band">
-        <div class="band-head"><h2>Four weeks. <em>One week at a time.</em></h2><p>Each week opens once the last week’s practice is done. Your work saves as you go.</p></div>
-        <ol class="band-weeks">${D.WEEKS.map(w => {
+      <section class="floor">
+        <div class="fl-main">
+          <div class="fl-top"><span class="fl-k">Up next</span><span class="fl-m">Week 1 · ${d} of ${t} steps done</span></div>
+          <h2>${esc(n.title)}</h2>
+          <ul><li>${esc(n.meta)}</li><li>${n.tag === "Start here" ? "Start here. Everything else builds on it." : esc(n.tag)}</li></ul>
+          <div class="fl-act"><button type="button" class="btn-gold" data-go="${n.go}">${esc(n.cta)}</button><button type="button" class="btn-ghost" data-go="week">See all Week 1 steps</button></div>
+        </div>
+        <figure class="fl-note"><img src="${D.IMG.d}" alt="Tiffany McGilloway, LPC"><figcaption><small>A note from Tiffany</small><q>${esc(D.TIPS.home)}</q></figcaption></figure>
+      </section>
+      <section class="card weeks4">
+        <div class="w4-head"><h2>Four weeks. <em>One at a time.</em></h2><p>Each week opens once the last week’s practice is done.</p></div>
+        <ol>${D.WEEKS.map(w => {
           const cur = w.n === 1, open = weekOpen(w.n);
-          const status = cur ? (d ? `${d} of ${t} done · Continue →` : "Open now →") : open ? "Preview open" : `Opens after Week ${w.n - 1}`;
-          return `<li class="${cur ? "cur" : ""}"><span class="n">0${w.n}</span><b>${esc(w.title)}</b><small>${esc(w.theme)} · ${esc(w.question)}</small>
-            ${cur ? `<button type="button" class="st" data-go="week">${status}</button>` : `<span class="st">${status}</span>`}</li>`;
+          const status = cur ? (d ? `${d} of ${t} done` : "Open now") : open ? "Preview open" : `Opens after Week ${w.n - 1}`;
+          return `<li class="${cur ? "cur" : ""}"><span class="n">0${w.n}</span><span class="tx"><b>${esc(w.title)}</b><small>${esc(w.theme)} · ${esc(w.question)}</small></span>${cur ? `<button type="button" class="v6-link" data-go="week">${status} →</button>` : `<em>${status}</em>`}</li>`;
         }).join("")}</ol>
       </section>
       <div class="pick">
@@ -163,7 +172,7 @@
           ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
           ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
           ["growth", D.IMG.c, "My growth", "Your Day 1 answers. In Week 4, see how far you’ve come.", "See your growth"]
-        ].map(([k, img, t, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>
+        ].map(([k, img, t2, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t2)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>
       </div>`;
     return { html, hero, solo: true };
   }
@@ -685,13 +694,13 @@
     if (email === PREVIEW_EMAIL && pw === PREVIEW_PASSWORD) { sessionStorage.setItem(PREVIEW_SESSION, "1"); err.textContent = ""; f.reset(); render(); }
     else err.textContent = "That email and password don’t match the preview account.";
   });
-  $("[data-signout]").onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); render(); };
-  $("[data-preview-toggle]").onclick = () => { S.reviewer = !S.reviewer; save(); render(); };
+  $$("[data-signout]").forEach(b => b.onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); render(); });
+  $$("[data-preview-toggle]").forEach(b => b.onclick = () => { S.reviewer = !S.reviewer; save(); render(); });
   /* Preview only: wipe this browser's progress and start over */
-  $("[data-reset]").onclick = () => {
+  $$("[data-reset]").forEach(b => b.onclick = () => {
     if (!confirm("Erase all your answers and progress in this browser and start over?")) return;
     S = blank(); save(); go("home");
-  };
+  });
   addEventListener("hashchange", render);
   render();
 })();
