@@ -126,7 +126,7 @@
     const i = curIdx();
     if (i >= D.WEEK1.length) return { tag: "Week 1 complete", title: "Week 2 opens next", meta: "Getting Unstuck in the Room · Decide", cta: "Review Week 1", go: "week" };
     const s = D.WEEK1[i];
-    if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four client moments to see where you’re starting · about 25 min", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
+    if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four client moments to see where you’re starting", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
     if (s.type === "lesson") { const r = REP(s.rep); return { tag: s.kind, title: s.title, meta: `Watch the lesson, then practice with ${r.client} · ${s.meta}`, cta: "Continue", go: "week/" + s.key }; }
     return { tag: s.kind, title: s.title, meta: s.meta, cta: "Continue", go: "week/" + s.key };
   }
@@ -185,7 +185,7 @@
     if (s.type === "day1") {
       const answered = D.BASELINE.filter(b => S.base[b.id] && S.base[b.id].aim).length;
       body = howHTML("What you’ll do today", [
-        ["Watch my welcome", "6–7 minutes. What the Lab is, and how it works."],
+        ["Watch my welcome", "What the Lab is, and how it works."],
         ["Meet four clients", `${D.BASELINE.map(b => b.client).join(", ")}. Each one says something that’s hard to answer.`],
         ["Write what you’d say", "Then pick what you were going for. No right answers and no feedback today."]
       ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
@@ -198,7 +198,7 @@
     if (s.type === "lesson") {
       const r = REP(s.rep);
       body = howHTML("How this step works", [
-        ["Watch the lesson", s.meta.replace(/\s*\+\s*Rep$/, "") + ". One idea, explained with real examples."],
+        ["Watch the lesson", "One idea, explained with real examples."],
         [`Do Rep ${r.id} with ${r.client}`, "Practice the idea right away: read the moment, write what you’d say, then see how the client reacts and what I’d do."]
       ]) + `<div class="quote-box"><span class="v6-label">Your Rep · ${esc(r.client)}</span><span class="ctx">${esc(r.context)}</span><span class="line">${r.line ? q(r.line) : esc(r.stageLine) + " " + r.silence + " seconds of silence."}</span></div>`;
       if (repSaved(r.id)) body += `<div class="done-note">✓ Rep ${r.id} saved to your Playbook.</div>`;
