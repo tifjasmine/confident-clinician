@@ -160,7 +160,7 @@
   /* Week 1, in the order learners meet it. */
   const WEEK1 = [
     { key: "day1", type: "day1", label: "Day 1", kind: "Day 1 · Welcome + Baseline", short: "Welcome + Day 1 Baseline", title: "Welcome + your starting point",
-      desc: "A 6–7 minute welcome from Tiffany, then four client moments answered before any teaching. No feedback today. Your answers stay sealed until the Week 4 Showcase.",
+      desc: "Before any teaching, see where you’re starting. About 25 minutes, start to finish.",
       meta: "About 25 min", img: IMG.e, video: "welcome", itemsLabel: "The Baseline · moment, your move, your aim" },
     { key: "l1", type: "lesson", rep: "1.1", label: "Lesson 1 + Rep", kind: "Lesson 1 + Rep 1.1", short: "Confidence Is Not a Personality Trait", title: "Confidence Is Not a Personality Trait",
       desc: "Tell apart a knowledge, skill, pressure, and support gap, and pick the next step that fits.", meta: "8–10 min + Rep", img: IMG.e, video: "w1-l1", pull: "The Pull: Prove" },

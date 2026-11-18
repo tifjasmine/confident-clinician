@@ -175,6 +175,7 @@
   };
   const itemsHTML = (label, items) => `<div class="items"><div class="lab">${esc(label)}</div>${items.map(([k, a, b, done]) => `<div class="row"><span class="k${done ? " done" : ""}">${done ? "✓" : esc(k)}</span><span class="t"><b>${esc(a)}</b>${b ? `<small>${esc(b)}</small>` : ""}</span></div>`).join("")}</div>`;
 
+  const howHTML = (title, steps, foot) => `<div class="how"><div class="how-h">${esc(title)}</div><ol>${steps.map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol>${foot ? `<div class="how-f">${esc(foot)}</div>` : ""}</div>`;
   function weekView(arg) {
     const sel = Math.max(0, arg ? D.WEEK1.findIndex(s => s.key === arg) : Math.min(curIdx(), D.WEEK1.length - 1));
     const s = D.WEEK1[sel], locked = !unlocked(sel), done = stepDone(s);
@@ -183,7 +184,11 @@
 
     if (s.type === "day1") {
       const answered = D.BASELINE.filter(b => S.base[b.id] && S.base[b.id].aim).length;
-      body = itemsHTML(s.itemsLabel, D.BASELINE.map(b => [b.id, `“${b.line}”`, `${b.who} · ${b.skill}`, S.sealed]));
+      body = howHTML("What you’ll do today", [
+        ["Watch my welcome", "6–7 minutes. What the Lab is, and how it works."],
+        ["Meet four clients", `${D.BASELINE.map(b => b.client).join(", ")}. Each one says something that’s hard to answer.`],
+        ["Write what you’d say", "Then pick what you were going for. No right answers and no feedback today."]
+      ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
       if (S.sealed) body += `<div class="done-note">✓ Your four Day 1 answers are saved and sealed until the Week 4 Showcase.</div>`;
       const watch = S.welcome ? `<button type="button" class="v6-btn secondary" data-act="welcome">Welcome watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="welcome">${D.VIDEOS.welcome ? "I’ve watched the welcome" : "Mark the welcome watched"}</button>`;
       const base = S.sealed ? `<button type="button" class="v6-btn secondary" data-go="growth">See My growth</button>`
@@ -192,7 +197,10 @@
     }
     if (s.type === "lesson") {
       const r = REP(s.rep);
-      body = `<div class="quote-box"><span class="v6-label">Rep ${r.id} · ${esc(r.client)}</span><span class="ctx">${esc(r.context)}</span><span class="line">${r.line ? q(r.line) : esc(r.stageLine) + " " + r.silence + " seconds of silence."}</span><span class="pull">${esc(s.pull)}</span></div>`;
+      body = howHTML("How this step works", [
+        ["Watch the lesson", s.meta.replace(/\s*\+\s*Rep$/, "") + ". One idea, explained with real examples."],
+        [`Do Rep ${r.id} with ${r.client}`, "Practice the idea right away: read the moment, write what you’d say, then see how the client reacts and what I’d do."]
+      ]) + `<div class="quote-box"><span class="v6-label">Your Rep · ${esc(r.client)}</span><span class="ctx">${esc(r.context)}</span><span class="line">${r.line ? q(r.line) : esc(r.stageLine) + " " + r.silence + " seconds of silence."}</span></div>`;
       if (repSaved(r.id)) body += `<div class="done-note">✓ Rep ${r.id} saved to your Playbook.</div>`;
       cta = (S.watched[s.key] ? `<button type="button" class="v6-btn secondary" data-act="watch" data-key="${s.key}">Lesson watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="watch" data-key="${s.key}">${D.VIDEOS[s.video] ? "I’ve watched the lesson" : "Mark lesson watched"}</button>`)
         + `<button type="button" class="v6-btn ${S.watched[s.key] ? "primary" : "secondary"}" data-go="rep/${r.id}">${repSaved(r.id) ? "Practice it again" : "Do the Rep"}</button>`;
