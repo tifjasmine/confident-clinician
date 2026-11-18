@@ -313,7 +313,8 @@
       </div>`;
       if (r.extra === "gap") html += `<div class="card stack-12"><span class="v6-label">Extra step · Which gap showed up for you?</span>
         <div class="aims">${D.GAPS.map(([k, label, hint]) => `<button type="button" class="aim" data-gap="${k}" aria-pressed="${x.gap === k}"><span>${esc(label)}</span><small>${esc(hint)}</small></button>`).join("")}</div>
-        <span class="hint">Your answer pre-fills your Clinical Confidence Profile.</span></div>`;
+        <button type="button" class="aim none" data-gap="none" aria-pressed="${x.gap === "none"}"><span>None of these showed up for me</span><small>That’s useful to know too</small></button>
+        <span class="hint">${x.gap === "none" ? "Got it. You can come back and pick one if something clicks later." : "Your answer pre-fills your Clinical Confidence Profile."}</span></div>`;
       html += `<div class="card stack-12"><span class="v6-label">6 · Run it back</span><div style="font-size:14px;color:var(--ink-2)">Try again, run the Three Checks, then save your best line.</div>
         ${x.attempts.length ? `<div class="attempts">${x.attempts.map((a, i) => `<div><small>Try ${i + 1}</small>${q(a.move)}${a.aim ? ` · ${esc((aims.find(z => z[0] === a.aim) || [])[1] || "")}` : ""}</div>`).join("")}</div>` : ""}
         <label class="field">${esc(r.bank)}…<textarea class="v6-ta" rows="2" data-line placeholder="Your best line, in your own words">${esc(x.line)}</textarea></label>
