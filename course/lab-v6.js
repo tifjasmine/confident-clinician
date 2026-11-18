@@ -486,6 +486,11 @@
   });
   $("[data-signout]").onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); render(); };
   $("[data-preview-toggle]").onclick = () => { S.reviewer = !S.reviewer; save(); render(); };
+  /* Preview only: wipe this browser's progress and start over */
+  $("[data-reset]").onclick = () => {
+    if (!confirm("Erase all your answers and progress in this browser and start over?")) return;
+    S = blank(); save(); go("home");
+  };
   addEventListener("hashchange", render);
   render();
 })();

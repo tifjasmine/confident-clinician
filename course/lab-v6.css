@@ -478,3 +478,6 @@ h1 em, h2 em, .t em, .display em, .v6-display em { font-style: italic; color: va
 .how b { font-weight: 600; }
 .how small { font-size: 13.5px; color: var(--muted); }
 .how-f { padding-top: 12px; border-top: 1px solid var(--line-2); font-size: 14px; color: var(--ink-2); }
+.v6-reset { cursor: pointer; }
+.v6-reset:hover { background: var(--blush); color: var(--terra-t); }
+@media (max-width: 720px) { .v6-reset { padding: 4px 8px; } }
