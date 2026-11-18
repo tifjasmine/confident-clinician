@@ -175,10 +175,14 @@
           return `<li class="${cur ? "cur" : ""}"><span class="n">0${w.n}</span><span class="tx"><b>${esc(w.title)}</b><small>${esc(w.theme)} · ${esc(w.question)}</small></span>${cur ? `<button type="button" class="v6-link" data-go="week">${status} →</button>` : `<em>${status}</em>`}</li>`;
         }).join("")}</ol>
       </section>
-      <section class="card quick">
-        <h2 class="h">Your work</h2>
-        ${[["playbook", "Clinical Playbook", "Your “What I Say When…” lines"], ["growth", "My growth", "Day 1 vs. Week 4"], ["reproom", "Rep Room", "Extra practice, anytime"]].map(([k, t2, d2]) => `<button type="button" class="q-row" data-go="${k}"><span><b>${esc(t2)}</b><small>${esc(d2)}</small></span><i aria-hidden="true">→</i></button>`).join("")}
-      </section>`;
+      <div class="pick">
+        <h2>${anyProgress() ? "Pick up where you <em>left off.</em>" : "Everything else, <em>in one place.</em>"}</h2>
+        <div class="pick-grid">${[
+          ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
+          ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
+          ["growth", D.IMG.c, "My growth", "Your Day 1 answers. In Week 4, see how far you’ve come.", "See your growth"]
+        ].map(([k, img, t2, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t2)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>
+      </div>`;
     return { html, hero, solo: true };
   }
 

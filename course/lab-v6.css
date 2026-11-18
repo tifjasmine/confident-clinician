@@ -863,3 +863,6 @@ button, input, textarea, select { font-family: inherit; }
   .quick { padding: 20px 18px 6px; }
 }
 @media (min-width: 1100px) { .v6-wrap { max-width: 960px; } .v6-shell.solo .v6-col, .v6-shell.aside-narrow .v6-col, .v6-foot { max-width: none; } }
+.pick-card { border: 1px solid var(--line); box-shadow: none; border-radius: 16px; }
+.pick-card:hover { box-shadow: 0 8px 24px #191d1b12; }
+.pick-card b { font-family: var(--serif); }
