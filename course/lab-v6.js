@@ -67,11 +67,14 @@
     const head = $("[data-head]");
     head.innerHTML = v.hero || headHTML(scr, v);
     head.className = v.hero ? "v6-head is-hero" : "v6-head";
-    $(".v6-shell").classList.toggle("solo", !!v.solo);
+    const sh = $(".v6-shell");
+    sh.classList.toggle("solo", !!v.solo || !["rep", "week"].includes(scr));
+    sh.classList.toggle("aside-narrow", scr === "week");
     const col = $("[data-view]");
     col.className = "v6-col" + (v.tight ? " tight" : "");
     col.innerHTML = v.html;
     $("[data-aside]").innerHTML = v.solo ? "" : asideHTML(scr, v);
+    $("[data-foot]").textContent = "Use fictional or generalized examples only. Never enter identifiable client information. This course is professional education and does not replace clinical supervision or independent clinical judgment.";
     if (scr !== lastScr) scrollTo({ top: 0 });
     lastScr = scr;
     bind(scr, arg);
@@ -136,11 +139,9 @@
     <div class="card checks"><div class="h">The Three Checks</div>${D.CHECKS.map(([t, d], i) => `<div class="c"><i>${i + 1}</i><span>${esc(t)}<small>${esc(d)}</small></span></div>`).join("")}</div>`;
   }
   function asideHTML(scr, v) {
-    let top = "";
-    if (scr === "rep") top = v.rail || "";
-    else top = scr === "week" ? `<div class="only-narrow">${stepperHTML(v.sel)}</div>` : statsHTML();
-    const tip = `<div class="card sage tip"><div class="me"><img src="/assets/optimized/tiffany-mcgilloway-lpc-900.jpg" alt="Tiffany McGilloway"><span>Tiffany McGilloway<small>Your instructor</small></span></div><q>${esc(D.TIPS[scr] || D.TIPS.home)}</q></div>`;
-    return top + tip + `<div class="disclaimer">Use fictional or generalized examples only. Never enter identifiable client information. This course is professional education and does not replace clinical supervision or independent clinical judgment.</div>`;
+    if (scr === "rep") return v.rail || "";
+    if (scr === "week") return stepperHTML(v.sel);
+    return "";
   }
 
   /* ---------- Home ---------- */
@@ -156,16 +157,15 @@
     const n = nextInfo(), d = doneCount(), t = D.WEEK1.length;
     const hero = `<div class="hm-head"><div class="v6-label">${anyProgress() ? "Welcome back" : "Welcome"} · Week 1 of 4</div>
       <h1 class="display">Build confidence through <em>practice,</em> not performance.</h1>
-      <p class="lede">One client moment at a time. Notice what shaped your answer, and leave with something specific to try again.</p></div>`;
+      </div>`;
     const html = `
       <section class="floor">
         <div class="fl-main">
           <div class="fl-top"><span class="fl-k">Up next</span><span class="fl-m">Week 1 · ${d} of ${t} steps done</span></div>
           <h2>${esc(n.title)}</h2>
-          <ul><li>${esc(n.meta)}</li><li>${n.tag === "Start here" ? "Start here. Everything else builds on it." : esc(n.tag)}</li></ul>
+          <p class="fl-sub">${esc(n.meta)}.</p>
           <div class="fl-act"><button type="button" class="btn-gold" data-go="${n.go}">${esc(n.cta)}</button><button type="button" class="btn-ghost" data-go="week">See all Week 1 steps</button></div>
         </div>
-        <figure class="fl-note"><img src="${D.IMG.d}" alt="Tiffany McGilloway, LPC"><figcaption><small>A note from Tiffany</small><q>${esc(D.TIPS.home)}</q></figcaption></figure>
       </section>
       <section class="card weeks4">
         <div class="w4-head"><h2>Four weeks. <em>One at a time.</em></h2><p>Each week opens once the last week’s practice is done.</p></div>
@@ -175,14 +175,10 @@
           return `<li class="${cur ? "cur" : ""}"><span class="n">0${w.n}</span><span class="tx"><b>${esc(w.title)}</b><small>${esc(w.theme)} · ${esc(w.question)}</small></span>${cur ? `<button type="button" class="v6-link" data-go="week">${status} →</button>` : `<em>${status}</em>`}</li>`;
         }).join("")}</ol>
       </section>
-      <div class="pick">
-        <h2>${anyProgress() ? "Pick up where you <em>left off.</em>" : "Everything else, <em>in one place.</em>"}</h2>
-        <div class="pick-grid">${[
-          ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
-          ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
-          ["growth", D.IMG.c, "My growth", "Your Day 1 answers. In Week 4, see how far you’ve come.", "See your growth"]
-        ].map(([k, img, t2, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t2)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>
-      </div>`;
+      <section class="card quick">
+        <h2 class="h">Your work</h2>
+        ${[["playbook", "Clinical Playbook", "Your “What I Say When…” lines"], ["growth", "My growth", "Day 1 vs. Week 4"], ["reproom", "Rep Room", "Extra practice, anytime"]].map(([k, t2, d2]) => `<button type="button" class="q-row" data-go="${k}"><span><b>${esc(t2)}</b><small>${esc(d2)}</small></span><i aria-hidden="true">→</i></button>`).join("")}
+      </section>`;
     return { html, hero, solo: true };
   }
 
@@ -432,7 +428,6 @@
 `;
     const w = D.WEEKS[0];
     const hero = `<section class="week-hero"><div class="in">
-      <button type="button" class="back" data-go="home">← Home</button>
       <div class="v6-label">Week 1 of 4 · ${esc(w.theme)}</div>
       <h1>${accent(w.title)}<em>.</em></h1>
       <p>${esc(w.question)} <span>· ${doneCount()} of ${D.WEEK1.length} steps done</span></p></div>
