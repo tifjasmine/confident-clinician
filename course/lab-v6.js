@@ -85,7 +85,7 @@
     if (scr === "home") title = anyProgress() ? "Welcome back" : "Welcome to the Lab";
     const crumb = v.crumb ? `<div class="v6-crumb"><button type="button" data-go="${v.crumb[2]}">${esc(v.crumb[0])}</button> <span aria-hidden="true">/</span> ${esc(v.crumb[1])}</div>` : "";
     const principle = scr === "home" ? `<div class="v6-principle"><span>Learn</span><i aria-hidden="true">→</i><span>Practice</span><i aria-hidden="true">→</i><span>Reflect</span><i aria-hidden="true">→</i><span>Improve</span></div>` : "";
-    return `<div>${crumb}<h1>${accent(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
+    return `<div>${crumb}<h1>${v.plain ? esc(title) : accent(title)}</h1><div class="sub">${esc(v.sub || h[1])}</div></div>${principle}`;
   }
 
   /* ---------- Aside ---------- */
@@ -324,7 +324,7 @@
     }
     const crumb = r.week === 1 ? ["Week 1", `Rep ${r.id}`, "week/" + D.WEEK1.find(s => s.rep === r.id).key] : ["Rep Room", `Rep ${r.id}`, "reproom"];
     return {
-      html, tight: true, title: `Rep ${r.id} · ${r.title}`, crumb, rail: repRailHTML(stage, x.saved),
+      html, tight: true, title: `Rep ${r.id} · ${r.title}`, plain: true, sub: `Your practice for Lesson ${r.id.split(".")[1]}: ${r.lesson}. Unlike Day 1, you’ll see how ${r.client} reacts, get my take, and then try it again.`, crumb, rail: repRailHTML(stage, x.saved),
       after: () => {
         clearInterval(silenceTimer);
         if (!r.silence) return;
