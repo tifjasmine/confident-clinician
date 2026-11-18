@@ -15,10 +15,10 @@
   const PREVIEW_PASSWORD = "LabPreview2026!";
 
   const KEY = "tcc-v6-v1";
-  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 2 }, reviewer: false });
+  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, reviewer: false });
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
-  if (!S.sim || S.sim.v !== 2) S.sim = { v: 2 }; /* simulation content changed (Content Master v1.0): start it fresh */
+  if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 }; /* simulation content changed (8-moment text simulations): start it fresh */
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -282,49 +282,49 @@
     return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between">${back}<span style="display:flex;align-items:center;gap:12px"><span class="saved-flag" data-flag></span>${fwd}</span></div></div>`;
   }
 
-  /* ---------- Week 1 Simulation: Jordan’s Advice Request ---------- */
-  const SIM_STAGES = ["Moment 1", "Moment 2", "Moment 3", "Moment 4", "Your turn", "Debrief"];
-  function simHTML() {
-    const M = S.sim, A = D.SIM, picks = M.picks || {}, n = A.decisions.length;
+  /* ---------- Text simulation player (Week 1: Jordan; Weeks 2-4 reuse it) ---------- */
+  const SIMS = window.TCC6_SIMS || {};
+  const INTENT_AT = [2, 5]; /* moments 3 and 6: optional pause + "What was your intention?" */
+  const shuffle = n => { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const newAttempt = X => ({ i: 0, order: X.moments.map(m => shuffle(m.choices.length)), picks: {}, intent: {}, ref: {}, saved: false, started: Date.now() });
+  function simHTML(key = "jordan") {
+    const X = SIMS[key], M = S.sim, n = X.moments.length, who = X.client;
+    const C = M.cur;
     const fiction = `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>`;
-    if (M.i == null) return `<div class="flow">${fiction}<p class="flow-q">You’re in the therapist chair.</p><p class="flow-sub" style="margin:0">${esc(A.intro)}</p>
-      <div class="actions"><button type="button" class="v6-btn primary" data-sim-go="0">Start simulation →</button></div>
-      ${(M.history || []).length ? `<div class="hint">You’ve completed ${M.history.length} earlier ${M.history.length === 1 ? "attempt" : "attempts"}. They’re saved.</div>` : ""}</div>`;
-    const i = Math.min(M.i, n + 1);
-    const head = `<div class="flow-head"><span class="v6-pill blush">${i < n ? `Moment ${i + 1} of ${n}` : SIM_STAGES[i]}</span><div class="flow-dots" aria-hidden="true">${SIM_STAGES.map((_, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}</div></div>`;
-    const jordan = (txt, md) => `<div class="speaker${md ? "" : " boxed"}"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said${md ? " md" : ""}">${q(txt)}</span></span></div>`;
+    const hist = M.history || [];
+    if (!C) return `<div class="flow">${fiction}<p class="flow-q">${esc(X.title)}</p>
+      <div class="sim-skill"><small>What you’re practicing</small>${esc(X.skill)}</div>
+      <p class="flow-sub" style="margin:0">${esc(X.setup)}</p>
+      <div class="how"><div class="how-h">How this works</div><ol>${[["Read what " + who + " says", ""], ["Pick what you’d say", "There’s no right answer and no score. The order of choices changes each time."], ["See how " + who + " reacts", "Then read what your move was trying to do, and what to watch for."]].map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol><div class="how-f">Eight moments, then a short debrief. Take your time.</div></div>
+      <div class="actions"><button type="button" class="v6-btn primary" data-sim-start>Start the session →</button></div>
+      ${hist.length ? `<div class="hint">You’ve finished ${hist.length} earlier ${hist.length === 1 ? "attempt" : "attempts"}. They’re saved, and your debrief shows what you chose last time.</div>` : ""}</div>`;
+    const i = Math.min(C.i, n);
+    const head = `<div class="flow-head"><span class="v6-pill blush">${i < n ? `Moment ${i + 1} of ${n}` : "Debrief"}</span><div class="flow-dots sim8" aria-hidden="true">${X.moments.map((_, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}<span class="${i === n ? "on" : ""}"></span></div></div>`;
+    const client = (txt, md) => `<div class="speaker${md ? "" : " boxed"}"><span class="av" aria-hidden="true">${who[0]}</span><span class="col"><span class="who">${esc(who)}</span><span class="said${md ? " md" : ""}">${q(txt)}</span></span></div>`;
     if (i < n) {
-      const d = A.decisions[i], p = picks[i];
-      let body = `${d.bridge ? `<p class="bridge">${esc(d.bridge)}</p>` : ""}${d.banner ? `<div class="banner-new">${esc(d.banner)}</div>` : ""}${jordan(d.line)}`;
+      const m = X.moments[i], p = C.picks[i];
+      let body = client(m.client);
       if (p == null) {
-        body += `<p class="flow-q">${esc(d.prompt)}</p><div class="choices">${d.choices.map((c, k) => `<button type="button" class="choice" data-sim-pick="${k}"><span>${q(c[1])}</span></button>`).join("")}</div>`;
+        body += `<p class="flow-q">What would you say?</p><div class="choices">${C.order[i].map(k => `<button type="button" class="choice" data-sim-pick="${k}"><span>${q(m.choices[k][1])}</span></button>`).join("")}</div>`;
         return `<div class="flow">${head}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
       }
-      const c = d.choices[p];
-      body += `<div class="you-said"><small>You</small>${q(c[1])}</div>${jordan(c[2], true)}<div class="coach"><small>Why it landed that way</small>${esc(c[3])}</div>`;
+      const c = m.choices[p];
+      body += `<div class="you-said"><small>You</small>${q(c[1])}</div>${client(c[2], true)}
+        <details class="coach-d" open><summary>Coach note</summary><div class="coach2"><div><small>What this move was trying to do</small>${esc(c[3])}</div><div><small>What to watch for</small>${esc(c[4])}</div></div></details>
+        ${INTENT_AT.includes(i) ? `<label class="field intent">Take 20 seconds. What was your intention? <small>Optional, just for you</small><textarea class="v6-ta" rows="2" data-sim-intent="${i}" placeholder="I was trying to…">${esc(C.intent[i])}</textarea></label>` : ""}`;
       return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button>
-        <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "Your turn →" : "Next moment →"}</button></div></div>`;
+        <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "Go to the debrief →" : "Continue →"}</button></div></div>`;
     }
-    if (i === n) {
-      const P = M.practice = M.practice || { text: "", aloud: false, purposes: [] }, X = A.practice;
-      const ok = !!(P.text.trim() || P.aloud) && P.purposes.length;
-      return `<div class="flow">${head}<p class="flow-q">${esc(X.title)}</p>${jordan(X.quote)}<p class="flow-sub" style="margin:0">${esc(X.prompt)}</p>
-        <label class="field">What I might say… <small>Type it, or practice it out loud below.</small><textarea class="v6-ta" rows="3" data-sim-text placeholder="Your words">${esc(P.text)}</textarea></label>
-        <label class="check"><input type="checkbox" data-sim-aloud${P.aloud ? " checked" : ""}> I practiced it out loud</label>
-        <div class="field">What is the purpose of your response? <small>Choose one or two.</small><div class="chips-row">${X.purposes.map(t => `<button type="button" class="chip" data-sim-purpose="${esc(t)}" aria-pressed="${P.purposes.includes(t)}">${esc(t)}</button>`).join("")}</div></div>
-        <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-go="${n - 1}">← Back</button><button type="button" class="v6-btn primary" data-sim-go="${n + 1}"${ok ? "" : " disabled"}>Review my clinical decisions →</button></div></div>`;
-    }
-    const R = M.ref = M.ref || {}, X = A.debrief;
-    const rows = A.decisions.map((d, k) => { const c = d.choices[picks[k]]; return c ? `<div class="bd-row"><span class="v6-label grey">Moment ${k + 1}</span><div class="bd-line">Jordan: ${q(d.line)}</div><div class="you-said sm"><small>You</small>${q(c[1])}</div><div class="bd-line">Jordan: ${q(c[2])}</div><div class="coach"><small>Why it landed that way</small>${esc(c[3])}</div><button type="button" class="v6-link" data-sim-rewind="${k}">↺ Redo this moment</button></div>` : ""; }).join("");
-    const ok = !!((R.pull || "").trim() || R.pullNS) && !!(R.shift || "").trim();
-    return `<div class="flow">${head}<p class="flow-q">${esc(X.title)}</p><div class="breakdown">${rows}</div>
-      <label class="field">${esc(X.pull)}<textarea class="v6-ta" rows="2" data-sim-ref="pull"${R.pullNS ? " disabled" : ""}>${esc(R.pull)}</textarea></label>
-      <label class="check"><input type="checkbox" data-sim-ns${R.pullNS ? " checked" : ""}> Not sure yet</label>
-      <label class="field">${esc(X.shift)}<textarea class="v6-ta" rows="2" data-sim-ref="shift">${esc(R.shift)}</textarea></label>
-      <label class="field">${esc(X.redo)} <small>Optional</small><textarea class="v6-ta" rows="2" data-sim-ref="redo">${esc(R.redo)}</textarea></label>
-      ${ok || M.saved ? `<div class="how"><div class="how-h">The clinical picture</div><ul class="compare">${X.compare.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : `<div class="hint">Answer the first two questions to see the clinical picture.</div>`}
-      <div class="actions">${M.saved ? `<button type="button" class="v6-btn primary" data-go="week/save">Open my Confidence Profile →</button><button type="button" class="v6-btn secondary" data-sim-again>Try a different path</button>`
-        : `<button type="button" class="v6-btn primary" data-sim-save${ok ? "" : " disabled"}>Save this practice attempt</button><button type="button" class="v6-btn secondary" data-sim-again>Try a different path</button>`}<span class="saved-flag" data-flag></span></div></div>`;
+    const last = hist[hist.length - 1];
+    const rows = X.moments.map((m, k) => { const c = m.choices[C.picks[k]]; if (!c) return ""; const prev = last && last.picks[k] != null && last.picks[k] !== C.picks[k] ? m.choices[last.picks[k]] : null;
+      return `<li><span class="mn">${k + 1}</span><span class="mb"><span class="cl">${esc(who)}: ${q(m.client)}</span><span class="me">You: ${q(c[1])}</span><span class="re">${esc(who)}: ${q(c[2])}</span>${prev ? `<span class="pv">Last time you said: ${q(prev[1])}</span>` : ""}</span></li>`; }).join("");
+    const R = C.ref, ok = X.debrief.every((_, k) => (R[k] || "").trim());
+    return `<div class="flow">${head}<p class="flow-q">Look back at your session.</p>
+      <details class="peek"><summary>Your path: all 8 moments</summary><ol class="path">${rows}</ol></details>
+      ${X.debrief.map((qq, k) => `<label class="field">${k + 1}. ${esc(qq)}<textarea class="v6-ta" rows="${k === 2 ? 3 : 2}" data-sim-ref="${k}">${esc(R[k])}</textarea></label>`).join("")}
+      <div class="actions">${C.saved ? `<button type="button" class="v6-btn primary" data-go="week/reflect">Next: Reflect & Redo →</button><button type="button" class="v6-btn secondary" data-sim-again>Try the session again</button>`
+        : `<button type="button" class="v6-btn primary" data-sim-save${ok ? "" : " disabled"}>Save this session</button>`}<span class="saved-flag" data-flag></span></div>
+      ${C.saved ? `<div class="hint">Saved to your Clinical Confidence Profile. Trying again starts a new attempt and keeps this one.</div>` : `<div class="hint">Answer all three to save. Your answers go into your Clinical Confidence Profile.</div>`}</div>`;
   }
 
   function weekView(arg) {
@@ -368,13 +368,14 @@
       const pf = S.profile, M = S.sim, L = S.lab, P = pf.plan = pf.plan || {};
       const g = S.reps["1.1"] && S.reps["1.1"].gap;
       const gp = g && g !== "none" ? D.GAPS.find(x => x[0] === g) : null;
-      const path = (M.picks && Object.keys(M.picks).length === 4) ? D.SIM.decisions.map((d, k) => `Moment ${k + 1}: ${(d.choices[M.picks[k]] || [])[1] || ""}`).join("\n") : "";
+      const SJ = SIMS.jordan, SC = (M.cur && M.cur.saved) ? M.cur : (M.history || []).slice(-1)[0];
+      const path = SC && Object.keys(SC.picks).length === 8 ? SJ.moments.map((m, k) => `Moment ${k + 1}: ${(m.choices[SC.picks[k]] || [])[1] || ""}`).join("\n") : "";
       const auto = {
         gap: gp ? `${gp[1]}: ${gp[2].replace(/[“”]/g, "")} (from Rep 1.1)` : "",
-        pull: [S.reflect.pullPick, (M.ref || {}).pull].filter(Boolean).join(". "),
+        pull: [S.reflect.pullPick, SC && SC.ref[0]].filter(Boolean).join(". "),
         move: L.move || "",
-        shift: (M.ref || {}).shift || "",
-        adjust: (M.ref || {}).redo || ""
+        shift: (SC && SC.ref[1]) || "",
+        adjust: (SC && SC.ref[2]) || ""
       };
       const sec = (k, label, hint, ph) => { const v = pf[k] != null ? pf[k] : auto[k]; return `<label class="field">${esc(label)}${hint ? ` <small>${esc(hint)}</small>` : ""}<textarea class="v6-ta" rows="2" data-p="${k}" placeholder="${esc(ph)}">${esc(v)}</textarea></label>`; };
       const lines = D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim());
@@ -387,7 +388,7 @@
         <h3 class="pf-h">My Jordan practice</h3>
         ${path ? `<div class="pf-path">${esc(path).replace(/\n/g, "<br>")}</div>` : `<div class="empty">Your path shows up here after the simulation.</div>`}
         ${sec("shift", "When the priority changed", "", "Add what changed when Jordan shared new information")}
-        ${sec("adjust", "What I would adjust", "", "Add one thing you’d do differently")}
+        ${sec("adjust", "My closing for Jordan", "Includes a collaborative safety step, without directing them to stay or leave", "Add your closing")}
         <h3 class="pf-h">“What I Say When…”</h3>
         ${lines.length ? `<div class="bank">${lines.map(r => `<div class="bank-item"><span class="w">${esc(r.bank)}…</span><span class="l">${q(S.reps[r.id].line)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here after you save Reps 1.1–1.3.</div>`}
         <h3 class="pf-h">My seven-day practice target</h3>
@@ -623,18 +624,15 @@
       const rfs = $("[data-rf-save]", app); if (rfs) rfs.onclick = () => { S.steps.reflect = true; save(); render(); flash("Saved"); };
       const rfu = $("[data-rf-useline]", app); if (rfu) rfu.onclick = () => { const x = S.reps[F.rep]; if (x) { x.line = F.redoLine; x.saved = true; } save(); render(); flash("Playbook updated"); };
       /* Simulation */
-      const M = S.sim; M.picks = M.picks || {};
-      $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { M.picks[M.i] = +b.dataset.simPick; save(); render(); });
-      $$("[data-sim-go]", app).forEach(b => b.onclick = () => { M.i = +b.dataset.simGo; save(); render(); top(); });
-      $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete M.picks[k]; M.i = k; M.saved = false; save(); render(); top(); });
-      const stx = $("[data-sim-text]", app), syncP = () => { const P = M.practice, n = $(`[data-sim-go="${D.SIM.decisions.length + 1}"]`, app); if (n) n.disabled = !((P.text.trim() || P.aloud) && P.purposes.length); };
-      if (stx) stx.oninput = () => { M.practice.text = stx.value; save(); syncP(); };
-      const sal = $("[data-sim-aloud]", app); if (sal) sal.onchange = () => { M.practice.aloud = sal.checked; save(); syncP(); };
-      $$("[data-sim-purpose]", app).forEach(b => b.onclick = () => { const P = M.practice, t = b.dataset.simPurpose, ix = P.purposes.indexOf(t); if (ix >= 0) P.purposes.splice(ix, 1); else { P.purposes.push(t); if (P.purposes.length > 2) P.purposes.shift(); } save(); render(); });
-      $$("[data-sim-ref]", app).forEach(t => t.oninput = () => { M.ref[t.dataset.simRef] = t.value; save(); const ok = !!((M.ref.pull || "").trim() || M.ref.pullNS) && !!(M.ref.shift || "").trim(); const sv = $("[data-sim-save]", app); if (sv) sv.disabled = !ok; });
-      const sns = $("[data-sim-ns]", app); if (sns) sns.onchange = () => { M.ref.pullNS = sns.checked; save(); render(); };
-      const ssv = $("[data-sim-save]", app); if (ssv) ssv.onclick = () => { M.saved = true; S.steps.sim = true; S.profile.shift = S.profile.adjust = undefined; save(); render(); flash("Saved"); };
-      const sag = $("[data-sim-again]", app); if (sag) sag.onclick = () => { M.history = M.history || []; M.history.push({ picks: M.picks, practice: M.practice, ref: M.ref, at: Date.now() }); M.picks = {}; M.practice = null; M.ref = {}; M.saved = false; M.i = 0; save(); render(); top(); };
+      const M = S.sim, X = SIMS.jordan, C = M.cur;
+      const ss = $("[data-sim-start]", app); if (ss) ss.onclick = () => { M.cur = newAttempt(X); save(); render(); top(); };
+      $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { C.picks[C.i] = +b.dataset.simPick; save(); render(); });
+      $$("[data-sim-go]", app).forEach(b => b.onclick = () => { C.i = +b.dataset.simGo; save(); render(); top(); });
+      $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete C.picks[k]; C.i = k; save(); render(); });
+      $$("[data-sim-intent]", app).forEach(t => t.oninput = () => { C.intent[t.dataset.simIntent] = t.value; save(); });
+      $$("[data-sim-ref]", app).forEach(t => t.oninput = () => { C.ref[t.dataset.simRef] = t.value; save(); const sv = $("[data-sim-save]", app); if (sv) sv.disabled = !X.debrief.every((_, k) => (C.ref[k] || "").trim()); });
+      const ssv = $("[data-sim-save]", app); if (ssv) ssv.onclick = () => { C.saved = true; C.done = Date.now(); S.steps.sim = true; delete S.profile.shift; delete S.profile.adjust; save(); render(); flash("Saved"); };
+      const sag = $("[data-sim-again]", app); if (sag) sag.onclick = () => { M.history = M.history || []; M.history.push(C); M.cur = newAttempt(X); save(); render(); top(); };
       /* Profile */
       $$("[data-plan]", app).forEach(b => b.onclick = () => { const P = S.profile.plan = S.profile.plan || {}; P[b.dataset.plan] = b.dataset.v; save(); render(); });
       $$("[data-plan-own]", app).forEach(t => t.oninput = () => { const P = S.profile.plan = S.profile.plan || {}; P[t.dataset.planOwn] = t.value; save(); $$(`[data-plan="${t.dataset.planOwn}"]`, app).forEach(c => c.setAttribute("aria-pressed", "false")); const sv = $('[data-act="saveprofile"]', app); if (sv) sv.disabled = !(P.skill && P.rehearse && P.evidence); });
