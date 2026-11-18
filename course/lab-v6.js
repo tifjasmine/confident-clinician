@@ -251,7 +251,7 @@
     let fwd;
     if (st < 3) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
     else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>See how I’d say it →</button>`;
-    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary" data-go="week/sim">Next: Jordan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
+    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary next" data-go="week/sim">Next: Jordan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
     return `<div class="flow">${head}${st === 0 ? `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>` : ""}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
 
@@ -296,7 +296,7 @@
     }
     const back = st ? `<button type="button" class="v6-btn secondary" data-rf-nav="-1">← Back</button>` : "<span></span>";
     const fwd = st < 3 ? `<button type="button" class="v6-btn primary" data-rf-nav="1"${ok ? "" : " disabled"}>Next: ${RF_STEPS[st + 1]} →</button>`
-      : S.steps.reflect ? `<button type="button" class="v6-btn primary" data-go="week/save">Next: Your Profile →</button>` : `<button type="button" class="v6-btn primary" data-rf-save${ok ? "" : " disabled"}>Save my redo ✓</button>`;
+      : S.steps.reflect ? `<button type="button" class="v6-btn primary next" data-go="week/save">Next: Your Profile →</button>` : `<button type="button" class="v6-btn primary" data-rf-save${ok ? "" : " disabled"}>Save my redo ✓</button>`;
     return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between">${back}<span style="display:flex;align-items:center;gap:12px"><span class="saved-flag" data-flag></span>${fwd}</span></div></div>`;
   }
 
@@ -340,7 +340,7 @@
     return `<div class="flow">${head}<p class="flow-q">Look back at your session.</p>
       <details class="peek"><summary>Your path: all 8 moments</summary><ol class="path">${rows}</ol></details>
       ${X.debrief.map((qq, k) => `<label class="field">${k + 1}. ${esc(qq)}<textarea class="v6-ta" rows="${k === 2 ? 3 : 2}" data-sim-ref="${k}">${esc(R[k])}</textarea></label>`).join("")}
-      <div class="actions">${C.saved ? `<button type="button" class="v6-btn primary" data-go="week/reflect">Next: Reflect & Redo →</button><button type="button" class="v6-btn secondary" data-sim-again>Try the session again</button>`
+      <div class="actions">${C.saved ? `<button type="button" class="v6-btn primary next" data-go="week/reflect">Next: Reflect & Redo →</button><button type="button" class="v6-btn secondary" data-sim-again>Try the session again</button>`
         : `<button type="button" class="v6-btn primary" data-sim-save${ok ? "" : " disabled"}>Save this session</button>`}<span class="saved-flag" data-flag></span></div>
       ${C.saved ? `<div class="hint">Saved to your Clinical Confidence Profile. Trying again starts a new attempt and keeps this one.</div>` : `<div class="hint">Answer all three to save. Your answers go into your Clinical Confidence Profile.</div>`}</div>`;
   }
@@ -420,7 +420,7 @@
     const media = ["lab", "sim", "save", "reflect"].includes(s.type) ? "" : video(s.video, s.img, !!s.video);
     const lockedNote = locked ? `<div class="locked-note"><span aria-hidden="true">🔒</span>Opens when you finish ${esc(prev)}.</div>` : "";
     const nxt = D.WEEK1[sel + 1];
-    const nextBtn = done && nxt && !["lab", "sim", "reflect"].includes(s.type) ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
+    const nextBtn = done && nxt && !["lab", "sim", "reflect"].includes(s.type) ? `<button type="button" class="v6-btn primary next" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
     const actions = locked ? `<div class="actions"><button type="button" class="v6-btn primary" disabled>${esc(s.type === "lesson" ? "Watch lesson" : "Locked")}</button></div>` : `<div class="actions">${cta}${nextBtn}</div>`;
     const html = `
       <div class="card stack">${media}
@@ -568,8 +568,8 @@
           : `<div class="empty">Your first line lands here after the Lesson 1 Rep.</div>`}
       </div>
       <div class="card"><h2 class="h">Your tools</h2><div class="grid2">
-        <div class="words"><span class="t">The Pull</span><span class="d">The automatic urge that grabs you under pressure.</span><div class="chips">${D.PULLS.map(([t, d]) => `<span title="${esc(d)}">${esc(t)}</span>`).join("")}</div></div>
-        <div class="words"><span class="t">P.A.U.S.E.</span><span class="d">Your way back in when you go blank.</span><div class="pause">${D.PAUSE.map(([l, t]) => `<span><b>${l}</b> · ${esc(t)}</span>`).join("")}</div></div>
+        <div class="words pull"><span class="t">The Pull</span><span class="d">The automatic urge that grabs you under pressure.</span><div class="chips">${D.PULLS.map(([t, d]) => `<span title="${esc(d)}">${esc(t)}</span>`).join("")}</div></div>
+        <div class="words pause-c"><span class="t">P.A.U.S.E.</span><span class="d">Your way back in when you go blank.</span><div class="pause">${D.PAUSE.map(([l, t]) => `<span><b>${l}</b> · ${esc(t)}</span>`).join("")}</div></div>
       </div></div>
       <div class="card flush"><div style="padding:20px 24px 12px"><h2 class="h" style="margin:0">What you’ll walk away with</h2></div>
         ${D.DELIVERABLES.map(([n, t, sub], i) => {

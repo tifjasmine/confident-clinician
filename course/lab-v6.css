@@ -874,3 +874,57 @@ button, input, textarea, select { font-family: inherit; }
 .growth-card .slot { background: #fff; border-color: transparent; }
 .growth-card .slot.empty, .growth-card .slot[class*="dash"] { background: #ffffff99; }
 .growth-card .v6-pill { background: #ffffffb3; color: var(--ink-2); }
+
+/* ============ Brand color + a little fun (forest, terracotta, sage, blush, cream only) ============ */
+:root { --cream: #f6efe3; --cream-line: #ebe0cc; --sage-2: #dfeae2; --blush-2: #f3dccf; }
+/* My growth: brand tints only */
+.growth-card:nth-of-type(4n+1) { background: var(--sage); border-color: var(--sage-line); }
+.growth-card:nth-of-type(4n+2) { background: #f9ede6; border-color: var(--blush-2); }
+.growth-card:nth-of-type(4n+3) { background: var(--cream); border-color: var(--cream-line); }
+.growth-card:nth-of-type(4n+4) { background: var(--sage-2); border-color: #cddcd2; }
+/* tags back in brand color */
+.v6-pill.blush { background: var(--blush); color: var(--terra-t); }
+.pills .v6-pill.sage { background: var(--sage); color: var(--forest); }
+/* numbered steps: soft terracotta badges */
+.how .num, .num.lg { width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--blush); color: var(--terra-t); font-weight: 700; display: grid; place-items: center; }
+/* "Your Rep" preview: warm blush card */
+.quote-box { background: #f9ede6; border: 1px solid var(--blush-2); }
+.quote-box .v6-label { color: var(--terra-t); }
+/* Next buttons in terracotta; main actions stay forest */
+.v6-btn.primary.next:not(:disabled) { background: var(--terra); }
+.v6-btn.primary.next:not(:disabled):hover { background: var(--terra-h); }
+/* green banners: a soft terracotta + sage shape in the corner */
+.floor, .week-hero { position: relative; overflow: hidden; isolation: isolate; }
+.floor::after, .week-hero::after { content: ""; position: absolute; z-index: -1; right: -90px; top: -110px; width: 320px; height: 320px; border-radius: 50%; background: var(--terra); opacity: .22; }
+.floor::before, .week-hero::before { content: ""; position: absolute; z-index: -1; right: 120px; bottom: -150px; width: 240px; height: 240px; border-radius: 50%; background: #9fc0a9; opacity: .14; }
+/* Four weeks: colored number badges */
+.weeks4 .n { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; }
+.weeks4 li:nth-child(1) .n { background: var(--blush); color: var(--terra-t); }
+.weeks4 li:nth-child(2) .n { background: var(--sage); color: var(--forest); }
+.weeks4 li:nth-child(3) .n { background: var(--cream); color: #8a6a3a; }
+.weeks4 li:nth-child(4) .n { background: var(--sage-2); color: var(--forest); }
+.weeks4 li { grid-template-columns: 64px minmax(0, 1fr) auto; }
+/* Playbook tools: one blush, one sage */
+.words.pull { background: #f9ede6; border: 1px solid var(--blush-2); }
+.words.pause-c { background: var(--sage); border: 1px solid var(--sage-line); }
+.words .t { color: var(--ink); }
+.pause b { color: var(--terra-t); }
+/* pick cards: colored label strip */
+.pick-card:nth-child(1) small { color: var(--terra-t); }
+.pick-card:nth-child(2) small { color: var(--forest); }
+.pick-card:nth-child(3) small { color: #8a6a3a; }
+/* page eyebrow alternates by section */
+.eyebrow { background: var(--blush); color: var(--terra-t); }
+/* done notes in sage with forest text */
+.done-note { background: var(--sage); color: var(--forest); border: 0; }
+@media (max-width: 720px) {
+  .weeks4 li { grid-template-columns: 44px minmax(0, 1fr); }
+  .weeks4 .n { width: 40px; height: 40px; font-size: 17px; }
+  .floor::after, .week-hero::after { width: 200px; height: 200px; right: -70px; top: -80px; }
+}
+.floor::after, .week-hero::after { right: -120px; top: -140px; width: 360px; height: 360px; background: #3d6150; opacity: 1; }
+.floor::before, .week-hero::before { right: 64px; top: 34px; bottom: auto; width: 64px; height: 64px; background: var(--terra-l); opacity: 1; }
+.week-hero::before { top: 28px; width: 54px; height: 54px; }
+@media (max-width: 720px) { .floor::before, .week-hero::before { width: 38px; height: 38px; right: 22px; top: 20px; } .floor::after, .week-hero::after { width: 220px; height: 220px; right: -90px; top: -100px; } }
+.floor::after, .week-hero::after { z-index: -2; }
+.floor::before, .week-hero::before { z-index: -1; }
