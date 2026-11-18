@@ -127,7 +127,7 @@
     if (i >= D.WEEK1.length) return { tag: "Week 1 complete", title: "Week 2 opens next", meta: "Getting Unstuck in the Room · Decide", cta: "Review Week 1", go: "week" };
     const s = D.WEEK1[i];
     if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four client moments to see where you’re starting", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
-    if (s.type === "lesson") { const r = REP(s.rep); return { tag: s.kind, title: s.title, meta: `Watch the lesson, then practice with ${r.client} · ${s.meta}`, cta: "Continue", go: "week/" + s.key }; }
+    if (s.type === "lesson") { const r = REP(s.rep); return { tag: s.kind, title: s.title, meta: `Watch the lesson, then practice with ${r.client}`, cta: "Continue", go: "week/" + s.key }; }
     return { tag: s.kind, title: s.title, meta: s.meta, cta: "Continue", go: "week/" + s.key };
   }
   function homeView() {
@@ -246,7 +246,7 @@
     const actions = locked ? `<div class="actions"><button type="button" class="v6-btn primary" disabled>${esc(s.type === "lesson" ? "Watch lesson" : "Locked")}</button></div>` : `<div class="actions">${cta}${nextBtn}</div>`;
     const html = `
       <div class="card stack">${media}
-        <div class="pills"><span class="v6-pill blush">Step ${sel + 1} of ${D.WEEK1.length}</span><span class="v6-pill sage">${esc(s.kind)}</span><span class="v6-pill neutral">${esc(s.meta)}</span>${done ? `<span class="v6-pill sage">Done ✓</span>` : ""}</div>
+        <div class="pills"><span class="v6-pill blush">Step ${sel + 1} of ${D.WEEK1.length}</span><span class="v6-pill sage">${esc(s.kind)}</span>${/\d/.test(s.meta) ? `<span class="v6-pill neutral">${esc(s.meta)}</span>` : ""}${done ? `<span class="v6-pill sage">Done ✓</span>` : ""}</div>
         <div><h2 class="detail-title">${esc(s.title)}</h2><p class="detail-desc">${esc(s.desc)}</p></div>
         ${locked && (s.type === "reflect" || s.type === "save") ? "" : body}${lockedNote}${actions}
       </div>
