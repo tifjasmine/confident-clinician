@@ -185,7 +185,7 @@
     if (s.type === "day1") {
       const answered = D.BASELINE.filter(b => S.base[b.id] && S.base[b.id].aim).length;
       body = howHTML("What you’ll do today", [
-        ["Watch my welcome", "What the Lab is, and how it works."],
+        ["Start with a welcome from me", "What the Lab is, and how it works."],
         ["Answer four client moments", `${D.BASELINE.map(b => b.client).join(", ")} each say something hard to answer. For each one, write what you’d say, then pick what you were going for. No right answers and no feedback today.`]
       ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
       if (S.sealed) body += `<div class="done-note">✓ Your four Day 1 answers are saved and sealed until the Week 4 Showcase.</div>`;
