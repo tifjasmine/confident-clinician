@@ -95,14 +95,16 @@
     return `<div class="card" style="padding:20px 22px"><h2 class="h" style="font-size:15px;margin:0 0 14px">Your progress</h2><div class="stats">
       ${row("Week 1 steps", `${d} of ${t}`, d / t * 100)}${row("Reps completed", `${rc} of 20`, rc / 20 * 100, true)}${row("“What I Say When…” lines", `${bl} of 12`, Math.min(bl / 12, 1) * 100)}</div></div>`;
   }
+  const STAGES = [["Start", ["day1"]], ["Learn + practice", ["l1", "l2", "l3", "demo"]], ["Apply it", ["lab", "sim"]], ["Wrap up", ["reflect", "save"]]];
   function stepperHTML(sel) {
     const cur = curIdx();
-    return `<div class="card rail"><div class="h pad">Week 1 · Notice</div>${D.WEEK1.map((s, i) => {
-      const done = stepDone(s), isCur = i === cur, locked = !unlocked(i);
-      const mark = done ? "✓" : locked ? "🔒" : i === 0 ? "★" : String(i);
-      const status = done ? "Done" : isCur ? (i === 0 ? "Start here" : "Up next") : locked ? "Locked" : "Open";
-      return `<button type="button" class="rail-row${i === sel ? " sel" : ""}" data-go="week/${s.key}"${i === sel ? ' aria-current="step"' : ""}><span class="ico lg${done ? " done" : isCur ? " cur" : ""}" aria-hidden="true">${mark}</span><span class="tt"><b>${esc(s.short)}</b><small>${esc(s.label)} · ${status}</small></span></button>`;
-    }).join("")}</div>`;
+    const row = i => {
+      const st = D.WEEK1[i], done = stepDone(st), isCur = i === cur, locked = !unlocked(i);
+      const status = done ? "Done" : isCur ? "Up next" : locked ? "Locked" : "Open";
+      return `<button type="button" class="rail-row${i === sel ? " sel" : ""}${locked ? " future" : ""}" data-go="week/${st.key}"${i === sel ? ' aria-current="step"' : ""}><span class="ico lg${done ? " done" : isCur ? " cur" : ""}" aria-hidden="true">${done ? "✓" : i + 1}</span><span class="tt"><b>${esc(st.short)}</b><small>${esc(st.label)} · ${status}</small></span></button>`;
+    };
+    return `<div class="card rail"><div class="h">Week 1 steps</div><div class="s">${doneCount()} of ${D.WEEK1.length} done · about 2.5 hours</div>${STAGES.map(([name, keys]) =>
+      `<div class="stage">${esc(name)}</div>${keys.map(k => row(D.WEEK1.findIndex(x => x.key === k))).join("")}`).join("")}</div>`;
   }
   function repRailHTML(stage, saved) {
     return `<div class="card rail"><div class="h">The Rep</div><div class="s">3–5 minutes, one client moment</div>${D.REP_STEPS.map((t, i) => {
@@ -114,7 +116,7 @@
   function asideHTML(scr, v) {
     let top = "";
     if (scr === "rep") top = v.rail || "";
-    else top = statsHTML() + (scr === "week" ? stepperHTML(v.sel) : "");
+    else top = scr === "week" ? stepperHTML(v.sel) : statsHTML();
     const tip = `<div class="card sage tip"><div class="me"><img src="/assets/optimized/tiffany-mcgilloway-lpc-900.jpg" alt="Tiffany McGilloway"><span>Tiffany McGilloway<small>Your instructor</small></span></div><q>${esc(D.TIPS[scr] || D.TIPS.home)}</q></div>`;
     return top + tip + `<div class="disclaimer">Use fictional or generalized examples only. Never enter identifiable client information. This course is professional education and does not replace clinical supervision or independent clinical judgment.</div>`;
   }
@@ -232,18 +234,16 @@
 
     const media = video(s.video, s.img, !!s.video);
     const lockedNote = locked ? `<div class="locked-note"><span aria-hidden="true">🔒</span>Opens when you finish ${esc(prev)}.</div>` : "";
-    const actions = locked ? `<div class="actions"><button type="button" class="v6-btn primary" disabled>${esc(s.type === "lesson" ? "Watch lesson" : "Locked")}</button></div>` : `<div class="actions">${cta}</div>`;
+    const nxt = D.WEEK1[sel + 1];
+    const nextBtn = done && nxt ? `<button type="button" class="v6-btn primary" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
+    const actions = locked ? `<div class="actions"><button type="button" class="v6-btn primary" disabled>${esc(s.type === "lesson" ? "Watch lesson" : "Locked")}</button></div>` : `<div class="actions">${cta}${nextBtn}</div>`;
     const html = `
       <div class="card stack">${media}
-        <div class="pills"><span class="v6-pill sage">${esc(s.kind)}</span><span class="v6-pill neutral">${esc(s.meta)}</span>${done ? `<span class="v6-pill sage">Done</span>` : ""}</div>
+        <div class="pills"><span class="v6-pill blush">Step ${sel + 1} of ${D.WEEK1.length}</span><span class="v6-pill sage">${esc(s.kind)}</span><span class="v6-pill neutral">${esc(s.meta)}</span>${done ? `<span class="v6-pill sage">Done ✓</span>` : ""}</div>
         <div><h2 class="detail-title">${esc(s.title)}</h2><p class="detail-desc">${esc(s.desc)}</p></div>
         ${locked && (s.type === "reflect" || s.type === "save") ? "" : body}${lockedNote}${actions}
       </div>
-      <div class="card"><h2 class="h">The same shape every week</h2><div class="grid2 structure">${D.STRUCTURE.map(([t, d], i) => `<div><span class="num lg">${i + 1}</span><span class="tt"><b>${esc(t)}</b><small>${esc(d)}</small></span></div>`).join("")}</div><div class="note" style="margin-top:14px">About 2.5 hours a week.</div></div>
-      <div class="card"><h2 class="h">This week’s words</h2><div class="grid2">
-        <div class="words"><span class="t">The Pull</span><span class="d">The automatic urge that grabs you under pressure.</span><div class="chips">${D.PULLS.map(([t, d]) => `<span title="${esc(d)}">${esc(t)}</span>`).join("")}</div></div>
-        <div class="words"><span class="t">P.A.U.S.E.</span><span class="d">Your way back in when you go blank.</span><div class="pause">${D.PAUSE.map(([l, t]) => `<span><b>${l}</b> · ${esc(t)}</span>`).join("")}</div></div>
-      </div></div>`;
+`;
     const w = D.WEEKS[0];
     const hero = `<section class="week-hero"><div class="in">
       <button type="button" class="back" data-go="home">← Home</button>
@@ -382,6 +382,10 @@
         ${lines.length ? `<div class="bank">${lines.map(r => `<div class="bank-item"><span class="w">${esc(r.bank)}…</span><span class="l">${q(S.reps[r.id].line)}</span><span class="f">Rep ${r.id} · ${esc(r.client)}<button type="button" data-go="rep/${r.id}">Edit</button></span></div>`).join("")}</div>`
           : `<div class="empty">Your first line lands here after the Lesson 1 Rep.</div>`}
       </div>
+      <div class="card"><h2 class="h">Your tools</h2><div class="grid2">
+        <div class="words"><span class="t">The Pull</span><span class="d">The automatic urge that grabs you under pressure.</span><div class="chips">${D.PULLS.map(([t, d]) => `<span title="${esc(d)}">${esc(t)}</span>`).join("")}</div></div>
+        <div class="words"><span class="t">P.A.U.S.E.</span><span class="d">Your way back in when you go blank.</span><div class="pause">${D.PAUSE.map(([l, t]) => `<span><b>${l}</b> · ${esc(t)}</span>`).join("")}</div></div>
+      </div></div>
       <div class="card flush"><div style="padding:20px 24px 12px"><h2 class="h" style="margin:0">What you’ll walk away with</h2></div>
         ${D.DELIVERABLES.map(([n, t, sub], i) => {
           const cur = i === 0, status = cur ? (S.steps.save ? "Saved" : anyProgress() ? "In progress" : "This week") : `Week ${n}`;

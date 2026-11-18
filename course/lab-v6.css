@@ -463,3 +463,8 @@ h1 em, h2 em, .t em, .display em, .v6-display em { font-style: italic; color: va
   .v6-bottom { background: var(--card); }
   .v6-bottom button[aria-current="page"]::before { background: var(--terra); }
 }
+
+/* Week steps: grouped stages */
+.rail .stage { margin: 12px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--terra-t); }
+.rail .stage:first-of-type { margin-top: 4px; }
+.rail-row.future .ico { background: transparent; border: 1px solid var(--line); }
