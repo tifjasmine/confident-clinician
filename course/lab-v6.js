@@ -161,7 +161,7 @@
         <div class="pick-grid">${[
           ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
           ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
-          ["growth", D.IMG.c, "My growth", "Your Day 1 answers, waiting for the Week 4 Showcase.", "See your growth"]
+          ["growth", D.IMG.c, "My growth", "Your Day 1 answers. In Week 4, see how far you’ve come.", "See your growth"]
         ].map(([k, img, t, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>
       </div>`;
     return { html, hero, solo: true };
@@ -188,7 +188,7 @@
         ["Start with a welcome from me", "What the Lab is, and how it works."],
         ["Answer four client moments", `${D.BASELINE.map(b => b.client).join(", ")} each say something hard to answer. For each one, write what you’d say, then pick what you were going for. No right answers and no feedback today.`]
       ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
-      if (S.sealed) body += `<div class="done-note">✓ Your four Day 1 answers are saved and sealed until the Week 4 Showcase.</div>`;
+      if (S.sealed) body += `<div class="done-note">✓ Your four answers are saved in the <b>My growth</b> tab. In Week 4 you’ll compare them with your new answers there.</div>`;
       const watch = S.welcome ? `<button type="button" class="v6-btn secondary" data-act="welcome">Welcome watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="welcome">${D.VIDEOS.welcome ? "I’ve watched the welcome" : "Mark the welcome watched"}</button>`;
       const base = S.sealed ? `<button type="button" class="v6-btn secondary" data-go="growth">See My growth</button>`
         : `<button type="button" class="v6-btn ${S.welcome ? "primary" : "secondary"}" data-go="baseline">${answered ? `Continue the Baseline (${answered} of 4)` : "Start the Baseline"}</button>`;
@@ -340,7 +340,7 @@
   /* ---------- Day 1 Baseline ---------- */
   function baselineView() {
     const crumb = ["Week 1", "Day 1 Baseline", "week/day1"];
-    if (S.sealed) return { crumb, html: `<div class="card stack-12"><div class="sealed"><span aria-hidden="true">🔒</span><span><b>Saved and sealed.</b> You’ll see your four Day 1 answers next to your Week 4 answers in the Showcase.</span></div>
+    if (S.sealed) return { crumb, html: `<div class="card stack-12"><div class="sealed"><span aria-hidden="true">✓</span><span><b>Saved.</b> Your four answers now live in the <b>My growth</b> tab. In Week 4 you’ll answer the same moments again, and both answers will show up there side by side.</span></div>
       <div class="actions"><button type="button" class="v6-btn primary" data-go="week/l1">Start Lesson 1</button><button type="button" class="v6-btn secondary" data-go="growth">See My growth</button></div></div>` };
     const i = Math.min(S.baseIdx || 0, 3), b = D.BASELINE[i], a = S.base[b.id] || { move: "", aim: null };
     const canAim = (a.move || "").trim().length >= 3;
@@ -407,11 +407,11 @@
   function growthView() {
     const html = D.BASELINE.map(b => {
       const a = S.base[b.id];
-      const day1 = S.sealed ? `<span class="slot ok"><span class="lbl">Day 1 · your words</span>✓ Saved and sealed. You’ll see it next to your Week 4 answer.</span>`
+      const day1 = S.sealed ? `<span class="slot ok"><span class="lbl">Day 1 · your words</span>✓ Saved. Your Week 4 answer will appear next to it.</span>`
         : a && a.aim ? `<span class="slot"><span class="lbl">Day 1 · your words</span>Answered. Finish Day 1 to seal it.</span>`
         : `<span class="slot" style="color:var(--muted)"><span class="lbl">Day 1 · your words</span>Not answered yet. You’ll answer this on Day 1.</span>`;
       return `<div class="card stack-12" style="gap:14px"><div class="growth-top"><span class="col"><span class="who">${esc(b.who)}</span><span class="line">${q(b.line)}</span></span><span class="v6-pill sage">${b.id} · ${esc(b.skill)}</span></div>
-        <div class="grid2">${day1}<span class="slot dash"><span class="lbl">Week 4 · your words</span>🔒 Unlocks in the Week 4 Showcase</span></div></div>`;
+        <div class="grid2">${day1}<span class="slot dash"><span class="lbl">Week 4 · your words</span>Opens in Week 4</span></div></div>`;
     }).join("");
     return { html, tight: true };
   }

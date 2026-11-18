@@ -226,7 +226,7 @@
     baseline: ["Day 1 Baseline", "Four client moments, before any teaching. Just answer like you would today."],
     reproom: ["Rep Room", "Optional extra Reps, in the same format as everything else. Never blocks your progress."],
     playbook: ["Clinical Playbook", "Everything you build flows here, including your own words."],
-    growth: ["My growth", "Four Day 1 moments, waiting for the Week 4 Showcase."]
+    growth: ["My growth", "Your four Day 1 answers live here. In Week 4 you’ll answer the same moments again and see both side by side."]
   };
 
   const TIPS = {
