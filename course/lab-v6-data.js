@@ -270,7 +270,9 @@
     gapWhy: "Most likely pressure: the therapist knew how to explore but rushed.",
     pause: [["P", "Pause", "Slow down. What’s rushing you?"], ["A", "Attend", "What’s happening with Jordan, and in you?"], ["U", "Use", "What clinical information do you already have?"], ["S", "Say", "One intentional, clinically appropriate response."], ["E", "Explore", "What will you watch for in Jordan’s response?"]],
     take: "The bad guy. Tell me more about what that’s like.",
-    closing: "Notice line 8. When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3."
+    takeWhy: "It uses Jordan’s own words (“the bad guy”) and invites Jordan to say more, instead of jumping to a tool. You find out what it’s like for Jordan before deciding what would help.",
+    closing: "Notice line 8. When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3.",
+    line8: ["When the therapist took Jordan’s side (line 8):", "Jordan asked the therapist to decide (line 9):"]
   };
 
   /* Week 1 Simulation: Jordan’s Advice Request. Word for word from the Week 1 Clinical Content Master v1.0

@@ -581,3 +581,12 @@ h1 em, h2 em, .t em, .display em, .v6-display em { font-style: italic; color: va
 .chip.wrong { background: var(--card); border-color: var(--terra); color: var(--terra-t); box-shadow: 0 0 0 1px var(--terra); }
 .field > .ans, .sort-row .ans { display: block; margin-top: 8px; font-size: 13.5px; font-weight: 500; color: var(--forest); }
 .ans.miss { color: var(--terra-t); }
+/* Lab rewrite reveal */
+.compare-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.compare-2 .bd-p { font-size: 15px; }
+.compare-2 .tk { font: italic 600 19px/1.35 var(--serif); color: var(--forest); }
+.next-note { padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--card); font-size: 14.5px; line-height: 1.55; display: flex; flex-direction: column; gap: 8px; }
+.next-note b { color: var(--forest); }
+.nn-row { display: flex; flex-direction: column; padding-left: 12px; border-left: 2px solid var(--line); font-style: italic; color: var(--ink-2); }
+.nn-row span { font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+@media (max-width: 720px) { .compare-2 { grid-template-columns: minmax(0, 1fr); } }

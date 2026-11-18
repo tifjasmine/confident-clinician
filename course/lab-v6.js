@@ -221,13 +221,18 @@
         <div class="orig"><small>What the therapist said (line 4)</small>${q(A.lines[3][1])}</div>
         <details class="peek"${Object.values(pz).some(v => (v || "").trim()) ? " open" : ""}><summary>Stuck? Use P.A.U.S.E. to get there</summary><div class="pause-form" style="margin-top:10px">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="1" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div></details>
         <label class="field">Your new line 4 <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
-        ${L.compared ? `<div class="card sage stack-12 take" style="box-shadow:none"><span class="v6-label forest">Tiffany’s line 4</span><div class="say"><div>${q(A.take)}</div></div><div class="why">${esc(A.closing)}</div></div>` : ""}`;
-      ok = !!mv.trim();
+        ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>How I’d say it</small><span class="tk">${q(A.take)}</span></div></div>
+          <div class="coach"><small>Why it works</small>${esc(A.takeWhy)}</div>
+          <div class="next-note"><b>One more thing before you go.</b> Look at what happened next in the session.
+            <span class="nn-row"><span>${esc(A.line8[0])}</span>${q(A.lines[7][1])}</span>
+            <span class="nn-row"><span>${esc(A.line8[1])}</span>${q(A.lines[8][1])}</span>
+            When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3, and that’s exactly where Jordan starts.</div>` : ""}`;
+      ok = mv.trim().length >= 8;
     }
     const back = st ? `<button type="button" class="v6-btn secondary" data-lab-nav="-1">← Back</button>` : "<span></span>";
     let fwd;
     if (st < 3) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
-    else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>Compare with Tiffany’s →</button>`;
+    else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>See how I’d say it →</button>`;
     else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary" data-go="week/sim">Next: Jordan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
     return `<div class="flow">${head}${st === 0 ? `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>` : ""}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
@@ -604,7 +609,7 @@
       $$("[data-lab-sort]", app).forEach(b => b.onclick = () => { L.sort = L.sort || {}; L.sort[b.dataset.labSort] = b.dataset.v; save(); render(); });
       [["p4", "labP4"], ["p8", "labP8"], ["gap", "labGap"]].forEach(([k, d]) => $$(`[data-lab-${k}]`, app).forEach(b => b.onclick = () => { L[k] = b.dataset[d]; save(); render(); }));
       $$("[data-lab-pause]", app).forEach(t => t.oninput = () => { L.pause = L.pause || {}; L.pause[t.dataset.labPause] = t.value; save(); const n = $('[data-lab-nav="1"]', app); if (n) n.disabled = !(L.pause.S || "").trim(); });
-      const lm = $("[data-lab-move]", app); if (lm) lm.oninput = () => { L.move = lm.value; save(); const c = $("[data-lab-compare]", app); if (c) c.disabled = !lm.value.trim(); };
+      const lm = $("[data-lab-move]", app); if (lm) lm.oninput = () => { L.move = lm.value; save(); const c = $("[data-lab-compare]", app); if (c) c.disabled = lm.value.trim().length < 8; };
       $$("[data-lab-nav]", app).forEach(b => b.onclick = () => { L.step = Math.max(0, Math.min(3, (L.step || 0) + +b.dataset.labNav)); save(); render(); top(); });
       const lc = $("[data-lab-compare]", app); if (lc) lc.onclick = () => { L.compared = true; save(); render(); };
       const lf = $("[data-lab-finish]", app); if (lf) lf.onclick = () => { S.steps.lab = true; save(); render(); };
