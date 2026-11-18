@@ -126,7 +126,7 @@
     const i = curIdx();
     if (i >= D.WEEK1.length) return { tag: "Week 1 complete", title: "Week 2 opens next", meta: "Getting Unstuck in the Room · Decide", cta: "Review Week 1", go: "week" };
     const s = D.WEEK1[i];
-    if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four moments answered cold · about 25 min", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
+    if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four client moments to see where you’re starting · about 25 min", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
     if (s.type === "lesson") { const r = REP(s.rep); return { tag: s.kind, title: s.title, meta: `Watch the lesson, then practice with ${r.client} · ${s.meta}`, cta: "Continue", go: "week/" + s.key }; }
     return { tag: s.kind, title: s.title, meta: s.meta, cta: "Continue", go: "week/" + s.key };
   }

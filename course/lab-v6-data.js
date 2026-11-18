@@ -159,14 +159,14 @@
 
   /* Week 1, in the order learners meet it. */
   const WEEK1 = [
-    { key: "day1", type: "day1", label: "Day 1", kind: "Day 1 · Welcome + Baseline", short: "Welcome + Day 1 Baseline", title: "Welcome, then four cold Reps",
+    { key: "day1", type: "day1", label: "Day 1", kind: "Day 1 · Welcome + Baseline", short: "Welcome + Day 1 Baseline", title: "Welcome + your starting point",
       desc: "A 6–7 minute welcome from Tiffany, then four client moments answered before any teaching. No feedback today. Your answers stay sealed until the Week 4 Showcase.",
       meta: "About 25 min", img: IMG.e, video: "welcome", itemsLabel: "The Baseline · moment, your move, your aim" },
-    { key: "l1", type: "lesson", rep: "1.1", label: "Lesson 1", kind: "Lesson 1 + Rep 1.1", short: "Confidence Is Not a Personality Trait", title: "Confidence Is Not a Personality Trait",
+    { key: "l1", type: "lesson", rep: "1.1", label: "Lesson 1 + Rep", kind: "Lesson 1 + Rep 1.1", short: "Confidence Is Not a Personality Trait", title: "Confidence Is Not a Personality Trait",
       desc: "Tell apart a knowledge, skill, pressure, and support gap, and pick the next step that fits.", meta: "8–10 min + Rep", img: IMG.e, video: "w1-l1", pull: "The Pull: Prove" },
-    { key: "l2", type: "lesson", rep: "1.2", label: "Lesson 2", kind: "Lesson 2 + Rep 1.2", short: "Meet the Clinician Behind the Reaction", title: "Meet the Clinician Behind the Reaction",
+    { key: "l2", type: "lesson", rep: "1.2", label: "Lesson 2 + Rep", kind: "Lesson 2 + Rep 1.2", short: "Meet the Clinician Behind the Reaction", title: "Meet the Clinician Behind the Reaction",
       desc: "Name your most common Pull, spot its early cues, and use one small reset.", meta: "8–10 min + Rep", img: IMG.a, video: "w1-l2", pull: "The Pull: Defend" },
-    { key: "l3", type: "lesson", rep: "1.3", label: "Lesson 3", kind: "Lesson 3 + Rep 1.3", short: "Use P.A.U.S.E. When You Go Blank", title: "Use P.A.U.S.E. When You Go Blank",
+    { key: "l3", type: "lesson", rep: "1.3", label: "Lesson 3 + Rep", kind: "Lesson 3 + Rep 1.3", short: "Use P.A.U.S.E. When You Go Blank", title: "Use P.A.U.S.E. When You Go Blank",
       desc: "Run P.A.U.S.E. on a hard client line and come up with one grounded response instead of a perfect one.", meta: "10–12 min + Rep", img: IMG.d, video: "w1-l3", pull: "The Pull: Fill · adds the aim “I’d stay quiet a little longer”" },
     { key: "demo", type: "demo", label: "Demo", kind: "Demonstration", short: "When the client asks you to decide", title: "Demo: When the client asks you to decide for them",
       desc: "Watch Tiffany give a rushed take, see why it misses, then watch the steady take. Don’t memorize the words. Watch the decision underneath them.", meta: "5–6 min", img: IMG.c, video: "w1-demo",
@@ -223,7 +223,7 @@
     home: ["Welcome to the Lab", "Four weeks of practice with real client moments. You’ll leave with the words, not just the ideas."],
     week: ["The Therapist Behind the Therapy", "Week 1 · Notice · What’s happening in me right now?"],
     rep: ["", "One client moment, your words, the client’s reaction, Tiffany’s take, and a redo."],
-    baseline: ["Day 1 Baseline", "Four moments, answered cold. No feedback today."],
+    baseline: ["Day 1 Baseline", "Four client moments, before any teaching. Just answer like you would today."],
     reproom: ["Rep Room", "Optional extra Reps, in the same format as everything else. Never blocks your progress."],
     playbook: ["Clinical Playbook", "Everything you build flows here, including your own words."],
     growth: ["My growth", "Four Day 1 moments, waiting for the Week 4 Showcase."]
