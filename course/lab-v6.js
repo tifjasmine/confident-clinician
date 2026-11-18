@@ -154,11 +154,6 @@
             ${cur ? `<button type="button" class="st" data-go="week">${status}</button>` : `<span class="st">${status}</span>`}</li>`;
         }).join("")}</ol>
       </section>
-      <div class="card rep-intro">
-        <div><div class="v6-label">How you’ll practice</div><div class="t">Every lesson ends with a <em>Rep.</em></div><div class="note" style="font-size:14px">A 3–5 minute practice of one real client moment, in your own words.</div>
-          <button type="button" class="v6-link" style="margin-top:12px" data-go="rep/1.1">Try an example Rep →</button></div>
-        <div class="rep-steps">${D.REP_STEPS.map((t, i) => `<div><span class="num">${i + 1}</span>${esc(t)}</div>`).join("")}</div>
-      </div>
       <div class="pick">
         <h2>Pick up where you <em>left off.</em></h2>
         <div class="pick-grid">${[
