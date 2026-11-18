@@ -1,12 +1,12 @@
 /* Clinical Confidence Lab v6 "Workspace". Tokens and measurements follow design/lab-screen-v6.dc.html. */
 :root {
-  /* Blend: warm cream + deep forest + terracotta from the brand screens, v6 layout and flow. */
-  --bg: #f3eee5; --card: #fffdf9; --line: #e6ddcf; --line-2: #ebe4d8; --line-3: #f0eae0;
-  --ink: #1f2a24; --muted: #6b6a60; --ink-2: #3d4640;
-  --forest: #2b4a3b; --forest-h: #213a2e; --forest-2: #355746; --sage: #e8ece4; --sage-2: #f4f4ec; --sage-line: #dde3d8; --avatar: #e6e4da;
-  --blush: #f6e5da; --terra-t: #a8553a; --terra: #c2694b; --terra-h: #ad5a3e; --terra-l: #e7a084;
-  --chip: #efe9de; --track: #ebe4d8; --input: #d9d0c2; --soft: #f8f4ec; --dash: #cfc5b5;
-  --shadow: 0 1px 2px #2a201408;
+  /* Clean pass: white cards on a light warm page, hairlines instead of filled boxes, forest for action, terracotta as a sparing accent. */
+  --bg: #f5f2ec; --card: #ffffff; --line: #e7e2d9; --line-2: #ece8e0; --line-3: #f2efe9;
+  --ink: #1c2420; --muted: #66665e; --ink-2: #3b443e;
+  --forest: #2b4a3b; --forest-h: #213a2e; --forest-2: #355746; --sage: #eef2ed; --sage-2: #f6f8f5; --sage-line: #dfe6de; --avatar: #eceae4;
+  --blush: #f8ebe3; --terra-t: #a4502f; --terra: #c2694b; --terra-h: #ad5a3e; --terra-l: #e7a084;
+  --chip: #f1eee8; --track: #ece8e0; --input: #d8d2c7; --soft: #faf8f5; --dash: #d3ccbf;
+  --shadow: 0 1px 2px #1c24200a, 0 2px 8px #1c242006;
   --serif: "Cormorant Garamond", Georgia, serif;
 }
 * { box-sizing: border-box; }
@@ -607,3 +607,26 @@ h1 em, h2 em, .t em, .display em, .v6-display em { font-style: italic; color: va
 .path .me { font-weight: 600; color: var(--ink); }
 .path .pv { color: var(--terra-t); font-size: 12.5px; }
 @media (max-width: 720px) { .coach2 { grid-template-columns: minmax(0, 1fr); } }
+
+/* ============ Clean pass: crisper layers, fewer filled boxes ============ */
+.card { border: 1px solid var(--line); box-shadow: var(--shadow); }
+.v6-top { background: #fffffff2; backdrop-filter: saturate(1.2) blur(8px); }
+.v6-tabs { background: var(--chip); }
+/* client quote: no filled box, a quiet rule instead */
+.speaker.boxed { background: transparent; border: 0; border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); border-radius: 0; padding: 18px 2px; }
+.speaker .av { background: var(--sage); color: var(--forest); }
+/* inner panels: white with a hairline, not cream-on-cream */
+.how, .peek, .banner-soft, .next-note, .sort-row, .bd-row, .orig, .intent, .rep-steps div, .quote-box, .structure div, .items .lab, .bank-item, .slot, .attempts div { background: var(--card); border: 1px solid var(--line-2); }
+.transcript li > button, .transcript li > div { background: var(--card); }
+.transcript li.ther > * { background: var(--soft); }
+.bd-p, .pf-path, .sim-note { background: var(--soft); border: 1px solid var(--line-3); }
+.bd-p.t { background: var(--sage); border-color: var(--sage-line); }
+/* coaching stays the one tinted panel */
+.coach, .coach-d, .reveal { background: var(--sage); border: 1px solid var(--sage-line); }
+.choice { border-color: var(--line); box-shadow: var(--shadow); }
+.choice:hover { border-color: var(--forest); background: var(--card); box-shadow: 0 0 0 1px var(--forest); }
+.chip { background: var(--card); }
+.v6-ta, .v6-in, textarea, select { background: #fff; }
+.week-hero, .band { box-shadow: none; }
+.hero-photo figcaption { border-top-width: 2px; }
+.v6-aside .tip { background: var(--card); border: 1px solid var(--line); }
