@@ -866,3 +866,11 @@ button, input, textarea, select { font-family: inherit; }
 .pick-card { border: 1px solid var(--line); box-shadow: none; border-radius: 16px; }
 .pick-card:hover { box-shadow: 0 8px 24px #191d1b12; }
 .pick-card b { font-family: var(--serif); }
+/* My growth: alternate a soft tint per moment */
+.growth-card:nth-of-type(4n+1) { background: #eef3ef; border-color: #dce7df; }
+.growth-card:nth-of-type(4n+2) { background: #f9efe9; border-color: #f0ddd2; }
+.growth-card:nth-of-type(4n+3) { background: #f6f3ea; border-color: #e9e3d3; }
+.growth-card:nth-of-type(4n+4) { background: #edf1f5; border-color: #dbe2ea; }
+.growth-card .slot { background: #fff; border-color: transparent; }
+.growth-card .slot.empty, .growth-card .slot[class*="dash"] { background: #ffffff99; }
+.growth-card .v6-pill { background: #ffffffb3; color: var(--ink-2); }

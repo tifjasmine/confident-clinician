@@ -357,7 +357,6 @@
         ["Start with a welcome from me", "What the Lab is, and how it works."],
         ["Answer four client moments", `${D.BASELINE.map(b => b.client).join(", ")} each say something hard to answer. For each one, write what you’d say, then pick what you were going for. No right answers and no feedback today.`]
       ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
-      if (S.sealed) body += `<div class="done-note">✓ Your four answers are saved in the <b>My growth</b> tab. In Week 4 you’ll compare them with your new answers there.</div>`;
       const watch = S.welcome ? `<button type="button" class="v6-btn secondary" data-act="welcome">Welcome watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="welcome">${D.VIDEOS.welcome ? "I’ve watched the welcome" : "Mark the welcome watched"}</button>`;
       const base = S.sealed ? `<button type="button" class="v6-btn secondary" data-go="growth">See My growth</button>`
         : `<button type="button" class="v6-btn ${S.welcome ? "primary" : "secondary"}" data-go="baseline">${answered ? `Continue the Baseline (${answered} of 4)` : "Start the Baseline"}</button>`;
@@ -589,7 +588,7 @@
       const day1 = S.sealed ? `<span class="slot ok"><span class="lbl">Day 1 · your words</span>✓ Saved. Your Week 4 answer will appear next to it.</span>`
         : a && a.aim ? `<span class="slot"><span class="lbl">Day 1 · your words</span>Answered. Finish Day 1 to seal it.</span>`
         : `<span class="slot" style="color:var(--muted)"><span class="lbl">Day 1 · your words</span>Not answered yet. You’ll answer this on Day 1.</span>`;
-      return `<div class="card stack-12" style="gap:14px"><div class="growth-top"><span class="col"><span class="who">${esc(b.who)}</span><span class="line">${q(b.line)}</span></span><span class="v6-pill sage">${b.id} · ${esc(b.skill)}</span></div>
+      return `<div class="card stack-12 growth-card" style="gap:14px"><div class="growth-top"><span class="col"><span class="who">${esc(b.who)}</span><span class="line">${q(b.line)}</span></span><span class="v6-pill sage">${b.id} · ${esc(b.skill)}</span></div>
         <div class="grid2">${day1}<span class="slot dash"><span class="lbl">Week 4 · your words</span>Opens in Week 4</span></div></div>`;
     }).join("");
     return { html, tight: true };
