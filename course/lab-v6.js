@@ -72,6 +72,106 @@
   const goBack = () => { trail.pop(); const prev = trail[trail.length - 1] || "home"; goingBack = true; go(prev); };
   const setMenu = open => { $(".v6-app").classList.toggle("menu-open", open); $$("[data-menu]").forEach(b => b.setAttribute("aria-expanded", open)); };
 
+  /* ---------- Behind-the-scenes attempt log (Airtable "Lab Attempts") ----------
+     One row per activity attempt. A value is locked as the FIRST answer the first time it is committed
+     (a choice tapped, or a screen left / button pressed after typing); later changes count as "changed".
+     Students never see the log. Failed sends retry on the next change. */
+  const LOG = { url: "/.netlify/functions/lab-attempts", timer: null, busy: false };
+  const LOG_EMAIL = "studentpreview@theconfidentclinician.me"; /* the preview login; real accounts will pass the student's own email */
+  const logSource = () => /(^|\.)theconfidentclinician\.me$/.test(location.hostname) ? "Live" : "Preview";
+  const clip = v => String(v == null ? "" : v).trim().slice(0, 1500);
+  const optLabel = (opts, k) => { const o = (opts || []).find(x => (Array.isArray(x) ? x[0] : x) === k); return o ? (Array.isArray(o) ? o[1] : o) : k; };
+  /* Turn an activity's answers into labeled pairs, in screen order */
+  function actPairs(X, v) {
+    const out = [], seen = new Set(), add = (k, l, val) => { if (val == null || val === "" || (Array.isArray(val) && !val.length)) return; seen.add(k); out.push([k, l, Array.isArray(val) ? val.join(", ") : String(val)]); };
+    X.screens.forEach((sc, i) => {
+      const T = `${i + 1}. ${sc.title}`;
+      if (sc.kind === "tag") sc.items.forEach(([id, txt, , , nm]) => add(`t${i}_${id}`, `${T} · ${nm || txt.replace(/[“”]/g, "").slice(0, 60)}`, v[`t${i}_${id}`] && optLabel(sc.options, v[`t${i}_${id}`])));
+      if (sc.kind === "pick") add(`p${i}`, T, v[`p${i}`] && optLabel(sc.options, v[`p${i}`]));
+      if (sc.kind === "multi" && v[`m${i}c`]) add(`m${i}`, T, (v[`m${i}`] || []).map(k => optLabel(sc.options, k)));
+      if (sc.kind === "freeze") { sc.rows.forEach(([k, l]) => add(k, `${T} · ${l}`, v[k])); add("mine", `${T} · In my words`, v.mine); }
+      if (sc.kind === "reset") add("reset", T, v.reset);
+      if (sc.kind === "own") { add("what", `${T} · What happened`, v.what); add("gaps", `${T} · Gaps`, (v.gaps || []).map(k => ACTS.GAP[k])); add("action", `${T} · Action`, v.action); }
+      if (sc.kind === "selfcheck") sc.checks.forEach((c, k) => add(`s${k}`, `${T} · ${c}`, v[`s${k}`]));
+      if (sc.kind === "write2") sc.fields.forEach(([k, l]) => add(k, `${T} · ${l}`, v[k]));
+      if (sc.kind === "check") add("ck", T, v.ck);
+      if (sc.kind === "take") add(`t${sc.n}`, T, v[`t${sc.n}`]);
+      if (sc.kind === "pausewalk") sc.steps.forEach(([l, nm]) => add(l, `${T} · ${nm}`, v[l]));
+      if (sc.kind === "compare") sc.checks.forEach((c, k) => add(`c${k}`, `${T} · ${c}`, v[`c${k}`]));
+    });
+    return out;
+  }
+  function actMatches(X, first) {
+    let n = 0, hit = 0;
+    X.screens.forEach((sc, i) => {
+      if (sc.kind === "tag" && sc.items.every(it => it[2])) sc.items.forEach(([id, , ans]) => { const f = first[`t${i}_${id}`]; if (f != null) { n++; if (f === optLabel(sc.options, ans)) hit++; } });
+      if (sc.kind === "pick" && sc.best && first[`p${i}`] != null) { n++; if (first[`p${i}`] === optLabel(sc.options, sc.best)) hit++; }
+      if (sc.kind === "multi" && first[`m${i}`] != null) { n++; if (first[`m${i}`] === sc.correct.map(k => optLabel(sc.options, k)).join(", ")) hit++; }
+    });
+    return n ? `${hit} of ${n}` : "";
+  }
+  const flatPairs = (obj, prefix = "") => {
+    const out = [];
+    Object.entries(obj || {}).forEach(([k, val]) => {
+      if (val == null || val === "" || /^(o\d+|i|v|n|idx|step|order)$/.test(k)) return;
+      const key = prefix ? `${prefix}.${k}` : k;
+      if (typeof val === "object" && !Array.isArray(val)) out.push(...flatPairs(val, key));
+      else out.push([key, key, Array.isArray(val) ? val.map(x => typeof x === "object" ? JSON.stringify(x) : x).join(" | ") : String(val)]);
+    });
+    return out;
+  };
+  /* Build every row from current state */
+  function logRows() {
+    S.logId = S.logId || Math.random().toString(36).slice(2, 10);
+    const rows = [], mk = (key, activity, detail, week, n, status, pairs, extra = {}) => rows.push({ key: `${key}#${n}`, activity, detail, week, n, status, pairs, ...extra });
+    if (Object.keys(S.base || {}).length) mk("base", "Day 1 Baseline", "", 1, 1, S.sealed ? "Finished" : "In progress",
+      D.BASELINE.flatMap(b => { const a = S.base[b.id] || {}, aim = D.AIMS.find(x => x[0] === a.aim); return [[`${b.id}.move`, `${b.client} · Your words`, clip(a.move)], [`${b.id}.aim`, `${b.client} · Going for`, aim ? `${aim[2]} (${aim[1]})` : ""]]; }).filter(p => p[2]));
+    ["l1", "l2", "l3"].forEach(k => { const st = S.act && S.act[k]; if (!st || !Object.keys(st.v || {}).length) return; mk("act-" + k, ACTS[k].name, `Lesson ${k.slice(1)}`, 1, st.n || 1, st.done && st.i >= ACTS[k].screens.length - 1 ? "Finished" : "In progress", actPairs(ACTS[k], st.v), { act: k }); });
+    if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""]].filter(p => p[2]));
+    if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", "Jordan, session 2", 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
+    const M = S.sim || {}, SJ = SIMS.jordan;
+    [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Jordan Simulation", "Jordan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
+      SJ.moments.map((m, j) => [`m${j}`, `Moment ${j + 1}`, C.picks && C.picks[j] != null ? clip((m.choices[C.picks[j]] || [])[1]) : ""]).concat(flatPairs(C.intent, "Intention"), flatPairs(C.ref, "Debrief")).filter(p => p[2])));
+    Object.entries(S.reps || {}).forEach(([id, x]) => { const r = REP(id); if (!r) return; (x.attempts && x.attempts.length ? x.attempts : [x]).forEach((a, k) => mk("rep-" + id, "Rep", `Rep ${id} · ${r.client}`, r.week, k + 1, x.saved ? "Finished" : "In progress", flatPairs(a))); });
+    if (S.reflect && Object.keys(S.reflect).length) mk("reflect", "Reflect & Redo", "", 1, 1, S.steps.reflect ? "Finished" : "In progress", flatPairs(S.reflect));
+    if (S.profile && Object.keys(S.profile).length) mk("profile", "Clinical Confidence Profile", "", 1, 1, S.steps.save ? "Finished" : "In progress", flatPairs(S.profile));
+    return rows;
+  }
+  function logTick() {
+    try {
+      S.first = S.first || {}; S.logSent = S.logSent || {};
+      const now = new Date().toISOString(), out = [];
+      logRows().forEach(R => {
+        const F = S.first[R.key] = S.first[R.key] || { _started: now };
+        let changed = 0;
+        R.pairs.forEach(([k, , val]) => { if (!(k in F)) F[k] = val; else if (F[k] !== val) changed++; });
+        const firstTxt = R.pairs.map(([k, l]) => `${l}: ${F[k]}`).join("\n"), finalTxt = R.pairs.map(([, l, val]) => `${l}: ${val}`).join("\n");
+        const firstMap = Object.fromEntries(R.pairs.map(([k, l]) => [l, F[k]]));
+        const matches = R.act ? actMatches(ACTS[R.act], Object.fromEntries(R.pairs.map(([k]) => [k, F[k]]))) : "";
+        const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, email: LOG_EMAIL, activity: R.activity, detail: R.detail, week: R.week, attemptNo: R.n, status: R.status, first: firstTxt, final: finalTxt, changed, matches, started: F._started, source: logSource(), raw: JSON.stringify({ first: firstMap, final: Object.fromEntries(R.pairs.map(([, l, val]) => [l, val])) }) };
+        const sig = JSON.stringify([rec.status, rec.first, rec.final]);
+        if (S.logSent[R.key] !== sig) { rec.updated = now; rec._sig = sig; rec._key = R.key; out.push(rec); }
+      });
+      try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+      if (out.length) { LOG.queue = out; clearTimeout(LOG.timer); LOG.timer = setTimeout(logSend, 1500); }
+    } catch (e) { /* logging must never break the page */ }
+  }
+  async function logSend(useBeacon) {
+    const q = (LOG.queue || []).splice(0);
+    if (!q.length || LOG.busy) return;
+    LOG.busy = true;
+    for (let k = 0; k < q.length; k += 10) {
+      const part = q.slice(k, k + 10), body = JSON.stringify({ records: part.map(({ _sig, _key, ...r }) => r) });
+      try {
+        if (useBeacon && navigator.sendBeacon) { navigator.sendBeacon(LOG.url, new Blob([body], { type: "application/json" })); continue; }
+        const res = await fetch(LOG.url, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
+        if (res.ok) { part.forEach(r => { S.logSent[r._key] = r._sig; }); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+      } catch (e) { /* offline or not configured: retry on the next change */ }
+    }
+    LOG.busy = false;
+  }
+  addEventListener("pagehide", () => { if ((LOG.queue || []).length) logSend(true); });
+
   function render() {
     const signedIn = sessionStorage.getItem(PREVIEW_SESSION) === "1";
     $("[data-login]").hidden = signedIn;
@@ -108,6 +208,7 @@
     if (scr !== lastScr) scrollTo({ top: 0 });
     lastScr = scr;
     bind(scr, arg);
+    logTick();
     if (v.after) v.after();
   }
 
@@ -601,6 +702,9 @@
   const filled = (t, n = 3) => (t || "").trim().length >= n;
   function actScreen(X, i, v) {
     const sc = X.screens[i], K = sc.kind;
+    /* First answers are locked behind the scenes; if they change their pick, show what they chose first */
+    const F = ((S.first || {})[`act-${X.key}#${(S.act[X.key] || {}).n || 1}`]) || {};
+    const firstNote = (k, curLabel) => F[k] != null && F[k] !== curLabel ? `<span class="first-pick">Your first pick: ${esc(F[k])}</span>` : "";
     let h = `<h2 class="act-h">${esc(sc.title)}</h2>`, ok = true;
     if (K === "intro") {
       h += `<p class="act-p">${esc(sc.text)}</p>`;
@@ -612,14 +716,14 @@
         const cur = v[`t${i}_${id}`], lab = k => (sc.options.find(o => o[0] === k) || [])[1];
         const fb = cur ? (cur === ans ? `<div class="act-fb yes"><b>Yes, ${esc(lab(ans))}.</b> ${esc(why)}</div>` : `<div class="act-fb no"><b>Closer to ${esc(lab(ans))}.</b> ${esc(why)}</div>`) : "";
         const long = !sc.legend && sc.options.some(o => o[1].length > 28);
-        return `<div class="act-tag${cur ? " answered" : ""}${long ? " long" : ""}">${nm ? `<span class="nm">${esc(nm)}</span>` : ""}<span class="tx">${esc(txt)}</span>${pickChips("data-av", sc.options, cur, ` data-f="t${i}_${id}"`)}${fb}</div>`;
+        return `<div class="act-tag${cur ? " answered" : ""}${long ? " long" : ""}">${nm ? `<span class="nm">${esc(nm)}</span>` : ""}<span class="tx">${esc(txt)}</span>${pickChips("data-av", sc.options, cur, ` data-f="t${i}_${id}"`)}${fb}${cur ? firstNote(`t${i}_${id}`, lab(cur)) : ""}</div>`;
       }).join("")}</div>`;
       ok = sc.items.every(([id]) => v[`t${i}_${id}`]);
     }
     if (K === "pick") {
       const cur = v[`p${i}`], o = sc.options.find(x => x[0] === cur);
       h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${ord(v, "o" + i, sc.options.map(x => x[0])).map(j => sc.options[j]).map(([k, l]) => `<button type="button" class="act-pick" data-av="${k}" data-f="p${i}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`
-        + (o ? `<div class="act-fb ${cur === sc.best ? "yes" : "no"}">${esc(o[2])}</div>` : "");
+        + (o ? `<div class="act-fb ${cur === sc.best ? "yes" : "no"}">${esc(o[2])}</div>${firstNote(`p${i}`, o[1])}` : "");
       ok = !!cur;
     }
     if (K === "multi") {
@@ -843,7 +947,7 @@
       });
       $$("[data-anav]", app).forEach(b => b.onclick = () => {
         const d = b.dataset.anav;
-        if (d === "again") { S.act[arg] = { i: 0, v: {}, done: true }; }
+        if (d === "again") { S.act[arg] = { i: 0, v: {}, done: true, n: (st.n || 1) + 1 }; }
         else { st.i = Math.max(0, Math.min(X.screens.length - 1, st.i + +d)); if (st.i === X.screens.length - 1) st.done = true; }
         save(); render(); scrollTo({ top: 0 });
       });

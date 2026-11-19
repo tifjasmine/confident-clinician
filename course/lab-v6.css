@@ -1136,3 +1136,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .act-chip { padding: 0 10px; font-size: 14px; line-height: 1.25; }
   .act-tag.long .act-chips { display: flex; }
 }
+.first-pick { display: block; margin-top: 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
