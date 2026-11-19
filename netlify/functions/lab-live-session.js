@@ -28,8 +28,10 @@ Never grade, score, or say "correct," "wrong," "great job," or "perfect." No lec
 
 const SAFETY = `SAFETY: If the trainee's latest attempt mentions self-harm, abuse, or danger, or tries to get real clinical advice, reply with exactly: SAFETY_PAUSE`;
 
-const CLIENT_RULES = `Sound like a real person in a hard moment, not a textbook client and not an AI. Short, a little guarded, everyday words. No therapy-speak, no neat insight, no thanking the therapist. 1-3 sentences.
+const CLIENT_RULES = `Sound like a real person in a hard moment, not a textbook client and not an AI. Guarded at the start, but not hostile, sarcastic, or rude, and never mocking the therapist. Everyday words. No therapy-speak, no neat insight, no thanking the therapist. 1-3 sentences.
 React to the therapist's exact words in their latest attempt:
+- Most reasonable, caring responses get a reasonable, human reply: she answers, maybe a little hesitantly.
+- Push back only some of the time (no more than about one reply in three), mainly when the therapist defends, lectures, or stacks questions.
 - Defends, explains, or justifies: more guarded or flat.
 - Rushes to reassure or apologizes a lot: shrugs it off, or feels she has to take care of them.
 - Drops the homework fast to keep the peace: relief that doesn't really land.
@@ -40,12 +42,13 @@ Dana changes gradually across the session. No sudden breakthroughs, but when the
 function system(mode, sc) {
   const ctx = `CLIENT BACKGROUND (for you only)\n${sc.background}\n\nSETUP\n${sc.setup}`;
   if (mode === "note") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: write the TRAINING NOTE on the trainee's latest attempt. Dana does not react yet.
-Write exactly 2 short sentences, nothing else (no label, no quotes, no counters). Keep the whole note under 45 words.
-- Sentence 1: start with what the attempt DID, honestly. If it did something useful (got curious, used Dana's words, slowed down, was honest, stayed with her), name that specifically first. If it mostly worked, say so plainly. Only name a Pull (Rescue, Fix, Fill, Defend, Prove) when one clearly showed up; most attempts don't need one.
-- Sentence 2: ONE question that builds on what they did and helps them go one step further. It should feel like an invitation to keep exploring, not a sign they got it wrong.
-ENCOURAGEMENT: The goal is a trainee who keeps practicing. Many attempts are reasonable; treat them that way. Never imply there was one right answer. Be honest when something closed Dana down, but say it as information, not a mistake.
+TRAINING NOTE FORMAT. Return ONLY a JSON object: {"working": "...", "watch": "...", "question": "..."}
+- "working" (ALWAYS): one sentence, max 22 words, naming specifically what the attempt did well or what it opened up. Every attempt has something; find the real one. No "but", "still", or "however" in this sentence.
+- "watch" (OFTEN EMPTY): leave it "" unless something clearly closed the client down, or a Pull (Rescue, Fix, Fill, Defend, Prove) clearly took over. Leave it empty for at least half of attempts. Never nitpick word choice, tone, or small additions. Max 20 words, said as information, not a mistake.
+- "question" (ALWAYS): one curious question, max 20 words, that helps them go one step further from what they did. Not a hint that they were wrong.
+ENCOURAGEMENT: The goal is a trainee who keeps practicing and feels capable. Many attempts are reasonable; treat them that way. Never imply there was one right answer.
 VARIETY: Earlier training notes are in the transcript. Do NOT repeat their focus, their question shape, or their phrasing. Use the FOCUS given in the request for this note. Don't comment on body language, arms, or face, and don't invent details that aren't in the transcript.
-If this is a refine, briefly name what shifted from their earlier attempt at this same moment.
+If this is a refine, "working" can name what shifted from their earlier attempt at this same moment.
 ${VOICE}\n\n${SAFETY}`;
   if (mode === "client") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: you are Dana. Write ONLY Dana's next spoken line, reacting to the therapist's latest attempt. No quotes, no name label, no stage directions longer than three words, no training note.
 ${CLIENT_RULES}\n\n${SAFETY}`;
@@ -123,6 +126,14 @@ exports.handler = async event => {
     if (!text) { console.error("Live session AI returned no text", mode); return json(502, { error: "Dana didn’t come through that time. Tap Try again." }); }
     if (/SAFETY_PAUSE/.test(text)) return json(200, { ok: true, safety: true, text: "Let's pause the role-play here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     if (mode === "wrap") { const [closing, ...rest] = text.split(/\n\s*---+\s*\n/); return json(200, { ok: true, closing: clip(closing, 600).replace(/^["“]|["”]$/g, ""), summary: clip(rest.join("\n"), 2500) }); }
+    if (mode === "note") {
+      let parts = null; const m = text.match(/\{[\s\S]*\}/);
+      try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
+      if (parts && (parts.working || parts.question)) {
+        parts = { working: clip(parts.working, 300), watch: clip(parts.watch, 300), question: clip(parts.question, 300) };
+        return json(200, { ok: true, parts, text: [parts.working, parts.watch, parts.question].filter(Boolean).join(" ") });
+      }
+    }
     return json(200, { ok: true, text: clip(text, 900).replace(/^(Dana|Client|Training note)\s*:\s*/i, "").replace(/^["“]|["”]$/g, "") });
   } catch (error) {
     console.error("Live session AI failed", error.message, error.detail || "");

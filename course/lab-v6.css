@@ -1235,3 +1235,13 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .live-allow { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 14px; color: #ffffffc8; }
 .live-allow b { color: #fff; font-size: 15px; }
 .live-go:disabled { opacity: .6; cursor: not-allowed; }
+/* structured training notes */
+.lv-note .nt-row { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; }
+.lv-note .nt-row + .nt-row { border-top: 1px solid #00000010; padding-top: 8px; margin-top: 4px; }
+.lv-note .nt-row > i { flex: none; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 12px; font-weight: 700; color: #fff; margin-top: 1px; }
+.lv-note .nt-row.work > i { background: var(--forest); }
+.lv-note .nt-row.watch > i { background: #b98a3c; }
+.lv-note .nt-row.ask > i { background: var(--terra); }
+.lv-note .nt-row b { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.lv-note .nt-row.work b { color: var(--forest); }
+.lv-note { background: #fff; border: 1px solid #f0dccf; border-left: 4px solid var(--terra); }

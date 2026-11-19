@@ -835,6 +835,11 @@
      Results are kept per spot and re-asked only if the student's words changed. `save` mirrors results into the
      activity's own state so they're logged to Airtable with everything else. */
   const AIREQ = {}, AIBUSY = {}, RATE = {};
+  /* Training notes come back in parts: what's working (always), something to watch (sometimes), a question to explore */
+  const noteLabeled = p => p ? [p.working && `What's working: ${p.working}`, p.watch && `Something to watch: ${p.watch}`, p.question && `To explore: ${p.question}`].filter(Boolean).join("\n") : "";
+  const noteBody = (p, fallback) => p && (p.working || p.question)
+    ? `${p.working ? `<span class="nt-row work"><i aria-hidden="true">✓</i><span><b>What’s working</b>${esc(p.working)}</span></span>` : ""}${p.watch ? `<span class="nt-row watch"><i aria-hidden="true">↗</i><span><b>Something to watch</b>${esc(p.watch)}</span></span>` : ""}${p.question ? `<span class="nt-row ask"><i aria-hidden="true">?</i><span><b>To explore</b>${esc(p.question)}</span></span>` : ""}`
+    : esc(fallback || "");
   /* Thumbs up / down under every practice-partner reply. Saved in S.fb and logged to Airtable "AI Feedback". */
   function rateHTML(fbid, meta) {
     RATE[fbid] = meta;
@@ -863,7 +868,7 @@
     if (fresh) {
       const res = r.res;
       if (res.client) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">${esc((o.who || "C")[0])}</span><div class="lv-say">${q(res.client)}</div></div>`;
-      if (res.note) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${esc(res.note)}</div>`;
+      if (res.note || res.parts) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${res.safety ? esc(res.note) : noteBody(res.parts, res.note)}</div>`;
       if (!res.safety && o.rkey) h += rateHTML(`${id}@${r.at || ""}`, { rkey: o.rkey, akeys: o.akeys || [], where: o.where || label, type: res.client ? "Client reply" : "Training note", ai: [res.client && `Client: ${res.client}`, res.note && `Training note: ${res.note}`].filter(Boolean).join("\n"), input: data.response || data.action || data.take2 || data.sentence || "" });
     }
     if (AIBUSY[id]) h += `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(o.wait || "Processing…")}</div>`;
@@ -882,7 +887,7 @@
       const res = await fetch("/.netlify/functions/lab-ai-assist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task: R.task, data: R.data }) });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || !out.ok) throw new Error(out.error || "This isn’t available right now. Try again in a moment.");
-      S.ai[id] = { sig: aiSig(R.data), res: { client: out.client || "", note: out.note || "", safety: !!out.safety }, at: new Date().toISOString() };
+      S.ai[id] = { sig: aiSig(R.data), res: { client: out.client || "", note: (out.parts && noteLabeled(out.parts)) || out.note || "", parts: out.parts || null, safety: !!out.safety }, at: new Date().toISOString() };
       if (R.save) R.save(S.ai[id].res);
     } catch (e) { S.ai[id] = { ...(S.ai[id] || {}), err: e.message || "Something went wrong. Try again." }; }
     AIBUSY[id] = false; save(); render();
@@ -937,7 +942,7 @@
       const atts = (m.attempts || []).map((a, j, all) => {
         const old = j < all.length - 1;
         return `<div class="lv-me${old ? " old" : ""}"><span class="lv-tag">${old ? "↺ Refined" : all.length > 1 ? `Attempt ${j + 1}` : "You"}</span>${esc(a.text)}</div>`
-          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${esc(a.note)}</div>${a.safety ? "" : rateHTML(`live-${C.id}-m${k}-a${j}`, { rkey, akeys: [`m${k}a${j}`], where: `Live session · Moment ${k + 1} · Training note`, type: "Training note", ai: a.note, input: a.text })}` : "");
+          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${a.safety ? esc(a.note) : noteBody(a.parts, a.note)}</div>${a.safety ? "" : rateHTML(`live-${C.id}-m${k}-a${j}`, { rkey, akeys: [`m${k}a${j}`], where: `Live session · Moment ${k + 1} · Training note`, type: "Training note", ai: a.note, input: a.text })}` : "");
       }).join("");
       const prevA = k ? ((C.moments[k - 1].attempts || []).slice(-1)[0] || {}).text || "" : "";
       return `<div class="lv-moment${last ? " now" : ""}"><span class="lv-mn">Moment ${k + 1}</span><div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(m.client)}</div></div>${k ? rateHTML(`live-${C.id}-c${k}`, { rkey, akeys: [(m.attempts || []).length ? `m${k}a0` : `m${k - 1}a${Math.max(0, (C.moments[k - 1].attempts || []).length - 1)}`], where: `Live session · Moment ${k + 1} · Dana`, type: "Client reply", ai: m.client, input: prevA }) : ""}${atts}</div>`;
@@ -975,7 +980,7 @@
       if (kind === "note") {
         LIVE.busy = "note"; render();
         const a = C.moments[C.moments.length - 1].attempts.slice(-1)[0], out = await liveCall("note", C);
-        a.note = out.text; if (out.safety) a.safety = true; C.phase = "choose";
+        a.note = out.parts ? noteLabeled(out.parts) : out.text; a.parts = out.parts || null; if (out.safety) a.safety = true; C.phase = "choose";
       } else if (kind === "client") {
         LIVE.busy = "client"; render();
         const out = await liveCall("client", C);

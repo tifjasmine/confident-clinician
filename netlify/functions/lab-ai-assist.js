@@ -22,27 +22,32 @@ function prompt(task, d) {
     system: `${BASE}\n\nYou play the fictional client, then write a short training note.
 CLIENT: ${clip(d.who, 200)}. Context: ${clip(d.context, 600)}
 ${d.guide ? `How this client tends to react (the course author's notes, use as guidance): ${clip(d.guide, 1500)}` : ""}
-Sound like a real person in a hard moment, not a textbook client and not an AI. Everyday words, 1-3 sentences, no therapy-speak, no neat insight, no thanking the therapist. React to the therapist's EXACT words: defending or explaining -> more guarded; rushing to reassure or fix -> shrug it off or feel managed; real curiosity using the client's own words -> soften a little and give one real detail; stacked questions -> answer only the last one.
-Then the training note: 2 short sentences, under 45 words total. Sentence 1 starts with what the response DID: if it did something useful (curiosity, using the client's words, honesty, slowing down), name that specifically first; only name a Pull (Rescue, Fix, Fill, Defend, Prove) when one clearly showed up. Sentence 2 is one question that builds on what they did. The note should leave them encouraged to keep practicing, never feeling there was one right answer. Don't comment on body language or invent details.
-${VOICE}\n${SAFETY}\n${OUT} Shape: {"client": "...", "note": "..."}`,
+Sound like a real person in a hard moment, not a textbook client and not an AI. A little guarded but not hostile, sarcastic, or rude. Everyday words, 1-3 sentences, no therapy-speak, no neat insight, no thanking the therapist. Most reasonable, caring responses get a reasonable, human reply. React to the therapist's EXACT words: defending or explaining -> more guarded; rushing to reassure or fix -> shrug it off or feel managed; real curiosity using the client's own words -> soften a little and give one real detail; stacked questions -> answer only the last one.
+Then the training note.
+TRAINING NOTE FORMAT. (fields "working", "watch", "question" in the JSON)
+- "working" (ALWAYS): one sentence, max 22 words, naming specifically what the attempt did well or what it opened up. Every attempt has something; find the real one. No "but", "still", or "however" in this sentence.
+- "watch" (OFTEN EMPTY): leave it "" unless something clearly closed the client down, or a Pull (Rescue, Fix, Fill, Defend, Prove) clearly took over. Leave it empty for at least half of attempts. Never nitpick word choice, tone, or small additions. Max 20 words, said as information, not a mistake.
+- "question" (ALWAYS): one curious question, max 20 words, that helps them go one step further from what they did. Not a hint that they were wrong.
+
+${VOICE}\n${SAFETY}\n${OUT} Shape: {"client": "...", "working": "...", "watch": "", "question": "..."}`,
     user: `The client just said: "${clip(d.line, 800)}"\nThe trainee therapist responded: "${clip(d.response)}"`,
   };
   if (task === "plan") return {
     system: `${BASE}\n\nThe trainee named a gap from a recent session (Knowledge, Skill, Pressure, or Support) and wrote one action for this week. Your job: a short training note on whether the action is specific enough to actually do this week and whether it fits the gap.
 Specific means: someone else could tell whether they did it, it says when or how many times, and it matches the gap (knowledge -> study and verify; skill -> rehearse the behavior; pressure -> notice a cue and practice a reset; support -> consult or follow a procedure).
-Write 2 short sentences: sentence 1 names what's already concrete (or what's missing), plainly. Sentence 2 is one question that pushes them to make it doable. Don't rewrite the action for them.
-${VOICE}\n${OUT} Shape: {"note": "..."}`,
+"working": what's already concrete or well-matched to the gap. "watch": only if it's genuinely too vague to do this week or doesn't fit the gap, else "". "question": one question that helps them make it doable. Don't rewrite the action for them.
+${VOICE}\n${OUT} Shape: {"working": "...", "watch": "", "question": "..."}`,
     user: `Moment: ${clip(d.what, 800)}\nGap(s): ${clip(d.gap, 200)}\nAction this week: ${clip(d.action, 800)}`,
   };
   if (task === "compare") return {
     system: `${BASE}\n\nThe trainee answered the same client line twice: Take 1 on instinct, Take 2 after running P.A.U.S.E. (Pause, Attend, Use what the client gave you, Say one intentional thing, Explore). Point out ONE specific, concrete difference between the two takes (for example which of the client's words Take 2 used, or what Take 1 rushed toward). Be specific, quote at most three of the trainee's own words. Then one question about what that difference might invite from the client.
-2 short sentences total. If the takes are nearly the same, say so kindly and ask what they'd want to shift.
-${VOICE}\n${OUT} Shape: {"note": "..."}`,
+"working": the specific shift in Take 2 that helps (or, if they're nearly the same, what's already steady). "watch": usually "", only if Take 2 lost something real from Take 1. "question": what that difference might invite from the client.
+${VOICE}\n${OUT} Shape: {"working": "...", "watch": "", "question": "..."}`,
     user: `Client line: "${clip(d.line, 600)}"\nTake 1: "${clip(d.take1)}"\nTake 2: "${clip(d.take2)}"`,
   };
   if (task === "why") return {
-    system: `${BASE}\n\nIn the Demo, a client (Jordan) asks the therapist to just decide for them. The trainee wrote their first sentence back and explained why. Reply with a short training note: sentence 1 reflects the reasoning they gave in plain words (if they only said something like "because it validates," gently note that it doesn't yet say what it helps them learn or what it avoids). Sentence 2 is ONE follow-up question that deepens their reasoning, ideally about whether the sentence gives Jordan the decision back while still helping.
-${VOICE}\n${OUT} Shape: {"note": "..."}`,
+    system: `${BASE}\n\nIn the Demo, a client (Jordan) asks the therapist to just decide for them. The trainee wrote their first sentence back and explained why. "working": the real reasoning in their why, in plain words. "watch": only if their why is just a label like "because it validates" (gently note it doesn't yet say what it helps them learn or avoid), else "". "question": ONE follow-up that deepens their reasoning, ideally about giving Jordan the decision back while still helping.
+${VOICE}\n${OUT} Shape: {"working": "...", "watch": "", "question": "..."}`,
     user: `Jordan said: "${clip(d.line, 600)}"\nTrainee's first sentence: "${clip(d.sentence)}"\nTheir why: "${clip(d.why)}"`,
   };
   return null;
@@ -73,8 +78,10 @@ exports.handler = async event => {
     if (out.stop_reason === "refusal") return json(200, { ok: true, safety: true, note: "Let's pause here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     const r = parse((out.content || []).filter(c => c.type === "text").map(c => c.text).join(""));
     if (r.safety) return json(200, { ok: true, safety: true, note: "Let's pause here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
-    if (!String(r.note || "").trim() && !String(r.client || "").trim()) { console.error("AI assist returned no text", body.task); return json(502, { error: "That didn’t come through. Tap Ask again." }); }
-    return json(200, { ok: true, client: clip(r.client, 800).replace(/^["“]|["”]$/g, ""), note: clip(r.note, 900) });
+    if (!String(r.note || r.working || r.question || "").trim() && !String(r.client || "").trim()) { console.error("AI assist returned no text", body.task); return json(502, { error: "That didn’t come through. Tap Ask again." }); }
+    const parts = (r.working || r.question) ? { working: clip(r.working, 300), watch: clip(r.watch, 300), question: clip(r.question, 300) } : null;
+    if (parts) r.note = [parts.working, parts.watch, parts.question].filter(Boolean).join(" ");
+    return json(200, { ok: true, parts, client: clip(r.client, 800).replace(/^["“]|["”]$/g, ""), note: clip(r.note, 900) });
   } catch (error) {
     console.error("AI assist error", error.message);
     return json(502, { error: "This isn’t available right now. Try again in a moment." });
