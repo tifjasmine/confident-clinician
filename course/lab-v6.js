@@ -157,8 +157,9 @@
         R.pairs.forEach(([k, , val]) => { if (!(k in F)) F[k] = val; else if (F[k] !== val) changed++; });
         const answers = R.pairs.map(([k, l, val, exp, extra], j) => ({ key: k, q: l, first: F[k], final: val, expected: exp || "", order: j + 1, ...(extra || {}) }));
         const matches = R.act ? actMatches(ACTS[R.act], Object.fromEntries(R.pairs.map(([k]) => [k, F[k]]))) : "";
-        const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, activityKey: R.akey, detail: R.detail, attemptNo: R.n, status: R.status, changed, matches, started: F._started, answers };
-        const sig = JSON.stringify([rec.status, answers]);
+        const feedback = Object.entries(S.fb || {}).filter(([, f]) => f.rkey === R.key && f.rating).map(([id, f]) => ({ id, rating: f.rating, note: f.note || "", where: f.where || "", type: f.type || "", ai: f.ai || "", input: f.input || "", at: f.at }));
+        const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, activityKey: R.akey, detail: R.detail, attemptNo: R.n, status: R.status, changed, matches, started: F._started, answers, feedback };
+        const sig = JSON.stringify([rec.status, answers, feedback]);
         if (S.logSent[R.key] !== sig) { rec.updated = now; rec._sig = sig; rec._key = R.key; out.push(rec); }
       });
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
@@ -383,7 +384,7 @@
         <label class="field">Your new line 4 <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
         ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>Another way to say it</small><span class="tk">${q(A.take)}</span></div></div>
           <div class="coach"><small>Why it works</small>${esc(A.takeWhy)}</div>
-          ${aiBox("lab-r4", "Hear how Jordan responds to your line 4", "react", () => ({ who: "Jordan, 29, in session 2", context: "Jordan keeps having the same fights with their partner and feels like they're always the one who has to bring things up, and then they're the bad guy.", line: A.lines[2][1], response: (S.lab.move || "").trim() }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: "Jordan", wait: "Jordan is responding…" })}
+          ${aiBox("lab-r4", "Hear how Jordan responds to your line 4", "react", () => ({ who: "Jordan, 29, in session 2", context: "Jordan keeps having the same fights with their partner and feels like they're always the one who has to bring things up, and then they're the bad guy.", line: A.lines[2][1], response: (S.lab.move || "").trim() }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: "Jordan", wait: "Jordan is responding…", rkey: "lab#1", where: "Clinical Blind Spot · Line 4 rewrite" })}
           <div class="next-note"><b>One more thing before you go.</b> Look at what happened next in the session.
             <span class="nn-row"><span>${esc(A.line8[0])}</span>${q(A.lines[7][1])}</span>
             <span class="nn-row"><span>${esc(A.line8[1])}</span>${q(A.lines[8][1])}</span>
@@ -530,7 +531,7 @@
           <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
           <label class="field">Why that sentence? <small>${esc(AD.hintWhy)}</small><textarea class="v6-ta" rows="2" data-demo="why" placeholder="I chose it because…">${esc(DM.why)}</textarea></label>
           <div class="field">${esc(AD.check)}<div class="chips-row">${["Yes", "Not quite", "Not sure"].map(o => `<button type="button" class="chip" data-demo-ck="${o}" aria-pressed="${DM.ck === o}">${o}</button>`).join("")}</div></div>
-          ${aiBox("demo-why", "Get a follow-up question on my why", "why", () => ({ line: AD.moment, sentence: DM.line || "", why: DM.why || "" }), res => { DM.aiNote = res.note; }, { req: ["sentence", "why"] })}</div>`;
+          ${aiBox("demo-why", "Get a follow-up question on my why", "why", () => ({ line: AD.moment, sentence: DM.line || "", why: DM.why || "" }), res => { DM.aiNote = res.note; }, { req: ["sentence", "why"], rkey: "demo#1", where: "Demo · Your why" })}</div>`;
       const dOk = (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3 && DM.ck;
       cta = (DM.watched ? `<button type="button" class="v6-btn secondary" data-act="demowatch">Demo watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="demowatch">Mark demo watched</button>`)
         + (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
@@ -637,7 +638,7 @@
 
     if (x.aim) {
       const guide = Object.entries(r.reactions || {}).map(([aim, z]) => [].concat(z).map(y => `If the move was mostly ${aim}${y.move ? ` (${y.move})` : ""}: ${name} says "${y.says}"${y.shows ? ` (${y.shows})` : ""}`).join(" ")).join("\n");
-      const aiReact = aiBox(`rep-${r.id}`, `Hear how ${name} responds to your words`, "react", () => ({ who: name, context: r.context || "", line: r.line || r.stageLine || "", response: (x.move || "").trim(), guide }), res => { x.aiClient = res.client; x.aiNote = res.note; }, { auto: true, req: ["response"], who: name, wait: `${name} is responding…` });
+      const aiReact = aiBox(`rep-${r.id}`, `Hear how ${name} responds to your words`, "react", () => ({ who: name, context: r.context || "", line: r.line || r.stageLine || "", response: (x.move || "").trim(), guide }), res => { x.aiClient = res.client; x.aiNote = res.note; }, { auto: true, req: ["response"], who: name, wait: `${name} is responding…`, rkey: `rep-${r.id}#${Math.max(1, (x.attempts || []).length)}`, where: `Rep ${r.id} · ${name} reacts` });
       html += `<div class="card stack-12"><span class="v6-label">4 · ${esc(name)} reacts to your words</span>${aiReact}
         <details class="act-ex rep-more"><summary>Other ways this moment can go</summary><div class="stack-12" style="margin-top:10px">${reacts.length ? reacts.map(z => `<div class="reaction-alt">${z.move ? `<p class="move-label" style="margin:0 0 8px">${reacts.length > 1 ? "If your move sounded like" : "A move like"} <b>${esc(z.move)}</b></p>` : ""}
         <div class="speaker"><span class="av" aria-hidden="true">${name[0]}</span><span class="col">${z.stage ? `<span class="stage">${esc(z.stage)}</span>` : ""}<span class="said md">${q(z.says)}</span>${z.after ? `<span class="stage">${esc(z.after)}</span>` : ""}<span class="shows">${esc(z.shows)}</span></span></div></div>`).join("")
@@ -753,7 +754,7 @@
       h += `<p class="act-p">${esc(sc.text)}</p><div class="act-you"><small>Your action</small>${esc(v.action || "")}</div>
         <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not yet"], v["s" + k], ` data-f="s${k}"`)}</div>`).join("")}</div>
         ${any ? `<label class="field">Tighten it <small>Add who, when, or how many times.</small><textarea class="v6-ta" rows="2" data-at="action">${esc(v.action)}</textarea></label>` : ""}
-        ${aiBox(`act-${X.key}-${i}`, "Get a second look at my plan", "plan", () => ({ what: v.what || "", gap: (v.gaps || []).map(k => ACTS.GAP[k]).join(" + "), action: v.action || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["action"] })}`;
+        ${aiBox(`act-${X.key}-${i}`, "Get a second look at my plan", "plan", () => ({ what: v.what || "", gap: (v.gaps || []).map(k => ACTS.GAP[k]).join(" + "), action: v.action || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["action"], rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, where: `${X.name} · ${sc.title}` })}`;
       ok = sc.checks.every((_, k) => v["s" + k]) && filled(v.action);
     }
     if (K === "own") {
@@ -781,7 +782,7 @@
     if (K === "write2") {
       h += momentHTML(sc.moment) + sc.fields.map(([k, l, ph]) => `<label class="field">${esc(l)}<textarea class="v6-ta" rows="2" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea></label>`).join("")
         + `<details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)} Don’t memorize it. Say it your way.</p></details>
-        ${aiBox(`act-${X.key}-${i}`, "Hear how the client responds", "react", () => ({ who: "a client in session 6, arms crossed", context: "Last week the therapist suggested a thought record. The client didn't do it and feels like every helper hands them homework instead of listening.", line: sc.moment.line, response: (v.r2 || v.r1 || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "The client is responding…" })}`;
+        ${aiBox(`act-${X.key}-${i}`, "Hear how the client responds", "react", () => ({ who: "a client in session 6, arms crossed", context: "Last week the therapist suggested a thought record. The client didn't do it and feels like every helper hands them homework instead of listening.", line: sc.moment.line, response: (v.r2 || v.r1 || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "The client is responding…", rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, where: `${X.name} · ${sc.title}` })}`;
       ok = sc.fields.every(([k]) => filled(v[k]));
     }
     if (K === "check") {
@@ -791,7 +792,7 @@
       ok = !!cur;
     }
     if (K === "take") {
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${sc.ai ? aiBox(`act-${X.key}-${i}`, "Hear her response", "react", () => ({ who: "a client in session 4 who has had a hard month", context: "Earlier she said she doesn't know what she feels anymore. Now she's pushing back: she doesn't want to be cheered up, she wants room to say how bad it feels.", line: sc.moment.line, response: (v["t" + sc.n] || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "She’s responding…" }) : ""}`;
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${sc.ai ? aiBox(`act-${X.key}-${i}`, "Hear her response", "react", () => ({ who: "a client in session 4 who has had a hard month", context: "Earlier she said she doesn't know what she feels anymore. Now she's pushing back: she doesn't want to be cheered up, she wants room to say how bad it feels.", line: sc.moment.line, response: (v["t" + sc.n] || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "She’s responding…", rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, where: `${X.name} · ${sc.title}` }) : ""}`;
       ok = filled(v["t" + sc.n]);
     }
     if (K === "pausewalk") {
@@ -801,7 +802,7 @@
     if (K === "compare") {
       h += `<div class="act-cmp"><div><small>Take 1 · instinct</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
         <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not quite"], v["c" + k], ` data-f="c${k}"`)}</div>`).join("")}</div>
-        ${aiBox(`act-${X.key}-${i}`, "What changed between my takes?", "compare", () => ({ line: (X.screens.find(z => z.kind === "take") || {}).moment.line, take1: v.t1 || "", take2: v.t2 || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["take1", "take2"] })}`;
+        ${aiBox(`act-${X.key}-${i}`, "What changed between my takes?", "compare", () => ({ line: (X.screens.find(z => z.kind === "take") || {}).moment.line, take1: v.t1 || "", take2: v.t2 || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["take1", "take2"], rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, where: `${X.name} · ${sc.title}` })}`;
       ok = sc.checks.every((_, k) => v["c" + k]);
     }
     if (K === "summary") {
@@ -833,7 +834,26 @@
      aiBox() renders a button (or auto-runs), then the result: an optional client reply bubble and a training note.
      Results are kept per spot and re-asked only if the student's words changed. `save` mirrors results into the
      activity's own state so they're logged to Airtable with everything else. */
-  const AIREQ = {}, AIBUSY = {};
+  const AIREQ = {}, AIBUSY = {}, RATE = {};
+  /* Thumbs up / down under every practice-partner reply. Saved in S.fb and logged to Airtable "AI Feedback". */
+  function rateHTML(fbid, meta) {
+    RATE[fbid] = meta;
+    const f = (S.fb || {})[fbid] || {};
+    return `<div class="rate" data-rate-row="${fbid}"><span>Was this helpful?</span>
+      <button type="button" class="rate-b${f.rating === "up" ? " on" : ""}" data-rate="${fbid}" data-val="up" aria-pressed="${f.rating === "up"}" aria-label="Helpful">👍</button>
+      <button type="button" class="rate-b${f.rating === "down" ? " on" : ""}" data-rate="${fbid}" data-val="down" aria-pressed="${f.rating === "down"}" aria-label="Not helpful or not accurate">👎</button>
+      ${f.rating === "up" ? `<em>Thanks!</em>` : ""}
+      ${f.rating === "down" ? `<span class="rate-off"><input class="v6-in" type="text" data-rate-note="${fbid}" value="${esc(f.note || "")}" placeholder="What was off? (optional)"><em>${f.note ? "Saved. Thank you." : "Thanks for telling us."}</em></span>` : ""}</div>`;
+  }
+  function bindRate() {
+    $$("[data-rate]").forEach(b => b.onclick = () => {
+      const id = b.dataset.rate, v = b.dataset.val; S.fb = S.fb || {};
+      const prev = S.fb[id] || {};
+      S.fb[id] = { ...prev, ...RATE[id], rating: prev.rating === v ? "" : v, at: new Date().toISOString() };
+      save(); render();
+    });
+    $$("[data-rate-note]").forEach(t => { t.oninput = () => { const id = t.dataset.rateNote; S.fb[id] = { ...(S.fb[id] || {}), note: t.value.slice(0, 600), at: new Date().toISOString() }; save(); const em = t.nextElementSibling; if (em) em.textContent = t.value.trim() ? "Saved. Thank you." : "Thanks for telling us."; clearTimeout(t._lt); t._lt = setTimeout(logTick, 800); }; });
+  }
   const aiSig = d => JSON.stringify(d);
   function aiBox(id, label, task, dataFn, save, o = {}) {
     AIREQ[id] = { task, dataFn, save, auto: !!o.auto, req: o.req || [] };
@@ -844,6 +864,7 @@
       const res = r.res;
       if (res.client) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">${esc((o.who || "C")[0])}</span><div class="lv-say">${q(res.client)}</div></div>`;
       if (res.note) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${esc(res.note)}</div>`;
+      if (!res.safety && o.rkey) h += rateHTML(`${id}@${r.at || ""}`, { rkey: o.rkey, where: o.where || label, type: res.client ? "Client reply" : "Training note", ai: [res.client && `Client: ${res.client}`, res.note && `Training note: ${res.note}`].filter(Boolean).join("\n"), input: data.response || data.action || data.take2 || data.sentence || "" });
     }
     if (AIBUSY[id]) h += `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(o.wait || "Processing…")}</div>`;
     else if (!fresh) h += `<button type="button" class="ai-btn" data-ai="${id}"${ready ? "" : " disabled"}><span class="ai-spark" aria-hidden="true">✦</span><span><b>${esc(label)}</b><small>${ready ? (o.sub || "Responds to your exact words") : (o.need || "Write your answer first")}</small></span></button>`;
@@ -868,6 +889,7 @@
   }
   function bindAI() {
     $$("[data-ai]").forEach(b => b.onclick = () => aiRun(b.dataset.ai));
+    bindRate();
     Object.entries(AIREQ).forEach(([id, R]) => { const r = (S.ai || {})[id]; if (R.auto && !AIBUSY[id] && !(r && r.sig === aiSig(R.dataFn()) && (r.res || r.err)) && document.querySelector(`[data-ai="${id}"]`)) setTimeout(() => aiRun(id), 50); });
   }
 
@@ -904,20 +926,23 @@
     C.moments.forEach(m => (m.attempts || []).forEach(a => { if (a.note === "") delete a.note; }));
     { const lm = C.moments[C.moments.length - 1], la = (lm.attempts || []).slice(-1)[0]; if (C.phase === "choose" && la && !la.note && !LIVE.busy) { C.phase = "attempt"; lm.attempts.pop(); C.draft = la.text; } }
     const n = C.moments.length, test = isTestAccount(), left = LIVE.refines - C.refinesUsed;
+    const allS = [...L.past, ...(L.past.some(p => p.id === C.id) ? [] : [C])], rkey = `live-dana#${allS.findIndex(p => p.id === C.id) + 1}`;
     const moment = (m, k) => {
       const last = k === n - 1;
       const atts = (m.attempts || []).map((a, j, all) => {
         const old = j < all.length - 1;
         return `<div class="lv-me${old ? " old" : ""}"><span class="lv-tag">${old ? "↺ Refined" : all.length > 1 ? `Attempt ${j + 1}` : "You"}</span>${esc(a.text)}</div>`
-          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${esc(a.note)}</div>` : "");
+          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${esc(a.note)}</div>${a.safety ? "" : rateHTML(`live-${C.id}-m${k}-a${j}`, { rkey, where: `Live session · Moment ${k + 1} · Training note`, type: "Training note", ai: a.note, input: a.text })}` : "");
       }).join("");
-      return `<div class="lv-moment${last ? " now" : ""}"><span class="lv-mn">Moment ${k + 1}</span><div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(m.client)}</div></div>${atts}</div>`;
+      const prevA = k ? ((C.moments[k - 1].attempts || []).slice(-1)[0] || {}).text || "" : "";
+      return `<div class="lv-moment${last ? " now" : ""}"><span class="lv-mn">Moment ${k + 1}</span><div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(m.client)}</div></div>${k ? rateHTML(`live-${C.id}-c${k}`, { rkey, where: `Live session · Moment ${k + 1} · Dana`, type: "Client reply", ai: m.client, input: prevA }) : ""}${atts}</div>`;
     };
     const curM = C.moments[n - 1], lastA = (curM.attempts || []).slice(-1)[0];
     let ctl = "";
     if (C.done) {
       ctl = `${C.closing ? `<div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(C.closing)}</div></div>` : ""}
         <div class="lv-summary"><span class="lv-tag">Session summary</span>${esc(C.summary || "").split(/\n+/).filter(Boolean).map(p => `<p>${p}</p>`).join("")}</div>
+        ${rateHTML(`live-${C.id}-sum`, { rkey, where: "Live session · Session summary", type: "Session summary", ai: [C.closing && `Dana: ${C.closing}`, C.summary].filter(Boolean).join("\n"), input: "" })}
         <div class="actions"><button type="button" class="v6-btn primary" data-live="new">Start a new session</button><button type="button" class="v6-btn secondary" data-go="reproom">Back to practice</button></div>`;
     } else if (LIVE.busy) {
       ctl = `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${LIVE.busy === "note" ? "Processing…" : LIVE.busy === "wrap" ? "Wrapping up the session…" : "Dana is responding…"}</div>`;
@@ -1089,6 +1114,7 @@
       const L = liveState();
       const t = $("[data-live-text]", app);
       if (t) { t.oninput = () => { L.cur.draft = t.value; save(); const b = $('[data-live="send"]', app); if (b) b.disabled = t.value.trim().length < 2; }; if (!LIVE.busy) t.focus({ preventScroll: true }); }
+      bindRate();
       $$("[data-live]", app).forEach(b => b.onclick = () => {
         const d = b.dataset.live, C = L.cur;
         if (d === "start" || d === "new") { if (L.cur && !L.past.some(p => p.id === L.cur.id)) L.past.push(L.cur); L.cur = liveNew(); L.showIntro = false; LIVE.err = ""; save(); render(); scrollTo({ top: 0 }); return; }

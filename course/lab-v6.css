@@ -1219,3 +1219,16 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .live-how li > span { display: flex; flex-direction: column; gap: 3px; }
 .live-how li b { font-size: 15.5px; }
 .live-how li { align-items: flex-start; }
+/* thumbs ratings on practice-partner replies */
+.rate { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.lv-note + .rate { margin: -2px 0 0 48px; }
+.lv-client + .rate { margin: -4px 0 0 48px; }
+.ai-box .lv-note + .rate { margin-left: 0; }
+.rate-b { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 15px; line-height: 1; cursor: pointer; filter: grayscale(.6); opacity: .8; }
+.rate-b:hover { opacity: 1; filter: none; }
+.rate-b.on { filter: none; opacity: 1; border-color: var(--forest); background: var(--sage); }
+.rate em { font-style: normal; color: var(--forest); }
+.rate-off { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; flex-basis: 100%; }
+.rate-off .v6-in { flex: 1 1 220px; min-height: 40px; font-size: 16px; }
+.lv-summary + .rate { margin-top: -6px; }
+@media (max-width: 720px) { .lv-note + .rate, .lv-client + .rate { margin-left: 0; } }

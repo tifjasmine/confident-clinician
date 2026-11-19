@@ -13,6 +13,7 @@ const T = {
   activities: process.env.AIRTABLE_LAB_ACTIVITIES_TABLE_ID || "tblzr9GMPbs82pCGO",
   attempts: process.env.AIRTABLE_LAB_ATTEMPTS_TABLE_ID || "tblbJ8NPny5fM6WaY",
   answers: process.env.AIRTABLE_LAB_ANSWERS_TABLE_ID || "tblt6WfYx5LTM4aNo",
+  feedback: process.env.AIRTABLE_LAB_FEEDBACK_TABLE_ID || "tbliDu3irWehb4dCQ",
 };
 const MAX_TEXT = 20000;
 let activityCache = null; /* Key -> record id, cached per warm function instance */
@@ -104,7 +105,26 @@ exports.handler = async event => {
       }));
     }));
     for (let k = 0; k < answers.length; k += 10) await upsert(token, T.answers, "Answer ID", answers.slice(k, k + 10));
-    return json(200, { ok: true, attempts: rows.length, answers: answers.length });
+    const TYPES = { "Training note": 1, "Client reply": 1, "Session summary": 1 };
+    const fb = [];
+    rows.forEach(r => (Array.isArray(r.feedback) ? r.feedback : []).slice(0, 60).forEach(f => {
+      const attemptRec = idByAttempt[text(r.attemptId, 240)];
+      if (!attemptRec || !f || !f.id || !["up", "down"].includes(f.rating)) return;
+      fb.push(strip({
+        "Feedback ID": text(`${r.attemptId}|${f.id}`, 300),
+        Rating: f.rating === "up" ? "👍 Helpful" : "👎 Not helpful or not accurate",
+        "What was off": text(f.note, 2000),
+        Where: text(f.where, 200),
+        "Reply type": TYPES[f.type] ? f.type : undefined,
+        "What the practice partner said": text(f.ai, 4000),
+        "Student's words": text(f.input, 2000),
+        Attempt: [attemptRec],
+        Student: [studentId],
+        "Rated at": iso(f.at),
+      }));
+    }));
+    for (let k = 0; k < fb.length; k += 10) await upsert(token, T.feedback, "Feedback ID", fb.slice(k, k + 10));
+    return json(200, { ok: true, attempts: rows.length, answers: answers.length, feedback: fb.length });
   } catch (error) {
     console.error("Lab attempts save failed", error.message, error.detail || "");
     return json(502, { error: "Could not save attempts", status: error.status || 0 });
