@@ -18,7 +18,8 @@
   const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, act: {}, demo: {}, reviewer: false });
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
-  if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 }; /* simulation content changed (8-moment text simulations): start it fresh */
+  if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
+  if (S.actV !== 2) { S.act = {}; S.actV = 2; } /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -590,7 +591,7 @@
   /* ---------- Lesson activities: one screen at a time ---------- */
   /* Builder note marking where AI could come in later. Shown on this preview build only. */
   const aiNote = t => t ? `<div class="ai-note"><b>✦ AI spot</b><span>${esc(t)}</span></div>` : "";
-  const momentHTML = m => m ? `<div class="act-moment"><span class="who">${esc(m.who)}</span><span class="line">${q(m.line)}</span></div>` : "";
+  const momentHTML = m => m ? `<div class="act-moment"><span class="who">${esc(m.who)}</span>${m.ctx ? `<span class="ctx">${esc(m.ctx)}</span>` : ""}<span class="line">${q(m.line)}</span></div>` : "";
   const pickChips = (attr, opts, cur, extra = "") => `<div class="act-chips">${opts.map(o => { const [k, l] = Array.isArray(o) ? o : [o, o]; return `<button type="button" class="act-chip" ${attr}="${esc(k)}"${extra} aria-pressed="${cur === k}">${esc(l)}</button>`; }).join("")}</div>`;
   /* Shuffled order per attempt, never the original order, so answers don't line up with the chips */
   const ord = (v, k, ids) => {
@@ -607,10 +608,11 @@
       if (sc.pause) h += `<div class="act-pause">${D.PAUSE.map(([l, t]) => { const [nm, ...rest] = t.split(": "); return `<div><span class="lt">${l}</span><span><b>${esc(nm)}</b> ${esc(rest.join(": "))}</span></div>`; }).join("")}</div>`;
     }
     if (K === "tag") {
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-tags">${ord(v, "o" + i, sc.items.map(x => x[0])).map(j => sc.items[j]).map(([id, txt, ans, why]) => {
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p>${sc.legend ? `<div class="act-legend">${sc.options.map(([, l, d]) => `<div><b>${esc(l)}</b><span>${esc(d)}</span></div>`).join("")}</div>` : ""}<div class="act-tags">${ord(v, "o" + i, sc.items.map(x => x[0])).map(j => sc.items[j]).map(([id, txt, ans, why, nm]) => {
         const cur = v[`t${i}_${id}`], lab = k => (sc.options.find(o => o[0] === k) || [])[1];
         const fb = cur ? (cur === ans ? `<div class="act-fb yes"><b>Yes, ${esc(lab(ans))}.</b> ${esc(why)}</div>` : `<div class="act-fb no"><b>Closer to ${esc(lab(ans))}.</b> ${esc(why)}</div>`) : "";
-        return `<div class="act-tag${cur ? " answered" : ""}"><span class="tx">${esc(txt)}</span>${pickChips("data-av", sc.options, cur, ` data-f="t${i}_${id}"`)}${fb}</div>`;
+        const long = !sc.legend && sc.options.some(o => o[1].length > 28);
+        return `<div class="act-tag${cur ? " answered" : ""}${long ? " long" : ""}">${nm ? `<span class="nm">${esc(nm)}</span>` : ""}<span class="tx">${esc(txt)}</span>${pickChips("data-av", sc.options, cur, ` data-f="t${i}_${id}"`)}${fb}</div>`;
       }).join("")}</div>`;
       ok = sc.items.every(([id]) => v[`t${i}_${id}`]);
     }
@@ -619,6 +621,20 @@
       h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${ord(v, "o" + i, sc.options.map(x => x[0])).map(j => sc.options[j]).map(([k, l]) => `<button type="button" class="act-pick" data-av="${k}" data-f="p${i}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`
         + (o ? `<div class="act-fb ${cur === sc.best ? "yes" : "no"}">${esc(o[2])}</div>` : "");
       ok = !!cur;
+    }
+    if (K === "multi") {
+      const sel = v["m" + i] || [], done = !!v["m" + i + "c"];
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-chips">${sc.options.map(([k, l]) => `<button type="button" class="act-chip${done ? (sc.correct.includes(k) ? " ok" : sel.includes(k) ? " off" : "") : ""}" data-mv="${k}" data-f="m${i}" aria-pressed="${sel.includes(k)}">${esc(l)}</button>`).join("")}</div>`;
+      if (!done) h += `<button type="button" class="v6-btn secondary act-check" data-mcheck="m${i}c"${sel.length ? "" : " disabled"}>Check my answer</button>`;
+      else { const hit = sc.correct.every(k => sel.includes(k)) && sel.every(k => sc.correct.includes(k)); h += `<div class="act-fb ${hit ? "yes" : "no"}"><b>${hit ? "Yes, both." : `It’s ${sc.correct.map(k => ACTS.GAP[k] || k).join(" + ")}.`}</b> ${esc(sc.fb)}</div>`; }
+      ok = done;
+    }
+    if (K === "selfcheck") {
+      const any = sc.checks.some((_, k) => v["s" + k] === "Not yet");
+      h += `<p class="act-p">${esc(sc.text)}</p><div class="act-you"><small>Your action</small>${esc(v.action || "")}</div>
+        <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not yet"], v["s" + k], ` data-f="s${k}"`)}</div>`).join("")}</div>
+        ${any ? `<label class="field">Tighten it <small>Add who, when, or how many times.</small><textarea class="v6-ta" rows="2" data-at="action">${esc(v.action)}</textarea></label>` : ""}${aiNote(sc.ai)}`;
+      ok = sc.checks.every((_, k) => v["s" + k]) && filled(v.action);
     }
     if (K === "own") {
       const g = v.gaps || [];
@@ -661,7 +677,7 @@
       ok = filled(v.U, 2);
     }
     if (K === "compare") {
-      h += `<div class="act-cmp"><div><small>Take 1 · gut</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
+      h += `<div class="act-cmp"><div><small>Take 1 · instinct</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
         <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not quite"], v["c" + k], ` data-f="c${k}"`)}</div>`).join("")}</div>${aiNote(sc.ai)}`;
       ok = sc.checks.every((_, k) => v["c" + k]);
     }
@@ -669,7 +685,7 @@
       const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";
       if (X.key === "l1") h += row("Your moment", q(v.what)) + row("The gap", esc((v.gaps || []).map(k => ACTS.GAP[k]).join(" + "))) + row("Your action this week", esc(v.action)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
       if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
-      if (X.key === "l3") h += row("Take 1 · gut", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
+      if (X.key === "l3") h += row("Take 1 · instinct", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + row("The limit", "When safety comes up, safety comes first.") + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
     }
     return { h, ok };
   }
@@ -816,6 +832,8 @@
       const st = ACT(arg), X = ACTS[arg], v = st.v;
       if (!X) return;
       $$("[data-av]", app).forEach(b => b.onclick = () => { v[b.dataset.f] = b.dataset.av; save(); render(); });
+      $$("[data-mv]", app).forEach(b => b.onclick = () => { const f = b.dataset.f; if (v[f + "c"]) return; const g = v[f] = v[f] || [], k = b.dataset.mv; const at = g.indexOf(k); at === -1 ? g.push(k) : g.splice(at, 1); save(); render(); });
+      $$("[data-mcheck]", app).forEach(b => b.onclick = () => { v[b.dataset.mcheck] = true; save(); render(); });
       $$("[data-gapt]", app).forEach(b => b.onclick = () => { const g = v.gaps = v.gaps || [], k = b.dataset.gapt; const at = g.indexOf(k); at === -1 ? g.push(k) : g.splice(at, 1); save(); render(); });
       $$("[data-at]", app).forEach(t => t.oninput = () => {
         v[t.dataset.at] = t.value; save();

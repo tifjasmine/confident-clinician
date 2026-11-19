@@ -1117,3 +1117,22 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .act-end { flex-direction: column-reverse; }
 }
 .act-cmp small, .act-you small, .sm-row small { font-family: "Lato", system-ui, sans-serif !important; font-style: normal; }
+/* harder activities */
+.act-moment .ctx { font-size: 14.5px; line-height: 1.45; color: var(--ink-2); }
+.look-freeze .act-freeze .act-moment .ctx { color: #ffffffcc; }
+.act-tag .nm { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ac); margin-bottom: 4px; }
+.act-tag .tx { font-weight: 500; }
+.act-tag.long .act-chips { flex-direction: column; align-items: stretch; }
+.act-tag.long .act-chip { text-align: left; border-radius: 12px; padding: 10px 14px; min-height: 48px; line-height: 1.35; }
+.act-chip.ok { background: var(--forest) !important; border-color: var(--forest) !important; color: #fff; }
+.act-chip.off { background: #fff !important; color: var(--muted) !important; text-decoration: line-through; border-color: var(--input) !important; }
+.act-check { align-self: flex-start; }
+.act-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.act-legend > div { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: 12px; background: var(--ac-t); font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.act-legend b { color: var(--forest); font-size: 14.5px; }
+@media (max-width: 720px) { .act-legend { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .act-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .act-chip { padding: 0 10px; font-size: 14px; line-height: 1.25; }
+  .act-tag.long .act-chips { display: flex; }
+}
