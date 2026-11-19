@@ -66,15 +66,17 @@ exports.handler = async event => {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 300, system: p.system, messages: [{ role: "user", content: p.user }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 1500, system: p.system, messages: [{ role: "user", content: p.user }], thinking: { type: "between_tools" }, output_config: { effort: process.env.LAB_AI_EFFORT || "low" } }),
     });
-    if (!res.ok) { console.error("AI assist failed", res.status, (await res.text()).slice(0, 300)); return json(502, { error: "The AI is unavailable right now." }); }
+    if (!res.ok) { console.error("AI assist failed", res.status, (await res.text()).slice(0, 300)); return json(502, { error: "This isn’t available right now. Try again in a moment." }); }
     const out = await res.json();
+    if (out.stop_reason === "refusal") return json(200, { ok: true, safety: true, note: "Let's pause here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     const r = parse((out.content || []).filter(c => c.type === "text").map(c => c.text).join(""));
     if (r.safety) return json(200, { ok: true, safety: true, note: "Let's pause here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
+    if (!String(r.note || "").trim() && !String(r.client || "").trim()) { console.error("AI assist returned no text", body.task); return json(502, { error: "That didn’t come through. Tap Ask again." }); }
     return json(200, { ok: true, client: clip(r.client, 800).replace(/^["“]|["”]$/g, ""), note: clip(r.note, 900) });
   } catch (error) {
     console.error("AI assist error", error.message);
-    return json(502, { error: "The AI is unavailable right now." });
+    return json(502, { error: "This isn’t available right now. Try again in a moment." });
   }
 };

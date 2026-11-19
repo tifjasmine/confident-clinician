@@ -1216,3 +1216,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .chips-row.pulls-row { display: flex; flex-wrap: wrap; gap: 8px; border: 0; background: none; padding: 0; }
 .chips-row.pulls-row .chip { flex: 0 0 auto; border: 1px solid var(--input); border-radius: 999px; background: #fff; padding: 0 16px; min-height: 44px; }
 .chips-row.pulls-row .chip[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: #fff; }
+.live-how li > span { display: flex; flex-direction: column; gap: 3px; }
+.live-how li b { font-size: 15.5px; }
+.live-how li { align-items: flex-start; }

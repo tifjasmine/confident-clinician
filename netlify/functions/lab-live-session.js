@@ -75,10 +75,11 @@ async function claude(sys, user, maxTokens) {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system: sys, messages: [{ role: "user", content: user }] }),
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system: sys, messages: [{ role: "user", content: user }], thinking: { type: "between_tools" }, output_config: { effort: process.env.LAB_AI_EFFORT || "low" } }),
   });
   if (!res.ok) { const d = await res.text(); const e = new Error(`Anthropic ${res.status}`); e.status = res.status; e.detail = d.slice(0, 400); throw e; }
   const out = await res.json();
+  if (out.stop_reason === "refusal") return "SAFETY_PAUSE";
   return (out.content || []).filter(c => c.type === "text").map(c => c.text).join("").trim();
 }
 
@@ -102,7 +103,9 @@ exports.handler = async event => {
       ? `SESSION SO FAR\n\n${t}\n\nWrite Dana's next line, reacting to the therapist's latest attempt at Moment ${moments.length}.`
       : `FULL SESSION\n\n${t}\n\nThe session is over. Write Dana's closing line, then ---, then the Session summary.`;
   try {
-    const text = await claude(system(mode, sc), ask, mode === "wrap" ? 700 : 220);
+    let text = await claude(system(mode, sc), ask, mode === "wrap" ? 3000 : 1500);
+    if (!text) text = await claude(system(mode, sc), ask + "\n\nReply now with the text only.", mode === "wrap" ? 3000 : 1500);
+    if (!text) { console.error("Live session AI returned no text", mode); return json(502, { error: "Dana didn’t come through that time. Tap Try again." }); }
     if (/SAFETY_PAUSE/.test(text)) return json(200, { ok: true, safety: true, text: "Let's pause the role-play here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     if (mode === "wrap") { const [closing, ...rest] = text.split(/\n\s*---+\s*\n/); return json(200, { ok: true, closing: clip(closing, 600).replace(/^["“]|["”]$/g, ""), summary: clip(rest.join("\n"), 2500) }); }
     return json(200, { ok: true, text: clip(text, 900).replace(/^(Dana|Client|Training note)\s*:\s*/i, "").replace(/^["“]|["”]$/g, "") });

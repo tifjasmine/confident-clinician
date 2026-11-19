@@ -223,7 +223,7 @@
     home: ["Welcome to the Lab", "Four weeks of practice with real client moments. You’ll leave with the words, not just the ideas."],
     week: ["The Therapist Behind the Therapy", "Week 1 · Notice · What’s happening in me right now?"],
     act: ["Practice", "One short screen at a time."],
-    live: ["Live session", "Practice with an AI client who reacts to your exact words."],
+    live: ["Live session", "A practice partner who reacts to your exact words."],
     rep: ["", "One client moment, your words, the client’s reaction, one way to handle it, and a redo."],
     baseline: ["Day 1 Baseline", "Four client moments, before any teaching. Just answer like you would today."],
     reproom: ["Rep Room", "Extra practice whenever you want it. Totally optional, and it never blocks your progress."],

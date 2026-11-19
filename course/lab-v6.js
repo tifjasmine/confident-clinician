@@ -251,7 +251,7 @@
     }).join("");
     return sec("today", "Today", "", item("home", "Home", navKey === "home"))
       + sec("week1", "Week 1 · Notice", `${doneCount()}/${D.WEEK1.length}`, steps)
-      + sec("practice", "Practice", "", item("live", "Live session · Dana", navKey === "live", "AI", "ai") + item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
+      + sec("practice", "Practice", "", item("live", "Live session · Dana", navKey === "live", "New", "ai") + item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
       + sec("later", "Coming up", "", D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>${S.start && !weekOpen(w.n) ? fmtDay(opensAt(w.n)) : weekOpen(w.n) ? "Open" : "Soon"}</em></div>`).join(""));
   }
 
@@ -845,8 +845,8 @@
       if (res.client) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">${esc((o.who || "C")[0])}</span><div class="lv-say">${q(res.client)}</div></div>`;
       if (res.note) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${esc(res.note)}</div>`;
     }
-    if (AIBUSY[id]) h += `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(o.wait || "Reading your response…")}</div>`;
-    else if (!fresh) h += `<button type="button" class="ai-btn" data-ai="${id}"${ready ? "" : " disabled"}><span class="ai-spark" aria-hidden="true">✦</span><span><b>${esc(label)}</b><small>${ready ? (o.sub || "AI training tool · responds to your exact words") : (o.need || "Write your answer first")}</small></span></button>`;
+    if (AIBUSY[id]) h += `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(o.wait || "Processing…")}</div>`;
+    else if (!fresh) h += `<button type="button" class="ai-btn" data-ai="${id}"${ready ? "" : " disabled"}><span class="ai-spark" aria-hidden="true">✦</span><span><b>${esc(label)}</b><small>${ready ? (o.sub || "Responds to your exact words") : (o.need || "Write your answer first")}</small></span></button>`;
     else h += `<button type="button" class="v6-link ai-again" data-ai="${id}">↺ Ask again</button>`;
     if (r && r.err && !fresh && !AIBUSY[id]) h += `<div class="lv-err">${esc(r.err)}</div>`;
     return h + `</div>`;
@@ -860,7 +860,7 @@
     try {
       const res = await fetch("/.netlify/functions/lab-ai-assist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task: R.task, data: R.data }) });
       const out = await res.json().catch(() => ({}));
-      if (!res.ok || !out.ok) throw new Error(out.error || "The AI is unavailable right now.");
+      if (!res.ok || !out.ok) throw new Error(out.error || "This isn’t available right now. Try again in a moment.");
       S.ai[id] = { sig: aiSig(R.data), res: { client: out.client || "", note: out.note || "", safety: !!out.safety }, at: new Date().toISOString() };
       if (R.save) R.save(S.ai[id].res);
     } catch (e) { S.ai[id] = { ...(S.ai[id] || {}), err: e.message || "Something went wrong. Try again." }; }
@@ -884,20 +884,25 @@
     const res = await fetch(LIVE.url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scenario: "dana", mode, moments: sess.moments.map(m => ({ client: m.client, attempts: (m.attempts || []).map(a => ({ text: a.text, note: a.note || "" })) })) }) });
     const out = await res.json().catch(() => ({}));
     if (!res.ok || !out.ok) throw new Error(out.error || "The practice partner is unavailable right now.");
+    if (mode !== "wrap" && !String(out.text || "").trim()) throw new Error("That didn’t come through. Tap Try again.");
     return out;
   }
   function liveView() {
     const L = liveState(), C = L.cur;
     const intro = `<div class="live-intro">
-        <span class="live-eyebrow">✦ Live session · AI practice partner</span>
+        <span class="live-eyebrow">✦ Live session · Practice partner</span>
         <h2>Sit with Dana for ten moments.</h2>
-        <p>Dana is a fictional client. You respond in your own words. Before she reacts, you get a short training note with a question to think about. Then you choose: refine your answer, or hear what Dana says.</p>
-        <ol class="live-how"><li><b>Dana speaks.</b> You write what you’d say.</li><li><b>Training note.</b> One question to help you explore. It never hands you a line.</li><li><b>Your call.</b> Refine (3 per session) or hear Dana’s response.</li><li><b>Ten moments,</b> then a session summary.</li></ol>
+        <p>Dana is a fictional client, six sessions in and a little guarded today. Respond the way you would in the room. Before she reacts, you’ll get a training note to help you slow down and look again. Then it’s your call.</p>
+        <ol class="live-how"><li><span><b>Dana talks</b>You respond in your own words.</span></li><li><span><b>You get a training note</b>What your response might invite, and a question to sit with. You find the next move.</span></li><li><span><b>You decide</b>Refine your answer (3 per session) or hear how Dana responds.</span></li><li><span><b>Ten moments</b>Then a summary of where the session opened up, and where it closed.</span></li></ol>
         <div class="live-meta"><span>About 15 minutes</span><span>Fictional practice only</span><span>A training tool for The Confident Clinician</span></div>
         <button type="button" class="v6-btn primary live-go" data-live="start">Start the session</button>
         ${L.past.filter(p => p.done).length ? `<p class="live-past">You’ve finished ${L.past.filter(p => p.done).length} session${L.past.filter(p => p.done).length > 1 ? "s" : ""}. <button type="button" class="v6-link" data-live="lastsum">See your last summary</button></p>` : ""}
       </div>`;
-    if (!C || L.showIntro) return { html: `<div class="live">${intro}</div>`, title: "Live session", plain: true, sub: "Practice with an AI client who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
+    if (!C || L.showIntro) return { html: `<div class="live">${intro}</div>`, title: "Live session", plain: true, sub: "A practice partner who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
+    /* repair: a blank client line (from an earlier failed reply) is removed so they can ask again */
+    while (C.moments.length > 1 && !String(C.moments[C.moments.length - 1].client || "").trim()) { C.moments.pop(); C.phase = "choose"; }
+    C.moments.forEach(m => (m.attempts || []).forEach(a => { if (a.note === "") delete a.note; }));
+    { const lm = C.moments[C.moments.length - 1], la = (lm.attempts || []).slice(-1)[0]; if (C.phase === "choose" && la && !la.note && !LIVE.busy) { C.phase = "attempt"; lm.attempts.pop(); C.draft = la.text; } }
     const n = C.moments.length, test = isTestAccount(), left = LIVE.refines - C.refinesUsed;
     const moment = (m, k) => {
       const last = k === n - 1;
@@ -915,7 +920,7 @@
         <div class="lv-summary"><span class="lv-tag">Session summary</span>${esc(C.summary || "").split(/\n+/).filter(Boolean).map(p => `<p>${p}</p>`).join("")}</div>
         <div class="actions"><button type="button" class="v6-btn primary" data-live="new">Start a new session</button><button type="button" class="v6-btn secondary" data-go="reproom">Back to practice</button></div>`;
     } else if (LIVE.busy) {
-      ctl = `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${LIVE.busy === "note" ? "Reading your response…" : LIVE.busy === "wrap" ? "Wrapping up the session…" : "Dana is responding…"}</div>`;
+      ctl = `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${LIVE.busy === "note" ? "Processing…" : LIVE.busy === "wrap" ? "Wrapping up the session…" : "Dana is responding…"}</div>`;
     } else if (C.phase === "attempt") {
       ctl = `<label class="lv-input"><span>What do you say to Dana?</span><textarea class="v6-ta" rows="3" data-live-text placeholder="Type it the way you’d say it in the room">${esc(C.draft || "")}</textarea></label>
         <div class="actions"><button type="button" class="v6-btn primary" data-live="send"${(C.draft || "").trim().length >= 2 ? "" : " disabled"}>Send my response</button>${lastA && lastA.note && C.refining ? `<button type="button" class="v6-btn secondary" data-live="cancelrefine">Keep my last answer</button>` : ""}</div>`;
@@ -927,12 +932,12 @@
         </div>${lastA.safety ? `<div class="actions"><button type="button" class="v6-btn secondary" data-live="new">Start over</button></div>` : ""}`;
     }
     const html = `<div class="live in-session">
-      <div class="live-head"><div><span class="live-eyebrow">✦ Live session · AI practice partner</span><span class="lv-who">Dana, 34 · ER nurse · Session 6</span></div>
+      <div class="live-head"><div><span class="live-eyebrow">✦ Live session · Practice partner</span><span class="lv-who">Dana, 34 · ER nurse · Session 6</span></div>
         <div class="lv-stats"><span>${C.done ? "Session complete" : `Moment ${n} of ${LIVE.moments}`}</span><span>Refines left: ${Math.max(0, left)}${test && left <= 0 ? " · test" : ""}</span></div>
         <div class="lv-prog" aria-hidden="true"><span style="width:${(C.done ? 1 : n / LIVE.moments) * 100}%"></span></div></div>
       <div class="live-feed">${C.moments.map(moment).join("")}${LIVE.err ? `<div class="lv-err">${esc(LIVE.err)} <button type="button" class="v6-link" data-live="retry">Try again</button></div>` : ""}${ctl}</div>
       <div class="live-foot">Fictional practice. Never use real client details. ${test ? "Test account: limits are shown but not enforced." : ""} <button type="button" class="v6-link" data-live="quit">Leave session</button></div></div>`;
-    return { html, title: "Live session", plain: true, sub: "Practice with an AI client who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
+    return { html, title: "Live session", plain: true, sub: "A practice partner who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
   }
   async function liveStep(kind) {
     const L = liveState(), C = L.cur; LIVE.err = ""; LIVE.retry = kind;
