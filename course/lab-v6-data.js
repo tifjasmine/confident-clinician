@@ -22,7 +22,7 @@
     ["safety", "Check safety / scope", "I wanted to check something important"]
   ];
 
-  const REP_STEPS = ["The moment", "Your move", "Name your aim", "The client reacts", "Tiffany’s take", "Run it back"];
+  const REP_STEPS = ["The moment", "Your move", "Name your aim", "The client reacts", "One way to handle it", "Run it back"];
 
   const CHECKS = [
     ["Did I use what they gave me?", "Their words, their feeling, their priority."],
@@ -59,7 +59,7 @@
         explore: { says: "Honestly? It scared me. I googled it and it said people with BPD are manipulative. I don’t want to be that.", shows: "The real fear comes out." },
         safety: { says: "Okay. That’s fair. I think I just want someone to tell me I’m not broken.", shows: "Dev trusts you more because you didn’t rush." }
       },
-      take: { pull: "Prove", text: "The Pull here is to prove yourself, either by having an answer or by rescuing Dev from a scary label. But you can’t responsibly confirm or rule out a diagnosis at intake.",
+      take: { pull: "Prove", text: "A common pull here is to prove yourself, either by having an answer or by rescuing Dev from a scary label. But you can’t responsibly confirm or rule out a diagnosis at intake.",
         say: "That’s a really important question, and I don’t want to guess. I’d want to get to know you first. Can I ask what that label has meant for you?",
         why: "This is honest about your limits and curious about Dev.", watch: "the question under the question: “Am I broken?”" },
       extra: "gap",
@@ -74,7 +74,7 @@
         explore: { move: "“Tell me what I’m missing.”", says: "Everyone explains her to me. I just need someone on my side for a minute.", shows: "The real need comes out." },
         reflect: { move: "Name the miss", says: "…Yeah. Exactly that.", after: "She looks up.", shows: "You’re back in the room together." }
       },
-      take: { pull: "Defend", text: "The Pull is Defend. Your reframe wasn’t evil, but it landed as one more person explaining Mom.",
+      take: { pull: "Defend", text: "A common pull here is Defend. Your reframe wasn’t evil, but it landed as one more person explaining Mom.",
         say: "I think I just did what everyone does: I explained her instead of hearing you. What do you need me to get?",
         watch: "the word “either.” You’re now part of her pattern. That isn’t a failure. It’s the most useful information in the room." },
       bank: "When a client says I don’t get them, I can say" },
@@ -89,7 +89,7 @@
         wait: { stage: "After 10 more seconds:", says: "I’m trying not to cry because that would be pathetic.", shows: "Your patience let Sam get there.", beat2: true }
       },
       beat2: { prompt: "What would you say now?", line: "I’m trying not to cry because that would be pathetic." },
-      take: { pull: "Fill", text: "The Pull here is Fill. Silence feels like failing, but Sam may be thinking or feeling. Ask yourself: does the silence look chosen (thinking) or stuck (lost, frozen)? If it’s chosen, wait.",
+      take: { pull: "Fill", text: "A common pull here is Fill. Silence feels like failing, but Sam may be thinking or feeling. Ask yourself: does the silence look chosen (thinking) or stuck (lost, frozen)? If it’s chosen, wait.",
         sayLabel: "If it’s stuck, offer a gentle check-in", say: "We can take a moment. What’s happening for you right now?",
         beat2Say: "It sounds like part of you is judging the tears before they even get here.",
         watch: "this: Sam feels judged by others, so a rushed rescue can feel like one more judgment." },
@@ -105,7 +105,7 @@
         explore: { move: "“What’s it like sitting in the car?”", says: "Quiet. It’s the only quiet part of my day.", shows: "The odd detail was the door." },
         focus: { move: "Offer the thread as a question", says: "…The car is the only place nobody needs anything from me.", shows: "The thread lands, in her words." }
       },
-      take: { pull: "Fix", text: "The Pull is Fix: grab the most solvable topic, the coworker. But listen for the detail that doesn’t fit, because that’s often the door.",
+      take: { pull: "Fix", text: "A common pull here is Fix: grab the most solvable topic, the coworker. But listen for the detail that doesn’t fit, because that’s often the door.",
         sayLabel: "One way to offer the thread", say: "I’m noticing a few places where you’re needing space before you can face people. Does that fit, or am I off?",
         watch: "context: ICU staffing and moral injury are real, not just Rosa’s “pattern.” A good thread holds both." },
       bank: "When a client brings several topics, I can offer a thread by saying" },
@@ -120,7 +120,7 @@
         safety: { move: "“Can I ask a few questions, including about safety?”", says: "I’m not going to do anything. I just feel heavy.", shows: "Asking directly is calm and caring, not alarming." }
       },
       beat2: { prompt: "What’s your next move now?", line: "I haven’t really been eating either.", note: "This is Recalibrate. New information can change the priority to assessing mood, sleep, appetite, and safety." },
-      take: { pull: "Prove", text: "The Pull is Prove: explain the feeling for him. CLEAR in action: Clarify “off” → Locate when it started → Embody (the camera is off, and that’s data) → Act with one question → Recalibrate when you hear “not eating.”",
+      take: { pull: "Prove", text: "A common pull here is Prove: explain the feeling for him. CLEAR in action: Clarify “off” → Locate when it started → Embody (the camera is off, and that’s data) → Act with one question → Recalibrate when you hear “not eating.”",
         sayLabel: "One way in", say: "It’s hard to put words to. I also noticed your camera’s off today, which is new. What’s that about?",
         watch: "behavior changes. They often tell you more than the words." },
       bank: "When a client can’t name what’s wrong, I can say" },
@@ -136,7 +136,7 @@
         explore: { move: "“What made strategies feel important?”", says: "My last therapist just listened. For two years. Nothing changed.", shows: "Useful history. Now you know what she’s afraid of." },
         focus: { move: "Focus + explain your purpose", says: "Yes. That’s what I want. The Sunday phone calls. That’s where it all goes wrong.", shows: "You explained your move and gave her a choice, and she gave you the target." }
       },
-      take: { pull: "Defend", text: "The Pull is Defend. But her question is fair, and her preference is valid. Matching how a client wants to work is part of good care.",
+      take: { pull: "Defend", text: "A common pull here is Defend. But her question is fair, and her preference is valid. Matching how a client wants to work is part of good care.",
         say: "Fair question. I ask because I want the strategies to fit what actually happens for you. Want to pick one situation and build a strategy for it together?",
         watch: "what she reveals about her last therapist. It tells you what will make her trust you." },
       bank: "When a client questions my approach, I can explain my purpose by saying" },
@@ -163,24 +163,24 @@
       desc: "Before any teaching, see where you’re starting.",
       meta: "Welcome video + Baseline", img: IMG.e, video: "welcome", itemsLabel: "The Baseline · moment, your move, your aim" },
     { key: "l1", type: "lesson", rep: "1.1", label: "Lesson 1 + Rep", kind: "Lesson 1 + Rep 1.1", short: "Confidence Is Not a Personality Trait", title: "Confidence Is Not a Personality Trait",
-      desc: "Tell apart a knowledge, skill, pressure, and support gap, and pick the next step that fits.", meta: "Video lesson + Rep", img: IMG.e, video: "w1-l1", pull: "The Pull: Prove" },
+      desc: "Feeling unsure in session doesn’t mean you’re not cut out for this. Learn how to figure out what’s actually missing in a hard moment, so you know what to work on next.", meta: "Video lesson + Rep", img: IMG.e, video: "w1-l1", pull: "The Pull: Prove" },
     { key: "l2", type: "lesson", rep: "1.2", label: "Lesson 2 + Rep", kind: "Lesson 2 + Rep 1.2", short: "Meet the Clinician Behind the Reaction", title: "Meet the Clinician Behind the Reaction",
-      desc: "Name your most common Pull, spot its early cues, and use one small reset.", meta: "Video lesson + Rep", img: IMG.a, video: "w1-l2", pull: "The Pull: Defend" },
+      desc: "When a session gets hard, most of us feel an urge to rush in: fix it, explain ourselves, fill the silence. Learn to notice yours early and slow it down.", meta: "Video lesson + Rep", img: IMG.a, video: "w1-l2", pull: "The Pull: Defend" },
     { key: "l3", type: "lesson", rep: "1.3", label: "Lesson 3 + Rep", kind: "Lesson 3 + Rep 1.3", short: "Use P.A.U.S.E. When You Go Blank", title: "Use P.A.U.S.E. When You Go Blank",
-      desc: "Run P.A.U.S.E. on a hard client line and come up with one grounded response instead of a perfect one.", meta: "Video lesson + Rep", img: IMG.d, video: "w1-l3", pull: "The Pull: Fill · adds the aim “I’d stay quiet a little longer”" },
+      desc: "A simple five-step tool for the moments your mind goes blank, so you can find one steady thing to say instead of the perfect thing.", meta: "Video lesson + Rep", img: IMG.d, video: "w1-l3", pull: "The Pull: Fill · adds the aim “I’d stay quiet a little longer”" },
     { key: "demo", type: "demo", label: "Demo", kind: "Demonstration", short: "When the client asks you to decide", title: "Demo: When the client asks you to decide for them",
-      desc: "Watch Tiffany give a rushed take, see why it misses, then watch the steady take. Don’t memorize the words. Watch the decision underneath them.", meta: "Video demo", img: IMG.c, video: "w1-demo",
+      desc: "A client asks you to just tell them what to do. Watch a rushed response, see why it misses, then watch a steadier one.", meta: "Video demo", img: IMG.c, video: "w1-demo",
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
-      desc: "Read Jordan’s session 2 with another therapist and find the moment it went sideways. Then rewrite it your way.", meta: "10–15 min", img: IMG.b,
-      itemsLabel: "Five steps", items: [["1", "Spot It", "Tap the line where the session turned."], ["2", "Seen vs. Supplied", "Did Jordan say it, or did the therapist fill it in?"], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "P.A.U.S.E. it", "Rewrite line 4 with one prompt per letter."], ["5", "Your move", "Say your new line 4, then compare it with Tiffany’s."]] },
+      desc: "Read a short session with Jordan and another therapist. Find the moment it went off track, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
+      itemsLabel: "Five steps", items: [["1", "Spot It", "Tap the line where the session turned."], ["2", "Seen vs. Supplied", "Did Jordan say it, or did the therapist fill it in?"], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "P.A.U.S.E. it", "Rewrite line 4 with one prompt per letter."], ["5", "Your move", "Write your new line 4, then compare it with another version."]] },
     { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Jordan’s Advice Request", title: "Simulation: Jordan’s Advice Request",
-      desc: "Now you’re in the chair for session 3. Eight moments with Jordan: pick what you’d say, see how Jordan reacts, and notice when new information changes your priority.", meta: "12–15 min", img: IMG.c,
+      desc: "Now you’re the therapist. Pick what you’d say at each moment with Jordan and see how Jordan responds.", meta: "12–15 min", img: IMG.c,
       itemsLabel: "Eight moments with Jordan", items: [["1", "“I’ve been thinking about what we talked about. Should I break up with Sam? I need you to tell me what you would do.”", "Where it starts"], ["8", "“I still want you to tell me what I should do. But I think I also know I need a plan.”", "Where it ends"]] },
     { key: "reflect", type: "reflect", label: "Reflect", kind: "Reflect & Redo", short: "Reflect & Redo", title: "Reflect & Redo",
-      desc: "Look back at the week with the Three Checks, then redo one Rep.", meta: "10 min", img: IMG.b },
+      desc: "Pick one of your Reps, check how it went, and try it one more time.", meta: "10 min", img: IMG.b },
     { key: "save", type: "save", label: "Save", kind: "Save it", short: "Clinical Confidence Profile", title: "Your Clinical Confidence Profile",
-      desc: "A practical snapshot of what you noticed, what needs practice, and how you’ll respond more intentionally next time. Then pick one small thing to practice this week.", meta: "Yours to keep", img: IMG.d }
+      desc: "Pull together what you noticed about yourself this week, and pick one small thing to practice next.", meta: "Yours to keep", img: IMG.d }
   ];
 
   const REFLECT = [
@@ -203,7 +203,7 @@
     ["Lesson 1 + Rep", "The core idea, practiced right away."],
     ["Lesson 2 + Rep", "The idea gets harder."],
     ["Lesson 3 + Rep", "The tool you keep."],
-    ["Demonstration", "Watch Tiffany miss, then redo."],
+    ["Demonstration", "A rushed response, then a steady one."],
     ["Lab · Study the case", "Get to know the week’s client on paper."],
     ["Simulation · Sit with the client", "The same client, reacting to your choices."],
     ["Reflect & Redo", "The Three Checks, then one redo."],
@@ -222,7 +222,7 @@
   const HEADS = {
     home: ["Welcome to the Lab", "Four weeks of practice with real client moments. You’ll leave with the words, not just the ideas."],
     week: ["The Therapist Behind the Therapy", "Week 1 · Notice · What’s happening in me right now?"],
-    rep: ["", "One client moment, your words, the client’s reaction, Tiffany’s take, and a redo."],
+    rep: ["", "One client moment, your words, the client’s reaction, one way to handle it, and a redo."],
     baseline: ["Day 1 Baseline", "Four client moments, before any teaching. Just answer like you would today."],
     reproom: ["Rep Room", "Extra practice whenever you want it. Totally optional, and it never blocks your progress."],
     playbook: ["Clinical Playbook", "Everything you write and save in the Lab, in one place. Come back to it anytime."],

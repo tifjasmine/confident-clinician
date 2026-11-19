@@ -1021,3 +1021,11 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .growth-card .slot .said { font: italic 500 17px/1.45 var(--serif); color: var(--ink); overflow-wrap: anywhere; }
 .growth-card .slot .aimed { font-size: 13.5px; color: var(--muted); }
 .growth-card .slot .aimed b { color: var(--forest); font-weight: 700; }
+/* What pulled at you? */
+.pullq .pq-sub { font-size: 14.5px; color: var(--ink-2); }
+.pulls-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pulls-row .chip { min-height: 44px; }
+.pulls-row .chip[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: #fff; }
+.pullq .pq-fb { font-size: 14.5px; color: var(--ink-2); padding: 12px 14px; border-radius: 12px; background: var(--blush); }
+.pullq .pq-fb b { color: var(--terra-t, var(--terra)); }
+.take .pull { font-size: 15.5px; line-height: 1.55; }

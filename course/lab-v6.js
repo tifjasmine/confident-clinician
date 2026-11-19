@@ -173,7 +173,7 @@
     const i = curIdx();
     if (i >= D.WEEK1.length) return { tag: "Week 1 complete", title: weekOpen(2) ? "Week 2 is open" : `Week 2 opens ${fmtDay(opensAt(2), true)}`, meta: "Getting Unstuck in the Room · Decide", cta: "Review Week 1", go: "week" };
     const s = D.WEEK1[i];
-    if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four client moments to see where you’re starting", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
+    if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome video, then four client moments to see where you’re starting", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
     if (s.type === "lesson") { const r = REP(s.rep); return { tag: s.kind, title: s.title, meta: `Watch the lesson, then practice with ${r.client}`, cta: "Continue", go: "week/" + s.key }; }
     return { tag: s.kind, title: s.title, meta: s.meta, cta: "Continue", go: "week/" + s.key };
   }
@@ -263,7 +263,7 @@
         <div class="orig"><small>What the therapist said (line 4)</small>${q(A.lines[3][1])}</div>
         <details class="peek"${Object.values(pz).some(v => (v || "").trim()) ? " open" : ""}><summary>Stuck? Use P.A.U.S.E. to get there</summary><div class="pause-form" style="margin-top:10px">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="1" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div></details>
         <label class="field">Your new line 4 <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
-        ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>How I’d say it</small><span class="tk">${q(A.take)}</span></div></div>
+        ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>Another way to say it</small><span class="tk">${q(A.take)}</span></div></div>
           <div class="coach"><small>Why it works</small>${esc(A.takeWhy)}</div>
           <div class="next-note"><b>One more thing before you go.</b> Look at what happened next in the session.
             <span class="nn-row"><span>${esc(A.line8[0])}</span>${q(A.lines[7][1])}</span>
@@ -378,8 +378,8 @@
     if (s.type === "day1") {
       const answered = D.BASELINE.filter(b => S.base[b.id] && S.base[b.id].aim).length;
       body = howHTML("What you’ll do today", [
-        ["Start with a welcome from me", "What the Lab is, and how it works."],
-        ["Answer four client moments", `${D.BASELINE.map(b => b.client).join(", ")} each say something hard to answer. For each one, write what you’d say, then pick what you were going for. No right answers and no feedback today.`]
+        ["Watch the welcome video", ""],
+        ["Answer four client moments", `${D.BASELINE.map(b => b.client).join(", ")} each say something hard to answer. Write what you’d say and pick what you were going for. No right answers today.`]
       ], "Why: these answers are your starting point. In Week 4 you’ll answer the same four moments again and see, side by side, how you’ve grown.");
       const watch = S.welcome ? `<button type="button" class="v6-btn secondary" data-act="welcome">Welcome watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="welcome">${D.VIDEOS.welcome ? "I’ve watched the welcome" : "Mark the welcome watched"}</button>`;
       const base = S.sealed ? `<button type="button" class="v6-btn secondary" data-go="growth">See My growth</button>`
@@ -389,8 +389,8 @@
     if (s.type === "lesson") {
       const r = REP(s.rep);
       body = howHTML("How this step works", [
-        ["Watch the lesson", "One idea, explained with real examples."],
-        [`Do Rep ${r.id} with ${r.client}`, "Practice the idea right away: read the moment, write what you’d say, then see how the client reacts and what I’d do."]
+        ["Watch the lesson", ""],
+        [`Do Rep ${r.id} with ${r.client}`, `Write what you’d say, then see how ${r.client} reacts.`]
       ]) + `<div class="quote-box"><span class="v6-label">Your Rep · ${esc(r.client)}</span><span class="ctx">${esc(r.context)}</span><span class="line">${r.line ? q(r.line) : esc(r.stageLine) + " " + r.silence + " seconds of silence."}</span></div>`;
       if (repSaved(r.id)) body += `<div class="done-note">✓ Rep ${r.id} saved to your Playbook.</div>`;
       cta = (S.watched[s.key] ? `<button type="button" class="v6-btn secondary" data-act="watch" data-key="${s.key}">Lesson watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="watch" data-key="${s.key}">${D.VIDEOS[s.video] ? "I’ve watched the lesson" : "Mark lesson watched"}</button>`)
@@ -468,7 +468,7 @@
     const r = REP(id) || REP("1.1");
     if (!weekOpen(r.week)) return { html: `<div class="card stack-12"><div class="locked-note"><span aria-hidden="true">🔒</span>Rep ${r.id} opens in Week ${r.week}.</div><div><button type="button" class="v6-btn secondary" data-go="reproom">Back to the Rep Room</button></div></div>`, title: `Rep ${r.id}`, crumb: ["Rep Room", `Rep ${r.id}`, "reproom"], rail: repRailHTML(1, false) };
     if (r.pending) return { html: `<div class="card stack-12"><span class="v6-pill blush" style="align-self:flex-start">1 · The moment</span><div class="speaker boxed"><span class="av">${r.client[0]}</span><span class="col"><span class="who">${esc(r.client)}, ${r.age}</span><span class="said md">${esc(r.moment)}</span></span></div>
-      <div class="soon-note">This Rep is still being written. Its reactions and Tiffany’s take arrive with Week ${r.week}.</div></div>`, title: `Rep ${r.id} · ${r.client}`, crumb: ["Rep Room", `Rep ${r.id}`, "reproom"], rail: repRailHTML(1, false) };
+      <div class="soon-note">This Rep is still being written. Its reactions and full walkthrough arrive with Week ${r.week}.</div></div>`, title: `Rep ${r.id} · ${r.client}`, crumb: ["Rep Room", `Rep ${r.id}`, "reproom"], rail: repRailHTML(1, false) };
 
     const x = R(r.id), name = r.client;
     const aims = D.AIMS.concat(r.extraAim ? [r.extraAim] : []);
@@ -503,11 +503,14 @@
     if (x.aim) {
       html += `<div class="card stack-12"><span class="v6-label">4 · ${esc(name)} reacts</span>${reacts.length ? reacts.map(z => `<div class="reaction-alt">${z.move ? `<p class="move-label" style="margin:0 0 8px">${reacts.length > 1 ? "If your move sounded like" : "A move like"} <b>${esc(z.move)}</b></p>` : ""}
         <div class="speaker"><span class="av" aria-hidden="true">${name[0]}</span><span class="col">${z.stage ? `<span class="stage">${esc(z.stage)}</span>` : ""}<span class="said md">${q(z.says)}</span>${z.after ? `<span class="stage">${esc(z.after)}</span>` : ""}<span class="shows">${esc(z.shows)}</span></span></div></div>`).join("")
-        : `<div style="font-size:15px;color:var(--ink-2)">Let’s see what Tiffany would do with this.</div>`}
+        : `<div style="font-size:15px;color:var(--ink-2)">Here’s one way to handle it.</div>`}
         ${beat2 ? `<label class="field" style="margin-top:8px;padding-top:14px;border-top:1px solid var(--line-2)"><span class="v6-label">Keep going · ${esc(r.beat2.prompt)}</span>${r.beat2.note ? `<small>${esc(r.beat2.note)}</small>` : ""}<textarea class="v6-ta" rows="2" data-beat2 placeholder="Your next move, in your own words">${esc(x.beat2)}</textarea></label>` : ""}
       </div>
-      <div class="card sage stack-12 take"><div class="speaker" style="align-items:center;gap:10px"><span class="av t" aria-hidden="true">T</span><span class="col" style="gap:0"><span class="v6-label forest">5 · Tiffany’s take</span><span style="font-size:12.5px;color:var(--ink-2)">One good option, never “the answer”</span></span></div>
-        <div class="pull"><b>The Pull: ${esc(r.take.pull)}.</b> ${esc(r.take.text)}</div>
+      <div class="card stack-12 pullq"><span class="v6-label">What pulled at you?</span><span class="pq-sub">Everyone feels a different urge in hard moments. Which one showed up for you here?</span>
+        <div class="chips-row pulls-row">${D.PULLS.map(([k, d]) => `<button type="button" class="chip" data-mypull="${k}" aria-pressed="${x.pull === k}" title="${esc(d)}">${k}</button>`).join("")}<button type="button" class="chip" data-mypull="steady" aria-pressed="${x.pull === "steady"}">I felt steady</button></div>
+        ${x.pull ? `<span class="pq-fb">${x.pull === "steady" ? "Nice. Notice what helped you stay steady here." : `<b>${esc(x.pull)}:</b> ${esc((D.PULLS.find(p => p[0] === x.pull) || [])[1] || "")}.`}${x.pull !== "steady" && x.pull !== r.take.pull ? ` ${esc(r.take.pull)} is another common one here. There’s no wrong answer.` : x.pull === r.take.pull ? " That’s a really common one here." : ""}</span>` : ""}</div>
+      <div class="card sage stack-12 take"><span class="v6-label forest">5 · One way to handle it</span>
+        <div class="pull">${esc(r.take.text)}</div>
         <div class="say"><small>${esc(r.take.sayLabel || "One way to say it")}</small><div>${q(r.take.say)}</div></div>
         ${r.take.beat2Say ? `<div class="say"><small>For Beat 2, try</small><div>${q(r.take.beat2Say)}</div></div>` : ""}
         <div class="why">${r.take.why ? esc(r.take.why) + " " : ""}<b>Watch for</b> ${esc(r.take.watch)}</div>
@@ -515,7 +518,8 @@
       if (r.extra === "gap") html += `<div class="card stack-12"><span class="v6-label">Extra step · Which gap showed up for you?</span>
         <div class="aims">${D.GAPS.map(([k, label, hint]) => `<button type="button" class="aim" data-gap="${k}" aria-pressed="${x.gap === k}"><span>${esc(label)}</span><small>${esc(hint)}</small></button>`).join("")}</div>
         <button type="button" class="aim none" data-gap="none" aria-pressed="${x.gap === "none"}"><span>None of these showed up for me</span><small>That’s useful to know too</small></button>
-        <span class="hint">${x.gap === "none" ? "Got it. You can come back and pick one if something clicks later." : "Your answer pre-fills your Clinical Confidence Profile."}</span></div>`;
+        <button type="button" class="aim none" data-gap="confident" aria-pressed="${x.gap === "confident"}"><span>I felt confident here</span><small>I knew what to say and why</small></button>
+        <span class="hint">${x.gap === "none" ? "Got it. You can come back and pick one if something clicks later." : x.gap === "confident" ? "Love that. Notice what made this one feel steady, so you can find it again." : "Your answer pre-fills your Clinical Confidence Profile."}</span></div>`;
       html += `<div class="card stack-12"><span class="v6-label">6 · Run it back</span><div style="font-size:14px;color:var(--ink-2)">Want another go? Try it again and test it with the Three Checks. Then write the line you’d want to remember next time this happens.</div>
         ${x.attempts.length ? `<div class="attempts">${x.attempts.map((a, i) => `<div><small>Try ${i + 1}</small>${q(a.move)}${a.aim ? ` · ${esc((aims.find(z => z[0] === a.aim) || [])[1] || "")}` : ""}</div>`).join("")}</div>` : ""}
         <label class="field">Your line to keep <small>${esc(r.bank)}…</small><textarea class="v6-ta" rows="2" data-line placeholder="Your best line, in your own words">${esc(x.line)}</textarea></label>
@@ -526,7 +530,7 @@
     }
     const crumb = r.week === 1 ? ["Week 1", `Rep ${r.id}`, "week/" + D.WEEK1.find(s => s.rep === r.id).key] : ["Rep Room", `Rep ${r.id}`, "reproom"];
     return {
-      html, tight: true, title: `Rep ${r.id} · ${r.title}`, plain: true, sub: `Your practice for Lesson ${r.id.split(".")[1]}: ${r.lesson}. Unlike Day 1, you’ll see how ${r.client} reacts, get my take, and then try it again.`, crumb, rail: repRailHTML(stage, x.saved),
+      html, tight: true, title: `Rep ${r.id} · ${r.title}`, plain: true, sub: `Your practice for Lesson ${r.id.split(".")[1]}: ${r.lesson}. Unlike Day 1, you’ll see how ${r.client} reacts, see one way to handle it, and then try it again.`, crumb, rail: repRailHTML(stage, x.saved),
       after: () => {
         clearInterval(silenceTimer);
         if (!r.silence) return;
@@ -696,6 +700,7 @@
         if (first) { const c = $$(".v6-col .card", app)[1]; if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }
       });
       const b2 = $("[data-beat2]", app); if (b2) b2.oninput = () => { x.beat2 = b2.value; save(); };
+      $$("[data-mypull]", app).forEach(b => b.onclick = () => { x.pull = x.pull === b.dataset.mypull ? null : b.dataset.mypull; save(); render(); });
       $$("[data-gap]", app).forEach(b => b.onclick = () => { x.gap = b.dataset.gap; delete S.profile.gap; save(); render(); });
       const line = $("[data-line]", app);
       if (line) line.oninput = () => { x.line = line.value; save(); const s = $('[data-act="saveline"]', app); if (s) s.disabled = !x.line.trim(); };
