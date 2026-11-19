@@ -35,15 +35,17 @@ React to the therapist's exact words in their latest attempt:
 - Drops the homework fast to keep the peace: relief that doesn't really land.
 - Gets curious about what's missing, using her words: softens a little and gives one real detail.
 - Asks several questions at once: answers only the last one, or none.
-Dana changes gradually across the session. No sudden breakthroughs. Stay in the moment; don't fast-forward the session. Reveal background details only when the trainee earns them by getting curious.`;
+Dana changes gradually across the session. No sudden breakthroughs, but when the therapist keeps meeting her with curiosity, let her warm up noticeably: longer answers, a real detail, a little humor or honesty. Vary her sentence openings and length; don't repeat her earlier phrasing. Stay in the moment; don't fast-forward the session. Reveal background details only when the trainee earns them by getting curious.`;
 
 function system(mode, sc) {
   const ctx = `CLIENT BACKGROUND (for you only)\n${sc.background}\n\nSETUP\n${sc.setup}`;
   if (mode === "note") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: write the TRAINING NOTE on the trainee's latest attempt. Dana does not react yet.
-Write exactly 2 short sentences, nothing else (no label, no quotes, no counters):
-- Sentence 1: name what the attempt would likely invite, plainly and without judgment. Name a Pull if one showed up: Rescue, Fix, Fill, Defend, or Prove.
-- Sentence 2: ONE question that sends them back to explore. Point to what to notice (Dana's words, her likely reaction, their own urge).
-If this is a refine, you may briefly notice what shifted from their earlier attempt at this same moment.
+Write exactly 2 short sentences, nothing else (no label, no quotes, no counters). Keep the whole note under 45 words.
+- Sentence 1: start with what the attempt DID, honestly. If it did something useful (got curious, used Dana's words, slowed down, was honest, stayed with her), name that specifically first. If it mostly worked, say so plainly. Only name a Pull (Rescue, Fix, Fill, Defend, Prove) when one clearly showed up; most attempts don't need one.
+- Sentence 2: ONE question that builds on what they did and helps them go one step further. It should feel like an invitation to keep exploring, not a sign they got it wrong.
+ENCOURAGEMENT: The goal is a trainee who keeps practicing. Many attempts are reasonable; treat them that way. Never imply there was one right answer. Be honest when something closed Dana down, but say it as information, not a mistake.
+VARIETY: Earlier training notes are in the transcript. Do NOT repeat their focus, their question shape, or their phrasing. Use the FOCUS given in the request for this note. Don't comment on body language, arms, or face, and don't invent details that aren't in the transcript.
+If this is a refine, briefly name what shifted from their earlier attempt at this same moment.
 ${VOICE}\n\n${SAFETY}`;
   if (mode === "client") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: you are Dana. Write ONLY Dana's next spoken line, reacting to the therapist's latest attempt. No quotes, no name label, no stage directions longer than three words, no training note.
 ${CLIENT_RULES}\n\n${SAFETY}`;
@@ -97,8 +99,21 @@ exports.handler = async event => {
   if ((mode === "note" || mode === "client") && !(cur.attempts && cur.attempts.length)) return json(400, { error: "No attempt yet" });
 
   const t = transcript(sc, moments);
+  const LENSES = [
+    "Dana's exact words: which word or phrase of hers matters most right now",
+    "what Dana might be feeling underneath what she said",
+    "what Dana seems to want from the therapist in this moment",
+    "the therapist's own urge or pull right now",
+    "pacing: how much the therapist said, and whether there's room for Dana",
+    "what's working between them right now, and how to build on it",
+    "where this conversation could go next, and what would help Dana stay in it",
+    "what would help Dana feel listened to rather than managed",
+    "the strength in the trainee's attempt and how to use it on purpose",
+  ];
+  /* one focus per training note, rotating through all of them before any repeats */
+  const noteNo = moments.reduce((n, m) => n + (m.attempts || []).length, 0), lens = LENSES[(noteNo - 1 + (moments[0].attempts && moments[0].attempts[0] ? moments[0].attempts[0].text.length : 0)) % LENSES.length];
   const ask = mode === "note"
-    ? `SESSION SO FAR\n\n${t}\n\nWrite the training note on the therapist's latest attempt at Moment ${moments.length}.`
+    ? `SESSION SO FAR\n\n${t}\n\nWrite the training note on the therapist's latest attempt at Moment ${moments.length}.\nFOCUS for this note: ${lens}.`
     : mode === "client"
       ? `SESSION SO FAR\n\n${t}\n\nWrite Dana's next line, reacting to the therapist's latest attempt at Moment ${moments.length}.`
       : `FULL SESSION\n\n${t}\n\nThe session is over. Write Dana's closing line, then ---, then the Session summary.`;

@@ -1232,3 +1232,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .rate-off .v6-in { flex: 1 1 220px; min-height: 40px; font-size: 16px; }
 .lv-summary + .rate { margin-top: -6px; }
 @media (max-width: 720px) { .lv-note + .rate, .lv-client + .rate { margin-left: 0; } }
+.live-allow { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 14px; color: #ffffffc8; }
+.live-allow b { color: #fff; font-size: 15px; }
+.live-go:disabled { opacity: .6; cursor: not-allowed; }

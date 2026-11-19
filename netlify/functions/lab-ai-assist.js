@@ -23,7 +23,7 @@ function prompt(task, d) {
 CLIENT: ${clip(d.who, 200)}. Context: ${clip(d.context, 600)}
 ${d.guide ? `How this client tends to react (the course author's notes, use as guidance): ${clip(d.guide, 1500)}` : ""}
 Sound like a real person in a hard moment, not a textbook client and not an AI. Everyday words, 1-3 sentences, no therapy-speak, no neat insight, no thanking the therapist. React to the therapist's EXACT words: defending or explaining -> more guarded; rushing to reassure or fix -> shrug it off or feel managed; real curiosity using the client's own words -> soften a little and give one real detail; stacked questions -> answer only the last one.
-Then the training note: 2 short sentences. Sentence 1 names what the response invited (name a Pull if one showed up: Rescue, Fix, Fill, Defend, or Prove). Sentence 2 is one question.
+Then the training note: 2 short sentences, under 45 words total. Sentence 1 starts with what the response DID: if it did something useful (curiosity, using the client's words, honesty, slowing down), name that specifically first; only name a Pull (Rescue, Fix, Fill, Defend, Prove) when one clearly showed up. Sentence 2 is one question that builds on what they did. The note should leave them encouraged to keep practicing, never feeling there was one right answer. Don't comment on body language or invent details.
 ${VOICE}\n${SAFETY}\n${OUT} Shape: {"client": "...", "note": "..."}`,
     user: `The client just said: "${clip(d.line, 800)}"\nThe trainee therapist responded: "${clip(d.response)}"`,
   };

@@ -897,7 +897,10 @@
      Flow per moment: Dana speaks -> trainee attempt -> Training note (Dana hasn't reacted yet)
        -> Refine (same moment, 3 per session) or Continue (Dana reacts; that's the next moment). 10 moments, then wrap-up.
      The shared preview login is a test account: counts are shown but never enforced. */
-  const LIVE = { url: "/.netlify/functions/lab-live-session", moments: 10, refines: 3, busy: false, err: "" };
+  const LIVE = { url: "/.netlify/functions/lab-live-session", moments: 10, refines: 3, perDay: 3, busy: false, err: "" };
+  /* Daily allowance: live sessions started in the last 24 hours (rolling). Test account: shown, not enforced. */
+  const liveUses = () => { const L = liveState(), now = Date.now(); L.starts = (L.starts || []).filter(t => now - t < 864e5); return L.starts; };
+  const liveResetIn = () => { const u = liveUses(); if (!u.length) return ""; const ms = Math.max(0, Math.min(...u) + 864e5 - Date.now()), h = Math.floor(ms / 36e5), m = Math.ceil((ms % 36e5) / 6e4); return h ? `${h}h ${m}m` : `${m}m`; };
   const LIVE_OPEN = "Honestly? I think you don’t understand me either. Everyone just keeps giving me homework.";
   const isTestAccount = () => true; /* every current login is the shared preview account; real Supabase students will be limited */
   const liveState = () => (S.live = S.live || { past: [], cur: null });
@@ -917,7 +920,9 @@
         <p>Dana is a fictional client, six sessions in and a little guarded today. Respond the way you would in the room. Before she reacts, you’ll get a training note to help you slow down and look again. Then it’s your call.</p>
         <ol class="live-how"><li><span><b>Dana talks</b>You respond in your own words.</span></li><li><span><b>You get a training note</b>What your response might invite, and a question to sit with. You find the next move.</span></li><li><span><b>You decide</b>Refine your answer (3 per session) or hear how Dana responds.</span></li><li><span><b>Ten moments</b>Then a summary of where the session opened up, and where it closed.</span></li></ol>
         <div class="live-meta"><span>About 15 minutes</span><span>Fictional practice only</span><span>A training tool for The Confident Clinician</span></div>
-        <button type="button" class="v6-btn primary live-go" data-live="start">Start the session</button>
+        ${(() => { const used = liveUses().length, left = Math.max(0, LIVE.perDay - used), test = isTestAccount(), blocked = !left && !test;
+          return `<div class="live-allow"><b>${left} of ${LIVE.perDay} sessions left today</b>${used ? `<span>${left ? "One more opens" : "Your next session opens"} in ${liveResetIn()}</span>` : `<span>Sessions reset every 24 hours</span>`}${test && !left ? `<span>Test account: keep going</span>` : ""}</div>
+            <button type="button" class="v6-btn primary live-go" data-live="start"${blocked ? " disabled" : ""}>${blocked ? `Next session opens in ${liveResetIn()}` : "Start the session"}</button>`; })()}
         ${L.past.filter(p => p.done).length ? `<p class="live-past">You’ve finished ${L.past.filter(p => p.done).length} session${L.past.filter(p => p.done).length > 1 ? "s" : ""}. <button type="button" class="v6-link" data-live="lastsum">See your last summary</button></p>` : ""}
       </div>`;
     if (!C || L.showIntro) return { html: `<div class="live">${intro}</div>`, title: "Live session", plain: true, sub: "A practice partner who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
@@ -1117,7 +1122,11 @@
       bindRate();
       $$("[data-live]", app).forEach(b => b.onclick = () => {
         const d = b.dataset.live, C = L.cur;
-        if (d === "start" || d === "new") { if (L.cur && !L.past.some(p => p.id === L.cur.id)) L.past.push(L.cur); L.cur = liveNew(); L.showIntro = false; LIVE.err = ""; save(); render(); scrollTo({ top: 0 }); return; }
+        if (d === "start" || d === "new") {
+          if (!isTestAccount() && liveUses().length >= LIVE.perDay) { L.cur = null; L.showIntro = true; save(); render(); return; }
+          if (d === "new") { L.showIntro = true; if (L.cur && !L.past.some(p => p.id === L.cur.id)) L.past.push(L.cur); L.cur = null; save(); render(); scrollTo({ top: 0 }); return; }
+          liveUses().push(Date.now());
+          if (L.cur && !L.past.some(p => p.id === L.cur.id)) L.past.push(L.cur); L.cur = liveNew(); L.showIntro = false; LIVE.err = ""; save(); render(); scrollTo({ top: 0 }); return; }
         if (d === "lastsum") { L.cur = L.past.filter(p => p.done).slice(-1)[0] || L.cur; L.showIntro = false; save(); render(); return; }
         if (d === "quit") { if (C && !C.done) { C.left = true; } L.showIntro = true; save(); render(); scrollTo({ top: 0 }); return; }
         if (!C) return;
