@@ -592,6 +592,11 @@
   const aiNote = t => t ? `<div class="ai-note"><b>✦ AI spot</b><span>${esc(t)}</span></div>` : "";
   const momentHTML = m => m ? `<div class="act-moment"><span class="who">${esc(m.who)}</span><span class="line">${q(m.line)}</span></div>` : "";
   const pickChips = (attr, opts, cur, extra = "") => `<div class="act-chips">${opts.map(o => { const [k, l] = Array.isArray(o) ? o : [o, o]; return `<button type="button" class="act-chip" ${attr}="${esc(k)}"${extra} aria-pressed="${cur === k}">${esc(l)}</button>`; }).join("")}</div>`;
+  /* Shuffled order per attempt, never the original order, so answers don't line up with the chips */
+  const ord = (v, k, ids) => {
+    if (!v[k] || v[k].length !== ids.length) { let o; do { o = shuffle(ids.length).map(j => ids[j]); } while (ids.length > 1 && o.every((x, j) => x === ids[j])); v[k] = o; }
+    return v[k].map(id => ids.indexOf(id)).filter(j => j > -1);
+  };
   const filled = (t, n = 3) => (t || "").trim().length >= n;
   function actScreen(X, i, v) {
     const sc = X.screens[i], K = sc.kind;
@@ -602,7 +607,7 @@
       if (sc.pause) h += `<div class="act-pause">${D.PAUSE.map(([l, t]) => { const [nm, ...rest] = t.split(": "); return `<div><span class="lt">${l}</span><span><b>${esc(nm)}</b> ${esc(rest.join(": "))}</span></div>`; }).join("")}</div>`;
     }
     if (K === "tag") {
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-tags">${sc.items.map(([id, txt, ans, why]) => {
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-tags">${ord(v, "o" + i, sc.items.map(x => x[0])).map(j => sc.items[j]).map(([id, txt, ans, why]) => {
         const cur = v[`t${i}_${id}`], lab = k => (sc.options.find(o => o[0] === k) || [])[1];
         const fb = cur ? (cur === ans ? `<div class="act-fb yes"><b>Yes, ${esc(lab(ans))}.</b> ${esc(why)}</div>` : `<div class="act-fb no"><b>Closer to ${esc(lab(ans))}.</b> ${esc(why)}</div>`) : "";
         return `<div class="act-tag${cur ? " answered" : ""}"><span class="tx">${esc(txt)}</span>${pickChips("data-av", sc.options, cur, ` data-f="t${i}_${id}"`)}${fb}</div>`;
@@ -611,7 +616,7 @@
     }
     if (K === "pick") {
       const cur = v[`p${i}`], o = sc.options.find(x => x[0] === cur);
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${sc.options.map(([k, l]) => `<button type="button" class="act-pick" data-av="${k}" data-f="p${i}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${ord(v, "o" + i, sc.options.map(x => x[0])).map(j => sc.options[j]).map(([k, l]) => `<button type="button" class="act-pick" data-av="${k}" data-f="p${i}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`
         + (o ? `<div class="act-fb ${cur === sc.best ? "yes" : "no"}">${esc(o[2])}</div>` : "");
       ok = !!cur;
     }

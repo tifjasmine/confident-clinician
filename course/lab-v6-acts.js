@@ -15,13 +15,13 @@
         cards: [["Knowledge", "I don’t know it yet.", "Study, verify, consult."], ["Skill", "I know it, but I can’t do it live yet.", "Practice the actual behavior."], ["Pressure", "I can do it, but pressure gets in the way.", "Notice the cue, slow down."], ["Support", "This needs more than me trying harder.", "Supervision, consultation, referral."]] },
       { kind: "tag", title: "One moment. Four therapists.",
         moment: { who: "Client", line: "I’m having intrusive thoughts, and I’m scared of what they mean." },
-        text: "Each therapist got stuck for a different reason. Tag each one.",
+        text: "Four therapists, same moment. Here’s what each said afterward. Which gap is it?",
         options: Object.entries(GAP),
         items: [
-          ["a", "“I don’t really understand the assessment distinctions here.”", "knowledge", "Something to learn or verify."],
-          ["b", "“I know the distinctions, but I can’t ask clear, non-leading questions yet.”", "skill", "The knowledge is there. The behavior needs reps."],
-          ["c", "“I know how to ask, but I panicked and felt I had to reassure them right away.”", "pressure", "The skill is there. Pressure took over."],
-          ["d", "“This might involve risk or complexity beyond my training.”", "support", "Trying harder isn’t the answer. Getting help is."]
+          ["a", "“I wasn’t sure what separates intrusive thoughts from something more serious, so I didn’t know what I was listening for.”", "knowledge", "The clue: they couldn’t name what to listen for. That’s something to learn or verify, not a confidence problem."],
+          ["b", "“I knew what I wanted to find out. But every question came out sounding like ‘You’re not going to act on them, right?’”", "skill", "The clue: they knew the goal, but the wording kept slipping. That gets better with practice, not more reading."],
+          ["c", "“On the drive home I knew exactly what I should have asked. In the room I just said, ‘That’s really common, try not to worry.’”", "pressure", "The clue: the answer showed up after the session. The knowledge didn’t appear when the client left. The conditions changed."],
+          ["d", "“Some of what they described sounded like it could involve risk, and I’ve never assessed that on my own.”", "support", "The clue: possible risk they haven’t handled before. That’s a reason to consult, not to push through alone."]
         ] },
       { kind: "tag", title: "The colleague test.",
         text: "You have 30 minutes to help a colleague with each gap. What do you hand them?",
