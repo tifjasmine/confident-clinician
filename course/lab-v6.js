@@ -609,8 +609,10 @@
   function growthView() {
     const html = D.BASELINE.map(b => {
       const a = S.base[b.id];
-      const day1 = S.sealed ? `<span class="slot ok"><span class="lbl">Day 1 · your words</span>✓ Saved. Your Week 4 answer will appear next to it.</span>`
-        : a && a.aim ? `<span class="slot"><span class="lbl">Day 1 · your words</span>Answered. Finish Day 1 to seal it.</span>`
+      const aim = a && D.AIMS.find(x => x[0] === a.aim);
+      const words = a && (a.move || "").trim() ? `<span class="said">${q(a.move.trim())}</span>${aim ? `<span class="aimed">Going for: <b>${esc(aim[2])}</b></span>` : ""}` : "";
+      const day1 = S.sealed && words ? `<span class="slot ok"><span class="lbl">Day 1 · your words</span>${words}</span>`
+        : a && a.aim ? `<span class="slot"><span class="lbl">Day 1 · your words</span>${words}<span class="aimed">Not sealed yet. Finish Day 1 to lock it in.</span></span>`
         : `<span class="slot" style="color:var(--muted)"><span class="lbl">Day 1 · your words</span>Not answered yet. You’ll answer this on Day 1.</span>`;
       return `<div class="card stack-12 growth-card" style="gap:14px"><div class="growth-top"><span class="col"><span class="who">${esc(b.who)}</span><span class="line">${q(b.line)}</span></span><span class="v6-pill sage">${b.id} · ${esc(b.skill)}</span></div>
         <div class="grid2">${day1}<span class="slot dash"><span class="lbl">Week 4 · your words</span>Opens in Week 4</span></div></div>`;

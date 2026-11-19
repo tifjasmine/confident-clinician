@@ -1016,3 +1016,8 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (max-width: 1099px) {
   .v6-top .v6-brand-short { max-width: 190px; font: 700 10.5px/1.35 "Lato", system-ui, sans-serif !important; letter-spacing: .16em; }
 }
+/* My growth: show the student's actual Day 1 words */
+.growth-top .col { flex: 1 1 260px; min-width: 0; }
+.growth-card .slot .said { font: italic 500 17px/1.45 var(--serif); color: var(--ink); overflow-wrap: anywhere; }
+.growth-card .slot .aimed { font-size: 13.5px; color: var(--muted); }
+.growth-card .slot .aimed b { color: var(--forest); font-weight: 700; }
