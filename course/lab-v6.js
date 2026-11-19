@@ -19,7 +19,7 @@
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 }; /* simulation content changed (8-moment text simulations): start it fresh */
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
+  const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
   const R = id => (S.reps[id] = S.reps[id] || { move: "", aim: null, map: {}, gap: null, beat2: "", line: "", saved: false, attempts: [] });
@@ -34,7 +34,20 @@
   const doneCount = () => D.WEEK1.filter(stepDone).length;
   const curIdx = () => { const i = D.WEEK1.findIndex(s => !stepDone(s)); return i === -1 ? D.WEEK1.length : i; };
   const unlocked = i => S.reviewer || i <= curIdx();
-  const weekOpen = n => n === 1 || S.reviewer;
+  /* Drip: a week opens only when the week before is finished AND its date has arrived (7 days apart, counted from the day the student starts). */
+  const DRIP_DAYS = 7;
+  const weekDone = n => n === 1 ? curIdx() >= D.WEEK1.length : false; /* Weeks 2-4 not built yet */
+  const opensAt = n => S.start ? S.start + (n - 1) * DRIP_DAYS * 864e5 : null;
+  const timeReached = n => n === 1 || (S.start && Date.now() >= opensAt(n));
+  const weekOpen = n => n === 1 || S.reviewer || (weekDone(n - 1) && timeReached(n));
+  const fmtDay = (t, long) => new Date(t).toLocaleDateString("en-US", long ? { weekday: "short", month: "short", day: "numeric" } : { month: "short", day: "numeric" });
+  const weekStatus = n => {
+    if (weekOpen(n)) return S.reviewer && !(weekDone(n - 1) && timeReached(n)) ? "Preview open" : "Open now";
+    if (!S.start) return `Opens ${(n - 1) * DRIP_DAYS} days after you start`;
+    const when = timeReached(n) ? "" : `Opens ${fmtDay(opensAt(n), true)}`;
+    if (weekDone(n - 1)) return when;
+    return when ? `${when} · finish Week ${n - 1} first` : `Finish Week ${n - 1} to open`;
+  };
   const lessonReps = () => D.REPS.filter(r => !r.pending);
   const bankLines = () => lessonReps().filter(r => repSaved(r.id) && (S.reps[r.id].line || "").trim());
   const repsCompleted = () => lessonReps().filter(r => repSaved(r.id)).length + (S.sealed ? 4 : 0);
@@ -47,12 +60,23 @@
 
   const NAV = [["home", "Home", "Home"], ["week", "My week", "Week"], ["reproom", "Rep Room", "Reps"], ["playbook", "Playbook", "Playbook"], ["growth", "My growth", "Growth"]];
 
+  /* Back button: walks back through screens visited in this tab; falls back to Home. */
+  const trail = [];
+  let goingBack = false;
+  const goBack = () => { trail.pop(); const prev = trail[trail.length - 1] || "home"; goingBack = true; go(prev); };
+  const setMenu = open => { $(".v6-app").classList.toggle("menu-open", open); $$("[data-menu]").forEach(b => b.setAttribute("aria-expanded", open)); };
+
   function render() {
     const signedIn = sessionStorage.getItem(PREVIEW_SESSION) === "1";
     $("[data-login]").hidden = signedIn;
     $("[data-app]").hidden = !signedIn;
     if (!signedIn) return;
     const { scr, arg } = route();
+    const h = location.hash.slice(1) || "home";
+    if (goingBack) goingBack = false; else if (trail[trail.length - 1] !== h) trail.push(h);
+    if (trail.length > 50) trail.splice(0, trail.length - 50);
+    setMenu(false);
+    $$("[data-back]").forEach(b => { b.hidden = scr === "home"; });
     const navKey = scr === "rep" ? (REP(arg) && REP(arg).week === 1 ? "week" : "reproom") : scr === "baseline" ? "week" : scr;
     const tabs = NAV.map(([k, label, short], i) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${i === -1 ? short : label}</button>`).join("");
     $("[data-tabs]").innerHTML = tabs;
@@ -110,7 +134,7 @@
     return sec("today", "Today", "", item("home", "Home", navKey === "home"))
       + sec("week1", "Week 1 · Notice", `${doneCount()}/${D.WEEK1.length}`, steps)
       + sec("practice", "Practice", "", item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
-      + sec("later", "Coming up", "", D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>Soon</em></div>`).join(""));
+      + sec("later", "Coming up", "", D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>${S.start && !weekOpen(w.n) ? fmtDay(opensAt(w.n)) : weekOpen(w.n) ? "Open" : "Soon"}</em></div>`).join(""));
   }
 
   /* ---------- Aside ---------- */
@@ -147,7 +171,7 @@
   /* ---------- Home ---------- */
   function nextInfo() {
     const i = curIdx();
-    if (i >= D.WEEK1.length) return { tag: "Week 1 complete", title: "Week 2 opens next", meta: "Getting Unstuck in the Room · Decide", cta: "Review Week 1", go: "week" };
+    if (i >= D.WEEK1.length) return { tag: "Week 1 complete", title: weekOpen(2) ? "Week 2 is open" : `Week 2 opens ${fmtDay(opensAt(2), true)}`, meta: "Getting Unstuck in the Room · Decide", cta: "Review Week 1", go: "week" };
     const s = D.WEEK1[i];
     if (s.type === "day1") return { tag: "Start here", title: "Welcome + Day 1 Baseline", meta: "A short welcome from Tiffany, then four client moments to see where you’re starting", cta: anyProgress() ? "Continue Day 1" : "Start Day 1", go: "week/day1" };
     if (s.type === "lesson") { const r = REP(s.rep); return { tag: s.kind, title: s.title, meta: `Watch the lesson, then practice with ${r.client}`, cta: "Continue", go: "week/" + s.key }; }
@@ -156,7 +180,7 @@
   function homeView() {
     const n = nextInfo(), d = doneCount(), t = D.WEEK1.length;
     const hero = `<div class="hm-head"><div class="v6-label">${anyProgress() ? "Welcome back" : "Welcome"} · Week 1 of 4</div>
-      <h1 class="display">Build confidence through <em>practice,</em> not performance.</h1>
+      <h1 class="display">Build confidence through <em>practice.</em></h1>
       </div>`;
     const html = `
       <section class="floor">
@@ -168,10 +192,10 @@
         </div>
       </section>
       <section class="card weeks4">
-        <div class="w4-head"><h2>Four weeks. <em>One at a time.</em></h2><p>Each week opens once the last week’s practice is done.</p></div>
+        <div class="w4-head"><h2><em>Four</em> weeks.</h2><p>A new week opens every ${DRIP_DAYS} days, once you’ve finished the week before.</p></div>
         <ol>${D.WEEKS.map(w => {
           const cur = w.n === 1, open = weekOpen(w.n);
-          const status = cur ? (d ? `${d} of ${t} done` : "Open now") : open ? "Preview open" : `Opens after Week ${w.n - 1}`;
+          const status = cur ? (d ? `${d} of ${t} done` : "Open now") : weekStatus(w.n);
           return `<li class="${cur ? "cur" : ""}"><span class="n">0${w.n}</span><span class="tx"><b>${esc(w.title)}</b><small>${esc(w.theme)} · ${esc(w.question)}</small></span>${cur ? `<button type="button" class="v6-link" data-go="week">${status} →</button>` : `<em>${status}</em>`}</li>`;
         }).join("")}</ol>
       </section>
@@ -702,6 +726,10 @@
     if (email === PREVIEW_EMAIL && pw === PREVIEW_PASSWORD) { sessionStorage.setItem(PREVIEW_SESSION, "1"); err.textContent = ""; f.reset(); render(); }
     else err.textContent = "That email and password don’t match the preview account.";
   });
+  $$("[data-back]").forEach(b => b.onclick = goBack);
+  $$("[data-menu]").forEach(b => b.onclick = () => setMenu(!$(".v6-app").classList.contains("menu-open")));
+  $$("[data-menu-close]").forEach(b => b.onclick = () => setMenu(false));
+  addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
   $("[data-sb-min]").onclick = () => { SB.min = !SB.min; sbSave(); render(); };
   $$("[data-signout]").forEach(b => b.onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); render(); });
   $$("[data-preview-toggle]").forEach(b => b.onclick = () => { S.reviewer = !S.reviewer; save(); render(); });

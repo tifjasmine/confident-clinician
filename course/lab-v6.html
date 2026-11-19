@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/course/lab-v6.css?v=20261118y">
+  <link rel="stylesheet" href="/course/lab-v6.css?v=20261118z">
 </head>
 <body>
   <!-- Preview sign-in. Client-side test gate only (same preview credential as the existing Lab preview). -->
@@ -53,6 +53,7 @@
   <div class="v6-app" data-app hidden>
     <header class="v6-top">
       <div class="v6-top-in">
+        <button type="button" class="top-btn back" data-back aria-label="Go back"><span aria-hidden="true">‹</span> Back</button>
         <div class="v6-brand"><span class="v6-brand-long">The Confident Clinician</span><span class="v6-brand-short">The Confident Clinician</span></div>
         <nav class="v6-tabs" aria-label="Lab sections" data-tabs></nav>
         <div class="v6-top-right">
@@ -60,10 +61,13 @@
           <button type="button" class="v6-pill muted v6-reset" data-reset title="Preview only: erase all answers and start over">Start over</button>
           <button type="button" class="v6-avatar" data-signout aria-label="Sign out">SP</button>
         </div>
+        <button type="button" class="top-btn menu" data-menu aria-expanded="false" aria-controls="lab-menu"><span class="burger" aria-hidden="true"><i></i><i></i><i></i></span> Menu</button>
       </div>
     </header>
     <div class="v6-frame">
-    <aside class="v6-side" aria-label="Lab navigation">
+    <div class="menu-scrim" data-menu-close aria-hidden="true"></div>
+    <aside class="v6-side" id="lab-menu" aria-label="Lab navigation">
+      <button type="button" class="menu-close" data-menu-close aria-label="Close menu">×</button>
       <div class="sb-brand"><span class="sb-k">The Confident</span><span class="sb-w">Clinician</span><span class="sb-pill">Confidence Lab</span>
         <button type="button" class="sb-min" data-sb-min aria-label="Collapse menu" title="Collapse menu">‹</button></div>
       <nav class="sb-nav" data-side></nav>
@@ -75,6 +79,7 @@
     </aside>
     <main class="v6-main">
       <div class="v6-wrap">
+        <button type="button" class="desk-back" data-back><span aria-hidden="true">‹</span> Back</button>
         <div class="v6-head" data-head></div>
         <div class="v6-shell">
           <div class="v6-col" data-view></div>
@@ -88,8 +93,8 @@
     <nav class="v6-bottom" aria-label="Lab sections" data-bottom></nav>
   </div>
 
-  <script src="/course/lab-v6-data.js?v=20261118y"></script>
-  <script src="/course/lab-v6-sims.js?v=20261118y"></script>
-  <script src="/course/lab-v6.js?v=20261118y"></script>
+  <script src="/course/lab-v6-data.js?v=20261118z"></script>
+  <script src="/course/lab-v6-sims.js?v=20261118z"></script>
+  <script src="/course/lab-v6.js?v=20261118z"></script>
 </body>
 </html>
