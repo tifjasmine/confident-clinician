@@ -649,12 +649,13 @@
     if (K === "freeze") {
       h += `<div class="act-freeze">${momentHTML(sc.moment)}<span class="fz" aria-hidden="true">❚❚ Paused</span></div><p class="act-p">${esc(sc.text)}</p>`
         + sc.rows.map(([k, l, opts]) => `<div class="field">${esc(l)}${pickChips("data-av", opts, v[k], ` data-f="${k}"`)}</div>`).join("")
-        + `<label class="field">In my words <small>Optional</small><input class="v6-in" type="text" data-at="mine" value="${esc(v.mine)}" placeholder="What actually goes on for you"></label>`;
+        + `<label class="field">${v.body === "Somewhere else" ? "Where do you feel it?" : "In my words"} <small>${v.body === "Somewhere else" ? "Your words" : "Optional"}</small><input class="v6-in" type="text" data-at="mine" value="${esc(v.mine)}" placeholder="${v.body === "Somewhere else" ? "e.g. my shoulders, my stomach" : "What actually goes on for you"}"></label>`;
       ok = sc.rows.every(([k]) => v[k]);
     }
     if (K === "reset") {
       h += `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${sc.options.map(o => `<button type="button" class="act-pick" data-av="${esc(o)}" data-f="reset" aria-pressed="${v.reset === o}">${esc(o)}</button>`).join("")}</div>`
-        + (v.reset ? `<div class="act-fb yes">Good. Next time you feel ${esc((v.body && v.body !== "Not sure" ? v.body : "that pull").toLowerCase())}, that’s your cue to ${esc(v.reset.toLowerCase())}.</div>` : "");
+        + (v.reset ? (() => { const calm = /steady|No strong|didn’t feel/.test([v.thought, v.urge, v.body].join(" ")) && !/Held|Tight|warm|Leaning|Somewhere/.test(v.body || ""); const cue = v.body && !/Somewhere|didn’t feel/.test(v.body) ? v.body.toLowerCase() : "that pull";
+            return `<div class="act-fb yes">${calm ? `Nice that this one didn’t rattle you. Keep it ready anyway: when a moment does get to you, ${esc(v.reset.toLowerCase())} first.` : `Good. Next time you notice ${esc(cue)}, that’s your cue to ${esc(v.reset.toLowerCase())}.`}</div>`; })() : "");
       ok = !!v.reset;
     }
     if (K === "write2") {

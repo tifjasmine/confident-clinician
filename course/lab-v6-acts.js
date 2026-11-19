@@ -67,11 +67,11 @@
         cards: [["Physical", "Held breath, tight jaw, faster heartbeat, leaning forward."], ["Mental", "“I have to fix this.” “I should know this.” “I’m losing them.”"], ["Behavioral", "Too many questions, explaining, reassuring, changing the topic."]] },
       { kind: "freeze", title: "Freeze the moment.",
         moment: { who: "Session 6 · client", ctx: "Last week you suggested a thought record. They didn’t do it. Now they cross their arms:", line: "Honestly? I think you don’t understand me either. Everyone just keeps giving me homework." },
-        text: "Before you say anything, what happens in you?",
+        text: "Before you say anything, what happens in you? If this one doesn’t get to you, say so. That counts too.",
         rows: [
-          ["thought", "First thought", ["I’m losing them", "I should have known", "They’re being unfair", "I need to fix this"]],
-          ["urge", "What you’re tempted to do", ["Explain why I gave it", "Apologize a lot", "Drop the homework fast", "Ask lots of questions"]],
-          ["body", "Where you feel it", ["Held breath", "Tight jaw", "Face gets warm", "Leaning back", "Not sure"]]
+          ["thought", "First thought", ["I’m losing them", "I should have known", "They’re being unfair", "I need to fix this", "Nothing, I felt steady"]],
+          ["urge", "What you’re tempted to do", ["Explain why I gave it", "Apologize a lot", "Drop the homework fast", "Ask lots of questions", "No strong urge"]],
+          ["body", "Where you feel it", ["Held breath", "Tight jaw", "Face gets warm", "Leaning back", "Somewhere else", "I didn’t feel it"]]
         ] },
       { kind: "tag", title: "Pressure, or a good call?",
         text: "Not every urge to act is avoidance. For each moment, is the therapist’s move pressure talking, or a clinical choice?",
@@ -82,8 +82,8 @@
           ["lean", "The therapist leans forward as the client describes a big win at work.", "either", "Could be engagement, could be eagerness to move to good news. Context decides. The question is what it does for the client."],
           ["explain", "The client says the last suggestion was useless. The therapist explains the research behind it.", "pressure", "Explaining yourself right after criticism usually protects you, not them. Get curious about what didn’t fit first."]
         ] },
-      { kind: "reset", title: "Pick one small reset.",
-        text: "Back to session 6. Small enough that the client wouldn’t notice. It just buys you a beat.",
+      { kind: "reset", title: "Pick your reset.",
+        text: "A reset is one tiny move you make before you answer, so you respond on purpose instead of on autopilot. The client won’t notice it. Which would you use with the client who crossed their arms?",
         options: ["Plant my feet", "Slow my pace", "One breath", "Go back to their exact words"] },
       { kind: "write2", title: "Now say it.",
         moment: { who: "Client", line: "Honestly? I think you don’t understand me either. Everyone just keeps giving me homework." },
