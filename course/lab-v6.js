@@ -15,7 +15,7 @@
   const PREVIEW_PASSWORD = "LabPreview2026!";
 
   const KEY = "tcc-v6-v2";
-  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, reviewer: false });
+  const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, act: {}, demo: {}, reviewer: false });
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 }; /* simulation content changed (8-moment text simulations): start it fresh */
@@ -24,11 +24,16 @@
   const REP = id => D.REPS.find(r => r.id === id);
   const R = id => (S.reps[id] = S.reps[id] || { move: "", aim: null, map: {}, gap: null, beat2: "", line: "", saved: false, attempts: [] });
   const repSaved = id => !!(S.reps[id] && S.reps[id].saved);
+  /* Lesson activities (lab-v6-acts.js): state per activity = { i: screen, v: answers, done } */
+  const ACTS = window.TCC6_ACTS || {};
+  const ACT = k => { S.act = S.act || {}; return (S.act[k] = S.act[k] || { i: 0, v: {}, done: false }); };
+  const actDone = k => !!(S.act && S.act[k] && S.act[k].done);
+  const actV = k => (S.act && S.act[k] && S.act[k].v) || {};
 
   /* Week 1 progress */
   const stepDone = s => {
     if (s.type === "day1") return S.welcome && S.sealed;
-    if (s.type === "lesson") return !!S.watched[s.key] && repSaved(s.rep);
+    if (s.type === "lesson") return !!S.watched[s.key] && actDone(s.key);
     return !!S.steps[s.key];
   };
   const doneCount = () => D.WEEK1.filter(stepDone).length;
@@ -51,7 +56,7 @@
   const lessonReps = () => D.REPS.filter(r => !r.pending);
   const bankLines = () => lessonReps().filter(r => repSaved(r.id) && (S.reps[r.id].line || "").trim());
   const repsCompleted = () => lessonReps().filter(r => repSaved(r.id)).length + (S.sealed ? 4 : 0);
-  const anyProgress = () => doneCount() > 0 || S.welcome || Object.keys(S.base).length > 0 || Object.keys(S.reps).length > 0;
+  const anyProgress = () => doneCount() > 0 || S.welcome || Object.keys(S.base).length > 0 || Object.keys(S.reps).length > 0 || Object.keys(S.act || {}).length > 0;
 
   /* Routing: #home · #week/<step> · #rep/<id> · #baseline · #reproom · #playbook · #growth */
   const route = () => { const [scr, arg] = (location.hash.slice(1) || "home").split("/"); return { scr: D.HEADS[scr] ? scr : "home", arg: arg ? decodeURIComponent(arg) : null }; };
@@ -77,13 +82,13 @@
     if (trail.length > 50) trail.splice(0, trail.length - 50);
     setMenu(false);
     $$("[data-back]").forEach(b => { b.hidden = scr === "home"; });
-    const navKey = scr === "rep" ? (REP(arg) && REP(arg).week === 1 ? "week" : "reproom") : scr === "baseline" ? "week" : scr;
+    const navKey = scr === "rep" ? "reproom" : scr === "baseline" || scr === "act" ? "week" : scr;
     const tabs = NAV.map(([k, label, short], i) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${i === -1 ? short : label}</button>`).join("");
     $("[data-tabs]").innerHTML = tabs;
     $("[data-bottom]").innerHTML = NAV.map(([k, , short]) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${short}</button>`).join("");
     $$("[data-preview-toggle]").forEach(pv => { pv.textContent = S.reviewer ? "Preview · all open" : "Preview"; pv.classList.toggle("on", S.reviewer); pv.setAttribute("aria-pressed", S.reviewer); });
 
-    const views = { home: homeView, week: weekView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
+    const views = { home: homeView, week: weekView, act: actView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
     $("[data-side]").innerHTML = sideHTML(navKey, scr === "week" ? v.sel : -1);
     $(".v6-frame").classList.toggle("side-min", !!SB.min);
@@ -280,11 +285,19 @@
   }
 
   /* ---------- Week 1 Reflect & Redo ---------- */
-  const RF_STEPS = ["Your Pull", "Pick a Rep", "Three Checks", "Redo it"];
+  const RF_STEPS = ["Your Pull", "Pick one", "Three Checks", "Redo it"];
+  /* Everything the student wrote this week that can be redone */
+  function rfPool() {
+    const out = [], v2 = actV("l2"), v3 = actV("l3");
+    if ((v2.r1 || "").trim()) out.push({ id: "l2", tag: "Lesson 2 · Catch the Reaction", who: "Client", line: q("I think you don’t understand me either."), first: v2.r1 });
+    if ((v3.t1 || "").trim()) out.push({ id: "l3", tag: "Lesson 3 · Two Takes", who: "Client", line: q("I don’t even know what I feel anymore."), first: v3.t1 });
+    if (S.demo && (S.demo.line || "").trim()) out.push({ id: "demo", tag: "Demo · Jordan", who: "Jordan", line: q(ACTS.demo.moment), first: S.demo.line });
+    D.REPS.filter(r => r.week === 1 && repSaved(r.id)).forEach(r => { const x = S.reps[r.id]; out.push({ id: "rep:" + r.id, rep: r.id, tag: `Rep ${r.id} · ${r.client}`, who: r.client, line: r.line ? q(r.line) : esc(r.stageLine), first: (x.attempts[0] && x.attempts[0].move) || x.move || x.line || "" }); });
+    return out;
+  }
   function reflectHTML() {
     const F = S.reflect, st = Math.min(F.step || 0, 3);
-    const reps = D.REPS.filter(r => r.week === 1 && repSaved(r.id));
-    const first = r => { const x = S.reps[r.id]; return (x.attempts[0] && x.attempts[0].move) || x.move || x.line || ""; };
+    const reps = rfPool();
     const r = reps.find(z => z.id === F.rep);
     const head = `<div class="flow-head"><span class="v6-pill blush">${st + 1} of 4 · ${RF_STEPS[st]}</span><div class="flow-dots" aria-hidden="true">${RF_STEPS.map((_, i) => `<span class="${i < st ? "done" : i === st ? "on" : ""}"></span>`).join("")}</div></div>`;
     let body = "", ok = false;
@@ -295,27 +308,27 @@
       ok = !!F.pullPick;
     }
     if (st === 1) {
-      body = `<p class="flow-q">Pick your weakest Rep.</p><p class="flow-sub">The one you’d most like a do-over on. Here’s your first answer to each.</p>
-        ${reps.length ? `<div class="choices">${reps.map(z => `<button type="button" class="choice rf-rep" data-rf-rep="${z.id}" aria-pressed="${F.rep === z.id}"><small>Rep ${z.id} · ${esc(z.client)}</small><span class="cl">${z.line ? q(z.line) : esc(z.stageLine)}</span><span class="mine">You: ${q(first(z))}</span></button>`).join("")}</div>`
-          : `<div class="empty">Save at least one Week 1 Rep first. <button type="button" class="v6-link" data-go="rep/1.1">Go to Rep 1.1 →</button></div>`}`;
+      body = `<p class="flow-q">Pick your weakest answer.</p><p class="flow-sub">The one you’d most like a do-over on, from this week’s activities.</p>
+        ${reps.length ? `<div class="choices">${reps.map(z => `<button type="button" class="choice rf-rep" data-rf-rep="${z.id}" aria-pressed="${F.rep === z.id}"><small>${esc(z.tag)}</small><span class="cl">${z.line}</span><span class="mine">You: ${q(z.first)}</span></button>`).join("")}</div>`
+          : `<div class="empty">Finish a lesson activity first. <button type="button" class="v6-link" data-go="act/l2">Go to Catch the Reaction →</button></div>`}`;
       ok = !!r;
     }
     if (st === 2 && r) {
       const ck = F.ck || {};
       body = `<p class="flow-q">Run the Three Checks on your first answer.</p>
-        <div class="speaker boxed"><span class="av" aria-hidden="true">${r.client[0]}</span><span class="col"><span class="who">${esc(r.client)}</span><span class="said md">${r.line ? q(r.line) : esc(r.stageLine)}</span></span></div>
-        <div class="you-said sm"><small>Your first answer</small>${q(first(r))}</div>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">${r.who[0]}</span><span class="col"><span class="who">${esc(r.who)}</span><span class="said md">${r.line}</span></span></div>
+        <div class="you-said sm"><small>Your first answer</small>${q(r.first)}</div>
         <div class="sort">${D.CHECKS.map(([t, d], i) => `<div class="sort-row"><span class="st"><b>${i + 1}. ${esc(t)}</b><br><small style="color:var(--muted)">${esc(d)}</small></span><span class="sb">${["Yes", "Not quite", "Not sure"].map(v => `<button type="button" class="chip" data-rf-ck="${i}" data-v="${v}" aria-pressed="${ck[i] === v}">${v}</button>`).join("")}</span></div>`).join("")}</div>
         ${D.CHECKS.every((_, i) => ck[i]) ? `<div class="reveal">${D.CHECKS.filter((_, i) => ck[i] !== "Yes").length ? `<b>Your redo target:</b> ${D.CHECKS.map(([t], i) => ck[i] !== "Yes" ? esc(t) : "").filter(Boolean).join(" · ")}` : `<b>All three held up.</b> Redo it anyway and try a different route.`}</div>` : ""}`;
       ok = D.CHECKS.every((_, i) => ck[i]);
     }
     if (st === 3 && r) {
       body = `<p class="flow-q">${esc(D.REFLECT[2][1])} Then name the one thing you changed.</p>
-        <div class="speaker boxed"><span class="av" aria-hidden="true">${r.client[0]}</span><span class="col"><span class="who">${esc(r.client)}</span><span class="said md">${r.line ? q(r.line) : esc(r.stageLine)}</span></span></div>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">${r.who[0]}</span><span class="col"><span class="who">${esc(r.who)}</span><span class="said md">${r.line}</span></span></div>
         <label class="field">Your redo<textarea class="v6-ta" rows="3" data-rf="redoLine" placeholder="Say it out loud first, then write it">${esc(F.redoLine)}</textarea></label>
         <label class="field">${esc(D.REFLECT[2][2])}<textarea class="v6-ta" rows="2" data-rf="redo" placeholder="The one thing I changed…">${esc(F.redo)}</textarea></label>
-        ${S.steps.reflect ? `<div class="bd-paths"><div class="bd-p"><small>Before</small>${q(first(r))}</div><div class="bd-p t"><small>After</small>${q(F.redoLine)}</div></div>
-          ${S.reps[r.id].line === F.redoLine ? `<div class="hint">✓ This is now your Playbook line for Rep ${r.id}.</div>` : `<button type="button" class="v6-link" data-rf-useline>Make this my Playbook line for Rep ${r.id} →</button>`}` : ""}`;
+        ${S.steps.reflect ? `<div class="bd-paths"><div class="bd-p"><small>Before</small>${q(r.first)}</div><div class="bd-p t"><small>After</small>${q(F.redoLine)}</div></div>
+          ${!r.rep ? `<div class="hint">✓ Saved. Your redo shows up in your Profile.</div>` : S.reps[r.rep].line === F.redoLine ? `<div class="hint">✓ This is now your Playbook line for Rep ${r.rep}.</div>` : `<button type="button" class="v6-link" data-rf-useline>Make this my Playbook line for Rep ${r.rep} →</button>`}` : ""}`;
       ok = !!(F.redoLine || "").trim() && !!(F.redo || "").trim();
     }
     const back = st ? `<button type="button" class="v6-btn secondary" data-rf-nav="-1">← Back</button>` : "<span></span>";
@@ -387,18 +400,26 @@
       cta = watch + base;
     }
     if (s.type === "lesson") {
-      const r = REP(s.rep);
-      body = howHTML("How this step works", [
-        ["Watch the lesson", ""],
-        [`Do Rep ${r.id} with ${r.client}`, `Write what you’d say, then see how ${r.client} reacts.`]
-      ]) + `<div class="quote-box"><span class="v6-label">Your Rep · ${esc(r.client)}</span><span class="ctx">${esc(r.context)}</span><span class="line">${r.line ? q(r.line) : esc(r.stageLine) + " " + r.silence + " seconds of silence."}</span></div>`;
-      if (repSaved(r.id)) body += `<div class="done-note">✓ Rep ${r.id} saved to your Playbook.</div>`;
+      const r = REP(s.rep), X = ACTS[s.key], st = ACT(s.key), n = X.screens.length;
+      const started = st.i > 0 || st.done;
+      body = `<div class="act-card look-${X.look}"><span class="v6-label">Your practice</span><span class="ac-name">${esc(X.name)}</span><span class="ac-t">${esc(X.teaser)}</span>
+          <span class="ac-meta">${st.done ? "✓ Done" : started ? `Screen ${st.i + 1} of ${n}` : `${n} short screens`}</span></div>
+        <p class="more-rep">Want extra practice later? <button type="button" class="v6-link" data-go="rep/${r.id}">Rep ${r.id} with ${esc(r.client)}</button> is in the Rep Room.</p>`;
       cta = (S.watched[s.key] ? `<button type="button" class="v6-btn secondary" data-act="watch" data-key="${s.key}">Lesson watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="watch" data-key="${s.key}">${D.VIDEOS[s.video] ? "I’ve watched the lesson" : "Mark lesson watched"}</button>`)
-        + `<button type="button" class="v6-btn ${S.watched[s.key] ? "primary" : "secondary"}" data-go="rep/${r.id}">${repSaved(r.id) ? "Practice it again" : "Do the Rep"}</button>`;
+        + `<button type="button" class="v6-btn ${S.watched[s.key] ? "primary" : "secondary"}" data-go="act/${s.key}">${st.done ? "Do it again" : started ? "Continue the activity" : "Start the activity"}</button>`;
     }
     if (s.type === "demo") {
       body = `<div class="quote-box"><span class="v6-label">${esc(s.quoteLabel)}</span><span class="ctx">${esc(s.context)}</span><span class="line">${esc(s.moment)}</span><span class="pull">${esc(s.pull)}</span></div>`;
-      cta = done ? `<button type="button" class="v6-btn secondary" data-act="step" data-key="demo">Demo watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="step" data-key="demo">Mark demo watched</button>`;
+      const DM = S.demo = S.demo || {}, AD = ACTS.demo;
+      body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
+          <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(AD.moment)}</span></span></div>
+          <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
+          <label class="field">Why that sentence? <small>${esc(AD.hintWhy)}</small><textarea class="v6-ta" rows="2" data-demo="why" placeholder="I chose it because…">${esc(DM.why)}</textarea></label>
+          <div class="field">${esc(AD.check)}<div class="chips-row">${["Yes", "Not quite", "Not sure"].map(o => `<button type="button" class="chip" data-demo-ck="${o}" aria-pressed="${DM.ck === o}">${o}</button>`).join("")}</div></div>
+          ${aiNote(AD.ai)}</div>`;
+      const dOk = (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3 && DM.ck;
+      cta = (DM.watched ? `<button type="button" class="v6-btn secondary" data-act="demowatch">Demo watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="demowatch">Mark demo watched</button>`)
+        + (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
     }
     if (s.type === "lab" || s.type === "sim") {
       body = locked ? itemsHTML(s.itemsLabel, s.items) : s.type === "lab" ? labHTML() : simHTML();
@@ -407,19 +428,20 @@
     if (s.type === "reflect") { body = reflectHTML(); cta = ""; }
     if (s.type === "save") {
       const pf = S.profile, M = S.sim, L = S.lab, P = pf.plan = pf.plan || {};
-      const g = S.reps["1.1"] && S.reps["1.1"].gap;
-      const gp = g && g !== "none" ? D.GAPS.find(x => x[0] === g) : null;
+      const v1 = actV("l1"), v2 = actV("l2"), v3 = actV("l3");
+      const gaps = (v1.gaps || []).map(k => ACTS.GAP[k]).filter(Boolean);
       const SJ = SIMS.jordan, SC = (M.cur && M.cur.saved) ? M.cur : (M.history || []).slice(-1)[0];
       const path = SC && Object.keys(SC.picks).length === 8 ? SJ.moments.map((m, k) => `Moment ${k + 1}: ${(m.choices[SC.picks[k]] || [])[1] || ""}`).join("\n") : "";
       const auto = {
-        gap: gp ? `${gp[1]}: ${gp[2].replace(/[“”]/g, "")} (from Rep 1.1)` : "",
-        pull: [S.reflect.pullPick, SC && SC.ref[0]].filter(Boolean).join(". "),
+        gap: gaps.length ? `${gaps.join(" + ")}. ${v1.action ? "This week: " + v1.action : ""}`.trim() : "",
+        pull: [S.reflect.pullPick, v2.thought && `First cue: “${v2.thought}”${v2.body && v2.body !== "Not sure" ? `, ${v2.body.toLowerCase()}` : ""}`, v2.reset && `Reset: ${v2.reset.toLowerCase()}`, SC && SC.ref[0]].filter(Boolean).join(". "),
         move: L.move || "",
         shift: (SC && SC.ref[1]) || "",
         adjust: (SC && SC.ref[2]) || ""
       };
       const sec = (k, label, hint, ph) => { const v = pf[k] != null ? pf[k] : auto[k]; return `<label class="field">${esc(label)}${hint ? ` <small>${esc(hint)}</small>` : ""}<textarea class="v6-ta" rows="2" data-p="${k}" placeholder="${esc(ph)}">${esc(v)}</textarea></label>`; };
-      const lines = D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim());
+      const lines = [[ "When a client says I don’t understand them…", v2.r2 ], ["When a client doesn’t know what they feel…", v3.t2], ["When a client says don’t make me feel better…", v3.t3], ["When a client asks me to decide for them…", S.demo && S.demo.line]].filter(x => (x[1] || "").trim())
+        .concat(D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim()).map(r => [r.bank + "…", S.reps[r.id].line]));
       body = `<div class="profile">
         <div class="banner-soft">Not a personality test. Filled in from your Week 1 choices. Edit anything.</div>
         <h3 class="pf-h">What I noticed</h3>
@@ -431,7 +453,7 @@
         ${sec("shift", "When the priority changed", "", "Add what changed when Jordan shared new information")}
         ${sec("adjust", "My closing for Jordan", "Includes a collaborative safety step, without directing them to stay or leave", "Add your closing")}
         <h3 class="pf-h">“What I Say When…”</h3>
-        ${lines.length ? `<div class="bank">${lines.map(r => `<div class="bank-item"><span class="w">${esc(r.bank)}…</span><span class="l">${q(S.reps[r.id].line)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here after you save Reps 1.1–1.3.</div>`}
+        ${lines.length ? `<div class="bank">${lines.map(([w, l]) => `<div class="bank-item"><span class="w">${esc(w)}</span><span class="l">${q(l)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here as you finish the lesson activities.</div>`}
         <h3 class="pf-h">My seven-day practice target</h3>
         <p class="flow-sub" style="margin:0">${esc(D.PLAN.intro)}</p>
         ${D.PLAN.fields.map(([k, label, opts]) => `<div class="field">${esc(label)}${opts ? `<div class="chips-row">${opts.map(o => `<button type="button" class="chip" data-plan="${k}" data-v="${esc(o)}" aria-pressed="${P[k] === o}">${esc(o)}</button>`).join("")}</div>` : ""}
@@ -480,8 +502,7 @@
     const week1Steps = D.WEEK1.filter(s => s.type === "lesson");
     const li = week1Steps.findIndex(s => s.rep === r.id);
     let nextLine = "";
-    if (r.week === 1) nextLine = li < 2 ? `Next: Lesson ${li + 2} and Rep ${week1Steps[li + 1].rep} with ${REP(week1Steps[li + 1].rep).client}.` : "Next: the Demo with Jordan.";
-    else { const n = D.REPS.find(z => z.week === r.week && z.id > r.id && !z.pending); nextLine = n ? `Next: Rep ${n.id} with ${n.client}.` : "Back to the Rep Room for more."; }
+    { const n = D.REPS.find(z => z.week === r.week && z.id > r.id && !z.pending); nextLine = n ? `Next: Rep ${n.id} with ${n.client}.` : "Back to the Rep Room for more."; }
 
     const moment = r.line
       ? `<div class="speaker boxed"><span class="av" aria-hidden="true">${name[0]}</span><span class="col"><span class="who">${esc(name)}</span><span class="said">${q(r.line)}</span></span></div>`
@@ -524,13 +545,13 @@
         ${x.attempts.length ? `<div class="attempts">${x.attempts.map((a, i) => `<div><small>Try ${i + 1}</small>${q(a.move)}${a.aim ? ` · ${esc((aims.find(z => z[0] === a.aim) || [])[1] || "")}` : ""}</div>`).join("")}</div>` : ""}
         <label class="field">Your line to keep <small>${esc(r.bank)}…</small><textarea class="v6-ta" rows="2" data-line placeholder="Your best line, in your own words">${esc(x.line)}</textarea></label>
         ${x.saved ? `<div class="saved-box"><span><b>✓ Saved</b> to your Playbook. ${esc(nextLine)}</span><button type="button" class="v6-link" data-go="playbook">Open Playbook →</button></div>
-          <div class="actions"><button type="button" class="v6-btn secondary" data-act="again">↺ Try again</button>${r.week === 1 ? `<button type="button" class="v6-btn secondary" data-go="week/${D.WEEK1[D.WEEK1.findIndex(s => s.rep === r.id) + 1].key}">Continue Week 1 →</button>` : ""}</div>`
+          <div class="actions"><button type="button" class="v6-btn secondary" data-act="again">↺ Try again</button><button type="button" class="v6-btn secondary" data-go="reproom">Back to the Rep Room</button></div>`
         : `<div class="actions"><button type="button" class="v6-btn secondary" data-act="again">↺ Try again</button><button type="button" class="v6-btn primary" data-act="saveline"${(x.line || "").trim() ? "" : " disabled"}>Save to “What I Say When…”</button></div>`}
       </div>`;
     }
-    const crumb = r.week === 1 ? ["Week 1", `Rep ${r.id}`, "week/" + D.WEEK1.find(s => s.rep === r.id).key] : ["Rep Room", `Rep ${r.id}`, "reproom"];
+    const crumb = ["Rep Room", `Rep ${r.id}`, "reproom"];
     return {
-      html, tight: true, title: `Rep ${r.id} · ${r.title}`, plain: true, sub: `Your practice for Lesson ${r.id.split(".")[1]}: ${r.lesson}. Unlike Day 1, you’ll see how ${r.client} reacts, see one way to handle it, and then try it again.`, crumb, rail: repRailHTML(stage, x.saved),
+      html, tight: true, title: `Rep ${r.id} · ${r.title}`, plain: true, sub: `Extra practice for Lesson ${r.id.split(".")[1]}: ${r.lesson}. Unlike Day 1, you’ll see how ${r.client} reacts, see one way to handle it, and then try it again.`, crumb, rail: repRailHTML(stage, x.saved),
       after: () => {
         clearInterval(silenceTimer);
         if (!r.silence) return;
@@ -564,6 +585,104 @@
         <button type="button" class="v6-btn primary" data-act="bnext"${a.aim && canAim ? "" : " disabled"}>${i === 3 ? "Save and seal my answers" : "Next moment →"}</button></div>
     </div>`;
     return { html, crumb };
+  }
+
+  /* ---------- Lesson activities: one screen at a time ---------- */
+  /* Builder note marking where AI could come in later. Shown on this preview build only. */
+  const aiNote = t => t ? `<div class="ai-note"><b>✦ AI spot</b><span>${esc(t)}</span></div>` : "";
+  const momentHTML = m => m ? `<div class="act-moment"><span class="who">${esc(m.who)}</span><span class="line">${q(m.line)}</span></div>` : "";
+  const pickChips = (attr, opts, cur, extra = "") => `<div class="act-chips">${opts.map(o => { const [k, l] = Array.isArray(o) ? o : [o, o]; return `<button type="button" class="act-chip" ${attr}="${esc(k)}"${extra} aria-pressed="${cur === k}">${esc(l)}</button>`; }).join("")}</div>`;
+  const filled = (t, n = 3) => (t || "").trim().length >= n;
+  function actScreen(X, i, v) {
+    const sc = X.screens[i], K = sc.kind;
+    let h = `<h2 class="act-h">${esc(sc.title)}</h2>`, ok = true;
+    if (K === "intro") {
+      h += `<p class="act-p">${esc(sc.text)}</p>`;
+      if (sc.cards) h += `<div class="act-cards n${sc.cards.length}">${sc.cards.map(([t, d, n]) => `<div class="act-cardlet"><b>${esc(t)}</b><span>${esc(d)}</span>${n ? `<small>${esc(n)}</small>` : ""}</div>`).join("")}</div>`;
+      if (sc.pause) h += `<div class="act-pause">${D.PAUSE.map(([l, t]) => { const [nm, ...rest] = t.split(": "); return `<div><span class="lt">${l}</span><span><b>${esc(nm)}</b> ${esc(rest.join(": "))}</span></div>`; }).join("")}</div>`;
+    }
+    if (K === "tag") {
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-tags">${sc.items.map(([id, txt, ans, why]) => {
+        const cur = v[`t${i}_${id}`], lab = k => (sc.options.find(o => o[0] === k) || [])[1];
+        const fb = cur ? (cur === ans ? `<div class="act-fb yes"><b>Yes, ${esc(lab(ans))}.</b> ${esc(why)}</div>` : `<div class="act-fb no"><b>Closer to ${esc(lab(ans))}.</b> ${esc(why)}</div>`) : "";
+        return `<div class="act-tag${cur ? " answered" : ""}"><span class="tx">${esc(txt)}</span>${pickChips("data-av", sc.options, cur, ` data-f="t${i}_${id}"`)}${fb}</div>`;
+      }).join("")}</div>`;
+      ok = sc.items.every(([id]) => v[`t${i}_${id}`]);
+    }
+    if (K === "pick") {
+      const cur = v[`p${i}`], o = sc.options.find(x => x[0] === cur);
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${sc.options.map(([k, l]) => `<button type="button" class="act-pick" data-av="${k}" data-f="p${i}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`
+        + (o ? `<div class="act-fb ${cur === sc.best ? "yes" : "no"}">${esc(o[2])}</div>` : "");
+      ok = !!cur;
+    }
+    if (K === "own") {
+      const g = v.gaps || [];
+      h += `<p class="act-p">${esc(sc.text)}</p>
+        <label class="field">${esc(sc.fields[0][1])}<textarea class="v6-ta" rows="2" data-at="what" placeholder="${esc(sc.fields[0][2])}">${esc(v.what)}</textarea></label>
+        <div class="field">Which gap or gaps fit? <small>More than one can be true.</small><div class="act-chips">${Object.entries(ACTS.GAP).map(([k, l]) => `<button type="button" class="act-chip" data-gapt="${k}" aria-pressed="${g.includes(k)}">${l}</button>`).join("")}</div></div>
+        ${g.length ? `<div class="act-hints">${g.map(k => `<span><b>${ACTS.GAP[k]}:</b> ${esc(sc.gapActions[k])}</span>`).join("")}</div>` : ""}
+        <label class="field">${esc(sc.fields[1][1])}<textarea class="v6-ta" rows="2" data-at="action" placeholder="Specific enough to do this week">${esc(v.action)}</textarea></label>
+        <details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)}</p></details>${aiNote(sc.ai)}`;
+      ok = filled(v.what) && filled(v.action) && g.length > 0;
+    }
+    if (K === "freeze") {
+      h += `<div class="act-freeze">${momentHTML(sc.moment)}<span class="fz" aria-hidden="true">❚❚ Paused</span></div><p class="act-p">${esc(sc.text)}</p>`
+        + sc.rows.map(([k, l, opts]) => `<div class="field">${esc(l)}${pickChips("data-av", opts, v[k], ` data-f="${k}"`)}</div>`).join("")
+        + `<label class="field">In my words <small>Optional</small><input class="v6-in" type="text" data-at="mine" value="${esc(v.mine)}" placeholder="What actually goes on for you"></label>`;
+      ok = sc.rows.every(([k]) => v[k]);
+    }
+    if (K === "reset") {
+      h += `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${sc.options.map(o => `<button type="button" class="act-pick" data-av="${esc(o)}" data-f="reset" aria-pressed="${v.reset === o}">${esc(o)}</button>`).join("")}</div>`
+        + (v.reset ? `<div class="act-fb yes">Good. Next time you feel ${esc((v.body && v.body !== "Not sure" ? v.body : "that pull").toLowerCase())}, that’s your cue to ${esc(v.reset.toLowerCase())}.</div>` : "");
+      ok = !!v.reset;
+    }
+    if (K === "write2") {
+      h += momentHTML(sc.moment) + sc.fields.map(([k, l, ph]) => `<label class="field">${esc(l)}<textarea class="v6-ta" rows="2" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea></label>`).join("")
+        + `<details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)} Don’t memorize it. Say it your way.</p></details>${aiNote(sc.ai)}`;
+      ok = sc.fields.every(([k]) => filled(v[k]));
+    }
+    if (K === "check") {
+      const cur = v.ck;
+      h += `<div class="act-you"><small>You said</small>${q(v[sc.show] || v.r1 || "")}</div><p class="act-p big">${esc(sc.text)}</p>${pickChips("data-av", sc.options, cur, ' data-f="ck"')}`
+        + (cur ? `<div class="act-fb ${cur === "Yes" ? "yes" : "no"}">${esc(sc.fb[cur])}</div>` : "");
+      ok = !!cur;
+    }
+    if (K === "take") {
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${aiNote(sc.ai)}`;
+      ok = filled(v["t" + sc.n]);
+    }
+    if (K === "pausewalk") {
+      h += momentHTML(sc.moment) + `<div class="act-walk">${sc.steps.map(([l, nm, pr, ph]) => `<label class="aw"><span class="lt">${l}</span><span class="aw-b"><b>${esc(nm)}</b> ${esc(pr)}${l === "U" ? "" : " <small>Optional</small>"}<input class="v6-in" type="text" data-at="${l}" value="${esc(v[l])}" placeholder="${esc(ph)}"></span></label>`).join("")}</div>`;
+      ok = filled(v.U, 2);
+    }
+    if (K === "compare") {
+      h += `<div class="act-cmp"><div><small>Take 1 · gut</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
+        <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not quite"], v["c" + k], ` data-f="c${k}"`)}</div>`).join("")}</div>${aiNote(sc.ai)}`;
+      ok = sc.checks.every((_, k) => v["c" + k]);
+    }
+    if (K === "summary") {
+      const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";
+      if (X.key === "l1") h += row("Your moment", q(v.what)) + row("The gap", esc((v.gaps || []).map(k => ACTS.GAP[k]).join(" + "))) + row("Your action this week", esc(v.action)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
+      if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
+      if (X.key === "l3") h += row("Take 1 · gut", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
+    }
+    return { h, ok };
+  }
+  function actView(key) {
+    const X = ACTS[key];
+    if (!X) return weekView();
+    const st = ACT(key), n = X.screens.length, i = Math.min(st.i, n - 1), last = i === n - 1;
+    const { h, ok } = actScreen(X, i, st.v);
+    const wi = D.WEEK1.findIndex(s => s.key === key), nx = D.WEEK1[wi + 1];
+    const back = i ? `<button type="button" class="v6-btn secondary" data-anav="-1">← Back</button>` : `<button type="button" class="v6-btn secondary" data-go="week/${key}">← Lesson</button>`;
+    const fwd = last ? `<span class="act-end"><button type="button" class="v6-btn secondary" data-anav="again">↺ Do it again</button>${nx ? `<button type="button" class="v6-btn primary next" data-go="week/${nx.key}">Next: ${esc(nx.short)} →</button>` : ""}</span>`
+      : `<button type="button" class="v6-btn primary" data-anav="1"${ok ? "" : " disabled"}>${i === n - 2 ? "Finish ✓" : "Next →"}</button>`;
+    const html = `<div class="act look-${X.look}"><div class="act-top"><span class="act-name">${esc(X.name)}</span><span class="act-count">${i + 1} of ${n}</span></div>
+      <div class="act-prog" aria-hidden="true"><span style="width:${((i + 1) / n) * 100}%"></span></div>
+      <div class="act-body">${h}</div>
+      ${i === 0 ? `<div class="fiction">Fictional practice. Never enter real client details.</div>` : ""}
+      <div class="actions act-nav">${back}${fwd}</div></div>`;
+    return { html, title: X.name, plain: true, sub: `Lesson ${key.slice(1)} practice`, crumb: ["Week 1", X.name, "week/" + key], solo: true, tight: true };
   }
 
   /* ---------- Rep Room ---------- */
@@ -635,6 +754,8 @@
         const k = b.dataset.key, act = b.dataset.act;
         if (act === "welcome") { S.welcome = !S.welcome; }
         if (act === "watch") { S.watched[k] = !S.watched[k]; }
+        if (act === "demowatch") { S.demo.watched = !S.demo.watched; }
+        if (act === "demosave") { S.steps.demo = true; save(); render(); flash("Saved"); return; }
         if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); render(); flash("Saved"); return; }
         if (act === "copyprofile" || act === "printprofile") {
           const txt = $$(".profile .field, .profile .pf-h, .profile .pf-path", app).map(el => el.matches(".pf-h") ? "\n" + el.textContent.toUpperCase() : el.matches(".pf-path") ? el.innerText : (el.querySelector("textarea, input") ? `${el.firstChild.textContent.trim()}: ${(el.querySelector("[aria-pressed=true]") || {}).textContent || el.querySelector("textarea, input").value || "—"}` : "")).join("\n");
@@ -648,6 +769,8 @@
         }
         save(); render();
       });
+      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && (S.demo.line || "").trim().length >= 3 && (S.demo.why || "").trim().length >= 3 && S.demo.ck); });
+      $$("[data-demo-ck]", app).forEach(b => b.onclick = () => { S.demo.ck = b.dataset.demoCk; save(); render(); });
       $$("[data-r]", app).forEach(t => t.oninput = t.onchange = () => { S.reflect[t.dataset.r] = t.value; save(); });
       $$("[data-pullchip]", app).forEach(b => b.onclick = () => { S.reflect.pullPick = b.dataset.pullchip; save(); $$("[data-pullchip]", app).forEach(c => c.setAttribute("aria-pressed", c === b)); });
       $$("[data-p]", app).forEach(t => t.oninput = () => { S.profile[t.dataset.p] = t.value; save(); });
@@ -669,7 +792,7 @@
       $$("[data-rf]", app).forEach(t => t.oninput = () => { F[t.dataset.rf] = t.value; save(); const sv = $("[data-rf-save]", app); if (sv) sv.disabled = !((F.redoLine || "").trim() && (F.redo || "").trim()); });
       $$("[data-rf-nav]", app).forEach(b => b.onclick = () => { F.step = Math.max(0, Math.min(3, (F.step || 0) + +b.dataset.rfNav)); save(); render(); top(); });
       const rfs = $("[data-rf-save]", app); if (rfs) rfs.onclick = () => { S.steps.reflect = true; save(); render(); flash("Saved"); };
-      const rfu = $("[data-rf-useline]", app); if (rfu) rfu.onclick = () => { const x = S.reps[F.rep]; if (x) { x.line = F.redoLine; x.saved = true; } save(); render(); flash("Playbook updated"); };
+      const rfu = $("[data-rf-useline]", app); if (rfu) rfu.onclick = () => { const x = S.reps[String(F.rep).replace("rep:", "")]; if (x) { x.line = F.redoLine; x.saved = true; } save(); render(); flash("Playbook updated"); };
       /* Simulation */
       const M = S.sim, X = SIMS.jordan, C = M.cur;
       const ss = $("[data-sim-start]", app); if (ss) ss.onclick = () => { M.cur = newAttempt(X); save(); render(); top(); };
@@ -683,6 +806,23 @@
       /* Profile */
       $$("[data-plan]", app).forEach(b => b.onclick = () => { const P = S.profile.plan = S.profile.plan || {}; P[b.dataset.plan] = b.dataset.v; save(); render(); });
       $$("[data-plan-own]", app).forEach(t => t.oninput = () => { const P = S.profile.plan = S.profile.plan || {}; P[t.dataset.planOwn] = t.value; save(); $$(`[data-plan="${t.dataset.planOwn}"]`, app).forEach(c => c.setAttribute("aria-pressed", "false")); const sv = $('[data-act="saveprofile"]', app); if (sv) sv.disabled = !(P.skill && P.rehearse && P.evidence); });
+    }
+    if (scr === "act") {
+      const st = ACT(arg), X = ACTS[arg], v = st.v;
+      if (!X) return;
+      $$("[data-av]", app).forEach(b => b.onclick = () => { v[b.dataset.f] = b.dataset.av; save(); render(); });
+      $$("[data-gapt]", app).forEach(b => b.onclick = () => { const g = v.gaps = v.gaps || [], k = b.dataset.gapt; const at = g.indexOf(k); at === -1 ? g.push(k) : g.splice(at, 1); save(); render(); });
+      $$("[data-at]", app).forEach(t => t.oninput = () => {
+        v[t.dataset.at] = t.value; save();
+        const { ok } = actScreen(X, Math.min(st.i, X.screens.length - 1), v);
+        const nb = $('[data-anav="1"]', app); if (nb) nb.disabled = !ok;
+      });
+      $$("[data-anav]", app).forEach(b => b.onclick = () => {
+        const d = b.dataset.anav;
+        if (d === "again") { S.act[arg] = { i: 0, v: {}, done: true }; }
+        else { st.i = Math.max(0, Math.min(X.screens.length - 1, st.i + +d)); if (st.i === X.screens.length - 1) st.done = true; }
+        save(); render(); scrollTo({ top: 0 });
+      });
     }
     if (scr === "rep") {
       const r = REP(arg) || REP("1.1"); if (r.pending || !weekOpen(r.week)) return;
