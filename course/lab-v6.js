@@ -83,12 +83,12 @@
   const optLabel = (opts, k) => { const o = (opts || []).find(x => (Array.isArray(x) ? x[0] : x) === k); return o ? (Array.isArray(o) ? o[1] : o) : k; };
   /* Turn an activity's answers into labeled pairs, in screen order */
   function actPairs(X, v) {
-    const out = [], seen = new Set(), add = (k, l, val) => { if (val == null || val === "" || (Array.isArray(val) && !val.length)) return; seen.add(k); out.push([k, l, Array.isArray(val) ? val.join(", ") : String(val)]); };
+    const out = [], seen = new Set(), add = (k, l, val, exp) => { if (val == null || val === "" || (Array.isArray(val) && !val.length)) return; seen.add(k); out.push([k, l, Array.isArray(val) ? val.join(", ") : String(val), exp || ""]); };
     X.screens.forEach((sc, i) => {
       const T = `${i + 1}. ${sc.title}`;
-      if (sc.kind === "tag") sc.items.forEach(([id, txt, , , nm]) => add(`t${i}_${id}`, `${T} · ${nm || txt.replace(/[“”]/g, "").slice(0, 60)}`, v[`t${i}_${id}`] && optLabel(sc.options, v[`t${i}_${id}`])));
-      if (sc.kind === "pick") add(`p${i}`, T, v[`p${i}`] && optLabel(sc.options, v[`p${i}`]));
-      if (sc.kind === "multi" && v[`m${i}c`]) add(`m${i}`, T, (v[`m${i}`] || []).map(k => optLabel(sc.options, k)));
+      if (sc.kind === "tag") sc.items.forEach(([id, txt, ans, , nm]) => add(`t${i}_${id}`, `${T} · ${nm || txt.replace(/[“”]/g, "").slice(0, 60)}`, v[`t${i}_${id}`] && optLabel(sc.options, v[`t${i}_${id}`]), ans && optLabel(sc.options, ans)));
+      if (sc.kind === "pick") add(`p${i}`, T, v[`p${i}`] && optLabel(sc.options, v[`p${i}`]), sc.best && optLabel(sc.options, sc.best));
+      if (sc.kind === "multi" && v[`m${i}c`]) add(`m${i}`, T, (v[`m${i}`] || []).map(k => optLabel(sc.options, k)), sc.correct.map(k => optLabel(sc.options, k)).join(", "));
       if (sc.kind === "freeze") { sc.rows.forEach(([k, l]) => add(k, `${T} · ${l}`, v[k])); add("mine", `${T} · In my words`, v.mine); }
       if (sc.kind === "reset") add("reset", T, v.reset);
       if (sc.kind === "own") { add("what", `${T} · What happened`, v.what); add("gaps", `${T} · Gaps`, (v.gaps || []).map(k => ACTS.GAP[k])); add("action", `${T} · Action`, v.action); }
@@ -123,7 +123,7 @@
   /* Build every row from current state */
   function logRows() {
     S.logId = S.logId || Math.random().toString(36).slice(2, 10);
-    const rows = [], mk = (key, activity, detail, week, n, status, pairs, extra = {}) => rows.push({ key: `${key}#${n}`, activity, detail, week, n, status, pairs, ...extra });
+    const rows = [], mk = (key, activity, detail, week, n, status, pairs, extra = {}) => rows.push({ key: `${key}#${n}`, akey: key, activity, detail, week, n, status, pairs, ...extra });
     if (Object.keys(S.base || {}).length) mk("base", "Day 1 Baseline", "", 1, 1, S.sealed ? "Finished" : "In progress",
       D.BASELINE.flatMap(b => { const a = S.base[b.id] || {}, aim = D.AIMS.find(x => x[0] === a.aim); return [[`${b.id}.move`, `${b.client} · Your words`, clip(a.move)], [`${b.id}.aim`, `${b.client} · Going for`, aim ? `${aim[2]} (${aim[1]})` : ""]]; }).filter(p => p[2]));
     ["l1", "l2", "l3"].forEach(k => { const st = S.act && S.act[k]; if (!st || !Object.keys(st.v || {}).length) return; mk("act-" + k, ACTS[k].name, `Lesson ${k.slice(1)}`, 1, st.n || 1, st.done && st.i >= ACTS[k].screens.length - 1 ? "Finished" : "In progress", actPairs(ACTS[k], st.v), { act: k }); });
@@ -145,11 +145,10 @@
         const F = S.first[R.key] = S.first[R.key] || { _started: now };
         let changed = 0;
         R.pairs.forEach(([k, , val]) => { if (!(k in F)) F[k] = val; else if (F[k] !== val) changed++; });
-        const firstTxt = R.pairs.map(([k, l]) => `${l}: ${F[k]}`).join("\n"), finalTxt = R.pairs.map(([, l, val]) => `${l}: ${val}`).join("\n");
-        const firstMap = Object.fromEntries(R.pairs.map(([k, l]) => [l, F[k]]));
+        const answers = R.pairs.map(([k, l, val, exp], j) => ({ key: k, q: l, first: F[k], final: val, expected: exp || "", order: j + 1 }));
         const matches = R.act ? actMatches(ACTS[R.act], Object.fromEntries(R.pairs.map(([k]) => [k, F[k]]))) : "";
-        const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, email: LOG_EMAIL, activity: R.activity, detail: R.detail, week: R.week, attemptNo: R.n, status: R.status, first: firstTxt, final: finalTxt, changed, matches, started: F._started, source: logSource(), raw: JSON.stringify({ first: firstMap, final: Object.fromEntries(R.pairs.map(([, l, val]) => [l, val])) }) };
-        const sig = JSON.stringify([rec.status, rec.first, rec.final]);
+        const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, activityKey: R.akey, detail: R.detail, attemptNo: R.n, status: R.status, changed, matches, started: F._started, answers };
+        const sig = JSON.stringify([rec.status, answers]);
         if (S.logSent[R.key] !== sig) { rec.updated = now; rec._sig = sig; rec._key = R.key; out.push(rec); }
       });
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
@@ -161,7 +160,7 @@
     if (!q.length || LOG.busy) return;
     LOG.busy = true;
     for (let k = 0; k < q.length; k += 10) {
-      const part = q.slice(k, k + 10), body = JSON.stringify({ records: part.map(({ _sig, _key, ...r }) => r) });
+      const part = q.slice(k, k + 10), body = JSON.stringify({ email: LOG_EMAIL, source: logSource(), attempts: part.map(({ _sig, _key, ...r }) => r) });
       try {
         if (useBeacon && navigator.sendBeacon) { navigator.sendBeacon(LOG.url, new Blob([body], { type: "application/json" })); continue; }
         const res = await fetch(LOG.url, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
