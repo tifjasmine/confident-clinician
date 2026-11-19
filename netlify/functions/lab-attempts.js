@@ -24,7 +24,7 @@ const num = v => (Number.isFinite(+v) ? Math.max(0, Math.min(9999, Math.round(+v
 const iso = v => { const d = new Date(v); return Number.isNaN(d.getTime()) ? undefined : d.toISOString(); };
 const cleanEmail = v => { const e = text(v, 200).trim().toLowerCase(); return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : ""; };
 const idOk = v => /^[\w@.+\-·#| ]{6,240}$/.test(String(v || ""));
-const strip = f => { Object.keys(f).forEach(k => (f[k] === undefined || f[k] === "") && delete f[k]); return f; };
+const strip = f => { Object.keys(f).forEach(k => (f[k] === undefined || f[k] === "" || (Array.isArray(f[k]) && !f[k].length)) && delete f[k]); return f; };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function at(token, path, method = "GET", body) {
@@ -104,7 +104,11 @@ exports.handler = async event => {
         "Training note": text(a.note, 3000),
       }));
     }));
-    for (let k = 0; k < answers.length; k += 10) await upsert(token, T.answers, "Answer ID", answers.slice(k, k + 10));
+    const idByAnswer = {};
+    for (let k = 0; k < answers.length; k += 10) {
+      const res = await upsert(token, T.answers, "Answer ID", answers.slice(k, k + 10));
+      (res.records || []).forEach(x => { if (x.fields && x.fields["Answer ID"]) idByAnswer[x.fields["Answer ID"]] = x.id; });
+    }
     const TYPES = { "Training note": 1, "Client reply": 1, "Session summary": 1 };
     const fb = [];
     rows.forEach(r => (Array.isArray(r.feedback) ? r.feedback : []).slice(0, 60).forEach(f => {
@@ -119,6 +123,7 @@ exports.handler = async event => {
         "What the practice partner said": text(f.ai, 4000),
         "Student's words": text(f.input, 2000),
         Attempt: [attemptRec],
+        Answer: (Array.isArray(f.akeys) ? f.akeys : []).map(k => idByAnswer[text(`${r.attemptId}|${k}`, 300)]).filter(Boolean),
         Student: [studentId],
         "Rated at": iso(f.at),
       }));
