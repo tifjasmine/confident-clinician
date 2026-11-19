@@ -98,6 +98,8 @@
       if (sc.kind === "take") add(`t${sc.n}`, T, v[`t${sc.n}`]);
       if (sc.kind === "pausewalk") sc.steps.forEach(([l, nm]) => add(l, `${T} · ${nm}`, v[l]));
       if (sc.kind === "compare") sc.checks.forEach((c, k) => add(`c${k}`, `${T} · ${c}`, v[`c${k}`]));
+      if (v[`ai${i}_client`]) add(`ai${i}_client`, `${T} · AI client reply`, v[`ai${i}_client`]);
+      if (v[`ai${i}_note`]) add(`ai${i}_note`, `${T} · AI training note`, v[`ai${i}_note`]);
     });
     return out;
   }
@@ -127,7 +129,7 @@
     if (Object.keys(S.base || {}).length) mk("base", "Day 1 Baseline", "", 1, 1, S.sealed ? "Finished" : "In progress",
       D.BASELINE.flatMap(b => { const a = S.base[b.id] || {}, aim = D.AIMS.find(x => x[0] === a.aim); return [[`${b.id}.move`, `${b.client} · Your words`, clip(a.move)], [`${b.id}.aim`, `${b.client} · Going for`, aim ? `${aim[2]} (${aim[1]})` : ""]]; }).filter(p => p[2]));
     ["l1", "l2", "l3"].forEach(k => { const st = S.act && S.act[k]; if (!st || !Object.keys(st.v || {}).length) return; mk("act-" + k, ACTS[k].name, `Lesson ${k.slice(1)}`, 1, st.n || 1, st.done && st.i >= ACTS[k].screens.length - 1 ? "Finished" : "In progress", actPairs(ACTS[k], st.v), { act: k }); });
-    if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""]].filter(p => p[2]));
+    if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""], ["aiNote", "AI training note", clip(S.demo.aiNote)]].filter(p => p[2]));
     if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", "Jordan, session 2", 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
     const M = S.sim || {}, SJ = SIMS.jordan;
     [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Jordan Simulation", "Jordan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
@@ -216,6 +218,7 @@
     if (scr !== lastScr) scrollTo({ top: 0 });
     lastScr = scr;
     bind(scr, arg);
+    bindAI();
     logTick();
     if (v.after) v.after();
   }
@@ -380,6 +383,7 @@
         <label class="field">Your new line 4 <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
         ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>Another way to say it</small><span class="tk">${q(A.take)}</span></div></div>
           <div class="coach"><small>Why it works</small>${esc(A.takeWhy)}</div>
+          ${aiBox("lab-r4", "Hear how Jordan responds to your line 4", "react", () => ({ who: "Jordan, 29, in session 2", context: "Jordan keeps having the same fights with their partner and feels like they're always the one who has to bring things up, and then they're the bad guy.", line: A.lines[2][1], response: (S.lab.move || "").trim() }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: "Jordan", wait: "Jordan is responding…" })}
           <div class="next-note"><b>One more thing before you go.</b> Look at what happened next in the session.
             <span class="nn-row"><span>${esc(A.line8[0])}</span>${q(A.lines[7][1])}</span>
             <span class="nn-row"><span>${esc(A.line8[1])}</span>${q(A.lines[8][1])}</span>
@@ -526,7 +530,7 @@
           <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
           <label class="field">Why that sentence? <small>${esc(AD.hintWhy)}</small><textarea class="v6-ta" rows="2" data-demo="why" placeholder="I chose it because…">${esc(DM.why)}</textarea></label>
           <div class="field">${esc(AD.check)}<div class="chips-row">${["Yes", "Not quite", "Not sure"].map(o => `<button type="button" class="chip" data-demo-ck="${o}" aria-pressed="${DM.ck === o}">${o}</button>`).join("")}</div></div>
-          ${aiNote(AD.ai)}</div>`;
+          ${aiBox("demo-why", "Get a follow-up question on my why", "why", () => ({ line: AD.moment, sentence: DM.line || "", why: DM.why || "" }), res => { DM.aiNote = res.note; }, { req: ["sentence", "why"] })}</div>`;
       const dOk = (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3 && DM.ck;
       cta = (DM.watched ? `<button type="button" class="v6-btn secondary" data-act="demowatch">Demo watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="demowatch">Mark demo watched</button>`)
         + (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
@@ -632,9 +636,12 @@
     </div>`;
 
     if (x.aim) {
-      html += `<div class="card stack-12"><span class="v6-label">4 · ${esc(name)} reacts</span>${reacts.length ? reacts.map(z => `<div class="reaction-alt">${z.move ? `<p class="move-label" style="margin:0 0 8px">${reacts.length > 1 ? "If your move sounded like" : "A move like"} <b>${esc(z.move)}</b></p>` : ""}
+      const guide = Object.entries(r.reactions || {}).map(([aim, z]) => [].concat(z).map(y => `If the move was mostly ${aim}${y.move ? ` (${y.move})` : ""}: ${name} says "${y.says}"${y.shows ? ` (${y.shows})` : ""}`).join(" ")).join("\n");
+      const aiReact = aiBox(`rep-${r.id}`, `Hear how ${name} responds to your words`, "react", () => ({ who: name, context: r.context || "", line: r.line || r.stageLine || "", response: (x.move || "").trim(), guide }), res => { x.aiClient = res.client; x.aiNote = res.note; }, { auto: true, req: ["response"], who: name, wait: `${name} is responding…` });
+      html += `<div class="card stack-12"><span class="v6-label">4 · ${esc(name)} reacts to your words</span>${aiReact}
+        <details class="act-ex rep-more"><summary>Other ways this moment can go</summary><div class="stack-12" style="margin-top:10px">${reacts.length ? reacts.map(z => `<div class="reaction-alt">${z.move ? `<p class="move-label" style="margin:0 0 8px">${reacts.length > 1 ? "If your move sounded like" : "A move like"} <b>${esc(z.move)}</b></p>` : ""}
         <div class="speaker"><span class="av" aria-hidden="true">${name[0]}</span><span class="col">${z.stage ? `<span class="stage">${esc(z.stage)}</span>` : ""}<span class="said md">${q(z.says)}</span>${z.after ? `<span class="stage">${esc(z.after)}</span>` : ""}<span class="shows">${esc(z.shows)}</span></span></div></div>`).join("")
-        : `<div style="font-size:15px;color:var(--ink-2)">Here’s one way to handle it.</div>`}
+        : `<div style="font-size:15px;color:var(--ink-2)">Here’s one way to handle it.</div>`}</div></details>
         ${beat2 ? `<label class="field" style="margin-top:8px;padding-top:14px;border-top:1px solid var(--line-2)"><span class="v6-label">Keep going · ${esc(r.beat2.prompt)}</span>${r.beat2.note ? `<small>${esc(r.beat2.note)}</small>` : ""}<textarea class="v6-ta" rows="2" data-beat2 placeholder="Your next move, in your own words">${esc(x.beat2)}</textarea></label>` : ""}
       </div>
       <div class="card stack-12 pullq"><span class="v6-label">What pulled at you?</span><span class="pq-sub">Everyone feels a different urge in hard moments. Which one showed up for you here?</span>
@@ -745,7 +752,8 @@
       const any = sc.checks.some((_, k) => v["s" + k] === "Not yet");
       h += `<p class="act-p">${esc(sc.text)}</p><div class="act-you"><small>Your action</small>${esc(v.action || "")}</div>
         <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not yet"], v["s" + k], ` data-f="s${k}"`)}</div>`).join("")}</div>
-        ${any ? `<label class="field">Tighten it <small>Add who, when, or how many times.</small><textarea class="v6-ta" rows="2" data-at="action">${esc(v.action)}</textarea></label>` : ""}${aiNote(sc.ai)}`;
+        ${any ? `<label class="field">Tighten it <small>Add who, when, or how many times.</small><textarea class="v6-ta" rows="2" data-at="action">${esc(v.action)}</textarea></label>` : ""}
+        ${aiBox(`act-${X.key}-${i}`, "Get a second look at my plan", "plan", () => ({ what: v.what || "", gap: (v.gaps || []).map(k => ACTS.GAP[k]).join(" + "), action: v.action || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["action"] })}`;
       ok = sc.checks.every((_, k) => v["s" + k]) && filled(v.action);
     }
     if (K === "own") {
@@ -755,7 +763,7 @@
         <div class="field">Which gap or gaps fit? <small>More than one can be true.</small><div class="act-chips">${Object.entries(ACTS.GAP).map(([k, l]) => `<button type="button" class="act-chip" data-gapt="${k}" aria-pressed="${g.includes(k)}">${l}</button>`).join("")}</div></div>
         ${g.length ? `<div class="act-hints">${g.map(k => `<span><b>${ACTS.GAP[k]}:</b> ${esc(sc.gapActions[k])}</span>`).join("")}</div>` : ""}
         <label class="field">${esc(sc.fields[1][1])}<textarea class="v6-ta" rows="2" data-at="action" placeholder="Specific enough to do this week">${esc(v.action)}</textarea></label>
-        <details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)}</p></details>${aiNote(sc.ai)}`;
+        <details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)}</p></details>`;
       ok = filled(v.what) && filled(v.action) && g.length > 0;
     }
     if (K === "freeze") {
@@ -772,7 +780,8 @@
     }
     if (K === "write2") {
       h += momentHTML(sc.moment) + sc.fields.map(([k, l, ph]) => `<label class="field">${esc(l)}<textarea class="v6-ta" rows="2" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea></label>`).join("")
-        + `<details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)} Don’t memorize it. Say it your way.</p></details>${aiNote(sc.ai)}`;
+        + `<details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)} Don’t memorize it. Say it your way.</p></details>
+        ${aiBox(`act-${X.key}-${i}`, "Hear how the client responds", "react", () => ({ who: "a client in session 6, arms crossed", context: "Last week the therapist suggested a thought record. The client didn't do it and feels like every helper hands them homework instead of listening.", line: sc.moment.line, response: (v.r2 || v.r1 || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "The client is responding…" })}`;
       ok = sc.fields.every(([k]) => filled(v[k]));
     }
     if (K === "check") {
@@ -782,7 +791,7 @@
       ok = !!cur;
     }
     if (K === "take") {
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${aiNote(sc.ai)}`;
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${sc.ai ? aiBox(`act-${X.key}-${i}`, "Hear her response", "react", () => ({ who: "a client in session 4 who has had a hard month", context: "Earlier she said she doesn't know what she feels anymore. Now she's pushing back: she doesn't want to be cheered up, she wants room to say how bad it feels.", line: sc.moment.line, response: (v["t" + sc.n] || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "She’s responding…" }) : ""}`;
       ok = filled(v["t" + sc.n]);
     }
     if (K === "pausewalk") {
@@ -791,7 +800,8 @@
     }
     if (K === "compare") {
       h += `<div class="act-cmp"><div><small>Take 1 · instinct</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
-        <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not quite"], v["c" + k], ` data-f="c${k}"`)}</div>`).join("")}</div>${aiNote(sc.ai)}`;
+        <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not quite"], v["c" + k], ` data-f="c${k}"`)}</div>`).join("")}</div>
+        ${aiBox(`act-${X.key}-${i}`, "What changed between my takes?", "compare", () => ({ line: (X.screens.find(z => z.kind === "take") || {}).moment.line, take1: v.t1 || "", take2: v.t2 || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["take1", "take2"] })}`;
       ok = sc.checks.every((_, k) => v["c" + k]);
     }
     if (K === "summary") {
@@ -817,6 +827,48 @@
       ${i === 0 ? `<div class="fiction">Fictional practice. Never enter real client details.</div>` : ""}
       <div class="actions act-nav">${back}${fwd}</div></div>`;
     return { html, title: X.name, plain: true, sub: `Lesson ${key.slice(1)} practice`, crumb: ["Week 1", X.name, "week/" + key], solo: true, tight: true };
+  }
+
+  /* ---------- Short AI assists inside activities (lab-ai-assist function) ----------
+     aiBox() renders a button (or auto-runs), then the result: an optional client reply bubble and a training note.
+     Results are kept per spot and re-asked only if the student's words changed. `save` mirrors results into the
+     activity's own state so they're logged to Airtable with everything else. */
+  const AIREQ = {}, AIBUSY = {};
+  const aiSig = d => JSON.stringify(d);
+  function aiBox(id, label, task, dataFn, save, o = {}) {
+    AIREQ[id] = { task, dataFn, save, auto: !!o.auto, req: o.req || [] };
+    S.ai = S.ai || {};
+    const data = dataFn(), r = S.ai[id], fresh = !!(r && r.sig === aiSig(data) && r.res), ready = true;
+    let h = `<div class="ai-box${o.cls ? " " + o.cls : ""}">`;
+    if (fresh) {
+      const res = r.res;
+      if (res.client) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">${esc((o.who || "C")[0])}</span><div class="lv-say">${q(res.client)}</div></div>`;
+      if (res.note) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${esc(res.note)}</div>`;
+    }
+    if (AIBUSY[id]) h += `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(o.wait || "Reading your response…")}</div>`;
+    else if (!fresh) h += `<button type="button" class="ai-btn" data-ai="${id}"${ready ? "" : " disabled"}><span class="ai-spark" aria-hidden="true">✦</span><span><b>${esc(label)}</b><small>${ready ? (o.sub || "AI training tool · responds to your exact words") : (o.need || "Write your answer first")}</small></span></button>`;
+    else h += `<button type="button" class="v6-link ai-again" data-ai="${id}">↺ Ask again</button>`;
+    if (r && r.err && !fresh && !AIBUSY[id]) h += `<div class="lv-err">${esc(r.err)}</div>`;
+    return h + `</div>`;
+  }
+  async function aiRun(id) {
+    const R = AIREQ[id]; if (!R || AIBUSY[id]) return;
+    S.ai = S.ai || {};
+    const data = R.dataFn();
+    if (R.req.some(k => !String(data[k] || "").trim())) { S.ai[id] = { ...(S.ai[id] || {}), err: "Write your answer first, then ask." }; render(); return; }
+    R.data = data; AIBUSY[id] = true; render();
+    try {
+      const res = await fetch("/.netlify/functions/lab-ai-assist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task: R.task, data: R.data }) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || "The AI is unavailable right now.");
+      S.ai[id] = { sig: aiSig(R.data), res: { client: out.client || "", note: out.note || "", safety: !!out.safety }, at: new Date().toISOString() };
+      if (R.save) R.save(S.ai[id].res);
+    } catch (e) { S.ai[id] = { ...(S.ai[id] || {}), err: e.message || "Something went wrong. Try again." }; }
+    AIBUSY[id] = false; save(); render();
+  }
+  function bindAI() {
+    $$("[data-ai]").forEach(b => b.onclick = () => aiRun(b.dataset.ai));
+    Object.entries(AIREQ).forEach(([id, R]) => { const r = (S.ai || {})[id]; if (R.auto && !AIBUSY[id] && !(r && r.sig === aiSig(R.dataFn()) && (r.res || r.err)) && document.querySelector(`[data-ai="${id}"]`)) setTimeout(() => aiRun(id), 50); });
   }
 
   /* ---------- AI live session: Dana (lab-live-session function) ----------
