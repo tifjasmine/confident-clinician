@@ -133,6 +133,14 @@
     [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Jordan Simulation", "Jordan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
       SJ.moments.map((m, j) => [`m${j}`, `Moment ${j + 1}`, C.picks && C.picks[j] != null ? clip((m.choices[C.picks[j]] || [])[1]) : ""]).concat(flatPairs(C.intent, "Intention"), flatPairs(C.ref, "Debrief")).filter(p => p[2])));
     Object.entries(S.reps || {}).forEach(([id, x]) => { const r = REP(id); if (!r) return; (x.attempts && x.attempts.length ? x.attempts : [x]).forEach((a, k) => mk("rep-" + id, "Rep", `Rep ${id} · ${r.client}`, r.week, k + 1, x.saved ? "Finished" : "In progress", flatPairs(a))); });
+    const LS = S.live || {};
+    [...(LS.past || []), ...(LS.cur && !(LS.past || []).includes(LS.cur) && !(LS.past || []).some(p => p.id === LS.cur.id) ? [LS.cur] : [])].forEach((C, k) => {
+      if (!C.moments || !C.moments.some(m => (m.attempts || []).length)) return;
+      const pairs = [];
+      C.moments.forEach((m, mi) => (m.attempts || []).forEach((a, j) => pairs.push([`m${mi}a${j}`, `Moment ${mi + 1} · Attempt ${j + 1}${j < m.attempts.length - 1 ? " (refined)" : ""}`, clip(a.text), "", { clientLine: m.client, note: a.note || "" }])));
+      if (C.done) pairs.push(["summary", "Session summary", clip(C.summary), "", { clientLine: C.closing || "" }]);
+      mk("live-dana", "Live Session · Dana", `${C.moments.length} moments · ${C.refinesUsed || 0} refines${C.left && !C.done ? " · left early" : ""}`, 1, k + 1, C.done ? "Finished" : "In progress", pairs, { started: C.started });
+    });
     if (S.reflect && Object.keys(S.reflect).length) mk("reflect", "Reflect & Redo", "", 1, 1, S.steps.reflect ? "Finished" : "In progress", flatPairs(S.reflect));
     if (S.profile && Object.keys(S.profile).length) mk("profile", "Clinical Confidence Profile", "", 1, 1, S.steps.save ? "Finished" : "In progress", flatPairs(S.profile));
     return rows;
@@ -145,7 +153,7 @@
         const F = S.first[R.key] = S.first[R.key] || { _started: now };
         let changed = 0;
         R.pairs.forEach(([k, , val]) => { if (!(k in F)) F[k] = val; else if (F[k] !== val) changed++; });
-        const answers = R.pairs.map(([k, l, val, exp], j) => ({ key: k, q: l, first: F[k], final: val, expected: exp || "", order: j + 1 }));
+        const answers = R.pairs.map(([k, l, val, exp, extra], j) => ({ key: k, q: l, first: F[k], final: val, expected: exp || "", order: j + 1, ...(extra || {}) }));
         const matches = R.act ? actMatches(ACTS[R.act], Object.fromEntries(R.pairs.map(([k]) => [k, F[k]]))) : "";
         const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, activityKey: R.akey, detail: R.detail, attemptNo: R.n, status: R.status, changed, matches, started: F._started, answers };
         const sig = JSON.stringify([rec.status, answers]);
@@ -183,12 +191,13 @@
     setMenu(false);
     $$("[data-back]").forEach(b => { b.hidden = scr === "home"; });
     const navKey = scr === "rep" ? "reproom" : scr === "baseline" || scr === "act" ? "week" : scr;
+    if (scr === "live" && liveState().cur && liveState().showIntro === undefined) liveState().showIntro = !!liveState().cur.done;
     const tabs = NAV.map(([k, label, short], i) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${i === -1 ? short : label}</button>`).join("");
     $("[data-tabs]").innerHTML = tabs;
     $("[data-bottom]").innerHTML = NAV.map(([k, , short]) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${short}</button>`).join("");
     $$("[data-preview-toggle]").forEach(pv => { pv.textContent = S.reviewer ? "Preview · all open" : "Preview"; pv.classList.toggle("on", S.reviewer); pv.setAttribute("aria-pressed", S.reviewer); });
 
-    const views = { home: homeView, week: weekView, act: actView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
+    const views = { home: homeView, week: weekView, act: actView, live: liveView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
     $("[data-side]").innerHTML = sideHTML(navKey, scr === "week" ? v.sel : -1);
     $(".v6-frame").classList.toggle("side-min", !!SB.min);
@@ -239,7 +248,7 @@
     }).join("");
     return sec("today", "Today", "", item("home", "Home", navKey === "home"))
       + sec("week1", "Week 1 · Notice", `${doneCount()}/${D.WEEK1.length}`, steps)
-      + sec("practice", "Practice", "", item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
+      + sec("practice", "Practice", "", item("live", "Live session · Dana", navKey === "live", "AI", "ai") + item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
       + sec("later", "Coming up", "", D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>${S.start && !weekOpen(w.n) ? fmtDay(opensAt(w.n)) : weekOpen(w.n) ? "Open" : "Soon"}</em></div>`).join(""));
   }
 
@@ -788,7 +797,7 @@
     if (K === "summary") {
       const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";
       if (X.key === "l1") h += row("Your moment", q(v.what)) + row("The gap", esc((v.gaps || []).map(k => ACTS.GAP[k]).join(" + "))) + row("Your action this week", esc(v.action)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
-      if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
+      if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p><div class="live-cta"><span class="live-eyebrow">✦ Take it live</span><b>Now try it with a client who reacts to your exact words.</b><span>Ten moments with Dana, a training note after each answer, and a summary at the end.</span><button type="button" class="v6-btn primary" data-go="live">Start a live session →</button></div>`;
       if (X.key === "l3") h += row("Take 1 · instinct", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + row("The limit", "When safety comes up, safety comes first.") + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
     }
     return { h, ok };
@@ -810,6 +819,92 @@
     return { html, title: X.name, plain: true, sub: `Lesson ${key.slice(1)} practice`, crumb: ["Week 1", X.name, "week/" + key], solo: true, tight: true };
   }
 
+  /* ---------- AI live session: Dana (lab-live-session function) ----------
+     Flow per moment: Dana speaks -> trainee attempt -> Training note (Dana hasn't reacted yet)
+       -> Refine (same moment, 3 per session) or Continue (Dana reacts; that's the next moment). 10 moments, then wrap-up.
+     The shared preview login is a test account: counts are shown but never enforced. */
+  const LIVE = { url: "/.netlify/functions/lab-live-session", moments: 10, refines: 3, busy: false, err: "" };
+  const LIVE_OPEN = "Honestly? I think you don’t understand me either. Everyone just keeps giving me homework.";
+  const isTestAccount = () => true; /* every current login is the shared preview account; real Supabase students will be limited */
+  const liveState = () => (S.live = S.live || { past: [], cur: null });
+  const liveNew = () => ({ id: Math.random().toString(36).slice(2, 9), started: new Date().toISOString(), moments: [{ client: LIVE_OPEN }], refinesUsed: 0, phase: "attempt", done: false });
+  async function liveCall(mode, sess) {
+    const res = await fetch(LIVE.url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scenario: "dana", mode, moments: sess.moments.map(m => ({ client: m.client, attempts: (m.attempts || []).map(a => ({ text: a.text, note: a.note || "" })) })) }) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || !out.ok) throw new Error(out.error || "The practice partner is unavailable right now.");
+    return out;
+  }
+  function liveView() {
+    const L = liveState(), C = L.cur;
+    const intro = `<div class="live-intro">
+        <span class="live-eyebrow">✦ Live session · AI practice partner</span>
+        <h2>Sit with Dana for ten moments.</h2>
+        <p>Dana is a fictional client. You respond in your own words. Before she reacts, you get a short training note with a question to think about. Then you choose: refine your answer, or hear what Dana says.</p>
+        <ol class="live-how"><li><b>Dana speaks.</b> You write what you’d say.</li><li><b>Training note.</b> One question to help you explore. It never hands you a line.</li><li><b>Your call.</b> Refine (3 per session) or hear Dana’s response.</li><li><b>Ten moments,</b> then a session summary.</li></ol>
+        <div class="live-meta"><span>About 15 minutes</span><span>Fictional practice only</span><span>A training tool for The Confident Clinician</span></div>
+        <button type="button" class="v6-btn primary live-go" data-live="start">Start the session</button>
+        ${L.past.filter(p => p.done).length ? `<p class="live-past">You’ve finished ${L.past.filter(p => p.done).length} session${L.past.filter(p => p.done).length > 1 ? "s" : ""}. <button type="button" class="v6-link" data-live="lastsum">See your last summary</button></p>` : ""}
+      </div>`;
+    if (!C || L.showIntro) return { html: `<div class="live">${intro}</div>`, title: "Live session", plain: true, sub: "Practice with an AI client who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
+    const n = C.moments.length, test = isTestAccount(), left = LIVE.refines - C.refinesUsed;
+    const moment = (m, k) => {
+      const last = k === n - 1;
+      const atts = (m.attempts || []).map((a, j, all) => {
+        const old = j < all.length - 1;
+        return `<div class="lv-me${old ? " old" : ""}"><span class="lv-tag">${old ? "↺ Refined" : all.length > 1 ? `Attempt ${j + 1}` : "You"}</span>${esc(a.text)}</div>`
+          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${esc(a.note)}</div>` : "");
+      }).join("");
+      return `<div class="lv-moment${last ? " now" : ""}"><span class="lv-mn">Moment ${k + 1}</span><div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(m.client)}</div></div>${atts}</div>`;
+    };
+    const curM = C.moments[n - 1], lastA = (curM.attempts || []).slice(-1)[0];
+    let ctl = "";
+    if (C.done) {
+      ctl = `${C.closing ? `<div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(C.closing)}</div></div>` : ""}
+        <div class="lv-summary"><span class="lv-tag">Session summary</span>${esc(C.summary || "").split(/\n+/).filter(Boolean).map(p => `<p>${p}</p>`).join("")}</div>
+        <div class="actions"><button type="button" class="v6-btn primary" data-live="new">Start a new session</button><button type="button" class="v6-btn secondary" data-go="reproom">Back to practice</button></div>`;
+    } else if (LIVE.busy) {
+      ctl = `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${LIVE.busy === "note" ? "Reading your response…" : LIVE.busy === "wrap" ? "Wrapping up the session…" : "Dana is responding…"}</div>`;
+    } else if (C.phase === "attempt") {
+      ctl = `<label class="lv-input"><span>What do you say to Dana?</span><textarea class="v6-ta" rows="3" data-live-text placeholder="Type it the way you’d say it in the room">${esc(C.draft || "")}</textarea></label>
+        <div class="actions"><button type="button" class="v6-btn primary" data-live="send"${(C.draft || "").trim().length >= 2 ? "" : " disabled"}>Send my response</button>${lastA && lastA.note && C.refining ? `<button type="button" class="v6-btn secondary" data-live="cancelrefine">Keep my last answer</button>` : ""}</div>`;
+    } else if (C.phase === "choose") {
+      const canRefine = left > 0 || test;
+      ctl = `<div class="lv-choose">
+          <button type="button" class="lv-btn refine" data-live="refine"${canRefine && !lastA.safety ? "" : " disabled"}><b>↺ Refine my answer</b><small>${left > 0 ? `${left} refine${left === 1 ? "" : "s"} left` : test ? "0 left · test account, keep going" : "No refines left"}</small></button>
+          <button type="button" class="lv-btn go" data-live="continue"${lastA.safety ? " disabled" : ""}><b>${n >= LIVE.moments ? "End the session →" : "Hear Dana’s response →"}</b><small>${n >= LIVE.moments ? "Get your session summary" : `Moment ${n + 1} of ${LIVE.moments} next`}</small></button>
+        </div>${lastA.safety ? `<div class="actions"><button type="button" class="v6-btn secondary" data-live="new">Start over</button></div>` : ""}`;
+    }
+    const html = `<div class="live in-session">
+      <div class="live-head"><div><span class="live-eyebrow">✦ Live session · AI practice partner</span><span class="lv-who">Dana, 34 · ER nurse · Session 6</span></div>
+        <div class="lv-stats"><span>${C.done ? "Session complete" : `Moment ${n} of ${LIVE.moments}`}</span><span>Refines left: ${Math.max(0, left)}${test && left <= 0 ? " · test" : ""}</span></div>
+        <div class="lv-prog" aria-hidden="true"><span style="width:${(C.done ? 1 : n / LIVE.moments) * 100}%"></span></div></div>
+      <div class="live-feed">${C.moments.map(moment).join("")}${LIVE.err ? `<div class="lv-err">${esc(LIVE.err)} <button type="button" class="v6-link" data-live="retry">Try again</button></div>` : ""}${ctl}</div>
+      <div class="live-foot">Fictional practice. Never use real client details. ${test ? "Test account: limits are shown but not enforced." : ""} <button type="button" class="v6-link" data-live="quit">Leave session</button></div></div>`;
+    return { html, title: "Live session", plain: true, sub: "Practice with an AI client who reacts to your exact words.", crumb: ["Practice", "Live session", "reproom"], solo: true, tight: true };
+  }
+  async function liveStep(kind) {
+    const L = liveState(), C = L.cur; LIVE.err = ""; LIVE.retry = kind;
+    try {
+      if (kind === "note") {
+        LIVE.busy = "note"; render();
+        const a = C.moments[C.moments.length - 1].attempts.slice(-1)[0], out = await liveCall("note", C);
+        a.note = out.text; if (out.safety) a.safety = true; C.phase = "choose";
+      } else if (kind === "client") {
+        LIVE.busy = "client"; render();
+        const out = await liveCall("client", C);
+        if (out.safety) { C.moments[C.moments.length - 1].attempts.slice(-1)[0].note = out.text; C.moments[C.moments.length - 1].attempts.slice(-1)[0].safety = true; C.phase = "choose"; }
+        else { C.moments.push({ client: out.text }); C.phase = "attempt"; C.draft = ""; }
+      } else if (kind === "wrap") {
+        LIVE.busy = "wrap"; render();
+        const out = await liveCall("wrap", C);
+        C.closing = out.closing || ""; C.summary = out.summary || out.text || ""; C.done = true; C.ended = new Date().toISOString();
+        L.past.push(C);
+      }
+    } catch (e) { LIVE.err = e.message || "Something went wrong."; }
+    LIVE.busy = false; save(); render();
+    const f = $(".live-feed"); if (f) { const last = f.lastElementChild; if (last) last.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+  }
+
   /* ---------- Rep Room ---------- */
   let chip = "open";
   function roomView() {
@@ -818,7 +913,8 @@
       return { r, open, practiced, n: x ? x.attempts.length + (x.saved ? 1 : 0) : 0 };
     });
     const list = all.filter(c => chip === "all" || (chip === "done" ? c.practiced : c.open));
-    const html = `<div class="chips-row">${[["open", "Open now"], ["done", "Practiced"], ["all", "All 12 Reps"]].map(([k, l]) => `<button type="button" class="chip" data-chip="${k}" aria-pressed="${chip === k}">${l}</button>`).join("")}</div>
+    const html = `<div class="live-cta wide"><span class="live-eyebrow">✦ New · Live session</span><b>Practice with a client who reacts to your exact words.</b><span>Ten moments with Dana. A training note after each answer, then you choose: refine or hear her response.</span><button type="button" class="v6-btn primary" data-go="live">Start a live session →</button></div>
+      <div class="chips-row">${[["open", "Open now"], ["done", "Practiced"], ["all", "All 12 Reps"]].map(([k, l]) => `<button type="button" class="chip" data-chip="${k}" aria-pressed="${chip === k}">${l}</button>`).join("")}</div>
       ${list.length ? `<div class="room-grid">${list.map(({ r, open, practiced, n }) => {
         const tag = practiced ? `<span class="v6-pill sage">Practiced ${n}×</span>` : open ? (r.pending ? `<span class="v6-pill muted">Being written</span>` : `<span class="v6-pill blush">Open</span>`) : `<span class="v6-pill muted">Opens Week ${r.week}</span>`;
         const btn = open ? `<button type="button" class="v6-btn secondary small" data-go="rep/${r.id}">${r.pending ? "Preview the moment" : practiced ? "Practice again" : "Start Rep"}</button>` : `<button type="button" class="v6-btn secondary small" disabled>Locked</button>`;
@@ -931,6 +1027,23 @@
       /* Profile */
       $$("[data-plan]", app).forEach(b => b.onclick = () => { const P = S.profile.plan = S.profile.plan || {}; P[b.dataset.plan] = b.dataset.v; save(); render(); });
       $$("[data-plan-own]", app).forEach(t => t.oninput = () => { const P = S.profile.plan = S.profile.plan || {}; P[t.dataset.planOwn] = t.value; save(); $$(`[data-plan="${t.dataset.planOwn}"]`, app).forEach(c => c.setAttribute("aria-pressed", "false")); const sv = $('[data-act="saveprofile"]', app); if (sv) sv.disabled = !(P.skill && P.rehearse && P.evidence); });
+    }
+    if (scr === "live") {
+      const L = liveState();
+      const t = $("[data-live-text]", app);
+      if (t) { t.oninput = () => { L.cur.draft = t.value; save(); const b = $('[data-live="send"]', app); if (b) b.disabled = t.value.trim().length < 2; }; if (!LIVE.busy) t.focus({ preventScroll: true }); }
+      $$("[data-live]", app).forEach(b => b.onclick = () => {
+        const d = b.dataset.live, C = L.cur;
+        if (d === "start" || d === "new") { if (L.cur && !L.past.some(p => p.id === L.cur.id)) L.past.push(L.cur); L.cur = liveNew(); L.showIntro = false; LIVE.err = ""; save(); render(); scrollTo({ top: 0 }); return; }
+        if (d === "lastsum") { L.cur = L.past.filter(p => p.done).slice(-1)[0] || L.cur; L.showIntro = false; save(); render(); return; }
+        if (d === "quit") { if (C && !C.done) { C.left = true; } L.showIntro = true; save(); render(); scrollTo({ top: 0 }); return; }
+        if (!C) return;
+        if (d === "send") { const txt = (C.draft || "").trim(); if (txt.length < 2) return; const m = C.moments[C.moments.length - 1]; (m.attempts = m.attempts || []).push({ text: txt.slice(0, 1200), at: new Date().toISOString() }); C.draft = ""; C.refining = false; save(); liveStep("note"); return; }
+        if (d === "refine") { C.refinesUsed++; C.phase = "attempt"; C.refining = true; C.draft = ""; save(); render(); return; }
+        if (d === "cancelrefine") { C.refinesUsed = Math.max(0, C.refinesUsed - 1); C.phase = "choose"; C.refining = false; save(); render(); return; }
+        if (d === "continue") { liveStep(C.moments.length >= LIVE.moments ? "wrap" : "client"); return; }
+        if (d === "retry") { liveStep(LIVE.retry || "note"); return; }
+      });
     }
     if (scr === "act") {
       const st = ACT(arg), X = ACTS[arg], v = st.v;

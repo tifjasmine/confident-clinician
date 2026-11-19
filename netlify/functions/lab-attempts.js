@@ -88,7 +88,7 @@ exports.handler = async event => {
     const idByAttempt = {};
     (attemptRecs.records || []).forEach(x => { idByAttempt[x.fields["Attempt ID"]] = x.id; });
     const answers = [];
-    rows.forEach(r => (Array.isArray(r.answers) ? r.answers : []).slice(0, 80).forEach(a => {
+    rows.forEach(r => (Array.isArray(r.answers) ? r.answers : []).slice(0, 120).forEach(a => {
       const attemptRec = idByAttempt[text(r.attemptId, 240)];
       if (!attemptRec || !a || !a.key) return;
       answers.push(strip({
@@ -99,6 +99,8 @@ exports.handler = async event => {
         "First answer": text(a.first),
         "Final answer": text(a.final),
         Expected: text(a.expected, 300),
+        "Client line": text(a.clientLine, 2000),
+        "Training note": text(a.note, 3000),
       }));
     }));
     for (let k = 0; k < answers.length; k += 10) await upsert(token, T.answers, "Answer ID", answers.slice(k, k + 10));

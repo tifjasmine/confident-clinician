@@ -89,7 +89,7 @@
         moment: { who: "Client", line: "Honestly? I think you don’t understand me either. Everyone just keeps giving me homework." },
         fields: [["r1", "Your response", "What would you say?"], ["r2", "Now a second version: shorter, and more like you", "Same purpose, your voice"]],
         example: "“I want to understand what I’ve missed. What have I been getting wrong?” Notice it doesn’t defend the homework or drop it. It asks.",
-        ai: "AI could play the client and react to what you actually wrote, including pushing back if you defended yourself." },
+        ai: "Built: the Live session with Dana (linked at the end of this activity) has the AI client react to your exact words." },
       { kind: "check", title: "The test.",
         text: "Could this client disagree with you without having to take care of your feelings?",
         show: "r2",
