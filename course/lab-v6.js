@@ -845,8 +845,8 @@
     RATE[fbid] = meta;
     const f = (S.fb || {})[fbid] || {};
     return `<div class="rate" data-rate-row="${fbid}"><span>Was this helpful?</span>
-      <button type="button" class="rate-b${f.rating === "up" ? " on" : ""}" data-rate="${fbid}" data-val="up" aria-pressed="${f.rating === "up"}" aria-label="Helpful">👍</button>
-      <button type="button" class="rate-b${f.rating === "down" ? " on" : ""}" data-rate="${fbid}" data-val="down" aria-pressed="${f.rating === "down"}" aria-label="Not helpful or not accurate">👎</button>
+      <button type="button" class="rate-b${f.rating === "up" ? " on" : ""}" data-rate="${fbid}" data-val="up" aria-pressed="${f.rating === "up"}" aria-label="Helpful">👍🏽</button>
+      <button type="button" class="rate-b${f.rating === "down" ? " on" : ""}" data-rate="${fbid}" data-val="down" aria-pressed="${f.rating === "down"}" aria-label="Not helpful or not accurate">👎🏽</button>
       ${f.rating === "up" ? `<em>Thanks!</em>` : ""}
       ${f.rating === "down" ? `<span class="rate-off"><input class="v6-in" type="text" data-rate-note="${fbid}" value="${esc(f.note || "")}" placeholder="What was off? (optional)"><em>${f.note ? "Saved. Thank you." : "Thanks for telling us."}</em></span>` : ""}</div>`;
   }

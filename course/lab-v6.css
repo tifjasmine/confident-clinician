@@ -1245,3 +1245,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .lv-note .nt-row b { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
 .lv-note .nt-row.work b { color: var(--forest); }
 .lv-note { background: #fff; border: 1px solid #f0dccf; border-left: 4px solid var(--terra); }
+/* keep the skin tone visible: no grayscale on thumbs */
+.rate-b { filter: none !important; opacity: .7; }
+.rate-b:hover, .rate-b.on { opacity: 1; }
