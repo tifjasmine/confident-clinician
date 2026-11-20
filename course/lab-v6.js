@@ -20,7 +20,8 @@
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
-  if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; } /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
+  if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
+  if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 1) { ["c0", "c1", "c2"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 1; } /* new side-by-side questions */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -100,7 +101,7 @@
       if (sc.kind === "take") add(`t${sc.n}`, T, v[`t${sc.n}`]);
       if (sc.kind === "follow") { add("her", `${T} · She said`, v.her); add("t4", `${T} · Your next move`, v.t4); if (v[`ai${i}b_note`]) add(`ai${i}b_note`, `${T} · AI training note (next move)`, v[`ai${i}b_note`]); }
       if (sc.kind === "pausewalk") sc.steps.forEach(([l, nm, , , key]) => add(key || l, `${T} · ${nm}`, v[key || l]));
-      if (sc.kind === "compare") sc.checks.forEach((c, k) => add(`c${k}`, `${T} · ${c}`, v[`c${k}`]));
+      if (sc.kind === "compare") sc.qs.forEach(([tag, qq], k) => add(`c${k}`, `${T} · ${tag}: ${qq}`, v[`c${k}`]));
       if (v[`ai${i}_client`]) add(`ai${i}_client`, `${T} · AI client reply`, v[`ai${i}_client`]);
       if (v[`ai${i}_note`]) add(`ai${i}_note`, `${T} · AI training note`, v[`ai${i}_note`]);
     });
@@ -834,9 +835,10 @@
     }
     if (K === "compare") {
       h += `<div class="act-cmp"><div><small>Take 1 · instinct</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
-        <div class="act-checks">${sc.checks.map((c, k) => `<div class="ack"><span>${esc(c)}</span>${pickChips("data-av", ["Yes", "Not quite"], v["c" + k], ` data-f="c${k}"`)}</div>`).join("")}</div>
+        ${sc.text ? `<p class="act-p">${esc(sc.text)}</p>` : ""}<div class="act-reflect">${sc.qs.map(([tag, qq, opts, fb], k) => { const cur = v["c" + k];
+          return `<div class="rf-q"><span class="rf-tag">${esc(tag)}</span><span class="rf-t">${esc(qq)}</span>${pickChips("data-av", opts, cur, ` data-f="c${k}"`)}${cur && fb[cur] ? `<div class="act-fb yes">${esc(fb[cur])}</div>` : ""}</div>`; }).join("")}</div>
         ${aiBox(`act-${X.key}-${i}`, "What changed between my takes?", "compare", () => ({ line: (X.screens.find(z => z.kind === "take") || {}).moment.line, take1: v.t1 || "", take2: v.t2 || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["take1", "take2"], rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, akeys: [`ai${i}_client`, `ai${i}_note`], where: `${X.name} · ${sc.title}` })}`;
-      ok = sc.checks.every((_, k) => v["c" + k]);
+      ok = sc.qs.every((_, k) => v["c" + k]);
     }
     if (K === "summary") {
       const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";

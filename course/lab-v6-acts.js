@@ -162,7 +162,17 @@
           ["E", "Explore", "What would you want to learn from her answer?", "e.g. when things started feeling numb", "E"]
         ] },
       { kind: "compare", stage: "Try it", title: "Side by side.",
-        checks: ["Closer to her words?", "Leaves room to clarify?", "One clear purpose?"],
+        text: "Look at both takes and answer from your gut. Different answers are information, not grades.",
+        qs: [
+          ["P · Pause", "Which take was led by the urge to fix, reassure, or sound helpful?", ["Take 1", "Take 2", "Both", "Neither"],
+            { "Take 1": "That’s the urge P.A.U.S.E. asks you to notice. Spotting it is the skill.", "Take 2": "Worth noticing. Even with the steps, the urge can sneak in. That’s normal.", "Both": "Honest. The urge is strong with a line like this one.", "Neither": "Nice. You stayed out of performance mode both times." }],
+          ["U · Use", "Which take uses something she actually said?", ["Take 1", "Take 2", "Both", "Neither"],
+            { "Take 1": "Your instinct already reached for her words. Keep that.", "Take 2": "That’s Use in action: the next question connects to what she brought.", "Both": "You’re already anchoring in her language. That’s a strength.", "Neither": "Look again at her line. “Anymore” is a word worth picking up." }],
+          ["E · Explore", "Which take makes it easier for her to tell you more?", ["Take 1", "Take 2", "About the same"],
+            { "Take 1": "Interesting. Notice what in Take 1 opens the door, and keep it.", "Take 2": "That’s explore before explaining: room for her to go further.", "About the same": "Then both leave room. Next, notice which one has one clear purpose." }],
+          ["Your takeaway", "What changed most between your takes?", ["I slowed down", "I used her words", "I picked one purpose", "I got curious instead of fixing", "Not much yet"],
+            { "I slowed down": "That’s P doing its job. The space is what lets you listen again.", "I used her words": "That’s U. It shows her your question is connected to what she brought.", "I picked one purpose": "That’s S. One grounded thing is usually enough.", "I got curious instead of fixing": "That’s E: explore before explaining.", "Not much yet": "That’s okay. The steps get familiar with reps, not on the first try." }]
+        ],
         ai: true },
       { kind: "follow", stage: "Try it", title: "E in action: let her answer lead.",
         moment: { who: "Client", line: "I don’t even know what I feel anymore." },
