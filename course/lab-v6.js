@@ -95,6 +95,7 @@
       if (sc.kind === "selfcheck") sc.checks.forEach((c, k) => add(`s${k}`, `${T} · ${c}`, v[`s${k}`]));
       if (sc.kind === "write2") sc.fields.forEach(([k, l]) => add(k, `${T} · ${l}`, v[k]));
       if (sc.kind === "check") add("ck", T, v.ck);
+      if (sc.kind === "reflect") { sc.items.forEach(([k, qq]) => add(k, `${T} · ${qq}`, v[k])); add("r2", `${T} · Adjusted response`, v.r2); }
       if (sc.kind === "take") add(`t${sc.n}`, T, v[`t${sc.n}`]);
       if (sc.kind === "pausewalk") sc.steps.forEach(([l, nm]) => add(l, `${T} · ${nm}`, v[l]));
       if (sc.kind === "compare") sc.checks.forEach((c, k) => add(`c${k}`, `${T} · ${c}`, v[`c${k}`]));
@@ -555,7 +556,7 @@
         adjust: (SC && SC.ref[2]) || ""
       };
       const sec = (k, label, hint, ph) => { const v = pf[k] != null ? pf[k] : auto[k]; return `<label class="field">${esc(label)}${hint ? ` <small>${esc(hint)}</small>` : ""}<textarea class="v6-ta" rows="2" data-p="${k}" placeholder="${esc(ph)}">${esc(v)}</textarea></label>`; };
-      const lines = [[ "When a client says I don’t understand them…", v2.r2 ], ["When a client doesn’t know what they feel…", v3.t2], ["When a client says don’t make me feel better…", v3.t3], ["When a client asks me to decide for them…", S.demo && S.demo.line]].filter(x => (x[1] || "").trim())
+      const lines = [[ "When a client says I don’t understand them…", v2.r2 || v2.r1 ], ["When a client doesn’t know what they feel…", v3.t2], ["When a client says don’t make me feel better…", v3.t3], ["When a client asks me to decide for them…", S.demo && S.demo.line]].filter(x => (x[1] || "").trim())
         .concat(D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim()).map(r => [r.bank + "…", S.reps[r.id].line]));
       body = `<div class="profile">
         <div class="banner-soft">Not a personality test. Filled in from your Week 1 choices. Edit anything.</div>
@@ -780,10 +781,19 @@
       ok = !!v.reset;
     }
     if (K === "write2") {
-      h += momentHTML(sc.moment) + sc.fields.map(([k, l, ph]) => `<label class="field">${esc(l)}<textarea class="v6-ta" rows="2" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea></label>`).join("")
+      h += momentHTML(sc.moment) + (sc.text ? `<p class="act-p">${esc(sc.text)}</p>` : "") + sc.fields.map(([k, l, ph]) => `<label class="field">${esc(l)}<textarea class="v6-ta" rows="2" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea></label>`).join("")
         + `<details class="act-ex"><summary>See an example</summary><p>${esc(sc.example)} Don’t memorize it. Say it your way.</p></details>
-        ${aiBox(`act-${X.key}-${i}`, "Hear how the client responds", "react", () => ({ who: "a client in session 6, arms crossed", context: "Last week the therapist suggested a thought record. The client didn't do it and feels like every helper hands them homework instead of listening.", line: sc.moment.line, response: (v.r2 || v.r1 || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "The client is responding…", rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, akeys: [`ai${i}_client`, `ai${i}_note`], where: `${X.name} · ${sc.title}` })}`;
+        ${aiBox(`act-${X.key}-${i}`, "Hear how the client responds", "react", () => ({ who: "a client in session 6, arms crossed", context: "Last week the therapist suggested a thought record. The client didn't do it and feels like every helper hands them homework instead of listening.", line: sc.moment.line, response: (v.r1 || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "The client is responding…", rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, akeys: [`ai${i}_client`, `ai${i}_note`], where: `${X.name} · ${sc.title}` })}`;
       ok = sc.fields.every(([k]) => filled(v[k]));
+    }
+    if (K === "reflect") {
+      const cl = v[`ai${i - 1}_client`];
+      h += `<p class="act-p">${esc(sc.text)}</p><div class="act-you"><small>You said</small>${q(v[sc.show] || "")}</div>${cl ? `<div class="act-you client"><small>The client said</small>${q(cl)}</div>` : ""}
+        <div class="act-reflect">${sc.items.map(([k, qq, opts]) => { const cur = v[k], o = opts.find(x => x[0] === cur);
+          return `<div class="rf-q"><span class="rf-t">${esc(qq)}</span>${pickChips("data-av", opts.map(x => x[0]), cur, ` data-f="${k}"`)}${o ? `<div class="act-fb ${o[2] ? "yes" : "no"}">${esc(o[1])}</div>` : ""}</div>`; }).join("")}</div>`;
+      const all = sc.items.every(([k]) => v[k]), anyOff = sc.items.some(([k, , opts]) => { const o = opts.find(x => x[0] === v[k]); return o && !o[2]; });
+      if (all) h += `${anyOff || v.r2 ? `<label class="field">${esc(sc.revise)} <small>Optional</small><textarea class="v6-ta" rows="2" data-at="r2" placeholder="Same moment, adjusted">${esc(v.r2)}</textarea></label>` : ""}<p class="act-close">${esc(sc.closing)}</p>`;
+      ok = all;
     }
     if (K === "check") {
       const cur = v.ck;
@@ -808,7 +818,7 @@
     if (K === "summary") {
       const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";
       if (X.key === "l1") h += row("Your moment", q(v.what)) + row("The gap", esc((v.gaps || []).map(k => ACTS.GAP[k]).join(" + "))) + row("Your action this week", esc(v.action)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
-      if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p><div class="live-cta"><span class="live-eyebrow">✦ Take it live</span><b>Now try it with a client who reacts to your exact words.</b><span>Ten moments with Dana, a training note after each answer, and a summary at the end.</span><button type="button" class="v6-btn primary" data-go="live">Start a live session →</button></div>`;
+      if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2 || v.r1)) + (v.r2 && v.r1 ? row("First version", q(v.r1)) : "") + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p><div class="live-cta"><span class="live-eyebrow">✦ Take it live</span><b>Now try it with a client who reacts to your exact words.</b><span>Ten moments with Dana, a training note after each answer, and a summary at the end.</span><button type="button" class="v6-btn primary" data-go="live">Start a live session →</button></div>`;
       if (X.key === "l3") h += row("Take 1 · instinct", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + row("The limit", "When safety comes up, safety comes first.") + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
     }
     return { h, ok };

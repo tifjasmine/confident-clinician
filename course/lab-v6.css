@@ -1248,3 +1248,8 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* keep the skin tone visible: no grayscale on thumbs */
 .rate-b { filter: none !important; opacity: .7; }
 .rate-b:hover, .rate-b.on { opacity: 1; }
+.act-reflect { display: flex; flex-direction: column; gap: 14px; }
+.rf-q { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: #fcfcfa; }
+.rf-t { font-size: 15.5px; font-weight: 600; line-height: 1.45; color: var(--ink); }
+.act-you.client { background: var(--sage); }
+.act-close { margin: 0; font: italic 500 16px/1.5 var(--serif); color: var(--forest); padding: 4px 2px; }
