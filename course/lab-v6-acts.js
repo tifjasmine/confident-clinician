@@ -174,9 +174,9 @@
             { "I slowed down": "That’s P doing its job. The space is what lets you listen again.", "I used her words": "That’s U. It shows her your question is connected to what she brought.", "I picked one purpose": "That’s S. One grounded thing is usually enough.", "I got curious instead of fixing": "That’s E: explore before explaining.", "Not much yet": "That’s okay. The steps get familiar with reps, not on the first try." }]
         ],
         ai: true },
-      { kind: "follow", stage: "Try it", title: "E in action: let her answer lead.",
+      { kind: "follow", stage: "Try it", title: "She answers. What’s your next move?",
         moment: { who: "Client", line: "I don’t even know what I feel anymore." },
-        text: "P.A.U.S.E. doesn’t end when you speak. Hear how she responds to your Take 2, then let her answer guide what you say next.",
+        text: "The last step of P.A.U.S.E. is Explore: let the client’s response guide your next move. Respond to what she just said, not to the plan in your head.",
         fallback: "I don’t know… it’s like I’m numb. I go to work, I come home, and nothing really lands." },
       { kind: "pick", stage: "Know the limit", title: "When the tool isn’t enough.",
         moment: { who: "Client, back to the first example", line: "Just tell me if I should break up with them. They said they’d hurt me if I leave." },

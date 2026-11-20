@@ -12,6 +12,8 @@ const MAX_ATTEMPT = 1200, MAX_TURNS = 60;
 
 const json = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) });
 const clip = (v, n) => String(v == null ? "" : v).replace(/\s+\n/g, "\n").trim().slice(0, n);
+/* Keep whole sentences: never cut text mid-word. If something runs long, end at the last full sentence. */
+const whole = (v, n = 1200) => { const t = String(v == null ? "" : v).replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const cut = t.slice(0, n), end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("? "), cut.lastIndexOf("! "), cut.lastIndexOf(".\u201d"), cut.lastIndexOf("?\u201d")); return end > n * 0.4 ? cut.slice(0, end + 1).trim() : cut.slice(0, cut.lastIndexOf(" ")).trim() + "…"; };
 
 const SCENARIOS = {
   dana: {
@@ -139,11 +141,11 @@ exports.handler = async event => {
       let parts = null; const m = text.match(/\{[\s\S]*\}/);
       try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
       if (parts && (parts.working || parts.build)) {
-        parts = { mode: parts.mode === "keep" ? "keep" : "build", working: clip(parts.working, 300), skill: clip(parts.skill, 120).replace(/:.*$/, ""), build: clip(parts.build, 400) };
+        parts = { mode: parts.mode === "keep" ? "keep" : "build", working: whole(parts.working, 700), skill: clip(parts.skill, 120).replace(/:.*$/, ""), build: whole(parts.build, 800) };
         return json(200, { ok: true, parts, text: [parts.working, parts.build].filter(Boolean).join(" ") });
       }
     }
-    return json(200, { ok: true, text: clip(text, 900).replace(/^(Dana|Client|Training note)\s*:\s*/i, "").replace(/\*[^*]{0,40}\*\s*/g, "").replace(/\((?:pause|pauses|sighs?|beat|laughs?|quietly|shrugs?)[^)]{0,30}\)\s*/gi, "").replace(/^["“]|["”]$/g, "").trim() });
+    return json(200, { ok: true, text: whole(text, 1400).replace(/^(Dana|Client|Training note)\s*:\s*/i, "").replace(/\*[^*]{0,40}\*\s*/g, "").replace(/\((?:pause|pauses|sighs?|beat|laughs?|quietly|shrugs?)[^)]{0,30}\)\s*/gi, "").replace(/^["“]|["”]$/g, "").trim() });
   } catch (error) {
     console.error("Live session AI failed", error.message, error.detail || "");
     return json(502, { error: "The practice partner is unavailable right now.", status: error.status || 0 });

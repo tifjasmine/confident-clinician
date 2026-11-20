@@ -749,14 +749,19 @@
     if (K === "follow") {
       const ctx = { who: "a client in session 4 who has had a hard month", context: "She's been describing a hard month. Then she stopped and said, flatly, that she doesn't even know what she feels anymore." };
       const meta = { rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, where: `${X.name} · ${sc.title}` };
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-you"><small>Your Take 2</small>${q(v.t2 || "")}</div>`;
       const aid = `act-${X.key}-${i}-a`, aerr = ((S.ai || {})[aid] || {}).err;
-      h += aiBox(aid, "Hear her response", "react", () => ({ ...ctx, line: sc.moment.line, response: (v.t2 || "").trim() }), res => { v.her = res.client; v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { auto: true, req: ["response"], who: "Client", wait: "She’s responding…", akeys: [`ai${i}_client`, `ai${i}_note`], ...meta });
+      const step = (n, t, sub) => `<div class="fl-step"><span class="fl-n">${n}</span><span><b>${esc(t)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span></div>`;
+      h += `<p class="act-p">${esc(sc.text)}</p>`
+        + step(1, "You said (your Take 2)") + `<div class="act-you">${q(v.t2 || "")}</div>`
+        + step(2, "She answers", "Read it closely. What’s new in what she just said?")
+        + aiBox(aid, "Hear her answer", "react", () => ({ ...ctx, line: sc.moment.line, response: (v.t2 || "").trim() }), res => { v.her = res.client; v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { auto: true, req: ["response"], who: "Client", wait: "She’s responding…", akeys: [`ai${i}_client`, `ai${i}_note`], noNote: true, ...meta });
       if (!v.her && aerr) v.her = sc.fallback;
+      if (aerr && v.her === sc.fallback) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">C</span><div class="lv-say">${q(v.her)}</div></div>`;
       if (v.her) {
-        if (aerr && v.her === sc.fallback) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">C</span><div class="lv-say">${q(v.her)}</div></div>`;
-        h += `<label class="field aw-next"><span class="lt-inline">E</span> Let her answer guide you. What do you say next?<textarea class="v6-ta" rows="3" data-at="t4" placeholder="Respond to what she just said">${esc(v.t4)}</textarea></label>`
-          + aiBox(`act-${X.key}-${i}-b`, "Get a training note on my next move", "react", () => ({ ...ctx, line: v.her || sc.fallback, response: (v.t4 || "").trim() }), res => { v[`ai${i}b_client`] = res.client; v[`ai${i}b_note`] = res.note; }, { req: ["response"], who: "Client", wait: "Processing…", akeys: [`ai${i}b_client`, `ai${i}b_note`], ...meta });
+        h += step(3, "Your next move", "Pick up something from her answer: a word, a feeling, or what changed.")
+          + `<textarea class="v6-ta" rows="3" data-at="t4" aria-label="Your next move" placeholder="Respond to what she just said">${esc(v.t4)}</textarea>`
+          + step(4, "Check it", "Optional. See how she takes it, with a training note.")
+          + aiBox(`act-${X.key}-${i}-b`, "How does she take it?", "react", () => ({ ...ctx, line: v.her || sc.fallback, response: (v.t4 || "").trim() }), res => { v[`ai${i}b_client`] = res.client; v[`ai${i}b_note`] = res.note; }, { req: ["response"], who: "Client", wait: "Processing…", akeys: [`ai${i}b_client`, `ai${i}b_note`], ...meta });
       }
       ok = filled(v.t4);
     }
@@ -903,12 +908,12 @@
     if (fresh) {
       const res = r.res;
       if (res.client) h += `<div class="lv-client"><span class="lv-av" aria-hidden="true">${esc((o.who || "C")[0])}</span><div class="lv-say">${q(res.client)}</div></div>`;
-      if (res.note || res.parts) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${res.safety ? esc(res.note) : noteBody(res.parts, res.note)}</div>`;
-      if (!res.safety && o.rkey) h += rateHTML(`${id}@${r.at || ""}`, { rkey: o.rkey, akeys: o.akeys || [], where: o.where || label, type: res.client ? "Client reply" : "Training note", ai: [res.client && `Client: ${res.client}`, res.note && `Training note: ${res.note}`].filter(Boolean).join("\n"), input: data.response || data.action || data.take2 || data.sentence || "" });
+      if ((res.note || res.parts) && !o.noNote) h += `<div class="lv-note${res.safety ? " safety" : ""}"><span class="lv-tag">${res.safety ? "Pause" : "✦ Training note"}</span>${res.safety ? esc(res.note) : noteBody(res.parts, res.note)}</div>`;
+      if (!res.safety && o.rkey && !o.noNote) h += rateHTML(`${id}@${r.at || ""}`, { rkey: o.rkey, akeys: o.akeys || [], where: o.where || label, type: res.client ? "Client reply" : "Training note", ai: [res.client && `Client: ${res.client}`, res.note && `Training note: ${res.note}`].filter(Boolean).join("\n"), input: data.response || data.action || data.take2 || data.sentence || "" });
     }
     if (AIBUSY[id]) h += `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(o.wait || "Processing…")}</div>`;
     else if (!fresh) h += `<button type="button" class="ai-btn" data-ai="${id}"${ready ? "" : " disabled"}><span class="ai-spark" aria-hidden="true">✦</span><span><b>${esc(label)}</b><small>${ready ? (o.sub || "Responds to your exact words") : (o.need || "Write your answer first")}</small></span></button>`;
-    else h += `<button type="button" class="v6-link ai-again" data-ai="${id}">↺ Ask again</button>`;
+    else if (!o.noNote) h += `<button type="button" class="v6-link ai-again" data-ai="${id}">↺ Ask again</button>`;
     if (r && r.err && !fresh && !AIBUSY[id]) h += `<div class="lv-err">${esc(r.err)}</div>`;
     return h + `</div>`;
   }

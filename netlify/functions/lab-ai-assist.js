@@ -9,6 +9,8 @@
 const MODEL = process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
 const json = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) });
 const clip = (v, n = 1200) => String(v == null ? "" : v).trim().slice(0, n);
+/* Keep whole sentences: never cut text mid-word. If something runs long, end at the last full sentence. */
+const whole = (v, n = 1200) => { const t = String(v == null ? "" : v).replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const cut = t.slice(0, n), end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("? "), cut.lastIndexOf("! "), cut.lastIndexOf(".\u201d"), cut.lastIndexOf("?\u201d")); return end > n * 0.4 ? cut.slice(0, end + 1).trim() : cut.slice(0, cut.lastIndexOf(" ")).trim() + "…"; };
 
 const BASE = `You power a practice exercise inside The Confident Clinician's Clinical Confidence Lab, a course that helps therapists build clinical confidence through practice, not performance. Everyone here is fictional. If anyone asks whether this is AI, the answer is: "This is a training tool for The Confident Clinician."`;
 const VOICE = `TRAINING NOTE VOICE: warm, direct, practical, like an experienced clinician who's been there. Talk to the trainee as "you." Name what happened accurately and without judgment. Uncertainty isn't incompetence. There's no perfect line, just one steady next move they choose.
@@ -46,7 +48,7 @@ ${VOICE}\n${OUT} Shape: {"working": "...", "skill": "...", "build": "..."}`,
   };
   if (task === "compare") return {
     system: `${BASE}\n\nThe trainee answered the same client line twice: Take 1 on instinct, Take 2 after running P.A.U.S.E. (Pause, Attend, Use what the client gave you, Say one intentional thing, Explore). Point out ONE specific, concrete difference between the two takes (for example which of the client's words Take 2 used, or what Take 1 rushed toward). Be specific, quote at most three of the trainee's own words. Then one question about what that difference might invite from the client.
-"working": the specific shift in Take 2 that helps, quoting at most three of their words (or, if they're nearly the same, what's already steady). "skill": the P.A.U.S.E. step most visible in the shift, e.g. "P.A.U.S.E. · Use what the client gave you". "build": max 32 words on how to lean into that step even more with this client line.
+"working": ONE genuine strength across their takes, max 22 words, positive only (e.g. warmth, openness, staying calm, a good instinct in Take 1). Never describe what either take lacked here. If Take 2 shifted in a helpful way, name that shift. "skill": the P.A.U.S.E. step most visible in the shift, e.g. "P.A.U.S.E. · Use what the client gave you". "build": max 32 words, one forward step for next time with this line (if neither take used her words yet, this is where to point to her phrase, kindly). "mode": "keep" only if Take 2 already does the skill well.
 ${VOICE}\n${OUT} Shape: {"working": "...", "skill": "...", "build": "..."}`,
     user: `Client line: "${clip(d.line, 600)}"\nTake 1: "${clip(d.take1)}"\nTake 2: "${clip(d.take2)}"`,
   };
@@ -84,9 +86,9 @@ exports.handler = async event => {
     const r = parse((out.content || []).filter(c => c.type === "text").map(c => c.text).join(""));
     if (r.safety) return json(200, { ok: true, safety: true, note: "Let's pause here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     if (!String(r.note || r.working || r.build || "").trim() && !String(r.client || "").trim()) { console.error("AI assist returned no text", body.task); return json(502, { error: "That didn’t come through. Tap Ask again." }); }
-    const parts = (r.working || r.build) ? { mode: r.mode === "keep" ? "keep" : "build", working: clip(r.working, 300), skill: clip(r.skill, 120).replace(/:.*$/, ""), build: clip(r.build, 400) } : null;
+    const parts = (r.working || r.build) ? { mode: r.mode === "keep" ? "keep" : "build", working: whole(r.working, 700), skill: clip(r.skill, 120).replace(/:.*$/, ""), build: whole(r.build, 800) } : null;
     if (parts) r.note = [parts.working, parts.build].filter(Boolean).join(" ");
-    return json(200, { ok: true, parts, client: clip(r.client, 800).replace(/^["“]|["”]$/g, ""), note: clip(r.note, 900) });
+    return json(200, { ok: true, parts, client: whole(r.client, 1200).replace(/^["“]|["”]$/g, ""), note: whole(r.note, 1600) });
   } catch (error) {
     console.error("AI assist error", error.message);
     return json(502, { error: "This isn’t available right now. Try again in a moment." });

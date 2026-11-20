@@ -1274,3 +1274,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .aw-next { padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--terra); background: #fff; }
 .lt-inline { display: inline-flex; width: 24px; height: 24px; border-radius: 50%; background: var(--forest); color: #fff; align-items: center; justify-content: center; font: 700 13px/1 var(--serif); margin-right: 6px; vertical-align: middle; }
 .rf-tag { align-self: flex-start; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--forest); background: var(--sage); padding: 3px 8px; border-radius: 99px; }
+.fl-step { display: flex; gap: 12px; align-items: flex-start; margin-top: 6px; }
+.fl-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--forest); color: #fff; font: 700 14px/1 var(--serif); display: flex; align-items: center; justify-content: center; }
+.fl-step b { display: block; font-size: 15.5px; color: var(--ink); }
+.fl-step small { display: block; font-size: 13.5px; color: var(--muted); margin-top: 2px; }
