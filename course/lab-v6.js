@@ -21,7 +21,7 @@
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
   if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
-  if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 1) { ["c0", "c1", "c2"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 1; } /* new side-by-side questions */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
+  if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 2) { ["c0", "c1", "c2", "c3", "c4", "c5"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 2; } /* side-by-side questions: one per P.A.U.S.E. letter + takeaway */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);

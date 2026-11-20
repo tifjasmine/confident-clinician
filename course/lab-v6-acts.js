@@ -166,8 +166,12 @@
         qs: [
           ["P · Pause", "Which take was led by the urge to fix, reassure, or sound helpful?", ["Take 1", "Take 2", "Both", "Neither"],
             { "Take 1": "That’s the urge P.A.U.S.E. asks you to notice. Spotting it is the skill.", "Take 2": "Worth noticing. Even with the steps, the urge can sneak in. That’s normal.", "Both": "Honest. The urge is strong with a line like this one.", "Neither": "Nice. You stayed out of performance mode both times." }],
+          ["A · Attend", "Which take shows you noticed something about her, like her flat tone or the hard month she’s had?", ["Take 1", "Take 2", "Both", "Neither"],
+            { "Take 1": "Your instinct was already tracking her. That’s attention as an active skill.", "Take 2": "That’s Attend: you took in what was happening with her before you spoke.", "Both": "You’re reading her, not just her words. Keep that.", "Neither": "Worth a second look: what do her tone and her month tell you?" }],
           ["U · Use", "Which take uses something she actually said?", ["Take 1", "Take 2", "Both", "Neither"],
             { "Take 1": "Your instinct already reached for her words. Keep that.", "Take 2": "That’s Use in action: the next question connects to what she brought.", "Both": "You’re already anchoring in her language. That’s a strength.", "Neither": "Look again at her line. “Anymore” is a word worth picking up." }],
+          ["S · Say", "Which take has one clear purpose, instead of doing several things at once?", ["Take 1", "Take 2", "Both"],
+            { "Take 1": "A clear first instinct. Notice what made it focused.", "Take 2": "That’s Say: one grounded thing is usually enough.", "Both": "Both stay focused. That makes it easier for her to answer." }],
           ["E · Explore", "Which take makes it easier for her to tell you more?", ["Take 1", "Take 2", "About the same"],
             { "Take 1": "Interesting. Notice what in Take 1 opens the door, and keep it.", "Take 2": "That’s explore before explaining: room for her to go further.", "About the same": "Then both leave room. Next, notice which one has one clear purpose." }],
           ["Your takeaway", "What changed most between your takes?", ["I slowed down", "I used her words", "I picked one purpose", "I got curious instead of fixing", "Not much yet"],
