@@ -1270,3 +1270,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (prefers-reduced-motion: reduce) { .act-walk.show .aw { animation: none; } }
 .lv-note .nt-row.build.keep > i { background: var(--forest); }
 .lv-note .nt-row.build.keep b { color: var(--forest); }
+.act-stage.st-start { background: var(--cream); color: #8a5a12; }

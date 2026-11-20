@@ -118,9 +118,12 @@
     key: "l3", name: "Two Takes", look: "takes",
     teaser: "See P.A.U.S.E. worked through, spot what different responses invite, then answer the same hard line twice: once on instinct, once with all five steps.",
     screens: [
-      { kind: "intro", stage: "Learn it", title: "Your brain gives you nothing. Now what?",
+      { kind: "intro", stage: "Start here", title: "Your brain gives you nothing. Now what?",
         text: "P.A.U.S.E. isn’t a magic sentence. It’s a quiet sequence that buys you enough space to listen again, use what the client already gave you, and respond on purpose. You don’t do five dramatic steps while your client waits.",
         pause: true },
+      { kind: "take", n: 1, stage: "Start here", title: "Take 1: on instinct.",
+        moment: { who: "Client · session 4", ctx: "She’s been describing a hard month. Then she stops and says flatly:", line: "I don’t even know what I feel anymore." },
+        text: "Before you learn the steps, answer off the top of your head. Don’t overthink it. You’ll come back to this line." },
       { kind: "walk", stage: "Learn it", title: "Watch it work, one letter at a time.",
         moment: { who: "Client", line: "Just tell me if I should break up with my partner." },
         text: "You feel the pressure to have an answer. Tap through each step.",
@@ -149,10 +152,7 @@
           ["room", "Slow down and make room for the feeling", "Yes. You stop arguing with the feeling and let her say it. That’s explore before explaining in action."],
           ["skill", "Offer a coping skill for the feeling", "Skills have a place, but she just told you what she needs first: room to say it."]
         ], best: "room" },
-      { kind: "take", n: 1, stage: "Try it", title: "Your turn. Take 1: on instinct.",
-        moment: { who: "Client · session 4", ctx: "She’s been describing a hard month. Then she stops and says flatly:", line: "I don’t even know what I feel anymore." },
-        text: "Off the top of your head. Don’t overthink it." },
-      { kind: "pausewalk", stage: "Try it", title: "Take 2: run all five steps.",
+      { kind: "pausewalk", stage: "Try it", title: "Take 2: same line, all five steps.",
         moment: { who: "Client", line: "I don’t even know what I feel anymore." },
         steps: [
           ["P", "Pause", "What’s your urge right now?", "e.g. to name the feeling for her, to reassure", "P"],

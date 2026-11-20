@@ -20,7 +20,7 @@
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
-  if (S.actL3 !== 2) { if (S.act) delete S.act.l3; S.actL3 = 2; } /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
+  if (S.actL3 !== 3) { if (S.act) delete S.act.l3; S.actL3 = 3; } /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -814,7 +814,7 @@
     }
     if (K === "pausewalk") {
       h += momentHTML(sc.moment) + `<div class="act-walk">${sc.steps.map(([l, nm, pr, ph, key, flag]) => { const k = key || l, big = flag === "big";
-        return `<label class="aw${big ? " say" : ""}"><span class="lt">${l}</span><span class="aw-b"><b>${esc(nm)}</b> ${esc(pr)}${big || flag === "req" ? "" : " <small>Optional</small>"}${big ? `<textarea class="v6-ta" rows="3" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>` : `<input class="v6-in" type="text" data-at="${k}" value="${esc(v[k])}" placeholder="${esc(ph)}">`}</span></label>`; }).join("")}</div>`;
+        return `<label class="aw${big ? " say" : ""}"><span class="lt">${l}</span><span class="aw-b"><b>${esc(nm)}</b> ${esc(pr)}${big ? `<textarea class="v6-ta" rows="3" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>` : `<input class="v6-in" type="text" data-at="${k}" value="${esc(v[k])}" placeholder="${esc(ph)}">`}</span></label>`; }).join("")}</div>`;
       ok = filled(v.U, 2) && filled(v.t2);
     }
     if (K === "compare") {
