@@ -1258,3 +1258,13 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .nt-skill { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 99px; background: var(--blush); color: var(--ink); font-style: normal; font-size: 10.5px; letter-spacing: .04em; text-transform: none; font-weight: 700; }
 .rate-b { opacity: 1 !important; }
 .rate-b:not(.on) { background: #fff; }
+/* activity stages + walk-through */
+.act-stage { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 5px 10px; border-radius: 99px; background: var(--sage); color: var(--forest); }
+.act-stage.st-try { background: var(--blush); color: var(--terra-t, var(--terra)); }
+.act-stage.st-know { background: #fff4e5; color: #8a5a12; }
+.act-walk.show .aw { background: #fff; border: 1px solid var(--line); animation: awIn .25s ease; }
+.act-walk.show .aw-b b { display: block; margin-bottom: 2px; }
+.act-walk .aw.say { background: #fff; border: 1.5px solid var(--terra); }
+.act-walk .aw.say .v6-ta { background: #fff; }
+@keyframes awIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .act-walk.show .aw { animation: none; } }

@@ -19,7 +19,8 @@
   let S = blank();
   try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
-  if (S.actV !== 2) { S.act = {}; S.actV = 2; } /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
+  if (S.actV !== 2) { S.act = {}; S.actV = 2; }
+  if (S.actL3 !== 2) { if (S.act) delete S.act.l3; S.actL3 = 2; } /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -97,7 +98,7 @@
       if (sc.kind === "check") add("ck", T, v.ck);
       if (sc.kind === "reflect") { sc.items.forEach(([k, qq]) => add(k, `${T} · ${qq}`, v[k])); add("r2", `${T} · Adjusted response`, v.r2); }
       if (sc.kind === "take") add(`t${sc.n}`, T, v[`t${sc.n}`]);
-      if (sc.kind === "pausewalk") sc.steps.forEach(([l, nm]) => add(l, `${T} · ${nm}`, v[l]));
+      if (sc.kind === "pausewalk") sc.steps.forEach(([l, nm, , , key]) => add(key || l, `${T} · ${nm}`, v[key || l]));
       if (sc.kind === "compare") sc.checks.forEach((c, k) => add(`c${k}`, `${T} · ${c}`, v[`c${k}`]));
       if (v[`ai${i}_client`]) add(`ai${i}_client`, `${T} · AI client reply`, v[`ai${i}_client`]);
       if (v[`ai${i}_note`]) add(`ai${i}_note`, `${T} · AI training note`, v[`ai${i}_note`]);
@@ -722,7 +723,7 @@
     /* First answers are locked behind the scenes; if they change their pick, show what they chose first */
     const F = ((S.first || {})[`act-${X.key}#${(S.act[X.key] || {}).n || 1}`]) || {};
     const firstNote = (k, curLabel) => F[k] != null && F[k] !== curLabel ? `<span class="first-pick">Your first pick: ${esc(F[k])}</span>` : "";
-    let h = `<h2 class="act-h">${esc(sc.title)}</h2>`, ok = true;
+    let h = `${sc.stage ? `<span class="act-stage st-${sc.stage.split(" ")[0].toLowerCase()}">${esc(sc.stage)}</span>` : ""}<h2 class="act-h">${esc(sc.title)}</h2>`, ok = true;
     if (K === "intro") {
       h += `<p class="act-p">${esc(sc.text)}</p>`;
       if (sc.cards) h += `<div class="act-cards n${sc.cards.length}">${sc.cards.map(([t, d, n]) => `<div class="act-cardlet"><b>${esc(t)}</b><span>${esc(d)}</span>${n ? `<small>${esc(n)}</small>` : ""}</div>`).join("")}</div>`;
@@ -742,6 +743,12 @@
       h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-picks">${ord(v, "o" + i, sc.options.map(x => x[0])).map(j => sc.options[j]).map(([k, l]) => `<button type="button" class="act-pick" data-av="${k}" data-f="p${i}" aria-pressed="${cur === k}">${esc(l)}</button>`).join("")}</div>`
         + (o ? `<div class="act-fb ${cur === sc.best ? "yes" : "no"}">${esc(o[2])}</div>${firstNote(`p${i}`, o[1])}` : "");
       ok = !!cur;
+    }
+    if (K === "walk") {
+      const shown = Math.min(sc.steps.length, v["w" + i] || 1);
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><div class="act-walk show">${sc.steps.slice(0, shown).map(([l, nm, t]) => `<div class="aw"><span class="lt">${l}</span><span class="aw-b"><b>${esc(nm)}</b>${esc(t)}</span></div>`).join("")}</div>`
+        + (shown < sc.steps.length ? `<button type="button" class="v6-btn secondary act-check" data-walk="${i}">Next step: ${esc(sc.steps[shown][1])} →</button>` : `<p class="act-close">${esc(sc.after)}</p>`);
+      ok = shown >= sc.steps.length;
     }
     if (K === "multi") {
       const sel = v["m" + i] || [], done = !!v["m" + i + "c"];
@@ -802,12 +809,13 @@
       ok = !!cur;
     }
     if (K === "take") {
-      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${sc.ai ? aiBox(`act-${X.key}-${i}`, "Hear her response", "react", () => ({ who: "a client in session 4 who has had a hard month", context: "Earlier she said she doesn't know what she feels anymore. Now she's pushing back: she doesn't want to be cheered up, she wants room to say how bad it feels.", line: sc.moment.line, response: (v["t" + sc.n] || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "She’s responding…", rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, akeys: [`ai${i}_client`, `ai${i}_note`], where: `${X.name} · ${sc.title}` }) : ""}`;
+      h += momentHTML(sc.moment) + `<p class="act-p">${esc(sc.text)}</p><label class="field"><span class="take-n">Take ${sc.n}</span><textarea class="v6-ta" rows="3" data-at="t${sc.n}" placeholder="Type it the way you’d say it">${esc(v["t" + sc.n])}</textarea></label>${sc.ai ? aiBox(`act-${X.key}-${i}`, "Hear her response", "react", () => ({ who: "a client in session 4 who has had a hard month", context: "She's been describing a hard month. Then she stopped and said, flatly, that she doesn't even know what she feels anymore.", line: sc.moment.line, response: (v["t" + sc.n] || "").trim() }), res => { v[`ai${i}_client`] = res.client; v[`ai${i}_note`] = res.note; }, { req: ["response"], who: "Client", wait: "She’s responding…", rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, akeys: [`ai${i}_client`, `ai${i}_note`], where: `${X.name} · ${sc.title}` }) : ""}`;
       ok = filled(v["t" + sc.n]);
     }
     if (K === "pausewalk") {
-      h += momentHTML(sc.moment) + `<div class="act-walk">${sc.steps.map(([l, nm, pr, ph]) => `<label class="aw"><span class="lt">${l}</span><span class="aw-b"><b>${esc(nm)}</b> ${esc(pr)}${l === "U" ? "" : " <small>Optional</small>"}<input class="v6-in" type="text" data-at="${l}" value="${esc(v[l])}" placeholder="${esc(ph)}"></span></label>`).join("")}</div>`;
-      ok = filled(v.U, 2);
+      h += momentHTML(sc.moment) + `<div class="act-walk">${sc.steps.map(([l, nm, pr, ph, key, flag]) => { const k = key || l, big = flag === "big";
+        return `<label class="aw${big ? " say" : ""}"><span class="lt">${l}</span><span class="aw-b"><b>${esc(nm)}</b> ${esc(pr)}${big || flag === "req" ? "" : " <small>Optional</small>"}${big ? `<textarea class="v6-ta" rows="3" data-at="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>` : `<input class="v6-in" type="text" data-at="${k}" value="${esc(v[k])}" placeholder="${esc(ph)}">`}</span></label>`; }).join("")}</div>`;
+      ok = filled(v.U, 2) && filled(v.t2);
     }
     if (K === "compare") {
       h += `<div class="act-cmp"><div><small>Take 1 · instinct</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
@@ -819,7 +827,7 @@
       const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";
       if (X.key === "l1") h += row("Your moment", q(v.what)) + row("The gap", esc((v.gaps || []).map(k => ACTS.GAP[k]).join(" + "))) + row("Your action this week", esc(v.action)) + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p>`;
       if (X.key === "l2") h += row("First thought", q(v.thought)) + row("Tempted to", esc(v.urge)) + row("Where you feel it", esc(v.body)) + row("Your reset", esc(v.reset)) + row("Your words", q(v.r2 || v.r1)) + (v.r2 && v.r1 ? row("First version", q(v.r1)) : "") + `<p class="act-done">✓ Saved to your Clinical Confidence Profile.</p><div class="live-cta"><span class="live-eyebrow">✦ Take it live</span><b>Now try it with a client who reacts to your exact words.</b><span>Ten moments with Dana, a training note after each answer, and a summary at the end.</span><button type="button" class="v6-btn primary" data-go="live">Start a live session →</button></div>`;
-      if (X.key === "l3") h += row("Take 1 · instinct", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + row("The limit", "When safety comes up, safety comes first.") + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
+      if (X.key === "l3") h += row("Take 1 · instinct", q(v.t1)) + row("Take 2 · P.A.U.S.E.", q(v.t2)) + row("Take 3 · your voice", q(v.t3)) + row("The limit", "When safety information appears, assessment, procedures, and consultation come first.") + `<p class="act-done">✓ Saved to your Profile’s “What I Say When…” lines.</p>`;
     }
     return { h, ok };
   }
@@ -1157,6 +1165,7 @@
       if (!X) return;
       $$("[data-av]", app).forEach(b => b.onclick = () => { v[b.dataset.f] = b.dataset.av; save(); render(); });
       $$("[data-mv]", app).forEach(b => b.onclick = () => { const f = b.dataset.f; if (v[f + "c"]) return; const g = v[f] = v[f] || [], k = b.dataset.mv; const at = g.indexOf(k); at === -1 ? g.push(k) : g.splice(at, 1); save(); render(); });
+      $$("[data-walk]", app).forEach(b => b.onclick = () => { const k = "w" + b.dataset.walk; v[k] = (v[k] || 1) + 1; save(); render(); });
       $$("[data-mcheck]", app).forEach(b => b.onclick = () => { v[b.dataset.mcheck] = true; save(); render(); });
       $$("[data-gapt]", app).forEach(b => b.onclick = () => { const g = v.gaps = v.gaps || [], k = b.dataset.gapt; const at = g.indexOf(k); at === -1 ? g.push(k) : g.splice(at, 1); save(); render(); });
       $$("[data-at]", app).forEach(t => t.oninput = () => {
