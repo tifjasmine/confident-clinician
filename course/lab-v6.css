@@ -1268,3 +1268,5 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .act-walk .aw.say .v6-ta { background: #fff; }
 @keyframes awIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .act-walk.show .aw { animation: none; } }
+.lv-note .nt-row.build.keep > i { background: var(--forest); }
+.lv-note .nt-row.build.keep b { color: var(--forest); }

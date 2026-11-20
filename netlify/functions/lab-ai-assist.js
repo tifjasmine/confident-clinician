@@ -24,12 +24,17 @@ CLIENT: ${clip(d.who, 200)}. Context: ${clip(d.context, 600)}
 ${d.guide ? `How this client tends to react (the course author's notes, use as guidance): ${clip(d.guide, 1500)}` : ""}
 Sound like a real person in a hard moment, not a textbook client and not an AI. A little guarded but not hostile, sarcastic, or rude. Everyday words, 1-3 sentences, no therapy-speak, no neat insight, no thanking the therapist. Most reasonable, caring responses get a reasonable, human reply. React to the therapist's EXACT words: defending or explaining -> more guarded; rushing to reassure or fix -> shrug it off or feel managed; real curiosity using the client's own words -> soften a little and give one real detail; stacked questions -> answer only the last one.
 Then the training note.
-TRAINING NOTE (fields "working", "skill", "build" in the JSON):
+TRAINING NOTE (fields "working", "mode", "skill", "build" in the JSON):
 - "working" (ALWAYS): one sentence, max 22 words, naming specifically what the response did well. No "but", "still", or "however".
 - "skill" + "build" (ALWAYS): pick the ONE course skill that would help most in this exact moment, then in max 32 words teach how it applies here, tied to what the client actually said and what the trainee actually did. Concrete, like a supervisor pointing something out. Not their next line, not a vague question. If a Pull clearly took over, use Notice your Pull and name it gently.
+- "mode" (ALWAYS): "keep" or "build".
+  Use "keep" when the attempt already does the skill well: then "skill" is the skill they DEMONSTRATED and "build" says, in plain words, why it works with this client and when to reach for it again. Nothing to fix; no "but", "instead", "though", "could", "might want to", "missed".
+  Use "build" only when there's a clear next layer: then "build" is ONE forward step ("Next time...", "To deepen this...", "Keep... and add..."), never a correction of what they said, and never "you missed", "instead of", "however", "but".
+  Aim for roughly half "keep". A simple, warm, open response is often a "keep".
+  REFINES: if this attempt applied what an earlier training note suggested, it is a "keep": credit that change specifically ("You brought in her word 'handed'...") and don't introduce a new critique.
 COURSE SKILLS (pick ONE for "skill", copied exactly): Notice your Pull (Rescue, Fix, Fill, Defend, Prove) · Respond to their meaning, not your discomfort · Ask a question you genuinely want answered · Leave room to be corrected · Clarify when they're confused · Explore before explaining · P.A.U.S.E. · Pause · P.A.U.S.E. · Attend · P.A.U.S.E. · Use what the client gave you · P.A.U.S.E. · Say one intentional response · P.A.U.S.E. · Explore
 
-${VOICE}\n${SAFETY}\n${OUT} Shape: {"client": "...", "working": "...", "skill": "...", "build": "..."}`,
+${VOICE}\n${SAFETY}\n${OUT} Shape: {"client": "...", "working": "...", "mode": "keep", "skill": "...", "build": "..."}`,
     user: `The client just said: "${clip(d.line, 800)}"\nThe trainee therapist responded: "${clip(d.response)}"`,
   };
   if (task === "plan") return {
@@ -79,7 +84,7 @@ exports.handler = async event => {
     const r = parse((out.content || []).filter(c => c.type === "text").map(c => c.text).join(""));
     if (r.safety) return json(200, { ok: true, safety: true, note: "Let's pause here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     if (!String(r.note || r.working || r.build || "").trim() && !String(r.client || "").trim()) { console.error("AI assist returned no text", body.task); return json(502, { error: "That didn’t come through. Tap Ask again." }); }
-    const parts = (r.working || r.build) ? { working: clip(r.working, 300), skill: clip(r.skill, 120).replace(/:.*$/, ""), build: clip(r.build, 400) } : null;
+    const parts = (r.working || r.build) ? { mode: r.mode === "keep" ? "keep" : "build", working: clip(r.working, 300), skill: clip(r.skill, 120).replace(/:.*$/, ""), build: clip(r.build, 400) } : null;
     if (parts) r.note = [parts.working, parts.build].filter(Boolean).join(" ");
     return json(200, { ok: true, parts, client: clip(r.client, 800).replace(/^["“]|["”]$/g, ""), note: clip(r.note, 900) });
   } catch (error) {

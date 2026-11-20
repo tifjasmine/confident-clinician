@@ -44,10 +44,15 @@ Dana changes gradually across the session. No sudden breakthroughs, but when the
 function system(mode, sc) {
   const ctx = `CLIENT BACKGROUND (for you only)\n${sc.background}\n\nSETUP\n${sc.setup}`;
   if (mode === "note") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: write the TRAINING NOTE on the trainee's latest attempt. Dana does not react yet.
-TRAINING NOTE FORMAT. Return ONLY a JSON object: {"working": "...", "skill": "...", "build": "..."}
+TRAINING NOTE FORMAT. Return ONLY a JSON object: {"working": "...", "mode": "keep or build", "skill": "...", "build": "..."}
 - "working" (ALWAYS): one sentence, max 22 words, naming specifically what the attempt did well or what it opened up. Every attempt has something; find the real one. No "but", "still", or "however".
 - "skill" (ALWAYS): the name of ONE skill from the course list below, copied exactly.
 - "build" (ALWAYS): one or two short sentences, max 32 words, teaching how that skill applies to THIS exact moment, tied to what Dana actually said and what the trainee actually did. Concrete and practical, the kind of thing an experienced clinician would point out in supervision. Point to what to notice or do differently; do not write their next line for them, and do not ask a vague reflective question. If a Pull clearly took over, use "Notice your Pull" and name it gently, as information, not a mistake.
+- "mode" (ALWAYS): "keep" or "build".
+  Use "keep" when the attempt already does the skill well: then "skill" is the skill they DEMONSTRATED and "build" says, in plain words, why it works with this client and when to reach for it again. Nothing to fix; no "but", "instead", "though", "could", "might want to", "missed".
+  Use "build" only when there's a clear next layer: then "build" is ONE forward step ("Next time...", "To deepen this...", "Keep... and add..."), never a correction of what they said, and never "you missed", "instead of", "however", "but".
+  Aim for roughly half "keep". A simple, warm, open response is often a "keep".
+  REFINES: if this attempt applied what an earlier training note at this moment suggested, it is a "keep": credit that change specifically ("You brought in her word 'handed'...") and don't introduce a new critique.
 COURSE SKILLS (from the Clinical Confidence Lab lessons):
 - Notice your Pull (Rescue, Fix, Fill, Defend, Prove): the urge that takes over under pressure
 - Respond to their meaning, not your discomfort
@@ -134,7 +139,7 @@ exports.handler = async event => {
       let parts = null; const m = text.match(/\{[\s\S]*\}/);
       try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
       if (parts && (parts.working || parts.build)) {
-        parts = { working: clip(parts.working, 300), skill: clip(parts.skill, 120).replace(/:.*$/, ""), build: clip(parts.build, 400) };
+        parts = { mode: parts.mode === "keep" ? "keep" : "build", working: clip(parts.working, 300), skill: clip(parts.skill, 120).replace(/:.*$/, ""), build: clip(parts.build, 400) };
         return json(200, { ok: true, parts, text: [parts.working, parts.build].filter(Boolean).join(" ") });
       }
     }
