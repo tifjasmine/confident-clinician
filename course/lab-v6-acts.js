@@ -116,7 +116,7 @@
 
   const l3 = {
     key: "l3", name: "Two Takes", look: "takes",
-    teaser: "See P.A.U.S.E. worked through, spot what different responses invite, then answer the same hard line twice: once on instinct, once with all five steps.",
+    teaser: "Answer a hard line on instinct, learn P.A.U.S.E. through a worked example, answer again with all five steps, then let the client’s response guide your next move.",
     screens: [
       { kind: "intro", stage: "Start here", title: "Your brain gives you nothing. Now what?",
         text: "P.A.U.S.E. isn’t a magic sentence. It’s a quiet sequence that buys you enough space to listen again, use what the client already gave you, and respond on purpose. You don’t do five dramatic steps while your client waits.",
@@ -164,10 +164,10 @@
       { kind: "compare", stage: "Try it", title: "Side by side.",
         checks: ["Closer to her words?", "Leaves room to clarify?", "One clear purpose?"],
         ai: true },
-      { kind: "take", n: 3, stage: "Try it", title: "Take 3: your normal voice.",
+      { kind: "follow", stage: "Try it", title: "E in action: let her answer lead.",
         moment: { who: "Client", line: "I don’t even know what I feel anymore." },
-        text: "Same line. Say it the way you naturally talk. You’re building options, not a script to recite.",
-        ai: true },
+        text: "P.A.U.S.E. doesn’t end when you speak. Hear how she responds to your Take 2, then let her answer guide what you say next.",
+        fallback: "I don’t know… it’s like I’m numb. I go to work, I come home, and nothing really lands." },
       { kind: "pick", stage: "Know the limit", title: "When the tool isn’t enough.",
         moment: { who: "Client, back to the first example", line: "Just tell me if I should break up with them. They said they’d hurt me if I leave." },
         text: "Same request, one new detail. What’s your priority now?",
@@ -176,7 +176,7 @@
           ["safety", "Shift to safety: assess risk, follow your agency’s procedures, and consult", "Yes. Risk and safety assessment, procedures, and consultation come first. A good therapist knows when a familiar tool isn’t enough."],
           ["reflect", "Reflect how hard the decision must be, then wait", "Reflecting can feel attuned, but it leaves a possible safety risk unaddressed."]
         ], best: "safety" },
-      { kind: "summary", title: "Three takes, one tool, one limit." }
+      { kind: "summary", title: "Two takes, one next move, one limit." }
     ]
   };
 
