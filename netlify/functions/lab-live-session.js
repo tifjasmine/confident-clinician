@@ -37,17 +37,31 @@ React to the therapist's exact words in their latest attempt:
 - Drops the homework fast to keep the peace: relief that doesn't really land.
 - Gets curious about what's missing, using her words: softens a little and gives one real detail.
 - Asks several questions at once: answers only the last one, or none.
+FIRST, respond to what the therapist actually said or asked in their latest attempt. If they asked a question, answer that question (even briefly or hesitantly) before anything else. Only bring in background details when the therapist's words opened that door; don't jump ahead to topics they haven't touched.
+Spoken words only: no *asterisks*, no (parentheses), no stage directions like pause or sighs. Show hesitation with words or "..." instead.
 Dana changes gradually across the session. No sudden breakthroughs, but when the therapist keeps meeting her with curiosity, let her warm up noticeably: longer answers, a real detail, a little humor or honesty. Vary her sentence openings and length; don't repeat her earlier phrasing. Stay in the moment; don't fast-forward the session. Reveal background details only when the trainee earns them by getting curious.`;
 
 function system(mode, sc) {
   const ctx = `CLIENT BACKGROUND (for you only)\n${sc.background}\n\nSETUP\n${sc.setup}`;
   if (mode === "note") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: write the TRAINING NOTE on the trainee's latest attempt. Dana does not react yet.
-TRAINING NOTE FORMAT. Return ONLY a JSON object: {"working": "...", "watch": "...", "question": "..."}
-- "working" (ALWAYS): one sentence, max 22 words, naming specifically what the attempt did well or what it opened up. Every attempt has something; find the real one. No "but", "still", or "however" in this sentence.
-- "watch" (OFTEN EMPTY): leave it "" unless something clearly closed the client down, or a Pull (Rescue, Fix, Fill, Defend, Prove) clearly took over. Leave it empty for at least half of attempts. Never nitpick word choice, tone, or small additions. Max 20 words, said as information, not a mistake.
-- "question" (ALWAYS): one curious question, max 20 words, that helps them go one step further from what they did. Not a hint that they were wrong.
-ENCOURAGEMENT: The goal is a trainee who keeps practicing and feels capable. Many attempts are reasonable; treat them that way. Never imply there was one right answer.
-VARIETY: Earlier training notes are in the transcript. Do NOT repeat their focus, their question shape, or their phrasing. Use the FOCUS given in the request for this note. Don't comment on body language, arms, or face, and don't invent details that aren't in the transcript.
+TRAINING NOTE FORMAT. Return ONLY a JSON object: {"working": "...", "skill": "...", "build": "..."}
+- "working" (ALWAYS): one sentence, max 22 words, naming specifically what the attempt did well or what it opened up. Every attempt has something; find the real one. No "but", "still", or "however".
+- "skill" (ALWAYS): the name of ONE skill from the course list below, copied exactly.
+- "build" (ALWAYS): one or two short sentences, max 32 words, teaching how that skill applies to THIS exact moment, tied to what Dana actually said and what the trainee actually did. Concrete and practical, the kind of thing an experienced clinician would point out in supervision. Point to what to notice or do differently; do not write their next line for them, and do not ask a vague reflective question. If a Pull clearly took over, use "Notice your Pull" and name it gently, as information, not a mistake.
+COURSE SKILLS (from the Clinical Confidence Lab lessons):
+- Notice your Pull (Rescue, Fix, Fill, Defend, Prove): the urge that takes over under pressure
+- Respond to their meaning, not your discomfort
+- Ask a question you genuinely want answered
+- Leave room to be corrected: the client could disagree without taking care of your feelings
+- Clarify when they're confused, instead of waiting it out
+- Explore before explaining
+- P.A.U.S.E. · Pause: slow down instead of rushing to respond
+- P.A.U.S.E. · Attend: notice what's happening with the client and in you
+- P.A.U.S.E. · Use what the client gave you: their exact words
+- P.A.U.S.E. · Say one intentional response: one clear purpose
+- P.A.U.S.E. · Explore: let their answer guide your next move
+ENCOURAGEMENT: The goal is a trainee who keeps practicing and feels capable. Many attempts are reasonable; treat them that way. Never imply there was one right answer. "build" is the next layer of skill, not a correction.
+VARIETY: Earlier training notes are in the transcript. Don't use the same skill as the previous note, and don't repeat earlier phrasing. Start from the SUGGESTED SKILL in the request, but pick a better-fitting one from the list if it clearly fits this moment better. Don't comment on body language, arms, or face, and don't invent details that aren't in the transcript.
 If this is a refine, "working" can name what shifted from their earlier attempt at this same moment.
 ${VOICE}\n\n${SAFETY}`;
   if (mode === "client") return `${BASE}\n\n${ctx}\n\nYOUR JOB NOW: you are Dana. Write ONLY Dana's next spoken line, reacting to the therapist's latest attempt. No quotes, no name label, no stage directions longer than three words, no training note.
@@ -59,7 +73,7 @@ PART 2: the Session summary, in The Confident Clinician voice, under 150 words, 
 - The moment it opened up most, and what the trainee did right before it.
 - The moment it closed down most, and what was going on in them (name any Pull).
 - What their refines changed, if they used any.
-- End with one question to carry into their next practice (a question, not advice).
+- End with the one course skill to practice next (from the course skills list) and, in one sentence, why it fits what happened in this session.
 ${VOICE}`;
 }
 
@@ -102,21 +116,11 @@ exports.handler = async event => {
   if ((mode === "note" || mode === "client") && !(cur.attempts && cur.attempts.length)) return json(400, { error: "No attempt yet" });
 
   const t = transcript(sc, moments);
-  const LENSES = [
-    "Dana's exact words: which word or phrase of hers matters most right now",
-    "what Dana might be feeling underneath what she said",
-    "what Dana seems to want from the therapist in this moment",
-    "the therapist's own urge or pull right now",
-    "pacing: how much the therapist said, and whether there's room for Dana",
-    "what's working between them right now, and how to build on it",
-    "where this conversation could go next, and what would help Dana stay in it",
-    "what would help Dana feel listened to rather than managed",
-    "the strength in the trainee's attempt and how to use it on purpose",
-  ];
-  /* one focus per training note, rotating through all of them before any repeats */
-  const noteNo = moments.reduce((n, m) => n + (m.attempts || []).length, 0), lens = LENSES[(noteNo - 1 + (moments[0].attempts && moments[0].attempts[0] ? moments[0].attempts[0].text.length : 0)) % LENSES.length];
+  const SKILLS = ["P.A.U.S.E. · Use what the client gave you: their exact words", "Explore before explaining", "Respond to their meaning, not your discomfort", "Leave room to be corrected", "P.A.U.S.E. · Attend: notice what's happening with the client and in you", "Ask a question you genuinely want answered", "P.A.U.S.E. · Say one intentional response: one clear purpose", "P.A.U.S.E. · Explore: let their answer guide your next move", "Notice your Pull", "P.A.U.S.E. · Pause: slow down instead of rushing to respond"];
+  /* suggest a different course skill for each training note, rotating through all before any repeats */
+  const noteNo = moments.reduce((n, m) => n + (m.attempts || []).length, 0), lens = SKILLS[(noteNo - 1) % SKILLS.length];
   const ask = mode === "note"
-    ? `SESSION SO FAR\n\n${t}\n\nWrite the training note on the therapist's latest attempt at Moment ${moments.length}.\nFOCUS for this note: ${lens}.`
+    ? `SESSION SO FAR\n\n${t}\n\nWrite the training note on the therapist's latest attempt at Moment ${moments.length}.\nSUGGESTED SKILL for this note: ${lens}.`
     : mode === "client"
       ? `SESSION SO FAR\n\n${t}\n\nWrite Dana's next line, reacting to the therapist's latest attempt at Moment ${moments.length}.`
       : `FULL SESSION\n\n${t}\n\nThe session is over. Write Dana's closing line, then ---, then the Session summary.`;
@@ -129,12 +133,12 @@ exports.handler = async event => {
     if (mode === "note") {
       let parts = null; const m = text.match(/\{[\s\S]*\}/);
       try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
-      if (parts && (parts.working || parts.question)) {
-        parts = { working: clip(parts.working, 300), watch: clip(parts.watch, 300), question: clip(parts.question, 300) };
-        return json(200, { ok: true, parts, text: [parts.working, parts.watch, parts.question].filter(Boolean).join(" ") });
+      if (parts && (parts.working || parts.build)) {
+        parts = { working: clip(parts.working, 300), skill: clip(parts.skill, 120).replace(/:.*$/, ""), build: clip(parts.build, 400) };
+        return json(200, { ok: true, parts, text: [parts.working, parts.build].filter(Boolean).join(" ") });
       }
     }
-    return json(200, { ok: true, text: clip(text, 900).replace(/^(Dana|Client|Training note)\s*:\s*/i, "").replace(/^["“]|["”]$/g, "") });
+    return json(200, { ok: true, text: clip(text, 900).replace(/^(Dana|Client|Training note)\s*:\s*/i, "").replace(/\*[^*]{0,40}\*\s*/g, "").replace(/\((?:pause|pauses|sighs?|beat|laughs?|quietly|shrugs?)[^)]{0,30}\)\s*/gi, "").replace(/^["“]|["”]$/g, "").trim() });
   } catch (error) {
     console.error("Live session AI failed", error.message, error.detail || "");
     return json(502, { error: "The practice partner is unavailable right now.", status: error.status || 0 });

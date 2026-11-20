@@ -1253,3 +1253,8 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .rf-t { font-size: 15.5px; font-weight: 600; line-height: 1.45; color: var(--ink); }
 .act-you.client { background: var(--sage); }
 .act-close { margin: 0; font: italic 500 16px/1.5 var(--serif); color: var(--forest); padding: 4px 2px; }
+.lv-note .nt-row.build > i { background: var(--terra); }
+.lv-note .nt-row.build b { color: var(--terra-t, var(--terra)); }
+.nt-skill { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 99px; background: var(--blush); color: var(--ink); font-style: normal; font-size: 10.5px; letter-spacing: .04em; text-transform: none; font-weight: 700; }
+.rate-b { opacity: 1 !important; }
+.rate-b:not(.on) { background: #fff; }

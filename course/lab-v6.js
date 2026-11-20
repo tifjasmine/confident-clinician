@@ -846,15 +846,15 @@
      activity's own state so they're logged to Airtable with everything else. */
   const AIREQ = {}, AIBUSY = {}, RATE = {};
   /* Training notes come back in parts: what's working (always), something to watch (sometimes), a question to explore */
-  const noteLabeled = p => p ? [p.working && `What's working: ${p.working}`, p.watch && `Something to watch: ${p.watch}`, p.question && `To explore: ${p.question}`].filter(Boolean).join("\n") : "";
-  const noteBody = (p, fallback) => p && (p.working || p.question)
-    ? `${p.working ? `<span class="nt-row work"><i aria-hidden="true">✓</i><span><b>What’s working</b>${esc(p.working)}</span></span>` : ""}${p.watch ? `<span class="nt-row watch"><i aria-hidden="true">↗</i><span><b>Something to watch</b>${esc(p.watch)}</span></span>` : ""}${p.question ? `<span class="nt-row ask"><i aria-hidden="true">?</i><span><b>To explore</b>${esc(p.question)}</span></span>` : ""}`
+  const noteLabeled = p => p ? [p.working && `What's working: ${p.working}`, p.build && `Build on it${p.skill ? ` (${p.skill})` : ""}: ${p.build}`, p.watch && `Something to watch: ${p.watch}`, p.question && `To explore: ${p.question}`].filter(Boolean).join("\n") : "";
+  const noteBody = (p, fallback) => p && (p.working || p.question || p.build)
+    ? `${p.working ? `<span class="nt-row work"><i aria-hidden="true">✓</i><span><b>What’s working</b>${esc(p.working)}</span></span>` : ""}${p.build ? `<span class="nt-row build"><i aria-hidden="true">↑</i><span><b>Build on it${p.skill ? ` <em class="nt-skill">${esc(p.skill)}</em>` : ""}</b>${esc(p.build)}</span></span>` : ""}${p.watch ? `<span class="nt-row watch"><i aria-hidden="true">↗</i><span><b>Something to watch</b>${esc(p.watch)}</span></span>` : ""}${p.question ? `<span class="nt-row ask"><i aria-hidden="true">?</i><span><b>To explore</b>${esc(p.question)}</span></span>` : ""}`
     : esc(fallback || "");
   /* Thumbs up / down under every practice-partner reply. Saved in S.fb and logged to Airtable "AI Feedback". */
   function rateHTML(fbid, meta) {
     RATE[fbid] = meta;
     const f = (S.fb || {})[fbid] || {};
-    return `<div class="rate" data-rate-row="${fbid}"><span>Was this helpful?</span>
+    return `<div class="rate" data-rate-row="${fbid}"><span>${esc(meta.label || "Was this helpful?")}</span>
       <button type="button" class="rate-b${f.rating === "up" ? " on" : ""}" data-rate="${fbid}" data-val="up" aria-pressed="${f.rating === "up"}" aria-label="Helpful">👍🏽</button>
       <button type="button" class="rate-b${f.rating === "down" ? " on" : ""}" data-rate="${fbid}" data-val="down" aria-pressed="${f.rating === "down"}" aria-label="Not helpful or not accurate">👎🏽</button>
       ${f.rating === "up" ? `<em>Thanks!</em>` : ""}
@@ -952,17 +952,17 @@
       const atts = (m.attempts || []).map((a, j, all) => {
         const old = j < all.length - 1;
         return `<div class="lv-me${old ? " old" : ""}"><span class="lv-tag">${old ? "↺ Refined" : all.length > 1 ? `Attempt ${j + 1}` : "You"}</span>${esc(a.text)}</div>`
-          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${a.safety ? esc(a.note) : noteBody(a.parts, a.note)}</div>${a.safety ? "" : rateHTML(`live-${C.id}-m${k}-a${j}`, { rkey, akeys: [`m${k}a${j}`], where: `Live session · Moment ${k + 1} · Training note`, type: "Training note", ai: a.note, input: a.text })}` : "");
+          + (a.note ? `<div class="lv-note${a.safety ? " safety" : ""}${old ? " old" : ""}"><span class="lv-tag">${a.safety ? "Pause" : "Training note"}</span>${a.safety ? esc(a.note) : noteBody(a.parts, a.note)}</div>` : "");
       }).join("");
       const prevA = k ? ((C.moments[k - 1].attempts || []).slice(-1)[0] || {}).text || "" : "";
-      return `<div class="lv-moment${last ? " now" : ""}"><span class="lv-mn">Moment ${k + 1}</span><div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(m.client)}</div></div>${k ? rateHTML(`live-${C.id}-c${k}`, { rkey, akeys: [(m.attempts || []).length ? `m${k}a0` : `m${k - 1}a${Math.max(0, (C.moments[k - 1].attempts || []).length - 1)}`], where: `Live session · Moment ${k + 1} · Dana`, type: "Client reply", ai: m.client, input: prevA }) : ""}${atts}</div>`;
+      return `<div class="lv-moment${last ? " now" : ""}"><span class="lv-mn">Moment ${k + 1}</span><div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(m.client)}</div></div>${atts}</div>`;
     };
     const curM = C.moments[n - 1], lastA = (curM.attempts || []).slice(-1)[0];
     let ctl = "";
     if (C.done) {
       ctl = `${C.closing ? `<div class="lv-client"><span class="lv-av" aria-hidden="true">D</span><div class="lv-say">${q(C.closing)}</div></div>` : ""}
         <div class="lv-summary"><span class="lv-tag">Session summary</span>${esc(C.summary || "").split(/\n+/).filter(Boolean).map(p => `<p>${p}</p>`).join("")}</div>
-        ${rateHTML(`live-${C.id}-sum`, { rkey, akeys: ["summary"], where: "Live session · Session summary", type: "Session summary", ai: [C.closing && `Dana: ${C.closing}`, C.summary].filter(Boolean).join("\n"), input: "" })}
+        ${rateHTML(`live-${C.id}-sum`, { rkey, akeys: ["summary"], label: "How helpful was this session?", where: "Live session · Session summary", type: "Session summary", ai: [C.closing && `Dana: ${C.closing}`, C.summary].filter(Boolean).join("\n"), input: "" })}
         <div class="actions"><button type="button" class="v6-btn primary" data-live="new">Start a new session</button><button type="button" class="v6-btn secondary" data-go="reproom">Back to practice</button></div>`;
     } else if (LIVE.busy) {
       ctl = `<div class="lv-wait" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${LIVE.busy === "note" ? "Processing…" : LIVE.busy === "wrap" ? "Wrapping up the session…" : "Dana is responding…"}</div>`;
