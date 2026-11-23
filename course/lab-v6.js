@@ -336,7 +336,7 @@
   /* ---------- My week ---------- */
   const video = (id, img, isVideo) => {
     const wid = id && D.VIDEOS[id];
-    if (wid) return `<div class="media"><iframe src="https://fast.wistia.net/embed/iframe/${esc(wid)}?videoFoam=true&seo=false" title="Lesson video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+    if (wid) return `<div class="media video"><iframe src="https://fast.wistia.net/embed/iframe/${esc(wid)}?seo=false" title="Lesson video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
     return `<div class="media"><img src="${img}" alt="">${isVideo ? `<div class="play"><span aria-hidden="true">▶</span></div><span class="soon">Video coming soon</span>` : ""}</div>`;
   };
   const itemsHTML = (label, items) => `<div class="items"><div class="lab">${esc(label)}</div>${items.map(([k, a, b, done]) => `<div class="row"><span class="k${done ? " done" : ""}">${done ? "✓" : esc(k)}</span><span class="t"><b>${esc(a)}</b>${b ? `<small>${esc(b)}</small>` : ""}</span></div>`).join("")}</div>`;
