@@ -1265,7 +1265,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .act-stage.st-know { background: #fff4e5; color: #8a5a12; }
 .act-walk.show .aw { background: #fff; border: 1px solid var(--line); animation: awIn .25s ease; }
 .act-walk.show .aw-b b { display: block; margin-bottom: 2px; }
-.act-walk .aw.say { background: #fff; border: 1.5px solid var(--terra); }
 .act-walk .aw.say .v6-ta { background: #fff; }
 @keyframes awIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .act-walk.show .aw { animation: none; } }
