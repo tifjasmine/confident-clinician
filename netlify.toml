@@ -116,6 +116,16 @@
   status = 200
 
 [[redirects]]
+  from = "/lab-video"
+  to = "/lab-video.html"
+  status = 200
+
+[[redirects]]
+  from = "/lab-video/"
+  to = "/lab-video.html"
+  status = 200
+
+[[redirects]]
   from = "/clinical-breakdowns"
   to = "/clinical-breakdowns.html"
   status = 200

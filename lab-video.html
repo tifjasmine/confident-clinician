@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The 4-Week Clinical Confidence Lab | The Confident Clinician</title>
+  <meta name="description" content="Short lessons, real practice, and tools you keep, for newer therapists who know the concepts but freeze when it's time to use them.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>
+  <style>
+    :root{--cream:#F6F2EB;--forest:#2A3C2F;--olive:#5A6A52;--terra:#98452F;--terra-dark:#863824;--sage:#6B7F5E;--tan:#D7C9B1;--sand:#EDE5D8;--blush:#F3E2D8;--line:#E2DAD0;--white:#FFFDF9}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--cream);color:var(--forest);font-family:Jost,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    h1,h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;line-height:1.08}
+    em{font-style:italic;color:var(--terra)}
+    .wrap{width:min(1080px,100% - 32px);margin:0 auto}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+    .brand{font:600 17px "Cormorant Garamond",serif;letter-spacing:.11em;text-transform:uppercase;text-decoration:none}
+    .nav a.login{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:9px 18px;background:var(--white)}
+    .eyebrow{color:var(--terra);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+    .hero{padding:28px 0 56px;text-align:center}
+    .hero h1{font-size:clamp(38px,6vw,68px);margin:14px auto 14px;max-width:880px}
+    .hero .sub{max-width:640px;margin:0 auto 30px;color:var(--olive);font-size:18px}
+    .video{position:relative;border-radius:22px;overflow:hidden;background:#1c2420;box-shadow:0 24px 60px rgba(42,60,47,.18);aspect-ratio:16/9}
+    .video .wistia_embed{position:absolute;inset:0;width:100%;height:100%}
+    .ctas{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:15px 30px;border-radius:999px;border:0;background:var(--terra);color:#fff;font:700 13px Jost,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background .2s}
+    .btn:hover{background:var(--terra-dark)}
+    .btn.ghost{background:transparent;color:var(--forest);border:1px solid var(--forest)}
+    .btn.ghost:hover{background:var(--forest);color:var(--cream)}
+    section{padding:64px 0}
+    .band{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .center{text-align:center}
+    h2{font-size:clamp(32px,4.4vw,48px);margin:10px 0 14px}
+    .lede{color:var(--olive);max-width:640px}
+    .center .lede{margin:0 auto}
+    .weeks{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}
+    .wk{border-radius:22px;padding:26px 22px;display:flex;flex-direction:column;gap:8px}
+    .wk .n{font:600 46px/1 "Cormorant Garamond",serif}
+    .wk h3{font-family:Jost,sans-serif;font-size:19px;font-weight:700;line-height:1.3}
+    .wk p{font-size:14px;opacity:.9}
+    .wk .tool{margin-top:auto;padding-top:12px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .wk.f{background:var(--forest);color:var(--cream)} .wk.f .n{color:#F0A88A}
+    .wk.t{background:var(--terra);color:#FFF8F3} .wk.t .n{color:#FDE3D6}
+    .wk.s{background:var(--sand)} .wk.s .n{color:var(--terra)}
+    .wk.w{background:var(--white);border:1px solid var(--line)} .wk.w .n{color:var(--forest)}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+    .chat{display:flex;flex-direction:column;gap:12px}
+    .bub{max-width:86%;padding:14px 20px;border-radius:22px;font-size:16px;line-height:1.45}
+    .bub.you{align-self:flex-end;background:var(--forest);color:var(--cream);border-bottom-right-radius:6px}
+    .bub.them{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-bottom-left-radius:6px}
+    .bub.note{align-self:stretch;max-width:100%;background:var(--blush);border-left:4px solid var(--terra);border-radius:14px;font-size:15px}
+    .bub small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:3px}
+    .checks{list-style:none;display:grid;gap:14px;margin-top:22px}
+    .checks li{display:flex;gap:14px;align-items:flex-start;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+    .checks li::before{content:"✓";flex:none;width:28px;height:28px;border-radius:50%;background:var(--terra);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700}
+    .fine{font-size:13px;color:var(--olive);margin-top:16px}
+    .join{background:var(--forest);color:var(--cream)}
+    .join .eyebrow{color:#F0A88A}
+    .join .lede{color:#D6E0D9}
+    .offer{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;margin-top:34px;align-items:start}
+    .card{background:var(--cream);color:var(--forest);border-radius:24px;padding:32px}
+    .card h3{font-size:30px;margin-bottom:6px}
+    .price{font:600 54px/1 "Cormorant Garamond",serif;color:var(--terra);margin:14px 0 4px}
+    .card ul{list-style:none;display:grid;gap:8px;margin:18px 0 24px;font-size:15px}
+    .card ul li::before{content:"·";color:var(--terra);font-weight:700;margin-right:10px}
+    .card .btn{width:100%}
+    .plan{margin-top:12px;font-size:13px;color:var(--olive);text-align:center}
+    .steps{display:grid;gap:12px}
+    .step{display:flex;gap:16px;align-items:flex-start;border:1px solid rgba(246,242,235,.2);border-radius:18px;padding:18px 20px}
+    .step b{flex:none;width:34px;height:34px;border-radius:50%;background:#F0A88A;color:var(--forest);display:grid;place-items:center;font-size:15px}
+    .step p{font-size:15px;color:#E7EEE9}
+    .step a{color:#fff;font-weight:600}
+    .msg{max-width:680px;margin:0 auto}
+    .form{display:grid;gap:14px;margin-top:26px;text-align:left}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:grid;gap:6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    input,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:var(--white);color:var(--forest);font:400 16px Jost,sans-serif;padding:14px 16px}
+    textarea{min-height:130px;resize:vertical}
+    input:focus,textarea:focus{outline:2px solid rgba(152,69,47,.3);outline-offset:1px}
+    .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+    .status{font-size:15px;padding:14px 16px;border-radius:14px;display:none}
+    .status.ok{display:block;background:#E6EFE6}
+    .status.err{display:block;background:var(--blush)}
+    footer{padding:36px 0 48px;font-size:13px;color:var(--olive);text-align:center;border-top:1px solid var(--line)}
+    footer a{margin:0 8px}
+    @media (max-width:860px){
+      .weeks{grid-template-columns:1fr 1fr}
+      .split,.offer{grid-template-columns:1fr}
+      section{padding:48px 0}
+    }
+    @media (max-width:520px){
+      .weeks,.row2{grid-template-columns:1fr}
+      .hero .sub{font-size:16px}
+      .btn{width:100%}
+      .card{padding:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <a class="brand" href="/">The Confident Clinician</a>
+      <a class="login" href="/course/" data-track="account">Log in</a>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">The 4-Week Clinical Confidence Lab</p>
+      <h1>When your mind goes blank in session, <em>practice</em> is what brings you back.</h1>
+      <p class="sub">Short lessons, real practice with fictional clients, and tools you keep. Built for newer therapists who know the concepts but freeze when it's time to use them.</p>
+      <div class="video">
+        <div class="wistia_embed wistia_async_o7163fk1fn videoFoam=true seo=false playerColor=98452F">&nbsp;</div>
+      </div>
+      <div class="ctas">
+        <a class="btn" href="#join" data-track="join">Join the Lab</a>
+        <a class="btn ghost" href="#message">Ask me a question</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="band">
+    <div class="wrap center">
+      <p class="eyebrow">What's inside</p>
+      <h2>Four weeks. Four tools you keep.</h2>
+      <p class="lede">Each week: short lessons, a demonstration, then practice that asks you to respond, not just read.</p>
+      <div class="weeks">
+        <div class="wk f"><span class="n">01</span><h3>Name what's in your way</h3><p>Stop treating every uncertain moment as proof you're not cut out for this.</p><span class="tool">Clinical Confidence Profile</span></div>
+        <div class="wk t"><span class="n">02</span><h3>Choose your next move</h3><p>Find the thread when a client brings five things at once.</p><span class="tool">Decision-Making Map</span></div>
+        <div class="wk s"><span class="n">03</span><h3>Guide with purpose</h3><p>Give a session direction without getting rigid.</p><span class="tool">50-Minute Session Roadmap</span></div>
+        <div class="wk w"><span class="n">04</span><h3>Review, repair, grow</h3><p>Look back without spiraling and build confidence from evidence.</p><span class="tool">Personal Clinical Playbook</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">The difference</p>
+        <h2>You respond. The client responds back.</h2>
+        <p class="lede">Practice with fictional clients in your own words. Rush to reassure and they pull away. Get curious about what they said and they open up. Then you get a training note and try again.</p>
+      </div>
+      <div class="chat" aria-label="Example practice exchange">
+        <p class="bub you"><small>You</small>Don't worry, you're doing great!</p>
+        <p class="bub them"><small>Client</small>…Yeah. Okay.</p>
+        <p class="bub you"><small>You, second try</small>When you say stuck, what's that like for you?</p>
+        <p class="bub them"><small>Client</small>Honestly? Like nothing I do matters.</p>
+        <p class="bub note"><small>Training note</small>What worked, plus one thing to build on next time.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Who it's for</p>
+        <h2>Built for you if…</h2>
+        <ul class="checks">
+          <li>You know the concepts, but freeze when it's time to use them.</li>
+          <li>You replay sessions long after they end.</li>
+          <li>You want real practice and clear examples, not another binder of interventions.</li>
+        </ul>
+        <p class="fine">For grad students, interns, and newer clinicians. This is professional education. It doesn't replace supervision, consultation, or crisis procedures.</p>
+      </div>
+      <div class="card" style="background:var(--sand)">
+        <p class="eyebrow">Self-paced</p>
+        <h3>What you get</h3>
+        <ul>
+          <li>Four weeks of short video lessons</li>
+          <li>Demonstrations of real clinical moments</li>
+          <li>Live practice sessions with fictional clients</li>
+          <li>The Common Clinical Moments Field Guide</li>
+          <li>Four tools you keep</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="join" id="join">
+    <div class="wrap">
+      <div class="center">
+        <p class="eyebrow">Join the Lab</p>
+        <h2>Practice the moments that rattle you.</h2>
+        <p class="lede">Check out securely, set up your account, and start with your Day 1 Baseline.</p>
+      </div>
+      <div class="offer">
+        <div class="card">
+          <h3>The Clinical Confidence Lab</h3>
+          <p style="color:var(--olive);font-size:15px">All four weeks, every case, guide, and tool.</p>
+          <!-- TODO Tiffany: replace [PRICE] with the real price. -->
+          <p class="price">[PRICE]</p>
+          <p style="font-size:13px;color:var(--olive)">Pay in full</p>
+          <ul>
+            <li>Lessons, demos, and practice for Weeks 1–4</li>
+            <li>Training notes on every practice rep</li>
+            <li>Field Guide + four tools you keep</li>
+          </ul>
+          <a class="btn" href="/.netlify/functions/create-clinical-confidence-lab-checkout" data-track="join">Join now</a>
+          <p class="plan" id="plan-note" hidden>Payment plan available at checkout.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><b>1</b><p>Check out securely through Stripe.</p></div>
+          <div class="step"><b>2</b><p>Set up your account with the same email you used to pay. <a href="/course/" data-track="account">Set up my account</a></p></div>
+          <div class="step"><b>3</b><p>Start with the welcome video and your Day 1 Baseline.</p></div>
+          <div class="step"><b>?</b><p>Already enrolled? <a href="/course/" data-track="account">Log in here</a>.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="message">
+    <div class="wrap msg center">
+      <p class="eyebrow">Questions?</p>
+      <h2>Send me a message</h2>
+      <p class="lede">Not sure if the Lab is right for you? Ask me anything. Please don't include client details.</p>
+      <form class="form" id="msg-form" novalidate>
+        <div class="row2">
+          <label>Name<input name="name" autocomplete="name" maxlength="120"></label>
+          <label>Email<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+        </div>
+        <label>Message<textarea name="message" required maxlength="4000"></textarea></label>
+        <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+        <button class="btn" type="submit">Send message</button>
+        <p class="status" id="msg-status" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p>© The Confident Clinician · Professional education, not supervision, therapy, or crisis support.</p>
+      <p style="margin-top:8px"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/disclaimer">Disclaimer</a></p>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var KEY = "tcc-vsl-visitor";
+    var visitor;
+    try { visitor = localStorage.getItem(KEY); } catch (e) {}
+    if (!visitor) {
+      visitor = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "v" + Date.now() + Math.random().toString(36).slice(2, 10);
+      try { localStorage.setItem(KEY, visitor); } catch (e) {}
+    }
+    var q = new URLSearchParams(location.search);
+    var w = window.innerWidth;
+    var base = {
+      visitor: visitor,
+      source: q.get("utm_source") || "", medium: q.get("utm_medium") || "", campaign: q.get("utm_campaign") || "",
+      referrer: document.referrer || "",
+      device: /iPad|Tablet/i.test(navigator.userAgent) || (w >= 600 && w < 1024 && "ontouchstart" in window) ? "Tablet" : (w < 600 ? "Phone" : "Computer")
+    };
+    /* Send one event at a time so a visitor never gets two rows. */
+    var chain = Promise.resolve();
+    function track(event, extra, wait) {
+      var body = JSON.stringify(Object.assign({}, base, { event: event }, extra || {}));
+      var p = chain.then(function () {
+        return fetch("/.netlify/functions/vsl-track", { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .catch(function () { return { ok: false, j: {} }; });
+      });
+      chain = p.then(function () {}, function () {});
+      return wait ? p : null;
+    }
+    track("view");
+
+    document.querySelectorAll("[data-track]").forEach(function (a) {
+      a.addEventListener("click", function () { track(a.getAttribute("data-track")); });
+    });
+
+    /* Video: play + how far they watched (25/50/75/100%). */
+    var marks = [0.25, 0.5, 0.75, 0.95], sent = {};
+    window._wq = window._wq || [];
+    _wq.push({ id: "o7163fk1fn", onReady: function (video) {
+      video.bind("play", function () { if (!sent.play) { sent.play = 1; track("play"); } });
+      video.bind("percentwatchedchanged", function (pct) {
+        marks.forEach(function (m) {
+          if (pct >= m && !sent[m]) { sent[m] = 1; track("progress", { pct: m === 0.95 ? 1 : m }); }
+        });
+      });
+    }});
+
+    /* Contact box */
+    var form = document.getElementById("msg-form"), status = document.getElementById("msg-status");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var d = new FormData(form);
+      status.className = "status";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(d.get("email") || "").trim()) || String(d.get("message") || "").trim().length < 2) {
+        status.textContent = "Please add your email and a message."; status.className = "status err"; return;
+      }
+      var btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Sending…";
+      track("message", { name: d.get("name"), email: d.get("email"), message: d.get("message"), website: d.get("website") }, true).then(function (res) {
+        btn.disabled = false; btn.textContent = "Send message";
+        if (res.ok) { form.reset(); status.textContent = "Thanks! Your message is on its way. I'll get back to you by email."; status.className = "status ok"; }
+        else { status.textContent = (res.j && res.j.error) || "That didn't send. Please try again."; status.className = "status err"; }
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
