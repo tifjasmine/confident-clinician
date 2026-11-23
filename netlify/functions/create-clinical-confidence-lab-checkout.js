@@ -32,7 +32,7 @@ exports.handler = async (event) => {
      Uses CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID only if it's set; otherwise always the regular price. */
   const EARLY_ENDS = Date.parse('2027-01-01T05:00:00Z');
   const earlyPriceId = process.env.CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID || 'price_1Uf4lQASlf43jszVbdkoC9c2'; /* $297 */
-  const priceId = (earlyPriceId && Date.now() < EARLY_ENDS) ? earlyPriceId : (process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID || 'price_1TyEZCASlf43jszV2eZ2kNon'); /* $397 */
+  const priceId = (earlyPriceId && Date.now() < EARLY_ENDS) ? earlyPriceId : process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID; /* $397, set in Netlify */
   /* Where to send people back: the video page (?from=video) or the main Lab page. */
   const fromVideo = (event.queryStringParameters || {}).from === 'video';
   const backPath = fromVideo ? '/lab-video' : '/clinical-confidence-lab';

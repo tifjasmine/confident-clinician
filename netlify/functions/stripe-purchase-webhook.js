@@ -231,7 +231,7 @@ const getLineItemPriceIds = (lineItems) => {
 
 const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
   /* Regular price, plus the early-bird price (before Jan 1) when it's set up. */
-  const labPriceIds = [process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID || 'price_1TyEZCASlf43jszV2eZ2kNon', process.env.CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID || 'price_1Uf4lQASlf43jszVbdkoC9c2'].filter(Boolean);
+  const labPriceIds = [process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID, process.env.CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID || 'price_1Uf4lQASlf43jszVbdkoC9c2'].filter(Boolean);
   if (!labPriceIds.length) return null;
   if (!getLineItemPriceIds(lineItems).some(id => labPriceIds.includes(id))) return null;
 
