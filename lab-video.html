@@ -83,7 +83,7 @@
     .join{background:var(--forest);color:var(--cream)}
     .join .eyebrow{color:#F0A88A}
     .join .lede{color:#D6E0D9}
-    .offer{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;margin-top:34px;align-items:start}
+    .offer{max-width:560px;margin:34px auto 0}
     .card{background:var(--cream);color:var(--forest);border-radius:24px;padding:32px}
     .card h3{font-size:30px;margin-bottom:6px}
     .price{font:600 54px/1 "Cormorant Garamond",serif;color:var(--terra);margin:14px 0 4px}
@@ -98,11 +98,6 @@
     .bought h2{margin:0 0 8px;color:var(--cream)}
     .bought p{max-width:560px;margin:0 auto 20px;color:#D6E0D9}
     .plan{margin-top:12px;font-size:13px;color:var(--olive);text-align:center}
-    .steps{display:grid;gap:12px}
-    .step{display:flex;gap:16px;align-items:flex-start;border:1px solid rgba(246,242,235,.2);border-radius:18px;padding:18px 20px}
-    .step b{flex:none;width:34px;height:34px;border-radius:50%;background:#F0A88A;color:var(--forest);display:grid;place-items:center;font-size:15px}
-    .step p{font-size:15px;color:#E7EEE9}
-    .step a{color:#fff;font-weight:600}
     .msg{max-width:680px;margin:0 auto}
     .form{display:grid;gap:14px;margin-top:26px;text-align:left}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -145,7 +140,7 @@
     <div class="wrap">
       <p class="eyebrow">The 4-Week Clinical Confidence Lab</p>
       <h1>When your mind goes blank in session, <em>practice</em> is what brings you back.</h1>
-      <p class="sub">Short lessons, real practice with fictional clients, and tools you keep. Built for newer therapists who know the concepts but freeze when it's time to use them.</p>
+      <p class="sub">Short lessons, real practice with fictional clients, and tools you keep. Built for newer therapists who want to feel steady when it counts.</p>
       <div class="video">
         <div class="wistia_embed wistia_async_o7163fk1fn videoFoam=true seo=false playerColor=98452F">&nbsp;</div>
       </div>
@@ -174,16 +169,17 @@
   <section>
     <div class="wrap split">
       <div>
-        <p class="eyebrow">The difference</p>
-        <h2>You respond. The client responds back.</h2>
-        <p class="lede">Practice with fictional clients in your own words. Rush to reassure and they pull away. Get curious about what they said and they open up. Then you get a training note and try again.</p>
+        <p class="eyebrow">How practice works</p>
+        <h2>Practice that talks back.</h2>
+        <p class="lede">Every rep is a short conversation with a fictional client who reacts to your exact words. You get feedback on what landed and one thing to build on, then you take another pass.</p>
       </div>
       <div class="chat" aria-label="Example practice exchange">
-        <p class="bub you"><small>You</small>Don't worry, you're doing great!</p>
-        <p class="bub them"><small>Client</small>…Yeah. Okay.</p>
-        <p class="bub you"><small>You, second try</small>When you say stuck, what's that like for you?</p>
-        <p class="bub them"><small>Client</small>Honestly? Like nothing I do matters.</p>
-        <p class="bub note"><small>Training note</small>What worked, plus one thing to build on next time.</p>
+        <p class="bub them"><small>Client</small>Everyone keeps telling me I'm overreacting.</p>
+        <p class="bub you"><small>You</small>I don't think you're overreacting at all!</p>
+        <p class="bub them"><small>Client</small>…Okay.</p>
+        <p class="bub you"><small>You, second pass</small>Overreacting. Who's been saying that?</p>
+        <p class="bub them"><small>Client</small>My mom, mostly. Since I was a kid.</p>
+        <p class="bub note"><small>Training note</small>What's working: you used her word and got curious. Build on it: stay with “since I was a kid.”</p>
       </div>
     </div>
   </section>
@@ -191,14 +187,14 @@
   <section class="band">
     <div class="wrap split">
       <div>
-        <p class="eyebrow">Who it's for</p>
-        <h2>Built for you if…</h2>
+        <p class="eyebrow">Is this for you?</p>
+        <h2>This is for you if…</h2>
         <ul class="checks">
-          <li>You know the concepts, but freeze when it's time to use them.</li>
-          <li>You replay sessions long after they end.</li>
-          <li>You want real practice and clear examples, not another binder of interventions.</li>
+          <li>You can explain a technique, but it comes out differently with a real person in front of you.</li>
+          <li>The perfect response shows up an hour after the session ends.</li>
+          <li>You'd rather practice the hard moments than read about them one more time.</li>
         </ul>
-        <p class="fine">For grad students, interns, and newer clinicians. This is professional education. It doesn't replace supervision, consultation, or crisis procedures.</p>
+        <p class="fine">Made for grad students, interns, and early-career therapists. Professional education, not a substitute for supervision, consultation, or crisis care.</p>
       </div>
       <div class="card" style="background:var(--sand)">
         <p class="eyebrow">Self-paced</p>
@@ -217,8 +213,8 @@
     <div class="wrap">
       <div class="center">
         <p class="eyebrow">Join the Lab</p>
-        <h2>Practice the moments that rattle you.</h2>
-        <p class="lede">Check out securely, set up your account, and start with your Day 1 Baseline.</p>
+        <h2>Start practicing this week.</h2>
+        <p class="lede">Check out securely and get access right away.</p>
       </div>
       <div class="offer">
         <div class="card">
@@ -232,13 +228,7 @@
             <li>Field Guide + four tools you keep</li>
           </ul>
           <a class="btn" href="/.netlify/functions/create-clinical-confidence-lab-checkout?from=video" data-track="join"><span>Join now for <span data-price>$297</span></span></a>
-          <p class="plan" id="plan-note" hidden>Payment plan available at checkout.</p>
-        </div>
-        <div class="steps">
-          <div class="step"><b>1</b><p>Check out securely through Stripe.</p></div>
-          <div class="step"><b>2</b><p>Right after you pay, set up your account with the same email. You get in immediately. <a href="/course/lab/#setup" data-track="account">Set up my account</a></p></div>
-          <div class="step"><b>3</b><p>Start with the welcome video and your Day 1 Baseline.</p></div>
-          <div class="step"><b>?</b><p>Already enrolled? <a href="/course/lab/" data-track="account">Log in here</a>.</p></div>
+          <p class="plan">Already enrolled? <a href="/course/lab/" data-track="account">Log in</a></p>
         </div>
       </div>
     </div>
