@@ -66,6 +66,8 @@ function parse(text) {
   try { return JSON.parse(m[0]); } catch { return { note: clip(text.replace(/[{}"]/g, ""), 900) }; }
 }
 
+const { verify, useAssist } = require("../lib/lab-auth");
+
 exports.handler = async event => {
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
   if (!process.env.ANTHROPIC_API_KEY) return json(503, { error: "AI not configured" });
@@ -74,6 +76,11 @@ exports.handler = async event => {
   try { body = JSON.parse(event.body || "{}"); } catch { return json(400, { error: "Bad JSON" }); }
   const p = prompt(body.task, body.data || {});
   if (!p) return json(400, { error: "Unknown task" });
+  /* Server-side checks: signed-in student, and their daily feedback allowance. */
+  const user = verify(event);
+  if (!user) return json(401, { error: "Please sign in again.", auth: true });
+  try { const u = await useAssist(user); if (!u.ok) return json(429, { error: u.message, limit: true }); }
+  catch (e) { console.error("Assist usage check failed (allowing)", e.message); }
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",

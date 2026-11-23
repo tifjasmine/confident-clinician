@@ -59,6 +59,8 @@ async function student(token, email, source, when) {
   return made.records[0].id;
 }
 
+const { verify } = require("../lib/lab-auth");
+
 exports.handler = async event => {
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
   const token = process.env.AIRTABLE_LAB_TOKEN || process.env.AIRTABLE_ACCESS_TOKEN;
@@ -66,7 +68,10 @@ exports.handler = async event => {
   if ((event.body || "").length > 300000) return json(413, { error: "Too large" });
   let body;
   try { body = JSON.parse(event.body || "{}"); } catch { return json(400, { error: "Bad JSON" }); }
-  const email = cleanEmail(body.email);
+  /* The email comes from the signed sign-in token, not from the browser. */
+  const user = verify(event);
+  if (!user) return json(401, { error: "Please sign in again.", auth: true });
+  const email = cleanEmail(user.email);
   const source = body.source === "Live" ? "Live" : "Preview";
   const rows = (Array.isArray(body.attempts) ? body.attempts : []).slice(0, 10).filter(r => r && idOk(r.attemptId) && typeof r.activityKey === "string");
   if (!email || !rows.length) return json(400, { error: "Nothing valid to save" });

@@ -12,9 +12,18 @@
   /* Preview sign-in: the same client-side test gate as the existing Lab preview. Not real authentication. */
   const PREVIEW_SESSION = "tccLabStudentPreview"; /* older preview flag, still honored */
   const SESSION = "tccLabSession"; /* { email, first, test } for this browser tab */
-  const session = () => { try { const s = JSON.parse(sessionStorage.getItem(SESSION) || "null"); if (s && s.email) return s; } catch (e) {} return sessionStorage.getItem(PREVIEW_SESSION) === "1" ? { email: "studentpreview@theconfidentclinician.me", test: true } : null; };
+  const session = () => { try { const s = JSON.parse(sessionStorage.getItem(SESSION) || "null"); if (s && s.email && s.token) return s; } catch (e) {} return null; };
+  /* Every call to the server carries the signed sign-in token; the server checks it and the daily limits. */
+  const authHeaders = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${(session() || {}).token || ""}` });
+  let signedOutMsg = "";
+  const signedOut = () => { sessionStorage.removeItem(SESSION); sessionStorage.removeItem(PREVIEW_SESSION); signedOutMsg = "For your security, please sign in again."; render(); };
+  async function api(url, payload, opts = {}) {
+    const res = await fetch(url, { method: "POST", headers: authHeaders(), body: typeof payload === "string" ? payload : JSON.stringify(payload), ...opts });
+    const out = await res.json().catch(() => ({}));
+    if (res.status === 401 && out.auth) { signedOut(); throw new Error("Please sign in again."); }
+    return { res, out };
+  }
   const PREVIEW_EMAIL = "studentpreview@theconfidentclinician.me";
-  const PREVIEW_PASSWORD = "LabPreview2026!";
 
   const BASE_KEY = "tcc-v6-v2";
   /* Real students get their own saved progress, so two people on one computer never mix. The preview account keeps the original key. */
@@ -183,8 +192,8 @@
     for (let k = 0; k < q.length; k += 10) {
       const part = q.slice(k, k + 10), body = JSON.stringify({ email: logEmail(), source: logSource(), attempts: part.map(({ _sig, _key, ...r }) => r) });
       try {
-        if (useBeacon && navigator.sendBeacon) { navigator.sendBeacon(LOG.url, new Blob([body], { type: "application/json" })); continue; }
-        const res = await fetch(LOG.url, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
+        if (!session()) continue;
+        const res = await fetch(LOG.url, { method: "POST", headers: authHeaders(), body, keepalive: true });
         if (res.ok) { part.forEach(r => { S.logSent[r._key] = r._sig; }); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
       } catch (e) { /* offline or not configured: retry on the next change */ }
     }
@@ -196,7 +205,7 @@
     const signedIn = !!session();
     $("[data-login]").hidden = signedIn;
     $("[data-app]").hidden = !signedIn;
-    if (!signedIn) return;
+    if (!signedIn) { if (signedOutMsg) $("[data-login-error]").textContent = signedOutMsg; return; }
     const { scr, arg } = route();
     const h = location.hash.slice(1) || "home";
     if (goingBack) goingBack = false; else if (trail[trail.length - 1] !== h) trail.push(h);
@@ -930,8 +939,7 @@
     if (R.req.some(k => !String(data[k] || "").trim())) { S.ai[id] = { ...(S.ai[id] || {}), err: "Write your answer first, then ask." }; render(); return; }
     R.data = data; AIBUSY[id] = true; render();
     try {
-      const res = await fetch("/.netlify/functions/lab-ai-assist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task: R.task, data: R.data }) });
-      const out = await res.json().catch(() => ({}));
+      const { res, out } = await api("/.netlify/functions/lab-ai-assist", { task: R.task, data: R.data });
       if (!res.ok || !out.ok) throw new Error(out.error || "This isn’t available right now. Try again in a moment.");
       S.ai[id] = { sig: aiSig(R.data), res: { client: out.client || "", note: (out.parts && noteLabeled(out.parts)) || out.note || "", parts: out.parts || null, safety: !!out.safety }, at: new Date().toISOString() };
       if (R.save) R.save(S.ai[id].res);
@@ -957,8 +965,7 @@
   const liveState = () => (S.live = S.live || { past: [], cur: null });
   const liveNew = () => ({ id: Math.random().toString(36).slice(2, 9), started: new Date().toISOString(), moments: [{ client: LIVE_OPEN }], refinesUsed: 0, phase: "attempt", done: false });
   async function liveCall(mode, sess) {
-    const res = await fetch(LIVE.url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scenario: "dana", mode, moments: sess.moments.map(m => ({ client: m.client, attempts: (m.attempts || []).map(a => ({ text: a.text, note: a.note || "" })) })) }) });
-    const out = await res.json().catch(() => ({}));
+    const { res, out } = await api(LIVE.url, JSON.stringify({ scenario: "dana", sessionId: sess.id, mode, moments: sess.moments.map(m => ({ client: m.client, attempts: (m.attempts || []).map(a => ({ text: a.text, note: a.note || "" })) })) }));
     if (!res.ok || !out.ok) throw new Error(out.error || "The practice partner is unavailable right now.");
     if (mode !== "wrap" && !String(out.text || "").trim()) throw new Error("That didn’t come through. Tap Try again.");
     return out;
@@ -1254,13 +1261,13 @@
     e.preventDefault();
     const f = e.currentTarget, email = f.email.value.trim().toLowerCase(), pw = f.password.value;
     const err = $("[data-login-error]");
+    signedOutMsg = "";
     const enter = s => { sessionStorage.setItem(SESSION, JSON.stringify(s)); KEY = keyFor(s); loadS(); err.textContent = ""; f.reset(); render(); };
-    if (email === PREVIEW_EMAIL && pw === PREVIEW_PASSWORD) return enter({ email, test: true });
     const btn = f.querySelector("button[type=submit]"), label = btn.innerHTML;
     btn.disabled = true; btn.textContent = "Signing in…"; err.textContent = "";
     fetch("/.netlify/functions/lab-login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pw }) })
       .then(r => r.json().catch(() => ({})))
-      .then(j => { if (j.ok) enter({ email: j.email, first: j.first || "", test: false }); else err.textContent = j.message || "That didn’t work. Please try again."; })
+      .then(j => { if (j.ok && j.token) enter({ email: j.email, first: j.first || "", test: !!j.test, token: j.token }); else err.textContent = j.message || "That didn’t work. Please try again."; })
       .catch(() => { err.textContent = "Sign-in is temporarily unavailable. Please try again."; })
       .finally(() => { btn.disabled = false; btn.innerHTML = label; });
   });

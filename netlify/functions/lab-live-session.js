@@ -109,6 +109,8 @@ async function claude(sys, user, maxTokens) {
   return (out.content || []).filter(c => c.type === "text").map(c => c.text).join("").trim();
 }
 
+const { verify, useLive } = require("../lib/lab-auth");
+
 exports.handler = async event => {
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
   if (!process.env.ANTHROPIC_API_KEY) return json(503, { error: "AI not configured" });
@@ -119,6 +121,11 @@ exports.handler = async event => {
   const mode = ["note", "client", "wrap"].includes(body.mode) ? body.mode : "";
   const moments = Array.isArray(body.moments) ? body.moments : [];
   if (!sc || !mode || !moments.length) return json(400, { error: "Missing scenario, mode or moments" });
+  /* Server-side checks: signed-in student, and their daily live-session allowance. */
+  const user = verify(event);
+  if (!user) return json(401, { error: "Please sign in again.", auth: true });
+  try { const u = await useLive(user, body.sessionId); if (!u.ok) return json(429, { error: u.message, limit: true }); }
+  catch (e) { console.error("Live usage check failed (allowing)", e.message); }
   const cur = moments[moments.length - 1];
   if ((mode === "note" || mode === "client") && !(cur.attempts && cur.attempts.length)) return json(400, { error: "No attempt yet" });
 
