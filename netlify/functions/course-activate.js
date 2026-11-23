@@ -11,7 +11,7 @@ const formulaString = (value) => String(value || "").replace(/\\/g, "\\\\").repl
 const findApprovedParticipant = async (email) => {
   const url = new URL(`https://api.airtable.com/v0/${BASE_ID}/${PARTICIPANTS_TABLE_ID}`);
   url.searchParams.set("maxRecords", "1");
-  url.searchParams.set("filterByFormula", `AND(LOWER({Email})='${formulaString(email)}',OR({Enrollment Status}='Invited',{Enrollment Status}='Onboarding',{Enrollment Status}='Active'))`);
+  url.searchParams.set("filterByFormula", `AND(LOWER({Email})='${formulaString(email)}',OR({Enrollment Status}='Purchased',{Enrollment Status}='Invited',{Enrollment Status}='Onboarding',{Enrollment Status}='Active'))`);
   const response = await fetch(url, { headers: { Authorization: `Bearer ${process.env.AIRTABLE_ACCESS_TOKEN}` } });
   if (!response.ok) throw new Error(`Airtable lookup failed (${response.status})`);
   return (await response.json()).records?.[0] || null;

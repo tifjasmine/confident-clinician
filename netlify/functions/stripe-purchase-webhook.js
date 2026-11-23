@@ -230,9 +230,10 @@ const getLineItemPriceIds = (lineItems) => {
 };
 
 const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
-  const labPriceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID;
-  if (!labPriceId) return null;
-  if (!getLineItemPriceIds(lineItems).includes(labPriceId)) return null;
+  /* Regular price, plus the early-bird price (before Jan 1) when it's set up. */
+  const labPriceIds = [process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID, process.env.CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID].filter(Boolean);
+  if (!labPriceIds.length) return null;
+  if (!getLineItemPriceIds(lineItems).some(id => labPriceIds.includes(id))) return null;
 
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_COURSE_BASE_ID || 'app9RCJ6ivTCgwDsl';

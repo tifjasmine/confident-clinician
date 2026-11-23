@@ -11,7 +11,7 @@ const json = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "ap
 const text = (v, n = 300) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
 const cleanEmail = v => { const e = text(v, 200).toLowerCase(); return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : ""; };
 const strip = f => { Object.keys(f).forEach(k => (f[k] === undefined || f[k] === "") && delete f[k]); return f; };
-const EVENTS = new Set(["view", "play", "progress", "join", "account", "message"]);
+const EVENTS = new Set(["view", "play", "progress", "join", "account", "message", "bought"]);
 const DEVICES = new Set(["Phone", "Tablet", "Computer"]);
 
 async function at(token, path, method = "GET", body) {
@@ -56,6 +56,7 @@ exports.handler = async event => {
     }
     if (ev === "join") fields["Clicked Join"] = true;
     if (ev === "account") fields["Clicked account"] = true;
+    if (ev === "bought") fields.Bought = true;
 
     if (ev === "message") {
       const email = cleanEmail(b.email);

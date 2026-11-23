@@ -1278,3 +1278,11 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .fl-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--forest); color: #fff; font: 700 14px/1 var(--serif); display: flex; align-items: center; justify-content: center; }
 .fl-step b { display: block; font-size: 15.5px; color: var(--ink); }
 .fl-step small { display: block; font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+
+/* Account setup on the sign-in card */
+.v6-setup { margin-top: 18px; border-top: 1px solid var(--line, #e2dad0); padding-top: 14px; font-size: 14px; }
+.v6-setup summary { cursor: pointer; color: var(--muted); list-style: none; }
+.v6-setup summary::-webkit-details-marker { display: none; }
+.v6-setup summary strong { color: var(--terra); }
+.v6-setup form { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.v6-setup input { font-size: 16px; }

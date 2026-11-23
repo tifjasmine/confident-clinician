@@ -28,7 +28,14 @@ exports.handler = async (event) => {
   }
 
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID;
+  /* Early-bird: $297 through Dec 31, 2026 (Eastern), then the regular $397 price.
+     Uses CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID only if it's set; otherwise always the regular price. */
+  const EARLY_ENDS = Date.parse('2027-01-01T05:00:00Z');
+  const earlyPriceId = process.env.CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID;
+  const priceId = (earlyPriceId && Date.now() < EARLY_ENDS) ? earlyPriceId : process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID;
+  /* Where to send people back: the video page (?from=video) or the main Lab page. */
+  const fromVideo = (event.queryStringParameters || {}).from === 'video';
+  const backPath = fromVideo ? '/lab-video' : '/clinical-confidence-lab';
 
   if (!stripeSecretKey || !priceId) {
     return html(500, '<p>Checkout is temporarily unavailable. Please try again later or email admin@theconfidentclinician.me.</p>');
@@ -41,8 +48,8 @@ exports.handler = async (event) => {
   params.set('line_items[0][quantity]', '1');
   params.set('allow_promotion_codes', 'true');
   params.set('billing_address_collection', 'auto');
-  params.set('success_url', `${origin}/clinical-confidence-lab?purchase=success&session_id={CHECKOUT_SESSION_ID}`);
-  params.set('cancel_url', `${origin}/clinical-confidence-lab`);
+  params.set('success_url', `${origin}${backPath}?purchase=success&session_id={CHECKOUT_SESSION_ID}`);
+  params.set('cancel_url', `${origin}${backPath}`);
 
   const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',

@@ -41,11 +41,18 @@
         </div>
         <form data-login-form novalidate>
           <label>Email<input type="email" name="email" autocomplete="username" placeholder="you@practice.com" required></label>
-          <label><span class="v6-row-between">Password <a href="/course/set-password.html">Forgot?</a></span><input type="password" name="password" autocomplete="current-password" required></label>
+          <label><span class="v6-row-between">Password <a href="#setup" data-setup-open>Forgot?</a></span><input type="password" name="password" autocomplete="current-password" required></label>
           <p class="v6-error" role="alert" data-login-error></p>
           <button type="submit" class="v6-btn primary">Enter the Lab <span aria-hidden="true">→</span></button>
         </form>
-        <div class="v6-preview-note"><span aria-hidden="true"></span>Preview account · no real student records</div>
+        <details class="v6-setup" id="setup">
+          <summary>New here, or forgot your password? <strong>Set up my account</strong></summary>
+          <form data-setup-form novalidate>
+            <label>Email you used to buy the Lab<input type="email" name="email" autocomplete="email" required></label>
+            <button type="submit" class="v6-btn">Email me a password link</button>
+            <p class="v6-muted" role="status" data-setup-msg></p>
+          </form>
+        </details>
       </div>
     </div>
   </section>

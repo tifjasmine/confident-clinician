@@ -10,14 +10,20 @@
   const q = t => `“${esc(t)}”`;
 
   /* Preview sign-in: the same client-side test gate as the existing Lab preview. Not real authentication. */
-  const PREVIEW_SESSION = "tccLabStudentPreview";
+  const PREVIEW_SESSION = "tccLabStudentPreview"; /* older preview flag, still honored */
+  const SESSION = "tccLabSession"; /* { email, first, test } for this browser tab */
+  const session = () => { try { const s = JSON.parse(sessionStorage.getItem(SESSION) || "null"); if (s && s.email) return s; } catch (e) {} return sessionStorage.getItem(PREVIEW_SESSION) === "1" ? { email: "studentpreview@theconfidentclinician.me", test: true } : null; };
   const PREVIEW_EMAIL = "studentpreview@theconfidentclinician.me";
   const PREVIEW_PASSWORD = "LabPreview2026!";
 
-  const KEY = "tcc-v6-v2";
+  const BASE_KEY = "tcc-v6-v2";
+  /* Real students get their own saved progress, so two people on one computer never mix. The preview account keeps the original key. */
+  const keyFor = s => (!s || s.test) ? BASE_KEY : `${BASE_KEY}:${s.email}`;
+  let KEY = keyFor(session());
   const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, act: {}, demo: {}, reviewer: false });
   let S = blank();
-  try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ }
+  const loadS = () => { S = blank(); try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ } };
+  loadS();
   if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
   if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
@@ -79,7 +85,7 @@
      (a choice tapped, or a screen left / button pressed after typing); later changes count as "changed".
      Students never see the log. Failed sends retry on the next change. */
   const LOG = { url: "/.netlify/functions/lab-attempts", timer: null, busy: false };
-  const LOG_EMAIL = "studentpreview@theconfidentclinician.me"; /* the preview login; real accounts will pass the student's own email */
+  const logEmail = () => (session() || {}).email || "studentpreview@theconfidentclinician.me"; /* the signed-in student's email */
   const logSource = () => /(^|\.)theconfidentclinician\.me$/.test(location.hostname) ? "Live" : "Preview";
   const clip = v => String(v == null ? "" : v).trim().slice(0, 1500);
   const optLabel = (opts, k) => { const o = (opts || []).find(x => (Array.isArray(x) ? x[0] : x) === k); return o ? (Array.isArray(o) ? o[1] : o) : k; };
@@ -162,7 +168,7 @@
         const answers = R.pairs.map(([k, l, val, exp, extra], j) => ({ key: k, q: l, first: F[k], final: val, expected: exp || "", order: j + 1, ...(extra || {}) }));
         const matches = R.act ? actMatches(ACTS[R.act], Object.fromEntries(R.pairs.map(([k]) => [k, F[k]]))) : "";
         const feedback = Object.entries(S.fb || {}).filter(([, f]) => f.rkey === R.key && f.rating).map(([id, f]) => ({ id, akeys: f.akeys || [], rating: f.rating, note: f.note || "", where: f.where || "", type: f.type || "", ai: f.ai || "", input: f.input || "", at: f.at }));
-        const rec = { attemptId: `${LOG_EMAIL}|${R.key}|${S.logId}`, activityKey: R.akey, detail: R.detail, attemptNo: R.n, status: R.status, changed, matches, started: F._started, answers, feedback };
+        const rec = { attemptId: `${logEmail()}|${R.key}|${S.logId}`, activityKey: R.akey, detail: R.detail, attemptNo: R.n, status: R.status, changed, matches, started: F._started, answers, feedback };
         const sig = JSON.stringify([rec.status, answers, feedback]);
         if (S.logSent[R.key] !== sig) { rec.updated = now; rec._sig = sig; rec._key = R.key; out.push(rec); }
       });
@@ -175,7 +181,7 @@
     if (!q.length || LOG.busy) return;
     LOG.busy = true;
     for (let k = 0; k < q.length; k += 10) {
-      const part = q.slice(k, k + 10), body = JSON.stringify({ email: LOG_EMAIL, source: logSource(), attempts: part.map(({ _sig, _key, ...r }) => r) });
+      const part = q.slice(k, k + 10), body = JSON.stringify({ email: logEmail(), source: logSource(), attempts: part.map(({ _sig, _key, ...r }) => r) });
       try {
         if (useBeacon && navigator.sendBeacon) { navigator.sendBeacon(LOG.url, new Blob([body], { type: "application/json" })); continue; }
         const res = await fetch(LOG.url, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
@@ -187,7 +193,7 @@
   addEventListener("pagehide", () => { if ((LOG.queue || []).length) logSend(true); });
 
   function render() {
-    const signedIn = sessionStorage.getItem(PREVIEW_SESSION) === "1";
+    const signedIn = !!session();
     $("[data-login]").hidden = signedIn;
     $("[data-app]").hidden = !signedIn;
     if (!signedIn) return;
@@ -947,7 +953,7 @@
   const liveUses = () => { const L = liveState(), now = Date.now(); L.starts = (L.starts || []).filter(t => now - t < 864e5); return L.starts; };
   const liveResetIn = () => { const u = liveUses(); if (!u.length) return ""; const ms = Math.max(0, Math.min(...u) + 864e5 - Date.now()), h = Math.floor(ms / 36e5), m = Math.ceil((ms % 36e5) / 6e4); return h ? `${h}h ${m}m` : `${m}m`; };
   const LIVE_OPEN = "Honestly? I think you don’t understand me either. Everyone just keeps giving me homework.";
-  const isTestAccount = () => true; /* every current login is the shared preview account; real Supabase students will be limited */
+  const isTestAccount = () => !!(session() || {}).test; /* the shared preview account is unlimited; real students are limited */
   const liveState = () => (S.live = S.live || { past: [], cur: null });
   const liveNew = () => ({ id: Math.random().toString(36).slice(2, 9), started: new Date().toISOString(), moments: [{ client: LIVE_OPEN }], refinesUsed: 0, phase: "attempt", done: false });
   async function liveCall(mode, sess) {
@@ -1248,15 +1254,37 @@
     e.preventDefault();
     const f = e.currentTarget, email = f.email.value.trim().toLowerCase(), pw = f.password.value;
     const err = $("[data-login-error]");
-    if (email === PREVIEW_EMAIL && pw === PREVIEW_PASSWORD) { sessionStorage.setItem(PREVIEW_SESSION, "1"); err.textContent = ""; f.reset(); render(); }
-    else err.textContent = "That email and password don’t match the preview account.";
+    const enter = s => { sessionStorage.setItem(SESSION, JSON.stringify(s)); KEY = keyFor(s); loadS(); err.textContent = ""; f.reset(); render(); };
+    if (email === PREVIEW_EMAIL && pw === PREVIEW_PASSWORD) return enter({ email, test: true });
+    const btn = f.querySelector("button[type=submit]"), label = btn.innerHTML;
+    btn.disabled = true; btn.textContent = "Signing in…"; err.textContent = "";
+    fetch("/.netlify/functions/lab-login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pw }) })
+      .then(r => r.json().catch(() => ({})))
+      .then(j => { if (j.ok) enter({ email: j.email, first: j.first || "", test: false }); else err.textContent = j.message || "That didn’t work. Please try again."; })
+      .catch(() => { err.textContent = "Sign-in is temporarily unavailable. Please try again."; })
+      .finally(() => { btn.disabled = false; btn.innerHTML = label; });
   });
   $$("[data-back]").forEach(b => b.onclick = goBack);
   $$("[data-menu]").forEach(b => b.onclick = () => setMenu(!$(".v6-app").classList.contains("menu-open")));
   $$("[data-menu-close]").forEach(b => b.onclick = () => setMenu(false));
   addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
   $("[data-sb-min]").onclick = () => { SB.min = !SB.min; sbSave(); render(); };
-  $$("[data-signout]").forEach(b => b.onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); render(); });
+  $$("[data-signout]").forEach(b => b.onclick = () => { sessionStorage.removeItem(PREVIEW_SESSION); sessionStorage.removeItem(SESSION); render(); });
+  if (location.hash === "#setup" && !session()) { const d = document.getElementById("setup"); if (d) d.open = true; }
+  $$("[data-setup-open]").forEach(a => a.onclick = e => { e.preventDefault(); const d = $("#setup"); if (d) { d.open = true; d.querySelector("input").focus(); } });
+  /* New student or forgot password: email a secure link to choose a password */
+  const setup = $("[data-setup-form]");
+  if (setup) setup.addEventListener("submit", e => {
+    e.preventDefault();
+    const email = setup.email.value.trim().toLowerCase(), msg = $("[data-setup-msg]"), btn = setup.querySelector("button");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.textContent = "Enter the email you used to buy the Lab."; return; }
+    btn.disabled = true; msg.textContent = "Sending…";
+    fetch("/.netlify/functions/course-activate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) })
+      .then(r => r.json().catch(() => ({})))
+      .then(j => { msg.textContent = j.message || (j.ok ? "Check your email for your link." : "That didn’t send. Please try again."); })
+      .catch(() => { msg.textContent = "That didn’t send. Please try again."; })
+      .finally(() => { btn.disabled = false; });
+  });
   $$("[data-preview-toggle]").forEach(b => b.onclick = () => { S.reviewer = !S.reviewer; save(); render(); });
   /* Preview only: wipe this browser's progress and start over */
   $$("[data-reset]").forEach(b => b.onclick = () => {
