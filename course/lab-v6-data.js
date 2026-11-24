@@ -282,8 +282,8 @@
     gapWhy: "Most likely skill: the therapist was listening, but followed the topic instead of the cue. Hearing what’s under the words takes practice.",
     /* Step 4 */
     pause: [["P", "Pause", "Slow down. What’s rushing you?"], ["A", "Attend", "What’s happening with Gene, and in you?"], ["U", "Use", "Which of Gene’s words matter most?"], ["S", "Say", "One intentional, clinically appropriate response."], ["E", "Explore", "What will you watch for in Gene’s response?"]],
-    take: "You and Dave were going to do it together.",
-    takeWhy: "It gently returns to the words Gene stepped away from, without guessing what happened. Gene gets to decide how much to say.",
+    take: "You said you and Dave were gonna do it together. Tell me about Dave.",
+    takeWhy: "It uses Gene’s own words, goes back to the name he skipped past, and doesn’t guess what happened. Gene decides how much to share.",
     react: { who: "Gene, 61, retired firefighter, session 1", context: "Gene was referred by his doctor for trouble sleeping. He says he’s fine. He mentioned he and Dave ‘were gonna’ restore an old truck together, paused, then said ‘Anyway.’ (In the background: Dave, his longtime crew partner, died last year. Gene does not bring this up unless the therapist gently returns to Dave.)", line: "Fixing up an old truck. Me and Dave were gonna restore it together. … Anyway. It’s coming along." }
   };
 

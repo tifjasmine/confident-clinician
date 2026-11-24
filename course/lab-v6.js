@@ -415,7 +415,7 @@
         <label class="field">Your new line ${A.turn} <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
         ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>Another way to say it</small><span class="tk">${q(A.take)}</span></div></div>
           <div class="coach"><small>Why it works</small>${esc(A.takeWhy)}</div>
-          ${aiBox("lab-r4", `Hear how ${A.client} responds to your line ${A.turn}`, "react", () => ({ who: A.react.who, context: A.react.context, line: A.react.line, response: (S.lab.move || "").trim() }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: A.client, wait: `${A.client} is responding…`, rkey: "lab#1", akeys: ["aiClient", "aiNote"], where: `Clinical Blind Spot · Line ${A.turn} rewrite` })}
+          ${aiBox("lab-r4", `Hear how ${A.client} responds to your line ${A.turn}`, "react", () => ({ who: A.react.who, context: A.react.context, line: A.react.line, response: (S.lab.move || "").trim(), model: A.take }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: A.client, wait: `${A.client} is responding…`, rkey: "lab#1", akeys: ["aiClient", "aiNote"], where: `Clinical Blind Spot · Line ${A.turn} rewrite` })}
 ` : ""}`;
       ok = mv.trim().length >= 8;
     }
