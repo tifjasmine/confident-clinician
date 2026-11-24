@@ -172,8 +172,8 @@
       desc: "A client asks you to just tell them what to do. Listen to a rushed conversation and a steadier one, then try your own.", meta: "Audio role-play", img: IMG.c,
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
-      desc: "Listen to a short session with Jordan and another therapist. Find where Jordan pulled back, trace what caused it, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
-      itemsLabel: "Four steps", items: [["1", "Spot It", "Find where Jordan pulled back, then trace it to the line that caused it."], ["2", "Said or assumed?", "Catch what the therapist filled in, and write a question to check it."], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "Your move", "Rewrite line 4 (P.A.U.S.E. helps if you’re stuck), then hear how Jordan responds."]] },
+      desc: "Read a short session with Jordan and another therapist. Find the blind spot, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
+      itemsLabel: "Four steps", items: [["1", "Spot It", "Find what Jordan said that the therapist missed."], ["2", "Said or assumed?", "Catch what the therapist filled in, and write a question to check it."], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "Your move", "Rewrite line 4 (P.A.U.S.E. helps if you’re stuck), then hear how Jordan responds."]] },
     { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Jordan’s Advice Request", title: "Simulation: Jordan’s Advice Request",
       desc: "Now you’re the therapist. Pick what you’d say at each moment with Jordan and see how Jordan responds.", meta: "12–15 min", img: IMG.c,
       itemsLabel: "Eight moments with Jordan", items: [["1", "“I’ve been thinking about what we talked about. Should I break up with Sam? I need you to tell me what you would do.”", "Where it starts"], ["8", "“I still want you to tell me what I should do. But I think I also know I need a plan.”", "Where it ends"]] },
@@ -247,8 +247,8 @@
   /* Week 1 Lab: The Clinical Blind Spot. Copied from the scripts doc (draft pending clinical review). */
   const LAB = {
     intro: "Jordan’s session 2, with another therapist. It’s easier to spot a Pull in someone else first. Then you’ll turn the lens on yourself.",
-    pullback: [5, 7],
-    pullWhy: "Line 5 is the first flicker (“I guess”). By line 7 it’s obvious: “Yeah, maybe,” and Jordan looks at their phone.",
+    spot: 3,
+    spotWhy: "Jordan said, “I’m the bad guy.” The therapist skipped right past it to ‘I’ statements in line 4. Watch what happens next: Jordan goes quiet (“I guess,” then “Yeah, maybe” and the phone).",
     lines: [
       ["Jordan", "We had another fight Sunday. It was about the dishes, but it’s never about the dishes."],
       ["Therapist", "What’s it usually about?"],

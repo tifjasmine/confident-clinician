@@ -37,7 +37,7 @@
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
   if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
   if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 2) { ["c0", "c1", "c2", "c3", "c4", "c5"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 2; } /* side-by-side questions: one per P.A.U.S.E. letter + takeaway */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
-  if (S.labV !== 2) { S.lab = {}; S.labV = 2; } /* Lab Spot It + Said or assumed? redesigned */
+  if (S.labV !== 3) { S.lab = {}; S.labV = 3; } /* Lab Spot It + Said or assumed? redesigned */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -360,13 +360,13 @@
   const howHTML = (title, steps, foot) => `<div class="how"><div class="how-h">${esc(title)}</div><ol>${steps.map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol>${foot ? `<div class="how-f">${esc(foot)}</div>` : ""}</div>`;
   /* ---------- Week 1 Lab: The Clinical Blind Spot ---------- */
   const LAB_STEPS = ["Spot It", "Said or assumed?", "The Pull", "Rewrite line 4"];
-  /* mode: "pull" (tap where Jordan pulls back), "turn" (trace it to a therapist line), or false (read only) */
+  /* mode: "spot" (tap the Jordan line the therapist missed) or false (read only) */
   const transcriptHTML = (L, mode) => `<ol class="transcript">${D.LAB.lines.map(([who, text, act], i) => {
     const n = i + 1, A = D.LAB;
-    const cls = [who === "Jordan" ? "client" : "ther", L.pullPick === n ? "pulled" : "", L.turnPick === n ? "picked" : "", L.turnPick && n === A.turn ? "turn" : "", L.pullPick && A.pullback.includes(n) ? "back" : ""].filter(Boolean).join(" ");
+    const cls = [who === "Jordan" ? "client" : "ther", L.spotPick === n ? "picked" : "", L.spotPick && n === A.spot ? "spot" : "", L.spotPick && n === A.turn ? "turn" : ""].filter(Boolean).join(" ");
     const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}</span>`;
-    const attr = mode === "pull" ? `data-lab-pull="${n}" aria-pressed="${L.pullPick === n}"` : mode === "turn" ? `data-lab-turn="${n}" aria-pressed="${L.turnPick === n}"` : "";
-    return `<li class="${cls}" data-ln="${n}">${mode ? `<button type="button" ${attr}>${inner}</button>` : `<div>${inner}</div>`}</li>`;
+    const can = mode === "spot" && who === "Jordan";
+    return `<li class="${cls}" data-ln="${n}">${can ? `<button type="button" data-lab-spot="${n}">${inner}</button>` : `<div>${inner}</div>`}</li>`;
   }).join("")}</ol>`;
   const chipsHTML = (attr, opts, cur, ans) => `<div class="chips-row">${opts.map(([k, l]) => `<button type="button" class="chip${cur === k && ans ? (k === ans ? " right" : " wrong") : ""}" ${attr}="${k}" aria-pressed="${cur === k}">${cur === k && k === ans ? "✓ " : ""}${esc(l)}</button>`).join("")}</div>`;
   const fb = (pick, ans, label) => pick ? `<span class="ans${pick === ans ? "" : " miss"}">${pick === ans ? `Yes, ${esc(label)}.` : `Closer to ${esc(label)}.`}</span>` : "";
@@ -376,16 +376,11 @@
     const peek = `<details class="peek"><summary>Show the session again</summary>${transcriptHTML(L, false)}</details>`;
     let body = "", ok = false;
     if (st === 0) {
-      const pullOk = L.pullPick && A.pullback.includes(L.pullPick), pullTher = L.pullPick && A.lines[L.pullPick - 1][0] !== "Jordan";
-      const mode = !L.pullPick || pullTher ? "pull" : !L.turnPick ? "turn" : false;
-      body = `<p class="flow-sub">${esc(A.intro)}</p>
-        <div class="lab-listen"><button type="button" class="v6-btn secondary" data-lab-listen>▶ Play the session</button><span>Listen first, or just read it.</span></div>
-        <p class="flow-q">${mode === "pull" ? "Where does Jordan start to pull back? Tap the line." : "Now trace it back. Which therapist line set that up?"}</p>
-        ${pullTher ? `<div class="reveal miss">That’s the therapist talking. Look at Jordan’s lines: where do they start to go quiet?</div>` : ""}
-        ${L.pullPick && !pullTher ? `<div class="reveal"><b>${pullOk ? "Yes." : `Look again at lines ${A.pullback.join(" and ")}.`}</b> ${esc(A.pullWhy)}</div>` : ""}
-        ${transcriptHTML(L, mode)}
-        ${L.turnPick ? `<div class="reveal"><b>The turn: line ${A.turn}.</b> ${esc(A.turnWhy)}${L.turnPick !== A.turn ? `<span class="you">You picked line ${L.turnPick}.</span>` : ""}</div>` : ""}`;
-      ok = !!(L.turnPick && L.pullPick && !pullTher);
+      const spot = L.spotPick, hit = spot === A.spot;
+      body = `<p class="flow-q">Jordan says something important. The therapist misses it.</p><p class="flow-sub">Find the blind spot: tap the Jordan line the therapist skipped past.</p>
+        ${transcriptHTML(L, spot ? false : "spot")}
+        ${spot ? `<div class="reveal${hit ? "" : " miss"}"><b>${hit ? "You found it." : "Close. The one they missed is line 3."}</b> ${esc(A.spotWhy)}</div>` : ""}`;
+      ok = !!spot;
     }
     if (st === 1) {
       const so = L.sort || {};
@@ -976,25 +971,6 @@
     Object.entries(AIREQ).forEach(([id, R]) => { const r = (S.ai || {})[id]; if (R.auto && !AIBUSY[id] && !(r && r.sig === aiSig(R.dataFn()) && (r.res || r.err)) && document.querySelector(`[data-ai="${id}"]`)) setTimeout(() => aiRun(id), 50); });
   }
 
-  /* ---------- Lab: play the session line by line (audio when /course/audio/lab/NN.mp3 is listed in LAB_AUDIO) ---------- */
-  const LAB_AUDIO = [];
-  let labRun = 0;
-  async function playLab(btn) {
-    const run = ++labRun; btn.disabled = true; btn.textContent = "Playing…";
-    for (let i = 0; i < D.LAB.lines.length; i++) {
-      const li = $(`.transcript li[data-ln="${i + 1}"]`); if (run !== labRun || !li) return;
-      li.classList.add("now"); li.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      const text = D.LAB.lines[i][1];
-      await new Promise(done => {
-        const fallback = () => setTimeout(done, Math.min(5200, 900 + text.length * 38));
-        if (!LAB_AUDIO.includes(i + 1)) return fallback();
-        const au = new Audio(`/course/audio/lab/${String(i + 1).padStart(2, "0")}.mp3`); au.onended = () => done(); au.onerror = fallback; au.play().catch(fallback);
-      });
-      li.classList.remove("now"); await new Promise(r => setTimeout(r, 300));
-    }
-    btn.disabled = false; btn.textContent = "▶ Play again";
-  }
-
   /* ---------- Demo audio conversation ---------- */
   const convoLine = l => `<div class="dw-line ${l[1] === "T" ? "t" : "j"}"><span class="who">${l[1] === "T" ? "Therapist" : "Jordan"}</span><span class="said">${esc(l[2])}</span></div>`;
   let convoRun = 0;
@@ -1217,9 +1193,8 @@
       /* Lab */
       const L = S.lab, top = () => { const f = $(".flow", app); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); };
       $$("[data-lab-turn]", app).forEach(b => b.onclick = () => { L.turnPick = +b.dataset.labTurn; save(); render(); });
-      $$("[data-lab-pull]", app).forEach(b => b.onclick = () => { L.pullPick = +b.dataset.labPull; save(); render(); });
+      $$("[data-lab-spot]", app).forEach(b => b.onclick = () => { L.spotPick = +b.dataset.labSpot; L.turnPick = D.LAB.turn; save(); render(); });
       $$("[data-lab-check]", app).forEach(t => t.oninput = () => { L.check = t.value; save(); const n = $('[data-lab-nav="1"]', app); if (n) n.disabled = !(D.LAB.sort.every((_, i) => (L.sort || {})[i]) && t.value.trim().length >= 8); });
-      $$("[data-lab-listen]", app).forEach(b => b.onclick = () => playLab(b));
       $$("[data-lab-sort]", app).forEach(b => b.onclick = () => { L.sort = L.sort || {}; L.sort[b.dataset.labSort] = b.dataset.v; save(); render(); });
       [["p4", "labP4"], ["p8", "labP8"], ["gap", "labGap"]].forEach(([k, d]) => $$(`[data-lab-${k}]`, app).forEach(b => b.onclick = () => { L[k] = b.dataset[d]; save(); render(); }));
       $$("[data-lab-pause]", app).forEach(t => t.oninput = () => { L.pause = L.pause || {}; L.pause[t.dataset.labPause] = t.value; save(); const n = $('[data-lab-nav="1"]', app); if (n) n.disabled = !(L.pause.S || "").trim(); });

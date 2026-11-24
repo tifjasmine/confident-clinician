@@ -1332,3 +1332,12 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .transcript li.pulled > *, .transcript li.back > * { background: #eef3ee; border-color: var(--forest); }
 .reveal.miss { background: var(--blush); }
 .lab-check { margin-top: 16px; }
+/* Lab transcript as a light chat: Jordan left, therapist right */
+.transcript { gap: 8px; }
+.transcript li { display: flex; }
+.transcript li.client { justify-content: flex-start; }
+.transcript li.ther { justify-content: flex-end; }
+.transcript li > button, .transcript li > div { width: auto; max-width: 86%; border-radius: 16px; }
+.transcript li.ther > * { background: #eef3ee; }
+.transcript li.client > button { border: 1px dashed var(--terra); }
+.transcript li.spot > * { border: 2px solid var(--terra); background: var(--blush); box-shadow: none; }
