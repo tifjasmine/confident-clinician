@@ -1145,7 +1145,7 @@
   /* ---------- Voice session (TESTING: preview account only) ---------- */
   const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-thalia-en", sum: null, sumErr: "" };
   const VS_VOICES = [["aura-2-thalia-en", "Thalia"], ["aura-2-andromeda-en", "Andromeda"], ["aura-2-helena-en", "Helena"], ["aura-2-luna-en", "Luna"], ["aura-2-cora-en", "Cora"], ["aura-2-delia-en", "Delia"], ["aura-2-asteria-en", "Asteria"], ["aura-2-athena-en", "Athena"]];
-  const VS_MAX = 10;
+  const VS_MAX = 8;
   function voiceView() {
     if (!isTestAccount()) return { html: `<div class="card"><p>Voice sessions aren’t open yet.</p></div>`, title: "Voice session" };
     const st = VS.status, turns = VS.hist.filter(h => h.who === "me").length;
@@ -1156,10 +1156,12 @@
     const html = `<div class="card stack">
       <div class="rep-top"><span class="v6-pill blush">🎙 Voice session · Testing</span><span class="lesson">Only your preview account can see this</span></div>
       ${st === "idle" ? `<p class="flow-q">A spoken mock session with Dana.</p>
-        <p class="flow-sub">Dana, 34, is an ER nurse in session 6. She didn’t do last week’s homework, and she’s guarded. She’ll speak first. Answer out loud, like you would in session. When you stop talking, she replies. Up to ${VS_MAX} back-and-forths.</p>
+        <p class="flow-sub">Dana, 34, is an ER nurse in session 6. She didn’t do last week’s homework, and she’s guarded. She’ll speak first. Answer out loud, like you would in session. When you stop talking, she replies. Up to ${VS_MAX} back-and-forths. End anytime you think you’ve reached the goal.</p>
+        <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
         <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
         <div class="field"><b>Dana’s voice</b><small>Testing only: try a few and see which sounds most like Dana.</small><div class="chips-row">${VS_VOICES.map(([v, n]) => `<button type="button" class="chip" data-vs-voice="${v}" aria-pressed="${VS.voice === v}">${n}</button>`).join("")}</div></div>
         <div class="actions"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button></div>` : ""}
+      ${st !== "idle" ? `<div class="vs-goal sm"><b>Goal</b> Find out what really got in the way of the homework, without assigning anything new.</div>` : ""}
       ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
       ${lines ? `<div class="vs-log">${lines}</div>` : ""}
       ${st !== "idle" ? `<div class="vs-status ${st}"><span class="vs-dot"></span><span>${statusLine}</span>${st === "listening" ? `<span class="vs-meter"><i data-vs-meter></i></span>` : ""}</div>
@@ -1176,6 +1178,7 @@
     if (!VS.sum) return `<div class="vs-status thinking"><span class="vs-dot"></span><span>Putting together your session breakdown…</span></div>${wait}`;
     const S2 = VS.sum, li = a => `<ul>${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
     return `<div class="vs-sum"><span class="v6-label forest">Your session breakdown</span>
+      ${S2.goal ? `<div class="blk next"><b>Your goal</b><p>${esc(S2.goal)}</p></div>` : ""}
       ${S2.arc ? `<p class="arc">${esc(S2.arc)}</p>` : ""}
       ${S2.well.length ? `<div class="blk well"><b>What went well</b>${li(S2.well)}</div>` : ""}
       ${S2.build.length ? `<div class="blk build"><b>What to build next</b>${li(S2.build)}</div>` : ""}
@@ -1218,7 +1221,7 @@
       const rms = Math.sqrt(sum / buf.length), now = Date.now(), m = document.querySelector("[data-vs-meter]");
       if (m) m.style.width = Math.min(100, rms * 4) + "%";
       if (rms > 6) { spoke = true; quietSince = 0; } else if (spoke && !quietSince) quietSince = now;
-      if ((spoke && quietSince && now - quietSince > 1400) || now - t0 > 90000) { rec.stop(); ctx.close(); return; }
+      if ((spoke && quietSince && now - quietSince > 1000) || now - t0 > 90000) { rec.stop(); ctx.close(); return; }
       VS.raf = requestAnimationFrame(tick);
     };
     VS.raf = requestAnimationFrame(tick);

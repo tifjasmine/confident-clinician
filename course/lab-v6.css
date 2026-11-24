@@ -1406,3 +1406,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .vs-sum .blk p{margin:0}
 .vs-sum .well b{color:#2e4a3e}.vs-sum .build b{color:#b5694f}
 .vs-wait{display:block;color:var(--muted);font-size:12.5px}
+
+.vs-goal{padding:12px 14px;border-radius:12px;border:1px dashed #b5694f;background:#fff}
+.vs-goal b{color:#b5694f;margin-right:6px}.vs-goal small{display:block;margin-top:4px;color:var(--ink-2)}
+.vs-goal.sm{padding:8px 12px;font-size:14px}

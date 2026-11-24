@@ -22,6 +22,7 @@ MOVING BETWEEN LAYERS:
 - Reassurance that skips what she said: polite, flat, stays where she is.
 - Once a layer is open, she doesn't fully close it again unless the therapist pushes hard.
 Stay consistent with what she's already said earlier in the session.` };
+const GOALS = { dana: "SESSION GOAL for the trainee: find out what really got in the way of the homework, without assigning anything new. STRETCH: Dana shares what she's afraid would happen if she slipped at work." };
 const SUMMARY_MODEL = process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
 /* What the course teaches, so the client and the feedback use the course's language */
 const COURSE = `COURSE CONTENT (The Confident Clinician's Clinical Confidence Lab, Week 1: Notice)
@@ -91,20 +92,21 @@ exports.handler = async event => {
       const moments = toMoments(sc, body.history);
       if (!moments.some(m => m.attempts.length)) return json(400, { error: "Nothing to review yet" });
       const sys = `You give feedback on a spoken practice session inside The Confident Clinician's Clinical Confidence Lab. Everyone is fictional. The therapist's words were transcribed from speech, so ignore small transcription slips.
-CLIENT BACKGROUND (fictional)\n${sc.background}\n\nSETUP\n${sc.setup}\n\n${MAPS[key] || ""}\n\n${COURSE}
+CLIENT BACKGROUND (fictional)\n${sc.background}\n\nSETUP\n${sc.setup}\n\n${MAPS[key] || ""}\n\n${GOALS[key] || ""}\n\n${COURSE}
 Voice: warm, direct, practical, like an experienced clinician. Talk to the trainee as "you". Quote their actual words. Use the course's language (gaps, Pulls, resets, P.A.U.S.E., the Three Checks) where it genuinely fits. No grades, no scores, no "correct/wrong", no "great job". Don't write lines for them to say.
 Return ONLY a JSON object:
 {"arc": "one or two sentences: how deep Dana got (surface, middle, or core, described in plain words like 'she started opening up about feeling managed by everyone', never the word 'layer'), and the therapist's move right before it shifted most, or what pulled her back up",
  "well": ["2 or 3 specific things that worked, each one sentence, quoting their words"],
  "build": ["1 or 2 specific next steps, each one sentence, framed forward (Next time..., To deepen this...), tied to a moment in the session"],
  "noticed": ["1 or 2 patterns you noticed across the session, like pace, question stacking, using her words, a Pull that kept showing up, or how they handled silence"],
+ "goal": "one or two sentences: how close they got to the session goal (and the stretch, if they got there), naming the move that got them closer or what got in the way. No grade or yes/no verdict.",
  "next": "the one course skill to practice next, and in one sentence why"}`;
       const text = await claude(sys, `FULL SESSION\n\n${transcript(sc, moments)}`, SUMMARY_MODEL, 1500);
       let parts = null; const m = text.match(/\{[\s\S]*\}/);
       try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
       if (!parts) return json(502, { error: "The breakdown didn’t come through. Try again." });
       const arr = v => (Array.isArray(v) ? v : [v]).filter(Boolean).map(x => clip(x, 400)).slice(0, 3);
-      return json(200, { ok: true, summary: { arc: clip(parts.arc, 500), well: arr(parts.well), build: arr(parts.build), noticed: arr(parts.noticed), next: clip(parts.next, 400) } });
+      return json(200, { ok: true, summary: { goal: clip(parts.goal, 500), arc: clip(parts.arc, 500), well: arr(parts.well), build: arr(parts.build), noticed: arr(parts.noticed), next: clip(parts.next, 400) } });
     }
     if (body.action !== "turn" || !body.audio) return json(400, { error: "Missing audio" });
     const t0 = Date.now();
