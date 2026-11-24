@@ -438,7 +438,7 @@
     D.REPS.filter(r => r.week === 1 && repSaved(r.id)).forEach(r => { const x = S.reps[r.id]; out.push({ id: "rep:" + r.id, rep: r.id, tag: `Rep ${r.id} · ${r.client}`, who: r.client, raw: r.line || r.stageLine || "", line: r.line ? q(r.line) : esc(r.stageLine), first: (x.attempts[0] && x.attempts[0].move) || x.move || x.line || "" }); });
     return out;
   }
-  const RF_WORDS = [["exact", "Their exact words"], ["meaning", "Their meaning, in my words"], ["none", "Nothing they said"]];
+  const RF_WORDS = [["exact", "Yes, their exact words"], ["meaning", "Their meaning, not their words"], ["none", "No"]];
   const rfOk3 = () => { const c = S.reflect.c3 || {}; return (c.need || "").trim().length >= 3 && !!c.used && ((c.pullAt || "").trim().length >= 2 || !!c.noPull); };
   function rfTarget(r) {
     const c = S.reflect.c3 || {}, P = S.reflect.pullPick || "your Pull";

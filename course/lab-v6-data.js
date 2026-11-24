@@ -26,7 +26,7 @@
 
   const CHECKS = [
     ["What were they really asking for?", "Name it in a few words."],
-    ["Which of their words did I use?", "Their exact words, or none."],
+    ["Did I use their words?", "Their exact words, their meaning, or neither."],
     ["Where did my Pull show up?", "The part where it took over, or nowhere."]
   ];
 
