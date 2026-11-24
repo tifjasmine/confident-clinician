@@ -1351,3 +1351,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .sim-best .sb-tag{display:inline-block;margin:0 0 6px;padding:3px 10px;border-radius:999px;background:#2e4a3e;color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .sim-best .sb-line{display:block;margin:0 0 6px;font-family:var(--serif,Georgia,serif);font-style:italic}
 .coach-d .sim-best{margin:14px 0 0}
+.sim-best .sb-tag{display:table;margin:0 0 8px}
