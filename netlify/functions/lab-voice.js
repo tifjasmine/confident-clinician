@@ -5,6 +5,7 @@
    Voice model for speed: LAB_VOICE_MODEL (default Claude Haiku 5.5). Client voice: LAB_VOICE_DANA. */
 const { verify } = require("../lib/lab-auth");
 const { SCENARIOS, system, transcript } = require("./lab-live-session").shared;
+const GUIDED = require("../lib/voice-guided");
 
 const DG = () => process.env.TESTING_DEEPGRAM || "";
 const MODEL = process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
@@ -93,6 +94,37 @@ exports.handler = async event => {
       const [audio, f1, f2] = await Promise.all([tts(sc.opening, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
       return json(200, { ok: true, text: sc.opening, audio, fillers: [f1, f2] });
     }
+    /* ---- Guided session ---- */
+    const G = GUIDED[key];
+    if (G && body.action === "gstart") {
+      const m = G.moments[0];
+      const [line, o, g, p, f1, f2] = await Promise.all([tts(m.line, voice), tts(m.replies.open, voice), tts(m.replies.guarded, voice), tts(m.replies.pull, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
+      const script = { client: G.client, intro: G.intro, goal: G.goal, stretch: G.stretch, moments: G.moments.map(x => ({ skill: x.skill, focus: x.focus, line: x.line, replies: x.replies })), closings: G.closings };
+      return json(200, { ok: true, script, audio: { line, open: o, guarded: g, pull: p }, fillers: [f1, f2] });
+    }
+    if (G && body.action === "gprep") {
+      const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m = G.moments[i];
+      const [line, o, g, p] = await Promise.all([tts(m.line, voice), tts(m.replies.open, voice), tts(m.replies.guarded, voice), tts(m.replies.pull, voice)]);
+      const out = { line, open: o, guarded: g, pull: p };
+      if (i === G.moments.length - 1) { const [w, f] = await Promise.all([tts(G.closings.warm, voice), tts(G.closings.flat, voice)]); out.warm = w; out.flat = f; }
+      return json(200, { ok: true, i, audio: out });
+    }
+    if (G && body.action === "gturn") {
+      const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m = G.moments[i];
+      const t0 = Date.now(), heard = await stt(body.audio, body.mime);
+      if (!heard) return json(200, { ok: true, heard: "", retry: true });
+      const t1 = Date.now();
+      const sys = `You sort a therapist-in-training's spoken response in a practice session. Everyone is fictional. Their words were transcribed from speech, so ignore small slips.
+${COURSE}
+Client: ${G.client}. Reply with ONE word only:
+- open: the response ${m.open}.
+- pull: the response ${m.pull}.
+- guarded: anything else (neutral, vague, off-topic, or a mix).
+When it's a reasonable, caring attempt that partly does the "open" move, choose open.`;
+      const raw = (await claude(sys, `${G.client} said: "${m.line}"\nTherapist said: "${heard}"\nOne word: open, guarded, or pull.`, FAST, 10)).toLowerCase();
+      const pick = /open/.test(raw) ? "open" : /pull/.test(raw) ? "pull" : "guarded";
+      return json(200, { ok: true, heard, pick, parts: { listen: t1 - t0, think: Date.now() - t1, voice: 0 }, ms: Date.now() - t0 });
+    }
     if (body.action === "wrap") {
       const moments = toMoments(sc, body.history);
       if (!moments.some(m => m.attempts.length)) return json(400, { error: "Nothing to review yet" });
@@ -106,7 +138,8 @@ Return ONLY a JSON object:
  "noticed": ["1 or 2 patterns you noticed across the session, like pace, question stacking, using her words, a Pull that kept showing up, or how they handled silence"],
  "goal": "one or two sentences: how close they got to the session goal (and the stretch, if they got there), naming the move that got them closer or what got in the way. No grade or yes/no verdict.",
  "next": "the one course skill to practice next, and in one sentence why"}`;
-      const text = await claude(sys, `FULL SESSION\n\n${transcript(sc, moments)}`, SUMMARY_MODEL, 1500);
+      const gnote = G && Array.isArray(body.picks) && body.picks.length ? `\n\nThis was a GUIDED session. Each moment practiced one course skill, and Dana's reply showed how it landed (open = she opened up, guarded = she stayed where she was, pull = she pulled back):\n${body.picks.map((p, k) => `Moment ${k + 1} (${(G.moments[k] || {}).skill}): ${p}`).join("\n")}\nUse this. Say which skills landed and which to practice.` : "";
+      const text = await claude(sys + gnote, `FULL SESSION\n\n${transcript(sc, moments)}`, SUMMARY_MODEL, 1500);
       let parts = null; const m = text.match(/\{[\s\S]*\}/);
       try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
       if (!parts) return json(502, { error: "The breakdown didn’t come through. Try again." });

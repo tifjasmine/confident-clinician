@@ -1143,11 +1143,13 @@
   }
 
   /* ---------- Voice session (TESTING: preview account only) ---------- */
-  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-thalia-en", sum: null, sumErr: "", speed: "fast", fillers: [], parts: [] };
+  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-thalia-en", sum: null, sumErr: "", speed: "fast", fillers: [], parts: [], mode: "guided", g: null };
+  const VG_TAG = { open: ["Dana opened up", "ok"], guarded: ["Dana stayed guarded", "mid"], pull: ["Dana pulled back", "back"] };
   const VS_VOICES = [["aura-2-thalia-en", "Thalia"], ["aura-2-andromeda-en", "Andromeda"], ["aura-2-helena-en", "Helena"], ["aura-2-luna-en", "Luna"], ["aura-2-cora-en", "Cora"], ["aura-2-delia-en", "Delia"], ["aura-2-asteria-en", "Asteria"], ["aura-2-athena-en", "Athena"]];
   const VS_MAX = 8;
   function voiceView() {
     if (!isTestAccount()) return { html: `<div class="card"><p>Voice sessions aren’t open yet.</p></div>`, title: "Voice session" };
+    if (VS.mode === "guided") return vgView();
     const st = VS.status, turns = VS.hist.filter(h => h.who === "me").length;
     const statusLine = { idle: "", opening: "Dana is getting ready…", speaking: "Dana is talking…", listening: "Your turn. Answer out loud. When you pause, Dana will reply.", thinking: "Dana is thinking…", done: "Session complete." }[st] || "";
     const lines = VS.hist.map((h, i) => h.who === "client"
@@ -1161,7 +1163,7 @@
         <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
         <div class="field"><b>Dana’s voice</b><small>Testing only: try a few and see which sounds most like Dana.</small><div class="chips-row">${VS_VOICES.map(([v, n]) => `<button type="button" class="chip" data-vs-voice="${v}" aria-pressed="${VS.voice === v}">${n}</button>`).join("")}</div></div>
         <div class="field"><b>Dana’s thinking</b><small>Testing only: Fast replies quicker, Smart follows you more closely.</small><div class="chips-row"><button type="button" class="chip" data-vs-speed="fast" aria-pressed="${VS.speed === "fast"}">Fast</button><button type="button" class="chip" data-vs-speed="smart" aria-pressed="${VS.speed === "smart"}">Smart</button></div></div>
-        <div class="actions"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button></div>` : ""}
+        <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button><button type="button" class="v6-link" data-vs-mode="guided">Back to the guided session</button></div>` : ""}
       ${st !== "idle" ? `<div class="vs-goal sm"><b>Goal</b> Find out what really got in the way of the homework, without assigning anything new.</div>` : ""}
       ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
       ${lines ? `<div class="vs-log">${lines}</div>` : ""}
@@ -1171,6 +1173,90 @@
       ${st === "done" ? vsSummaryHTML() : ""}
     </div>`;
     return { html, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
+  }
+  function vgView() {
+    const G = VS.g || {}, sc = G.script, st = VS.status, n = sc ? sc.moments.length : 5, i = G.i || 0, m = sc && sc.moments[Math.min(i, n - 1)];
+    const voicePick = `<div class="field"><b>Dana’s voice</b><small>Testing only.</small><div class="chips-row">${VS_VOICES.map(([v, nm]) => `<button type="button" class="chip" data-vs-voice="${v}" aria-pressed="${VS.voice === v}">${nm}</button>`).join("")}</div></div>`;
+    if (st === "idle") return { html: `<div class="card stack">
+      <div class="rep-top"><span class="v6-pill blush">🎙 Guided voice session · Testing</span><span class="lesson">Only your preview account can see this</span></div>
+      <p class="flow-q">A spoken session with Dana, in five moments.</p>
+      <p class="flow-sub">Dana, 34, is an ER nurse in session 6. Last week you suggested a thought record. She didn’t do it, and she walks in guarded. Each moment practices one skill from the course. Answer out loud; Dana responds to how it lands.</p>
+      <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
+      <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
+      ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
+      ${voicePick}
+      <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn primary" data-vg-start>Start the guided session</button><button type="button" class="v6-link" data-vs-mode="open">Try an open conversation instead</button></div>
+    </div>`, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
+    const lines = VS.hist.map(h => h.who === "client"
+      ? `<div class="vs-line c"><span class="av" aria-hidden="true">D</span><div><small>Dana</small>${q(h.text)}</div></div>`
+      : `<div class="vs-line me"><div><small>You${h.skill ? ` · ${esc(h.skill)}` : ""}</small>${esc(h.text)}${h.clip ? `<audio controls preload="none" src="${h.clip}"></audio>` : ""}${h.pick ? `<span class="vg-tag ${VG_TAG[h.pick][1]}">${VG_TAG[h.pick][0]}</span>` : ""}</div></div>`).join("");
+    const statusLine = { opening: "Getting Dana ready…", speaking: "Dana is talking…", listening: "Your turn. Answer out loud.", thinking: "Dana is listening…", between: "", done: "" }[st] || "";
+    const momentHead = m && st !== "done" ? `<div class="vg-moment"><span class="v6-label">Moment ${Math.min(i, n - 1) + 1} of ${n} · ${esc(m.skill)}</span><div class="vg-focus">${esc(m.focus)}</div></div>` : "";
+    const nextBox = st === "between" && sc ? `<div class="vg-next"><span class="v6-label">Up next · Moment ${i + 1} of ${n}</span><b>${esc(sc.moments[i].skill)}</b><span>${esc(sc.moments[i].focus)}</span><div class="actions"><button type="button" class="v6-btn primary" data-vg-next${G.ready && G.ready[i] ? "" : " disabled"}>${G.ready && G.ready[i] ? "Next moment →" : "Getting it ready…"}</button></div></div>` : "";
+    const recap = st === "done" && G.picks && G.picks.length ? `<div class="vg-recap"><span class="v6-label">How each moment landed</span>${G.picks.map((p, k) => `<div class="r"><span>${k + 1}. ${esc(sc.moments[k].skill)}</span><span class="vg-tag ${VG_TAG[p][1]}">${VG_TAG[p][0]}</span></div>`).join("")}</div>` : "";
+    return { html: `<div class="card stack">
+      <div class="rep-top"><span class="v6-pill blush">🎙 Guided voice session · Testing</span><span class="lesson">Goal: what really got in the way of the homework</span></div>
+      ${st === "between" ? "" : momentHead}
+      ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
+      ${lines ? `<div class="vs-log">${lines}</div>` : ""}
+      ${nextBox}
+      ${statusLine ? `<div class="vs-status ${st}"><span class="vs-dot"></span><span>${statusLine}</span>${st === "listening" ? `<span class="vs-meter"><i data-vs-meter></i></span>` : ""}</div>` : ""}
+      <div class="actions" style="justify-content:space-between">${st === "listening" ? `<button type="button" class="v6-btn primary" data-vs-done>I’m done talking</button>` : "<span></span>"}
+        ${st !== "done" ? `<button type="button" class="v6-btn secondary" data-vs-end>End session</button>` : `<button type="button" class="v6-btn secondary" data-vs-again>Start over</button>`}</div>
+      ${recap}
+      ${st === "done" ? vsSummaryHTML() : ""}
+    </div>`, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
+  }
+  async function vgPrep(i) {
+    const G = VS.g; if (!G || i >= G.script.moments.length || (G.audio[i])) return;
+    try { const { out } = await api("/.netlify/functions/lab-voice", { action: "gprep", scenario: "dana", voice: VS.voice, i }); if (out.ok && VS.g === G) { G.audio[i] = out.audio; G.ready[i] = true; if (VS.status === "between" && location.hash.startsWith("#voice")) render(); } } catch (e) {}
+  }
+  async function vgStart() {
+    VS.hist = []; VS.ms = []; VS.parts = []; VS.msg = ""; VS.sum = null; VS.sumErr = "";
+    try { VS.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+    catch (e) { return vsSet("idle", "Your microphone isn’t available. Check your browser’s permission for this site and try again."); }
+    vsSet("opening");
+    try {
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "gstart", scenario: "dana", voice: VS.voice });
+      if (!out.ok) { vsStopAll(); return vsSet("idle", out.error || "Voice isn’t available right now."); }
+      VS.g = { script: out.script, i: 0, picks: [], audio: { 0: out.audio }, ready: { 0: true } }; VS.fillers = out.fillers || [];
+      vgPrep(1);
+      await vgMoment();
+    } catch (e) { vsStopAll(); vsSet("idle", "Voice isn’t available right now."); }
+  }
+  async function vgMoment() {
+    const G = VS.g, m = G.script.moments[G.i];
+    VS.hist.push({ who: "client", text: m.line }); vsSet("speaking"); await vsPlay(G.audio[G.i].line);
+    if (VS.status === "speaking") vsListen();
+  }
+  async function vgSend(blob) {
+    const G = VS.g; if (VS.status !== "listening" || !G) return;
+    vsSet("thinking", "");
+    if (VS.fillers.length) { try { new Audio("data:audio/mpeg;base64," + VS.fillers[Math.floor(Math.random() * VS.fillers.length)]).play().catch(() => {}); } catch (e) {} }
+    const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
+    const t0 = Date.now();
+    try {
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "gturn", scenario: "dana", i: G.i, audio: b64, mime: blob.type.split(";")[0] });
+      if (VS.status !== "thinking") return;
+      if (!out.ok) { VS.msg = out.error || "Something went wrong. Try again."; return vsListen(); }
+      if (out.retry) { VS.msg = "Dana didn’t catch that. Try saying it again."; return vsListen(); }
+      VS.msg = ""; VS.ms.push(Date.now() - t0); if (out.parts) VS.parts.push(out.parts);
+      const m = G.script.moments[G.i];
+      G.picks.push(out.pick);
+      VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: out.pick, skill: m.skill });
+      VS.hist.push({ who: "client", text: m.replies[out.pick] });
+      vsSet("speaking"); await vsPlay(G.audio[G.i][out.pick]);
+      if (VS.status !== "speaking") return;
+      G.i++;
+      if (G.i >= G.script.moments.length) {
+        const warm = G.picks.filter(p => p === "open").length >= 3, last = G.audio[G.i - 1];
+        VS.hist.push({ who: "client", text: G.script.closings[warm ? "warm" : "flat"] });
+        render(); await vsPlay(last[warm ? "warm" : "flat"] || "");
+        vsStopAll(); vsSet("done", ""); return vsWrap();
+      }
+      vgPrep(G.i + 1);
+      vsSet("between");
+    } catch (e) { VS.msg = "Connection hiccup. Try again."; vsListen(); }
   }
   function vsSummaryHTML() {
     const avg = a => (a.reduce((x, y) => x + y, 0) / a.length / 1000).toFixed(1);
@@ -1192,12 +1278,12 @@
     VS.sum = null; VS.sumErr = "";
     if (!VS.hist.some(h => h.who === "me")) return;
     try {
-      const { out } = await api("/.netlify/functions/lab-voice", { action: "wrap", scenario: "dana", history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "wrap", scenario: "dana", picks: VS.mode === "guided" && VS.g ? VS.g.picks : [], history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
       if (out.ok) VS.sum = out.summary; else VS.sumErr = out.error || "The breakdown didn’t come through.";
     } catch (e) { VS.sumErr = "The breakdown didn’t come through."; }
     if (location.hash.startsWith("#voice")) render();
   }
-  const vsPlay = b64 => new Promise(res => { try { const a = new Audio("data:audio/mpeg;base64," + b64); VS.audio = a; a.onended = res; a.onerror = res; a.play().catch(res); } catch (e) { res(); } });
+  const vsPlay = b64 => new Promise(res => { if (!b64) return res(); try { const a = new Audio("data:audio/mpeg;base64," + b64); VS.audio = a; a.onended = res; a.onerror = res; a.play().catch(res); } catch (e) { res(); } });
   const vsSet = (st, msg) => { VS.status = st; if (msg !== undefined) VS.msg = msg; if (location.hash.startsWith("#voice")) render(); };
   function vsStopAll() {
     cancelAnimationFrame(VS.raf); VS.raf = 0;
@@ -1207,12 +1293,12 @@
     VS.stream = null; VS.rec = null;
   }
   async function vsListen() {
-    if (VS.hist.filter(h => h.who === "me").length >= VS_MAX) { vsStopAll(); vsSet("done", ""); return vsWrap(); }
+    if (VS.mode !== "guided" && VS.hist.filter(h => h.who === "me").length >= VS_MAX) { vsStopAll(); vsSet("done", ""); return vsWrap(); }
     vsSet("listening");
     const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
     const rec = new MediaRecorder(VS.stream, mime ? { mimeType: mime } : {}), chunks = [];
     VS.rec = rec; rec.ondataavailable = e => e.data.size && chunks.push(e.data);
-    rec.onstop = () => vsSend(new Blob(chunks, { type: rec.mimeType || mime || "audio/webm" }));
+    rec.onstop = () => { const bl = new Blob(chunks, { type: rec.mimeType || mime || "audio/webm" }); VS.mode === "guided" ? vgSend(bl) : vsSend(bl); };
     rec.start(250);
     const ctx = new (window.AudioContext || window.webkitAudioContext)(), src = ctx.createMediaStreamSource(VS.stream), an = ctx.createAnalyser();
     an.fftSize = 1024; src.connect(an); const buf = new Uint8Array(an.fftSize);
@@ -1533,12 +1619,15 @@
     if (scr !== "voice" && VS.status !== "idle" && VS.status !== "done") { vsStopAll(); VS.status = "done"; }
     if (scr === "voice") {
       const b1 = $("[data-vs-start]", app); if (b1) b1.onclick = vsStart;
+      const g1 = $("[data-vg-start]", app); if (g1) g1.onclick = vgStart;
+      const g2 = $("[data-vg-next]", app); if (g2) g2.onclick = () => { if (VS.g && VS.g.ready[VS.g.i]) vgMoment(); };
+      $$("[data-vs-mode]", app).forEach(b => b.onclick = () => { VS.mode = b.dataset.vsMode; VS.msg = ""; render(); });
       const b2 = $("[data-vs-done]", app); if (b2) b2.onclick = () => { try { VS.rec && VS.rec.state !== "inactive" && VS.rec.stop(); } catch (e) {} };
       const b3 = $("[data-vs-end]", app); if (b3) b3.onclick = () => { vsStopAll(); vsSet("done", ""); vsWrap(); };
       const b5 = $("[data-vs-sum]", app); if (b5) b5.onclick = () => { VS.sumErr = ""; render(); vsWrap(); };
       $$("[data-vs-voice]", app).forEach(b => b.onclick = () => { VS.voice = b.dataset.vsVoice; render(); });
       $$("[data-vs-speed]", app).forEach(b => b.onclick = () => { VS.speed = b.dataset.vsSpeed; render(); });
-      const b4 = $("[data-vs-again]", app); if (b4) b4.onclick = () => { vsStopAll(); VS.hist = []; vsSet("idle", ""); };
+      const b4 = $("[data-vs-again]", app); if (b4) b4.onclick = () => { vsStopAll(); VS.hist = []; VS.g = null; vsSet("idle", ""); };
     }
     if (scr === "bonus") {
       const B = BONUS().find(b => b.id === arg) || BONUS()[0], x = S.bonus[B.id], AU = window.TCC6_BONUS_AUDIO || { ready: [], base: "" };
