@@ -198,6 +198,17 @@
     moment: "Just tell me what to do. You’re the therapist. Should I break up with them?",
     hintWhy: "“Because it validates” isn’t enough. What does it help you learn, and what does it avoid?",
     check: "Did you give Jordan the decision back while still being helpful?",
+    /* Tap-through demo. Add an audio file URL to a take (audio: "...") to let students hear the tone. */
+    walk: [
+      { kind: "client", text: "Just tell me what to do. You’re the therapist. Should I break up with them?", ctx: "Jordan, 29 · session 3 · just described another fight with their partner" },
+      { kind: "take", tone: "rushed", label: "Take 1 · rushed", text: "From everything you’ve said, it sounds like you should leave.", audio: "" },
+      { kind: "client", text: "Okay… but what if I regret it?" },
+      { kind: "explain", title: "What happened", points: ["Pressure, not a knowledge gap: Jordan wanted a decision, and handing one over felt useful.", "It answered with half the story. We don’t know enough yet about safety, practical constraints, the relationship, or what matters most to Jordan.", "It took the decision away. Now Jordan is worried about regretting the therapist’s choice instead of thinking through their own."] },
+      { kind: "take", tone: "steady", label: "Take 2 · steady", text: "I hear how exhausted you are, and I get why you’d want someone to just give you a clear answer. I can help you sort through it, but I don’t want to decide something this important for you. Can we start with what feels hardest about staying, or about leaving?", audio: "" },
+      { kind: "client", text: "I’m scared I’ll make the wrong choice." },
+      { kind: "explain", title: "Why it works", points: ["It names what Jordan is carrying before turning anything back.", "It opens up the fear instead of answering it, so you can explore how Jordan decides and what they value.", "It’s still helpful. It just gives the decision back."] },
+      { kind: "explain", safety: true, title: "If safety comes up", points: ["If Jordan shows any sign they don’t feel safe, are being controlled, or can’t choose freely, assessment comes first. You’re not assuming abuse; you’re making room to assess when the information calls for it."], line: "Before we weigh your options, I want to understand whether you feel safe and free to make decisions in this relationship." }
+    ],
     ai: "AI could reply to your “why” with one follow-up question."
   };
 

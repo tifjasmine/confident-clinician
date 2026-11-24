@@ -169,7 +169,7 @@
     { key: "l3", type: "lesson", rep: "1.3", label: "Lesson 3 + Practice", kind: "Lesson 3 + Practice", short: "Use P.A.U.S.E. When You Go Blank", title: "Use P.A.U.S.E. When You Go Blank",
       desc: "A simple five-step tool for the moments your mind goes blank, so you can find one steady thing to say instead of the perfect thing.", meta: "Video lesson + practice", img: IMG.d, video: "w1-l3", pull: "The Pull: Fill · adds the aim “I’d stay quiet a little longer”" },
     { key: "demo", type: "demo", label: "Demo", kind: "Demonstration", short: "When the client asks you to decide", title: "Demo: When the client asks you to decide for them",
-      desc: "A client asks you to just tell them what to do. Watch a rushed response, see why it misses, then watch a steadier one.", meta: "Video demo", img: IMG.c, video: "w1-demo",
+      desc: "A client asks you to just tell them what to do. Step through a rushed response and a steadier one, then try your own.", meta: "Walk-through", img: IMG.c,
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
       desc: "Read a short session with Jordan and another therapist. Find the moment it went off track, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,

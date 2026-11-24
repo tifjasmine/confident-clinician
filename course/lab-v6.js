@@ -543,17 +543,25 @@
         + `<button type="button" class="v6-btn ${S.watched[s.key] ? "primary" : "secondary"}" data-go="act/${s.key}">${st.done ? "Do it again" : started ? "Continue the activity" : "Start the activity"}</button>`;
     }
     if (s.type === "demo") {
-      body = `<div class="quote-box"><span class="v6-label">${esc(s.quoteLabel)}</span><span class="ctx">${esc(s.context)}</span><span class="line">${esc(s.moment)}</span><span class="pull">${esc(s.pull)}</span></div>`;
-      const DM = S.demo = S.demo || {}, AD = ACTS.demo;
-      body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
+      const DM = S.demo = S.demo || {}, AD = ACTS.demo, W = AD.walk;
+      const at = Math.min(DM.step || 0, W.length - 1), fin = !!DM.watched;
+      const shown = fin ? W : W.slice(0, at + 1);
+      const stepHTML = (w, k) => {
+        if (w.kind === "client") return `<div class="dw-client"><span class="av" aria-hidden="true">J</span><div><span class="who">Jordan${w.ctx ? ` <small>${esc(w.ctx)}</small>` : ""}</span><span class="said">${q(w.text)}</span></div></div>`;
+        if (w.kind === "take") return `<div class="dw-take ${w.tone}"><span class="dw-label">${esc(w.label)}</span><span class="said">${q(w.text)}</span>${w.audio ? `<audio controls preload="none" src="${esc(w.audio)}"></audio>` : ""}</div>`;
+        return `<div class="dw-explain${w.safety ? " safety" : ""}"><span class="dw-label">${esc(w.title)}</span><ul>${w.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>${w.line ? `<p class="said">${q(w.line)}</p>` : ""}</div>`;
+      };
+      body = `<div class="act-card look-demo dw"><span class="v6-label">Walk-through · ${fin ? "Done" : `Step ${at + 1} of ${W.length}`}</span><span class="ac-name">One moment, two ways</span>
+          <div class="dw-steps">${shown.map(stepHTML).join("")}</div>
+          <div class="dw-nav">${fin ? `<button type="button" class="v6-link" data-act="demoreset">Walk through it again</button>` : `<button type="button" class="v6-btn primary" data-act="demonext">${at === W.length - 1 ? "Done: my turn →" : "Next"}</button>`}</div></div>`;
+      if (fin) body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
           <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(AD.moment)}</span></span></div>
           <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
           <label class="field">Why that sentence? <small>${esc(AD.hintWhy)}</small><textarea class="v6-ta" rows="2" data-demo="why" placeholder="I chose it because…">${esc(DM.why)}</textarea></label>
           <div class="field">${esc(AD.check)}<div class="chips-row">${["Yes", "Not quite", "Not sure"].map(o => `<button type="button" class="chip" data-demo-ck="${o}" aria-pressed="${DM.ck === o}">${o}</button>`).join("")}</div></div>
           ${aiBox("demo-why", "Get a training note on my sentence", "why", () => ({ line: AD.moment, sentence: DM.line || "", why: DM.why || "", check: DM.ck || "" }), res => { DM.aiNote = res.note; }, { req: ["sentence", "why"], rkey: "demo#1", akeys: ["aiNote"], where: "Demo · Your why" })}</div>`;
       const dOk = (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3 && DM.ck;
-      cta = (DM.watched ? `<button type="button" class="v6-btn secondary" data-act="demowatch">Demo watched ✓</button>` : `<button type="button" class="v6-btn primary" data-act="demowatch">Mark demo watched</button>`)
-        + (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
+      cta = !fin ? "" : (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
     }
     if (s.type === "lab" || s.type === "sim") {
       body = locked ? itemsHTML(s.itemsLabel, s.items) : s.type === "lab" ? labHTML() : simHTML();
@@ -597,7 +605,7 @@
       cta = `<button type="button" class="v6-btn primary" data-act="saveprofile"${planOk ? "" : " disabled"}>${done ? "Profile saved ✓" : "Save my profile"}</button><button type="button" class="v6-btn secondary" data-act="copyprofile">Copy</button><button type="button" class="v6-btn secondary" data-act="printprofile">Print</button><span class="saved-flag" data-flag></span>`;
     }
 
-    const media = ["lab", "sim", "save", "reflect"].includes(s.type) ? "" : video(s.video, s.img, !!s.video);
+    const media = ["lab", "sim", "save", "reflect", "demo"].includes(s.type) ? "" : video(s.video, s.img, !!s.video);
     const lockedNote = locked ? `<div class="locked-note"><span aria-hidden="true">🔒</span>Opens when you finish ${esc(prev)}.</div>` : "";
     const nxt = D.WEEK1[sel + 1];
     const nextBtn = done && nxt && !["lab", "sim", "reflect"].includes(s.type) ? `<button type="button" class="v6-btn primary next" data-go="week/${nxt.key}">Next: ${esc(nxt.short)} →</button>` : "";
@@ -1121,6 +1129,8 @@
         if (act === "welcome") { S.welcome = !S.welcome; }
         if (act === "watch") { S.watched[k] = !S.watched[k]; }
         if (act === "demowatch") { S.demo.watched = !S.demo.watched; }
+        if (act === "demonext") { const W = ACTS.demo.walk; S.demo.step = (S.demo.step || 0) + 1; if (S.demo.step >= W.length) { S.demo.watched = true; S.demo.step = W.length - 1; } }
+        if (act === "demoreset") { S.demo.step = 0; S.demo.watched = false; }
         if (act === "demosave") { S.steps.demo = true; save(); render(); flash("Saved"); return; }
         if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); render(); flash("Saved"); return; }
         if (act === "copyprofile" || act === "printprofile") {

@@ -1286,3 +1286,25 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .v6-setup summary strong { color: var(--terra); }
 .v6-setup form { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
 .v6-setup input { font-size: 16px; }
+
+/* Demo walk-through: one moment, two ways */
+.dw .dw-steps { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.dw .dw-steps > * { animation: dwIn .35s ease-out both; }
+@keyframes dwIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.dw-client { display: flex; gap: 12px; align-items: flex-start; }
+.dw-client .av { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-weight: 700; color: var(--forest); }
+.dw-client .who { display: block; font-size: 13px; color: var(--muted); margin-bottom: 2px; }
+.dw-client .who small { font-size: 12px; }
+.dw-client .said, .dw-take .said, .dw-explain .said { font: italic 600 19px/1.35 var(--serif); color: var(--ink); }
+.dw-take { border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.dw-take.rushed { background: #f6e3da; border-left: 4px solid var(--terra); }
+.dw-take.steady { background: #e6eee6; border-left: 4px solid var(--forest); }
+.dw-take audio { width: 100%; max-width: 360px; height: 36px; }
+.dw-label { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--terra); }
+.dw-take.steady .dw-label { color: var(--forest); }
+.dw-explain { border: 1px solid var(--line-2); border-radius: 16px; padding: 16px 18px; background: #fff; }
+.dw-explain ul { margin: 8px 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5; }
+.dw-explain.safety { background: var(--soft); }
+.dw-explain .said { margin-top: 10px; font-size: 17px; }
+.dw-nav { margin-top: 16px; display: flex; justify-content: flex-end; }
+.dw-nav .v6-btn { min-width: 140px; }
