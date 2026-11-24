@@ -1397,3 +1397,12 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .vs-status.thinking .vs-dot,.vs-status.opening .vs-dot{animation:vsp .8s infinite}
 @keyframes vsp{50%{opacity:.3}}
 .vs-meter{flex:1;max-width:160px;height:6px;border-radius:6px;background:#e7e4de;overflow:hidden}.vs-meter i{display:block;height:100%;width:0;background:#2e4a3e}
+
+.vs-sum{display:grid;gap:12px;padding:18px;border-radius:14px;background:#eef3ef}
+.vs-sum .arc{margin:0;font-family:var(--serif,Georgia,serif);font-size:1.05rem}
+.vs-sum .blk{background:#fff;border-radius:12px;padding:12px 14px}
+.vs-sum .blk b{display:block;margin-bottom:4px}
+.vs-sum .blk ul{margin:0;padding-left:18px}.vs-sum .blk li{margin:3px 0}
+.vs-sum .blk p{margin:0}
+.vs-sum .well b{color:#2e4a3e}.vs-sum .build b{color:#b5694f}
+.vs-wait{display:block;color:var(--muted);font-size:12.5px}
