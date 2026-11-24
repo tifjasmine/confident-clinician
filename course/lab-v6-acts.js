@@ -195,42 +195,41 @@
   };
 
   const demo = {
-    moment: "Just tell me what to do. You’re the therapist. Should I quit my job and open the bakery?",
+    moment: "Just tell me what to do. You’re the therapist. Should I break up with them?",
     hintWhy: "“Because it validates” isn’t enough. What does it help you learn, and what does it avoid?",
-    check: "Did you give Malik the decision back while still being helpful?",
+    check: "Did you give Jordan the decision back while still being helpful?",
     /* Audio demo: two takes of the same moment. Each line has a code; when its audio file is in
-       /course/audio/demo/<code>.mp3, list the code in audioReady and it plays. Until then lines appear at reading pace.
-       DRAFT wording: awaiting Tiffany's clinical review. */
+       /course/audio/demo/<code>.mp3, list the code in audioReady and it plays. Until then lines appear at reading pace. */
     audioBase: "/course/audio/demo/",
     audioReady: [],
     walk: [
-      { kind: "convo", tone: "rushed", label: "Take 1 · rushed", ctx: "Malik, 33 · session 4 · an accountant who’s been saving for years to open a bakery", lines: [
-        ["t1-01", "M", "Just tell me what to do. You’re the therapist. Should I quit my job and open the bakery?"],
-        ["t1-02", "T", "Honestly? Life’s short. If the job is making you this miserable, I think you should go for it."],
-        ["t1-03", "M", "Okay… but what if it fails? That’s my whole savings."],
-        ["t1-04", "T", "Plenty of small businesses make it. You could start small, maybe bake on weekends first and see how it goes."],
-        ["t1-05", "M", "I’ve thought about weekends. I’m already wiped out by Friday."],
-        ["t1-06", "T", "Then what about a leave of absence? A lot of companies offer that."],
-        ["t1-07", "M", "Yeah. Maybe. … I’ll look into it."]
+      { kind: "convo", tone: "rushed", label: "Take 1 · rushed", ctx: "Jordan, 29 · session 3 · just described another fight with their partner", lines: [
+        ["t1-01", "J", "Just tell me what to do. You’re the therapist. Should I break up with them?"],
+        ["t1-02", "T", "Honestly? From everything you’ve said, it sounds like you should leave."],
+        ["t1-03", "J", "Okay… but what if I regret it? We’ve been together four years."],
+        ["t1-04", "T", "That’s a normal thing to feel. But you deserve someone who treats you better. You’ve told me how much the fighting wears you down."],
+        ["t1-05", "J", "I mean… it’s not always bad. You’ve only heard about the bad parts."],
+        ["t1-06", "T", "Sure, but patterns like this usually don’t change on their own."],
+        ["t1-07", "J", "Yeah. I guess. … Can we talk about something else?"]
       ] },
-      { kind: "explain", title: "What happened in Take 1", points: ["The answer came from pressure to be useful, before knowing what this choice means to Malik.", "Every suggestion was a fix, and Malik had a reason each one wouldn’t work.", "The decision became the therapist’s project, and Malik went quiet and polite."] },
+      { kind: "explain", title: "What happened in Take 1", points: ["The answer came from pressure to be useful, with only half the story.", "Jordan started defending the relationship instead of exploring it.", "The decision became the therapist’s, and Jordan shut down."] },
       { kind: "convo", tone: "steady", label: "Take 2 · steady", lines: [
-        ["t2-01", "M", "Just tell me what to do. You’re the therapist. Should I quit my job and open the bakery?"],
-        ["t2-02", "T", "I can hear how worn down you are, and how much you’d like someone to just make the call. I don’t want to decide something this big for you, but I do want to help you think it through. What feels hardest about it right now?"],
-        ["t2-03", "M", "If I stay, it’s thirty more years of spreadsheets I hate. If I go and it fails, I lose everything I’ve saved. And my parents worked so hard so I could have this job."],
-        ["t2-04", "T", "So there’s the fear of losing the money, and something heavier about your parents and what they gave up."],
-        ["t2-05", "M", "Yeah. That’s the part I don’t say out loud."],
-        ["t2-06", "T", "When you picture telling them you quit, what do you imagine happens?"],
-        ["t2-07", "M", "… My dad would go quiet. That’s worse than yelling."],
-        ["t2-08", "T", "Go quiet. What would that quiet mean to you?"],
-        ["t2-09", "M", "That I wasted it. Everything they did for me."],
-        ["t2-10", "T", "That’s what you imagine he’d think. What do you think?"],
-        ["t2-11", "M", "… I think they wanted me to have choices. I just never felt like I had one."],
-        ["t2-12", "T", "That feels important. Maybe that’s where we start: what it would look like for this to be your choice, whichever way you go."],
-        ["t2-13", "M", "Yeah. I’ve never thought about it like that."]
+        ["t2-01", "J", "Just tell me what to do. You’re the therapist. Should I break up with them?"],
+        ["t2-02", "T", "I can hear how exhausted you are, and I get why you’d want someone to just give you a clear answer. I don’t want to make a decision this big for you, but I do want to help you sort through it. What feels hardest right now, staying or leaving?"],
+        ["t2-03", "J", "Both. If I stay, I’m scared it’s going to be like this forever. If I leave, I’m scared I’m throwing away four years over stuff that’s fixable."],
+        ["t2-04", "T", "So part of you is afraid of being stuck, and part of you is afraid of giving up on something that might still work."],
+        ["t2-05", "J", "Yeah. Exactly that."],
+        ["t2-06", "T", "When you picture a year from now, what would tell you that you made the right call, either way?"],
+        ["t2-07", "J", "… That I’m not walking on eggshells. That I feel like myself again."],
+        ["t2-08", "T", "Not walking on eggshells. What happens when you feel like you’re walking on eggshells?"],
+        ["t2-09", "J", "I watch everything I say. If I bring something up the wrong way, it turns into a whole fight."],
+        ["t2-10", "T", "When the fights happen, do you ever feel unsafe, or like you can’t make your own choices?"],
+        ["t2-11", "J", "No, nothing like that. It’s just loud and exhausting. We both say stuff we don’t mean."],
+        ["t2-12", "T", "Thank you for telling me. So it sounds like what matters most is feeling like yourself again. Maybe that’s where we start: what would need to change for that to happen, whether you stay or go?"],
+        ["t2-13", "J", "… Yeah. I can work with that."]
       ] },
-      { kind: "explain", title: "Why Take 2 works", points: ["It names what Malik is carrying before handing anything back.", "It reflects both fears, including the one he hadn’t said out loud.", "It follows his words, like “go quiet,” instead of jumping to solutions.", "It separates his dad’s voice from his own.", "It ends with a next step Malik owns."] },
-      { kind: "explain", safety: true, title: "If something more serious comes up", points: ["If Malik had mentioned hopelessness, weeks of barely sleeping, or thoughts of not wanting to be here, the decision would wait. Check in on that first and follow your safety protocol."] }
+      { kind: "explain", title: "Why Take 2 works", points: ["It names what Jordan is carrying before handing anything back.", "It reflects both fears in Jordan’s own words.", "It asks what matters to Jordan and follows “walking on eggshells.”", "It checks safety plainly, without assuming.", "It ends with a next step Jordan owns."] },
+      { kind: "explain", safety: true, title: "If safety comes up", points: ["Had Jordan said yes to feeling unsafe or controlled, assessment and your safety protocol come first, before weighing any options."] }
     ],
     ai: "AI could reply to your “why” with one follow-up question."
   };
