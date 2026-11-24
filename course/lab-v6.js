@@ -1236,17 +1236,17 @@
     const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
     const t0 = Date.now();
     try {
-      const { out } = await api("/.netlify/functions/lab-voice", { action: "gturn", scenario: "dana", i: G.i, audio: b64, mime: blob.type.split(";")[0] });
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "gturn", scenario: "dana", voice: VS.voice, i: G.i, history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })), audio: b64, mime: blob.type.split(";")[0] });
       if (VS.status !== "thinking") return;
       if (!out.ok) { VS.msg = out.error || "Something went wrong. Try again."; return vsListen(); }
       if (out.retry) { VS.msg = "Dana didn’t catch that. Try saying it again."; return vsListen(); }
       VS.msg = ""; VS.ms.push(Date.now() - t0); if (out.parts) VS.parts.push(out.parts);
       const m = G.script.moments[G.i];
-      const rep = m.replies[out.pick] || m.replies.other, land = out.land || rep.land || "guarded";
+      const land = out.land || "guarded";
       G.picks.push(land);
       VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: land, skill: m.skill });
-      VS.hist.push({ who: "client", text: rep.text });
-      vsSet("speaking"); await vsPlay(G.audio[G.i][out.pick]);
+      VS.hist.push({ who: "client", text: out.reply });
+      vsSet("speaking"); await vsPlay(out.audio);
       if (VS.status !== "speaking") return;
       G.i++;
       if (G.i >= G.script.moments.length) {

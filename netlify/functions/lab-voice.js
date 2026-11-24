@@ -73,7 +73,7 @@ async function claude(sys, user, model, maxTokens) {
 
 /* TTS for one guided moment: the line + every reply (+ closings on the last moment) */
 async function prepMoment(G, i, voice) {
-  const m = G.moments[i], jobs = [["line", m.line], ...m.replies.map(r => [r.key, r.text])];
+  const m = G.moments[i], jobs = [["line", m.line]];
   if (i === G.moments.length - 1) jobs.push(["warm", G.closings.warm], ["flat", G.closings.flat]);
   const done = await Promise.all(jobs.map(([, t]) => tts(t, voice)));
   return Object.fromEntries(jobs.map(([k], n) => [k, done[n]]));
@@ -117,16 +117,21 @@ exports.handler = async event => {
       const t0 = Date.now(), heard = await stt(body.audio, body.mime);
       if (!heard) return json(200, { ok: true, heard: "", retry: true });
       const t1 = Date.now();
-      const keys = m.replies.map(r => r.key);
-      const sys = `You match a therapist-in-training's spoken response to the client reply that fits it best, in a practice session. Everyone is fictional. Their words were transcribed from speech, so ignore small slips.
-${COURSE}
-Pick the ONE option whose description best matches what the therapist actually said or asked. Answer what they asked: if they asked a direct question, prefer the option that answers that question. If a response mixes moves, pick the move that dominates (usually the last thing they said). Use "other" only when nothing fits.
-Reply with the option key only.`;
-      const opts = m.replies.map(r => `- ${r.key}: the therapist ${r.when}`).join("\n");
-      const raw = (await claude(sys, `${G.client} said: "${m.line}"\nTherapist said: "${heard}"\n\nOPTIONS\n${opts}\n\nKey:`, FAST, 10)).toLowerCase();
-      const pick = keys.find(k => new RegExp("\\b" + k + "\\b").test(raw)) || "other";
-      const land = (m.replies.find(r => r.key === pick) || {}).land || "guarded";
-      return json(200, { ok: true, heard, pick, land, parts: { listen: t1 - t0, think: Date.now() - t1, voice: 0 }, ms: Date.now() - t0 });
+      const next = G.moments[i + 1];
+      const sys = `You play ${G.client} in a GUIDED spoken practice session for therapists-in-training. Everyone is fictional. The therapist's words were transcribed from speech, so ignore small slips.
+CLIENT BACKGROUND (fictional)\n${sc.background}\n\n${MAPS[key] || ""}\n\n${COURSE}
+Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "..."}
+1. "land": how the therapist's response lands, using the GUIDE for this moment. Reasonable, caring attempts that partly do an "open" move count as open.
+2. "reply": ${G.client}'s spoken reply. FIRST respond directly to what the therapist actually said or asked (if they asked a question, answer it, even briefly or reluctantly). Then let it carry the feeling and gist of the GUIDE example for that landing. Use the GUIDE examples as direction, not a script.
+Rules for the reply: one or two short sentences, everyday spoken words, no stage directions, no quotes, no therapy-speak. Never mention the course or skills. Don't jump ahead to what she'll say next${next ? ` (her next line will be: "${next.line}")` : ""}, and don't reveal more than this landing allows.`;
+      const guide = m.replies.map(r => `- ${r.land.toUpperCase()} when the therapist ${r.when}. Example gist: "${r.text}"`).join("\n");
+      const hist = (Array.isArray(body.history) ? body.history : []).slice(-12).map(h => `${h.who === "client" ? G.client : "Therapist"}: ${clip(h.text, 400)}`).join("\n");
+      const raw = await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nJSON:`, FAST, 300);
+      let land = "guarded", reply = "";
+      try { const j = JSON.parse((raw.match(/\{[\s\S]*\}/) || ["{}"])[0]); land = ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded"; reply = spoken(j.reply || ""); } catch { reply = ""; }
+      if (!reply) { const r = m.replies.find(x => x.land === land && x.key !== "other") || m.replies[m.replies.length - 1]; reply = r.text; }
+      const t2 = Date.now(), audio = await tts(reply, voice), t3 = Date.now();
+      return json(200, { ok: true, heard, land, reply, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
     }
     if (body.action === "wrap") {
       const moments = toMoments(sc, body.history);
