@@ -149,7 +149,7 @@
     if (Object.keys(S.base || {}).length) mk("base", "Day 1 Baseline", "", 1, 1, S.sealed ? "Finished" : "In progress",
       D.BASELINE.flatMap(b => { const a = S.base[b.id] || {}, aim = D.AIMS.find(x => x[0] === a.aim); return [[`${b.id}.move`, `${b.client} · Your words`, clip(a.move)], [`${b.id}.aim`, `${b.client} · Going for`, aim ? `${aim[2]} (${aim[1]})` : ""]]; }).filter(p => p[2]));
     ["l1", "l2", "l3"].forEach(k => { const st = S.act && S.act[k]; if (!st || !Object.keys(st.v || {}).length) return; mk("act-" + k, ACTS[k].name, `Lesson ${k.slice(1)}`, 1, st.n || 1, st.done && st.i >= ACTS[k].screens.length - 1 ? "Finished" : "In progress", actPairs(ACTS[k], st.v), { act: k }); });
-    if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""], ["aiNote", "AI training note", clip(S.demo.aiNote)]].filter(p => p[2]));
+    if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Malik", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""], ["aiNote", "AI training note", clip(S.demo.aiNote)]].filter(p => p[2]));
     if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", D.LAB.who, 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
     const M = S.sim || {}, SJ = SIMS.jordan;
     [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Rowan Simulation", "Rowan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
@@ -434,7 +434,7 @@
     const out = [], v2 = actV("l2"), v3 = actV("l3");
     if ((v2.r1 || "").trim()) out.push({ id: "l2", tag: "Lesson 2 · Catch the Reaction", who: "Client", line: q("I think you don’t understand me either."), first: v2.r1 });
     if ((v3.t1 || "").trim()) out.push({ id: "l3", tag: "Lesson 3 · Two Takes", who: "Client", line: q("I don’t even know what I feel anymore."), first: v3.t1 });
-    if (S.demo && (S.demo.line || "").trim()) out.push({ id: "demo", tag: "Demo · Jordan", who: "Jordan", line: q(ACTS.demo.moment), first: S.demo.line });
+    if (S.demo && (S.demo.line || "").trim()) out.push({ id: "demo", tag: "Demo · Malik", who: "Malik", line: q(ACTS.demo.moment), first: S.demo.line });
     D.REPS.filter(r => r.week === 1 && repSaved(r.id)).forEach(r => { const x = S.reps[r.id]; out.push({ id: "rep:" + r.id, rep: r.id, tag: `Rep ${r.id} · ${r.client}`, who: r.client, line: r.line ? q(r.line) : esc(r.stageLine), first: (x.attempts[0] && x.attempts[0].move) || x.move || x.line || "" }); });
     return out;
   }
@@ -480,7 +480,7 @@
     return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between">${back}<span style="display:flex;align-items:center;gap:12px"><span class="saved-flag" data-flag></span>${fwd}</span></div></div>`;
   }
 
-  /* ---------- Text simulation player (Week 1: Jordan; Weeks 2-4 reuse it) ---------- */
+  /* ---------- Text simulation player (Week 1: Rowan; Weeks 2-4 reuse it) ---------- */
   const SIMS = window.TCC6_SIMS || {};
   const INTENT_AT = [2, 5]; /* moments 3 and 6: optional pause + "What was your intention?" */
   const shuffle = n => { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -562,7 +562,7 @@
             <div class="dw-lines">${heard ? w.lines.map(convoLine).join("") : ""}</div>
             <div class="dw-ctl"><button type="button" class="v6-btn ${heard ? "secondary" : "primary"}" data-play="${k}">▶ ${heard ? "Play again" : "Play the conversation"}</button>${heard ? "" : `<button type="button" class="v6-link" data-showtext="${k}">Just show the text</button>`}</div></div>`;
         }
-        if (w.kind === "client") return `<div class="dw-client"><span class="av" aria-hidden="true">J</span><div><span class="who">Jordan${w.ctx ? ` <small>${esc(w.ctx)}</small>` : ""}</span><span class="said">${q(w.text)}</span></div></div>`;
+        if (w.kind === "client") return `<div class="dw-client"><span class="av" aria-hidden="true">M</span><div><span class="who">Malik${w.ctx ? ` <small>${esc(w.ctx)}</small>` : ""}</span><span class="said">${q(w.text)}</span></div></div>`;
         if (w.kind === "take") return `<div class="dw-take ${w.tone}"><span class="dw-label">${esc(w.label)}</span><span class="said">${q(w.text)}</span>${w.audio ? `<audio controls preload="none" src="${esc(w.audio)}"></audio>` : ""}</div>`;
         return `<div class="dw-explain${w.safety ? " safety" : ""}"><span class="dw-label">${esc(w.title)}</span><ul>${w.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>${w.line ? `<p class="said">${q(w.line)}</p>` : ""}</div>`;
       };
@@ -571,8 +571,8 @@
           <div class="dw-steps">${shown.map(stepHTML).join("")}</div>
           <div class="dw-nav">${fin ? `<button type="button" class="v6-link" data-act="demoreset">Walk through it again</button>` : `<button type="button" class="v6-btn primary" data-act="demonext"${waitHeard ? " disabled" : ""}>${at === W.length - 1 ? "Done: my turn →" : "Next"}</button>`}</div></div>`;
       if (fin) body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
-          <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(AD.moment)}</span></span></div>
-          <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
+          <div class="speaker boxed"><span class="av" aria-hidden="true">M</span><span class="col"><span class="who">Malik</span><span class="said md">${q(AD.moment)}</span></span></div>
+          <label class="field">Your first sentence to Malik<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
           <label class="field">Why that sentence? <small>${esc(AD.hintWhy)}</small><textarea class="v6-ta" rows="2" data-demo="why" placeholder="I chose it because…">${esc(DM.why)}</textarea></label>
           <div class="field">${esc(AD.check)}<div class="chips-row">${["Yes", "Not quite", "Not sure"].map(o => `<button type="button" class="chip" data-demo-ck="${o}" aria-pressed="${DM.ck === o}">${o}</button>`).join("")}</div></div>
           ${aiBox("demo-why", "Get a training note on my sentence", "why", () => ({ line: AD.moment, sentence: DM.line || "", why: DM.why || "", check: DM.ck || "" }), res => { DM.aiNote = res.note; }, { req: ["sentence", "why"], rkey: "demo#1", akeys: ["aiNote"], where: "Demo · Your why" })}</div>`;
@@ -977,7 +977,7 @@
   }
 
   /* ---------- Demo audio conversation ---------- */
-  const convoLine = l => `<div class="dw-line ${l[1] === "T" ? "t" : "j"}"><span class="who">${l[1] === "T" ? "Therapist" : "Jordan"}</span><span class="said">${esc(l[2])}</span></div>`;
+  const convoLine = l => `<div class="dw-line ${l[1] === "T" ? "t" : "j"}"><span class="who">${l[1] === "T" ? "Therapist" : "Malik"}</span><span class="said">${esc(l[2])}</span></div>`;
   let convoRun = 0;
   async function playConvo(k) {
     const run = ++convoRun, AD = ACTS.demo, w = AD.walk[k], box = $(`[data-convo="${k}"] .dw-lines`);
