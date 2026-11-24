@@ -438,15 +438,14 @@
     D.REPS.filter(r => r.week === 1 && repSaved(r.id)).forEach(r => { const x = S.reps[r.id]; out.push({ id: "rep:" + r.id, rep: r.id, tag: `Rep ${r.id} · ${r.client}`, who: r.client, raw: r.line || r.stageLine || "", line: r.line ? q(r.line) : esc(r.stageLine), first: (x.attempts[0] && x.attempts[0].move) || x.move || x.line || "" }); });
     return out;
   }
-  const toks = t => String(t || "").replace(/[“”"]/g, "").split(/\s+/).filter(Boolean);
-  const rfOk3 = () => { const c = S.reflect.c3 || {}; return (c.need || "").trim().length >= 3 && ((c.words || []).length > 0 || !!c.none) && ((c.pull || []).length > 0 || !!c.noPull); };
-  const pickText = (arr, idx) => { const s2 = [...idx].sort((a, b) => a - b); let out = "", prev = -2; s2.forEach(i => { out += (out ? (i === prev + 1 ? " " : " … ") : "") + arr[i]; prev = i; }); return out.replace(/^[^\w’']+|[^\w’']+$/g, ""); };
+  const RF_WORDS = [["exact", "Their exact words"], ["meaning", "Their meaning, in my words"], ["none", "Nothing they said"]];
+  const rfOk3 = () => { const c = S.reflect.c3 || {}; return (c.need || "").trim().length >= 3 && !!c.used && ((c.pullAt || "").trim().length >= 2 || !!c.noPull); };
   function rfTarget(r) {
     const c = S.reflect.c3 || {}, P = S.reflect.pullPick || "your Pull";
     return `<ul class="rt">
       <li>Respond to what ${esc(r.who === "Client" ? "they" : r.who)} really wanted: <i>${esc(c.need)}</i>.</li>
-      <li>${c.none ? "Bring in their words. None of what they said made it into your answer." : `You used “${esc(pickText(toks(r.raw), c.words || []))}.” Keep their words in.`}</li>
-      <li>${c.noPull ? `${esc(P)} didn’t take over here. Use your redo to try a different angle.` : `Rewrite “${esc(pickText(toks(r.first), c.pull || []))}.” That’s where ${esc(P)} took over.`}</li></ul>`;
+      <li>${c.used === "exact" ? "You used their words. Keep them in." : c.used === "meaning" ? "You caught their meaning. This time, try using one of their exact words." : "Bring in something they actually said."}</li>
+      <li>${c.noPull ? `${esc(P)} didn’t take over here. Use your redo to try a different angle.` : `Rewrite “${esc((c.pullAt || "").replace(/^[“"\s]+|[”"\s.]+$/g, ""))}.” That’s where ${esc(P)} took over.`}</li></ul>`;
   }
   function reflectHTML() {
     const F = S.reflect, st = Math.min(F.step || 0, 3);
@@ -467,17 +466,15 @@
       ok = !!r;
     }
     if (st === 2 && r) {
-      const c = F.c3 || {}, cw = toks(r.raw), aw = toks(r.first), wd = c.words || [], pw = c.pull || [];
-      const tapRow = (arr, sel, attr) => `<div class="tap-words">${arr.map((w, i) => `<button type="button" class="tw" ${attr}="${i}" aria-pressed="${sel.includes(i)}">${esc(w)}</button>`).join("")}</div>`;
+      const c = F.c3 || {};
       body = `<p class="flow-q">Run the Three Checks on your first answer.</p>
         <div class="speaker boxed"><span class="av" aria-hidden="true">${r.who[0]}</span><span class="col"><span class="who">${esc(r.who)}</span><span class="said md">${r.line}</span></span></div>
         <div class="you-said sm"><small>Your first answer</small>${q(r.first)}</div>
         <div class="ck3">
           <label class="field"><b>1. ${esc(D.CHECKS[0][0])}</b><small>${esc(D.CHECKS[0][1])} Not what they said, what they wanted.</small><input class="v6-in" data-rf3="need" value="${esc(c.need || "")}" placeholder="They wanted…"></label>
-          <div class="field"><b>2. ${esc(D.CHECKS[1][0])}</b><small>Tap any of ${esc(r.who === "Client" ? "the client’s" : r.who + "’s")} words that made it into your answer.</small>${tapRow(cw, wd, "data-rf-w")}
-            <button type="button" class="chip" data-rf-none aria-pressed="${!!c.none}">None of them</button></div>
-          <div class="field"><b>3. Where did ${esc(F.pullPick || "my Pull")} show up?</b><small>Tap the part of your answer where it took over.</small>${tapRow(aw, pw, "data-rf-p")}
-            <button type="button" class="chip" data-rf-nopull aria-pressed="${!!c.noPull}">It didn’t show up here</button></div>
+          <div class="field"><b>2. ${esc(D.CHECKS[1][0])}</b><small>Look back at what ${esc(r.who === "Client" ? "they" : r.who)} said.</small><div class="chips-row">${RF_WORDS.map(([k, t]) => `<button type="button" class="chip" data-rf-words="${k}" aria-pressed="${c.used === k}">${t}</button>`).join("")}</div></div>
+          <label class="field"><b>3. Where did ${esc(F.pullPick || "my Pull")} show up?</b><small>Copy the few words from your answer where it took over.</small><input class="v6-in" data-rf3="pullAt" value="${esc(c.pullAt || "")}" placeholder="e.g. “Not at all”"${c.noPull ? " disabled" : ""}>
+            <span class="chips-row" style="margin-top:8px"><button type="button" class="chip" data-rf-nopull aria-pressed="${!!c.noPull}">It didn’t show up here</button></span></label>
         </div>
         ${rfOk3() ? `<div class="reveal"><b>Your redo target</b>${rfTarget(r)}</div>` : ""}`;
       ok = rfOk3();
@@ -1232,12 +1229,9 @@
       $$("[data-rf-pull]", app).forEach(b => b.onclick = () => { F.pullPick = b.dataset.rfPull; save(); render(); });
       $$("[data-rf-rep]", app).forEach(b => b.onclick = () => { if (F.rep !== b.dataset.rfRep) { F.rep = b.dataset.rfRep; F.c3 = {}; } save(); render(); });
       const C3 = () => (F.c3 = F.c3 || {});
-      const tog = (k, i) => { const c = C3(), a = c[k] = c[k] || []; const j = a.indexOf(i); j < 0 ? a.push(i) : a.splice(j, 1); };
-      $$("[data-rf-w]", app).forEach(b => b.onclick = () => { tog("words", +b.dataset.rfW); C3().none = false; save(); render(); });
-      $$("[data-rf-p]", app).forEach(b => b.onclick = () => { tog("pull", +b.dataset.rfP); C3().noPull = false; save(); render(); });
-      const rn = $("[data-rf-none]", app); if (rn) rn.onclick = () => { const c = C3(); c.none = !c.none; if (c.none) c.words = []; save(); render(); };
-      const rp = $("[data-rf-nopull]", app); if (rp) rp.onclick = () => { const c = C3(); c.noPull = !c.noPull; if (c.noPull) c.pull = []; save(); render(); };
-      const nd = $("[data-rf3=need]", app); if (nd) { nd.oninput = () => { C3().need = nd.value; save(); const nx = $("[data-rf-nav='1']", app); if (nx) nx.disabled = !rfOk3(); }; nd.onchange = () => render(); }
+            $$("[data-rf-words]", app).forEach(b => b.onclick = () => { C3().used = b.dataset.rfWords; save(); render(); });
+      const rp = $("[data-rf-nopull]", app); if (rp) rp.onclick = () => { const c = C3(); c.noPull = !c.noPull; if (c.noPull) c.pullAt = ""; save(); render(); };
+      $$("[data-rf3]", app).forEach(nd => { nd.oninput = () => { C3()[nd.dataset.rf3] = nd.value; save(); const nx = $("[data-rf-nav='1']", app); if (nx) nx.disabled = !rfOk3(); }; nd.onchange = () => render(); });
       $$("[data-rf]", app).forEach(t => t.oninput = () => { F[t.dataset.rf] = t.value; save(); const sv = $("[data-rf-save]", app); if (sv) sv.disabled = !((F.redoLine || "").trim() && (F.redo || "").trim()); });
       $$("[data-rf-nav]", app).forEach(b => b.onclick = () => { F.step = Math.max(0, Math.min(3, (F.step || 0) + +b.dataset.rfNav)); save(); render(); top(); });
       const rfs = $("[data-rf-save]", app); if (rfs) rfs.onclick = () => { S.steps.reflect = true; save(); render(); flash("Saved"); };
