@@ -25,9 +25,9 @@
   const REP_STEPS = ["The moment", "Your move", "Name your aim", "The client reacts", "One way to handle it", "Run it back"];
 
   const CHECKS = [
-    ["Did I use what they gave me?", "Their words, their feeling, their priority."],
-    ["Could they disagree with me?", "Without taking care of my feelings."],
-    ["Do I know why I said it?", "One sentence. Did safety or scope change the move?"]
+    ["What were they really asking for?", "Name it in a few words."],
+    ["Which of their words did I use?", "Their exact words, or none."],
+    ["Where did my Pull show up?", "The part where it took over, or nowhere."]
   ];
 
   const PULLS = [["Rescue", "Make the feeling stop"], ["Fix", "Solve the problem"], ["Fill", "End the silence"], ["Defend", "Explain yourself"], ["Prove", "Sound like a good therapist"]];
@@ -185,7 +185,7 @@
 
   const REFLECT = [
     ["pull", "Which Pull showed up most for you this week?", ""],
-    ["checks", "Pick your weakest Rep. Run the Three Checks on your first answer.", ""],
+    ["checks", "Pick your weakest answer. Run the Three Checks on it.", ""],
     ["redo", "Redo it.", "Name the one thing you changed."]
   ];
 
