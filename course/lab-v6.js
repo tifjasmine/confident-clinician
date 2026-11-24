@@ -37,7 +37,7 @@
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
   if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
   if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 2) { ["c0", "c1", "c2", "c3", "c4", "c5"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 2; } /* side-by-side questions: one per P.A.U.S.E. letter + takeaway */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
-  if (S.labV !== 3) { S.lab = {}; S.labV = 3; } /* Lab Spot It + Said or assumed? redesigned */
+  if (S.labV !== 4) { S.lab = {}; S.labV = 4; } /* Lab Spot It + Said or assumed? redesigned */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -150,7 +150,7 @@
       D.BASELINE.flatMap(b => { const a = S.base[b.id] || {}, aim = D.AIMS.find(x => x[0] === a.aim); return [[`${b.id}.move`, `${b.client} · Your words`, clip(a.move)], [`${b.id}.aim`, `${b.client} · Going for`, aim ? `${aim[2]} (${aim[1]})` : ""]]; }).filter(p => p[2]));
     ["l1", "l2", "l3"].forEach(k => { const st = S.act && S.act[k]; if (!st || !Object.keys(st.v || {}).length) return; mk("act-" + k, ACTS[k].name, `Lesson ${k.slice(1)}`, 1, st.n || 1, st.done && st.i >= ACTS[k].screens.length - 1 ? "Finished" : "In progress", actPairs(ACTS[k], st.v), { act: k }); });
     if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""], ["aiNote", "AI training note", clip(S.demo.aiNote)]].filter(p => p[2]));
-    if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", "Jordan, session 2", 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
+    if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", D.LAB.who, 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
     const M = S.sim || {}, SJ = SIMS.jordan;
     [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Jordan Simulation", "Jordan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
       SJ.moments.map((m, j) => [`m${j}`, `Moment ${j + 1}`, C.picks && C.picks[j] != null ? clip((m.choices[C.picks[j]] || [])[1]) : ""]).concat(flatPairs(C.intent, "Intention"), flatPairs(C.ref, "Debrief")).filter(p => p[2])));
@@ -359,13 +359,13 @@
 
   const howHTML = (title, steps, foot) => `<div class="how"><div class="how-h">${esc(title)}</div><ol>${steps.map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol>${foot ? `<div class="how-f">${esc(foot)}</div>` : ""}</div>`;
   /* ---------- Week 1 Lab: The Clinical Blind Spot ---------- */
-  const LAB_STEPS = ["Spot It", "Said or assumed?", "The Pull", "Rewrite line 4"];
-  /* mode: "spot" (tap the Jordan line the therapist missed) or false (read only) */
+  const LAB_STEPS = ["Spot It", "Said or assumed?", "The Pull", "Your move"];
+  /* mode: "spot" (tap the client line the therapist missed) or false (read only) */
   const transcriptHTML = (L, mode) => `<ol class="transcript">${D.LAB.lines.map(([who, text, act], i) => {
     const n = i + 1, A = D.LAB;
-    const cls = [who === "Jordan" ? "client" : "ther", L.spotPick === n ? "picked" : "", L.spotPick && n === A.spot ? "spot" : "", L.spotPick && n === A.turn ? "turn" : ""].filter(Boolean).join(" ");
+    const cls = [who !== "Therapist" ? "client" : "ther", L.spotPick === n ? "picked" : "", L.spotPick && n === A.spot ? "spot" : "", L.spotPick && n === A.turn ? "turn" : ""].filter(Boolean).join(" ");
     const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}</span>`;
-    const can = mode === "spot" && who === "Jordan";
+    const can = mode === "spot" && who !== "Therapist";
     return `<li class="${cls}" data-ln="${n}">${can ? `<button type="button" data-lab-spot="${n}">${inner}</button>` : `<div>${inner}</div>`}</li>`;
   }).join("")}</ol>`;
   const chipsHTML = (attr, opts, cur, ans) => `<div class="chips-row">${opts.map(([k, l]) => `<button type="button" class="chip${cur === k && ans ? (k === ans ? " right" : " wrong") : ""}" ${attr}="${k}" aria-pressed="${cur === k}">${cur === k && k === ans ? "✓ " : ""}${esc(l)}</button>`).join("")}</div>`;
@@ -376,41 +376,45 @@
     const peek = `<details class="peek"><summary>Show the session again</summary>${transcriptHTML(L, false)}</details>`;
     let body = "", ok = false;
     if (st === 0) {
-      const spot = L.spotPick, hit = spot === A.spot;
-      body = `<p class="flow-q">Jordan says something important. The therapist misses it.</p><p class="flow-sub">Find the blind spot: tap the Jordan line the therapist skipped past.</p>
-        ${transcriptHTML(L, spot ? false : "spot")}
-        ${spot ? `<div class="reveal${hit ? "" : " miss"}"><b>${hit ? "You found it." : "Close. The one they missed is line 3."}</b> ${esc(A.spotWhy)}</div>` : ""}`;
-      ok = !!spot;
+      const spot = L.spotPick, hit = spot === A.spot, tries = L.spotTries || 0, found = hit || tries >= 2, cl = L.clues || {};
+      const clueChips = `<div class="chips-row">${A.clues.map(([k, l]) => { const on = !!cl[k], right = A.cluesRight.includes(k); return `<button type="button" class="chip${L.cluesDone && on ? (right ? " right" : " wrong") : ""}" data-lab-clue="${k}" aria-pressed="${on}"${L.cluesDone ? " disabled" : ""}>${L.cluesDone && right ? "✓ " : ""}${esc(l)}</button>`; }).join("")}</div>`;
+      body = `<p class="flow-sub">${esc(A.intro)}</p>
+        <p class="flow-q">The therapist is warm and on topic. But Gene says something they don’t catch. Find the quiet clue.</p>
+        ${transcriptHTML(L, found ? false : "spot")}
+        ${spot && !found ? `<div class="reveal miss"><b>Not quite.</b> ${esc((A.spotNear && A.spotNear[spot]) || "Look again. Listen for what Gene starts to say and then steps away from.")} <span class="you">Tap another line.</span></div>` : ""}
+        ${found ? `<div class="reveal"><b>${hit ? "You caught it: line 5." : "It’s line 5."}</b> What tipped you off? Pick everything you noticed.${clueChips}
+          ${L.cluesDone ? `<p style="margin-top:10px">${esc(A.spotWhy)}</p>` : `<button type="button" class="v6-btn secondary" data-lab-clues${Object.values(cl).some(Boolean) ? "" : " disabled"} style="margin-top:10px">Check</button>`}</div>` : ""}`;
+      ok = !!(found && L.cluesDone);
     }
     if (st === 1) {
       const so = L.sort || {};
-      body = `<p class="flow-q">Here’s what the therapist might have been thinking. Which did Jordan actually say or show, and which did the therapist fill in?</p><p class="flow-sub">Assumptions feel like facts in the moment. This is how you catch them.</p>${peek}
+      body = `<p class="flow-q">Here’s what the therapist might have been thinking. Which did ${esc(A.client)} actually say or show, and which did the therapist fill in?</p><p class="flow-sub">Assumptions feel like facts in the moment. This is how you catch them.</p>${peek}
         <div class="sort">${A.sort.map(([t, ans, note], i) => {
           const pick = so[i];
-          return `<div class="sort-row${pick ? " answered" : ""}"><span class="st">${esc(t)}</span><span class="sb">${["seen", "supplied"].map(k => `<button type="button" class="chip${pick === k ? (k === ans ? " right" : " wrong") : ""}" data-lab-sort="${i}" data-v="${k}" aria-pressed="${pick === k}">${pick === k && k === ans ? "✓ " : ""}${k === "seen" ? "Jordan said it" : "Therapist assumed it"}</button>`).join("")}</span>
-            ${pick && pick !== ans ? `<span class="ans miss">Actually ${ans === "seen" ? "Jordan said it" : "the therapist assumed it"}${note ? `: ${esc(note)}` : ""}.</span>` : pick && note ? `<span class="ans">${esc(note[0].toUpperCase() + note.slice(1))}.</span>` : ""}</div>`;
+          return `<div class="sort-row${pick ? " answered" : ""}"><span class="st">${esc(t)}</span><span class="sb">${["seen", "supplied"].map(k => `<button type="button" class="chip${pick === k ? (k === ans ? " right" : " wrong") : ""}" data-lab-sort="${i}" data-v="${k}" aria-pressed="${pick === k}">${pick === k && k === ans ? "✓ " : ""}${k === "seen" ? `${esc(A.client)} said it` : "Therapist assumed it"}</button>`).join("")}</span>
+            ${pick && pick !== ans ? `<span class="ans miss">Actually ${ans === "seen" ? `${esc(A.client)} said it` : "the therapist assumed it"}${note ? `: ${esc(note)}` : ""}.</span>` : pick && note ? `<span class="ans">${esc(note[0].toUpperCase() + note.slice(1))}.</span>` : ""}</div>`;
         }).join("")}</div>
-        ${A.sort.every((_, i) => so[i]) ? `<label class="field lab-check">${esc(A.checkQ)}<small>In your own words. One question is enough.</small><textarea class="v6-ta" rows="2" data-lab-check placeholder="Your question to Jordan">${esc(L.check)}</textarea></label>` : ""}`;
+        ${A.sort.every((_, i) => so[i]) ? `<label class="field lab-check">${esc(A.checkQ)}<small>In your own words. One question is enough.</small><textarea class="v6-ta" rows="2" data-lab-check placeholder="Your question to ${esc(A.client)}">${esc(L.check)}</textarea></label>` : ""}`;
       ok = A.sort.every((_, i) => so[i]) && (L.check || "").trim().length >= 8;
     }
     if (st === 2) {
       const pulls = D.PULLS.map(([t]) => [t, t]);
       body = `<p class="flow-q">What was driving the therapist?</p>${peek}
-        <div class="field">Which Pull drove line 4? <small>${q(A.lines[3][1])}</small>${chipsHTML("data-lab-p4", pulls, L.p4, A.pull4)}${fb(L.p4, A.pull4, A.pull4)}</div>
-        <div class="field">Which Pull drove line 8? <small>${q(A.lines[7][1])}</small>${chipsHTML("data-lab-p8", pulls, L.p8, A.pull8)}${fb(L.p8, A.pull8, A.pull8)}</div>
+        <div class="field">Which Pull drove line ${A.pullA[0]}? <small>${q(A.lines[A.pullA[0] - 1][1])}</small>${chipsHTML("data-lab-p4", pulls, L.p4, A.pullA[1])}${fb(L.p4, A.pullA[1], A.pullA[1])}</div>
+        <div class="field">Which Pull drove line ${A.pullB[0]}? <small>${q(A.lines[A.pullB[0] - 1][1])}</small>${chipsHTML("data-lab-p8", pulls, L.p8, A.pullB[1])}${fb(L.p8, A.pullB[1], A.pullB[1])}</div>
         <div class="field">Which gap? <small>Knowledge, skill, pressure, or support</small>${chipsHTML("data-lab-gap", D.GAPS.map(([k, l]) => [k, l]), L.gap, A.gap)}${L.gap ? `<span class="ans${L.gap === A.gap ? "" : " miss"}">${esc(A.gapWhy)}</span>` : ""}</div>`;
       ok = !!(L.p4 && L.p8 && L.gap);
     }
     if (st === 3) {
       const pz = L.pause || {}, mv = L.move || "";
-      body = `<p class="flow-q">Now you’re the therapist. Rewrite line 4.</p>
-        <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan · line 3</span><span class="said md">${q(A.lines[2][1])}</span></span></div>
-        <div class="orig"><small>What the therapist said (line 4)</small>${q(A.lines[3][1])}</div>
+      body = `<p class="flow-q">Now you’re the therapist. Rewrite line ${A.turn}.</p>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">${esc(A.av)}</span><span class="col"><span class="who">${esc(A.client)} · lines 5–6</span><span class="said md">${q(A.react.line)}</span></span></div>
+        <div class="orig"><small>What the therapist said (line ${A.turn})</small>${q(A.lines[A.turn - 1][1])}</div>
         <details class="peek"${Object.values(pz).some(v => (v || "").trim()) ? " open" : ""}><summary>Stuck? Use P.A.U.S.E. to get there</summary><div class="pause-form" style="margin-top:10px">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="1" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div></details>
-        <label class="field">Your new line 4 <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
+        <label class="field">Your new line ${A.turn} <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
         ${L.compared ? `<div class="compare-2"><div class="bd-p"><small>Your version</small>${q(mv)}</div><div class="bd-p t"><small>Another way to say it</small><span class="tk">${q(A.take)}</span></div></div>
           <div class="coach"><small>Why it works</small>${esc(A.takeWhy)}</div>
-          ${aiBox("lab-r4", "Hear how Jordan responds to your line 4", "react", () => ({ who: "Jordan, 29, in session 2", context: "Jordan keeps having the same fights with their partner and feels like they're always the one who has to bring things up, and then they're the bad guy.", line: A.lines[2][1], response: (S.lab.move || "").trim() }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: "Jordan", wait: "Jordan is responding…", rkey: "lab#1", akeys: ["aiClient", "aiNote"], where: "Clinical Blind Spot · Line 4 rewrite" })}
+          ${aiBox("lab-r4", `Hear how ${A.client} responds to your line ${A.turn}`, "react", () => ({ who: A.react.who, context: A.react.context, line: A.react.line, response: (S.lab.move || "").trim() }), res => { S.lab.aiClient = res.client; S.lab.aiNote = res.note; }, { req: ["response"], who: A.client, wait: `${A.client} is responding…`, rkey: "lab#1", akeys: ["aiClient", "aiNote"], where: `Clinical Blind Spot · Line ${A.turn} rewrite` })}
 ` : ""}`;
       ok = mv.trim().length >= 8;
     }
@@ -1193,7 +1197,9 @@
       /* Lab */
       const L = S.lab, top = () => { const f = $(".flow", app); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); };
       $$("[data-lab-turn]", app).forEach(b => b.onclick = () => { L.turnPick = +b.dataset.labTurn; save(); render(); });
-      $$("[data-lab-spot]", app).forEach(b => b.onclick = () => { L.spotPick = +b.dataset.labSpot; L.turnPick = D.LAB.turn; save(); render(); });
+      $$("[data-lab-spot]", app).forEach(b => b.onclick = () => { const n = +b.dataset.labSpot; L.spotPick = n; if (n !== D.LAB.spot) L.spotTries = (L.spotTries || 0) + 1; L.turnPick = D.LAB.turn; save(); render(); });
+      $$("[data-lab-clue]", app).forEach(b => b.onclick = () => { L.clues = { ...(L.clues || {}), [b.dataset.labClue]: !(L.clues || {})[b.dataset.labClue] }; save(); render(); });
+      $$("[data-lab-clues]", app).forEach(b => b.onclick = () => { L.cluesDone = true; save(); render(); });
       $$("[data-lab-check]", app).forEach(t => t.oninput = () => { L.check = t.value; save(); const n = $('[data-lab-nav="1"]', app); if (n) n.disabled = !(D.LAB.sort.every((_, i) => (L.sort || {})[i]) && t.value.trim().length >= 8); });
       $$("[data-lab-sort]", app).forEach(b => b.onclick = () => { L.sort = L.sort || {}; L.sort[b.dataset.labSort] = b.dataset.v; save(); render(); });
       [["p4", "labP4"], ["p8", "labP8"], ["gap", "labGap"]].forEach(([k, d]) => $$(`[data-lab-${k}]`, app).forEach(b => b.onclick = () => { L[k] = b.dataset[d]; save(); render(); }));

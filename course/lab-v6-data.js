@@ -172,8 +172,8 @@
       desc: "A client asks you to just tell them what to do. Listen to a rushed conversation and a steadier one, then try your own.", meta: "Audio role-play", img: IMG.c,
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
-      desc: "Read a short session with Jordan and another therapist. Find the blind spot, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
-      itemsLabel: "Four steps", items: [["1", "Spot It", "Find what Jordan said that the therapist missed."], ["2", "Said or assumed?", "Catch what the therapist filled in, and write a question to check it."], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "Your move", "Rewrite line 4 (P.A.U.S.E. helps if you’re stuck), then hear how Jordan responds."]] },
+      desc: "Read a first session with Gene, a retired firefighter. Find the quiet clue the therapist missed, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
+      itemsLabel: "Four steps", items: [["1", "Spot It", "Find the quiet clue the therapist missed, and what tipped you off."], ["2", "Said or assumed?", "Catch what the therapist filled in, and write a question to check it."], ["3", "The Pull", "Which Pulls steered the therapist away?"], ["4", "Your move", "Rewrite line 7, then hear how Gene responds."]] },
     { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Jordan’s Advice Request", title: "Simulation: Jordan’s Advice Request",
       desc: "Now you’re the therapist. Pick what you’d say at each moment with Jordan and see how Jordan responds.", meta: "12–15 min", img: IMG.c,
       itemsLabel: "Eight moments with Jordan", items: [["1", "“I’ve been thinking about what we talked about. Should I break up with Sam? I need you to tell me what you would do.”", "Where it starts"], ["8", "“I still want you to tell me what I should do. But I think I also know I need a plan.”", "Where it ends"]] },
@@ -244,41 +244,48 @@
   const BONUS = "Taylor, Casey, Alex, Mo, June and Deshawn. Mixed settings, extra practice whenever you want it.";
 
 
-  /* Week 1 Lab: The Clinical Blind Spot. Copied from the scripts doc (draft pending clinical review). */
+  /* Week 1 Lab: The Clinical Blind Spot. New client, not used anywhere else (draft pending clinical review). */
   const LAB = {
-    intro: "Jordan’s session 2, with another therapist. It’s easier to spot a Pull in someone else first. Then you’ll turn the lens on yourself.",
-    spot: 3,
-    spotWhy: "Jordan said, “I’m the bad guy.” The therapist skipped right past it to ‘I’ statements in line 4. Watch what happens next: Jordan goes quiet (“I guess,” then “Yeah, maybe” and the phone).",
+    client: "Gene", who: "Gene, 61 · session 1", av: "G",
+    intro: "Gene, 61, recently retired after 31 years as a firefighter. His doctor referred him for trouble sleeping. Here’s his first session with another therapist.",
     lines: [
-      ["Jordan", "We had another fight Sunday. It was about the dishes, but it’s never about the dishes."],
-      ["Therapist", "What’s it usually about?"],
-      ["Jordan", "I don’t know. I feel like I’m always the one who has to bring stuff up. And then I’m the bad guy."],
-      ["Therapist", "That sounds really unfair. Have you tried ‘I’ statements? Like, ‘I feel hurt when…’"],
-      ["Jordan", "I guess. I’ve read about those."],
-      ["Therapist", "They really help. And maybe set up a weekly check-in so things don’t build up."],
-      ["Jordan", "Yeah, maybe.", "looks at phone"],
-      ["Therapist", "You deserve someone who actually listens to you."],
-      ["Jordan", "…Do you think I should leave?"]
+      ["Gene", "Doc says I’m not sleeping enough. My wife says I’m ‘not myself.’ I told them both I’m fine."],
+      ["Therapist", "It sounds like the people around you are worried, even if you’re not."],
+      ["Gene", "Retirement’s an adjustment. Everybody says that. I’ve got the garage. I’ve got projects."],
+      ["Therapist", "What kinds of projects?"],
+      ["Gene", "Fixing up an old truck. Me and Dave were gonna restore it together.", "pause"],
+      ["Gene", "Anyway. It’s coming along."],
+      ["Therapist", "That sounds like a great project. It must feel good to stay busy."],
+      ["Gene", "Most days, yeah. Nights too, when I can’t sleep. It’s quieter out there."],
+      ["Therapist", "So the truck helps you wind down. Have you tried a regular bedtime routine?"],
+      ["Gene", "Sure. I’ll try that."]
     ],
-    turn: 4,
-    turnWhy: "Jordan offered something tender (“I’m the bad guy”), and the therapist went straight to a tool.",
-    /* Thoughts the therapist might have had during session 2: did Jordan actually say or show it, or did the therapist fill it in? */
+    /* Step 1: the quiet clue */
+    spot: 5,
+    spotNear: { 1: "“I’m fine” matters, and the therapist did notice the worry around it. Look for something quieter that went right past them.", 8: "Good ear: working on the truck at night is worth asking about. But the therapist missed something earlier, the moment Gene changed the subject.", 3: "“Everybody says that” is worth noticing. But there’s a quieter clue a little later.", 10: "That’s where Gene gives up and agrees. The miss happened earlier." },
+    clues: [["tense", "“were gonna”: past tense"], ["pause", "The pause"], ["anyway", "“Anyway”: changing the subject"], ["busy", "“It’s coming along”"]],
+    cluesRight: ["tense", "pause", "anyway"],
+    spotWhy: "“Me and Dave were gonna restore it together.” Past tense, a pause, then “Anyway.” Something happened with Dave, and Gene stepped away from it. The therapist followed the topic (the truck) instead of the cue, and the session drifted to sleep tips.",
+    turn: 7,
+    turnWhy: "Line 7 is where the therapist steered past Dave toward something brighter.",
+    /* Step 2: thoughts the therapist might have had. Did Gene actually say or show it, or did the therapist fill it in? */
     sort: [
-      ["“The fights aren’t really about the dishes.”", "seen", "it’s right there in line 1"],
-      ["“Jordan’s partner doesn’t listen.”", "supplied", "Jordan never said that. The therapist did, in line 8"],
-      ["“Jordan ends up feeling like the bad guy.”", "seen", "it’s right there in line 3"],
-      ["“Jordan needs better communication skills.”", "supplied", "the therapist decided that and reached for ‘I’ statements"],
-      ["“Jordan checked out after the advice.”", "seen", "Jordan showed it in line 7: “Yeah, maybe” and the phone"],
-      ["“Jordan is ready to leave.”", "supplied", "Jordan only asks in line 9, after the therapist takes sides in line 8"]
+      ["“Gene isn’t sleeping well.”", "seen", "Gene says it in lines 1 and 8"],
+      ["“The truck helps him wind down.”", "supplied", "Gene said it’s ‘quieter out there.’ ‘Wind down’ was the therapist’s idea"],
+      ["“Something happened with Dave.”", "supplied", "it’s a strong hunch, but Gene hasn’t said it. Hunches are worth checking, not assuming"],
+      ["“His wife has noticed a change.”", "seen", "“My wife says I’m ‘not myself,’” line 1"],
+      ["“Gene needs a better bedtime routine.”", "supplied", "the therapist decided that in line 9"],
+      ["“Gene is adjusting fine to retirement.”", "supplied", "Gene repeats what ‘everybody says.’ He doesn’t say it’s fine for him"]
     ],
-    checkQ: "Pick one thing the therapist filled in. What could they have asked to check it with Jordan instead?",
-    pull4: "Fix", pull8: "Rescue", gap: "pressure",
-    gapWhy: "Most likely pressure: the therapist knew how to explore but rushed.",
-    pause: [["P", "Pause", "Slow down. What’s rushing you?"], ["A", "Attend", "What’s happening with Jordan, and in you?"], ["U", "Use", "What clinical information do you already have?"], ["S", "Say", "One intentional, clinically appropriate response."], ["E", "Explore", "What will you watch for in Jordan’s response?"]],
-    take: "The bad guy. Tell me more about what that’s like.",
-    takeWhy: "It uses Jordan’s own words (“the bad guy”) and invites Jordan to say more, instead of jumping to a tool. You find out what it’s like for Jordan before deciding what would help.",
-    closing: "Notice line 8. When a therapist takes sides, the client often asks them to decide. Next, you’re in the chair for session 3.",
-    line8: ["When the therapist took Jordan’s side (line 8):", "Jordan asked the therapist to decide (line 9):"]
+    checkQ: "Pick one thing the therapist filled in. What could they have asked to check it with Gene instead?",
+    /* Step 3 */
+    pullA: [7, "Rescue"], pullB: [9, "Fix"], gap: "skill",
+    gapWhy: "Most likely skill: the therapist was listening, but followed the topic instead of the cue. Hearing what’s under the words takes practice.",
+    /* Step 4 */
+    pause: [["P", "Pause", "Slow down. What’s rushing you?"], ["A", "Attend", "What’s happening with Gene, and in you?"], ["U", "Use", "Which of Gene’s words matter most?"], ["S", "Say", "One intentional, clinically appropriate response."], ["E", "Explore", "What will you watch for in Gene’s response?"]],
+    take: "You and Dave were going to do it together.",
+    takeWhy: "It gently returns to the words Gene stepped away from, without guessing what happened. Gene gets to decide how much to say.",
+    react: { who: "Gene, 61, retired firefighter, session 1", context: "Gene was referred by his doctor for trouble sleeping. He says he’s fine. He mentioned he and Dave ‘were gonna’ restore an old truck together, paused, then said ‘Anyway.’ (In the background: Dave, his longtime crew partner, died last year. Gene does not bring this up unless the therapist gently returns to Dave.)", line: "Fixing up an old truck. Me and Dave were gonna restore it together. … Anyway. It’s coming along." }
   };
 
   /* Week 1 Simulation content lives in lab-v6-sims.js (TCC6_SIMS.jordan). */
