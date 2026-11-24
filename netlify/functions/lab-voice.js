@@ -71,6 +71,13 @@ async function claude(sys, user, model, maxTokens) {
   return (out.content || []).filter(c => c.type === "text").map(c => c.text).join("").trim();
 }
 
+/* TTS for one guided moment: the line + every reply (+ closings on the last moment) */
+async function prepMoment(G, i, voice) {
+  const m = G.moments[i], jobs = [["line", m.line], ...m.replies.map(r => [r.key, r.text])];
+  if (i === G.moments.length - 1) jobs.push(["warm", G.closings.warm], ["flat", G.closings.flat]);
+  const done = await Promise.all(jobs.map(([, t]) => tts(t, voice)));
+  return Object.fromEntries(jobs.map(([k], n) => [k, done[n]]));
+}
 /* history -> the moments shape the typed session uses: each client line + the therapist's reply */
 function toMoments(sc, history) {
   const moments = [];
@@ -97,33 +104,29 @@ exports.handler = async event => {
     /* ---- Guided session ---- */
     const G = GUIDED[key];
     if (G && body.action === "gstart") {
-      const m = G.moments[0];
-      const [line, o, g, p, f1, f2] = await Promise.all([tts(m.line, voice), tts(m.replies.open, voice), tts(m.replies.guarded, voice), tts(m.replies.pull, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
-      const script = { client: G.client, intro: G.intro, goal: G.goal, stretch: G.stretch, moments: G.moments.map(x => ({ skill: x.skill, focus: x.focus, line: x.line, replies: x.replies })), closings: G.closings };
-      return json(200, { ok: true, script, audio: { line, open: o, guarded: g, pull: p }, fillers: [f1, f2] });
+      const [audio, f1, f2] = await Promise.all([prepMoment(G, 0, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
+      const script = { client: G.client, intro: G.intro, goal: G.goal, stretch: G.stretch, moments: G.moments.map(x => ({ skill: x.skill, focus: x.focus, line: x.line, replies: Object.fromEntries(x.replies.map(r => [r.key, { text: r.text, land: r.land }])) })), closings: G.closings };
+      return json(200, { ok: true, script, audio, fillers: [f1, f2] });
     }
     if (G && body.action === "gprep") {
-      const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m = G.moments[i];
-      const [line, o, g, p] = await Promise.all([tts(m.line, voice), tts(m.replies.open, voice), tts(m.replies.guarded, voice), tts(m.replies.pull, voice)]);
-      const out = { line, open: o, guarded: g, pull: p };
-      if (i === G.moments.length - 1) { const [w, f] = await Promise.all([tts(G.closings.warm, voice), tts(G.closings.flat, voice)]); out.warm = w; out.flat = f; }
-      return json(200, { ok: true, i, audio: out });
+      const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0));
+      return json(200, { ok: true, i, audio: await prepMoment(G, i, voice) });
     }
     if (G && body.action === "gturn") {
       const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m = G.moments[i];
       const t0 = Date.now(), heard = await stt(body.audio, body.mime);
       if (!heard) return json(200, { ok: true, heard: "", retry: true });
       const t1 = Date.now();
-      const sys = `You sort a therapist-in-training's spoken response in a practice session. Everyone is fictional. Their words were transcribed from speech, so ignore small slips.
+      const keys = m.replies.map(r => r.key);
+      const sys = `You match a therapist-in-training's spoken response to the client reply that fits it best, in a practice session. Everyone is fictional. Their words were transcribed from speech, so ignore small slips.
 ${COURSE}
-Client: ${G.client}. Reply with ONE word only:
-- open: the response ${m.open}.
-- pull: the response ${m.pull}.
-- guarded: anything else (neutral, vague, off-topic, or a mix).
-When it's a reasonable, caring attempt that partly does the "open" move, choose open.`;
-      const raw = (await claude(sys, `${G.client} said: "${m.line}"\nTherapist said: "${heard}"\nOne word: open, guarded, or pull.`, FAST, 10)).toLowerCase();
-      const pick = /open/.test(raw) ? "open" : /pull/.test(raw) ? "pull" : "guarded";
-      return json(200, { ok: true, heard, pick, parts: { listen: t1 - t0, think: Date.now() - t1, voice: 0 }, ms: Date.now() - t0 });
+Pick the ONE option whose description best matches what the therapist actually said or asked. Answer what they asked: if they asked a direct question, prefer the option that answers that question. If a response mixes moves, pick the move that dominates (usually the last thing they said). Use "other" only when nothing fits.
+Reply with the option key only.`;
+      const opts = m.replies.map(r => `- ${r.key}: the therapist ${r.when}`).join("\n");
+      const raw = (await claude(sys, `${G.client} said: "${m.line}"\nTherapist said: "${heard}"\n\nOPTIONS\n${opts}\n\nKey:`, FAST, 10)).toLowerCase();
+      const pick = keys.find(k => new RegExp("\\b" + k + "\\b").test(raw)) || "other";
+      const land = (m.replies.find(r => r.key === pick) || {}).land || "guarded";
+      return json(200, { ok: true, heard, pick, land, parts: { listen: t1 - t0, think: Date.now() - t1, voice: 0 }, ms: Date.now() - t0 });
     }
     if (body.action === "wrap") {
       const moments = toMoments(sc, body.history);

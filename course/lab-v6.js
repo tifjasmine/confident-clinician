@@ -1242,9 +1242,10 @@
       if (out.retry) { VS.msg = "Dana didn’t catch that. Try saying it again."; return vsListen(); }
       VS.msg = ""; VS.ms.push(Date.now() - t0); if (out.parts) VS.parts.push(out.parts);
       const m = G.script.moments[G.i];
-      G.picks.push(out.pick);
-      VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: out.pick, skill: m.skill });
-      VS.hist.push({ who: "client", text: m.replies[out.pick] });
+      const rep = m.replies[out.pick] || m.replies.other, land = out.land || rep.land || "guarded";
+      G.picks.push(land);
+      VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: land, skill: m.skill });
+      VS.hist.push({ who: "client", text: rep.text });
       vsSet("speaking"); await vsPlay(G.audio[G.i][out.pick]);
       if (VS.status !== "speaking") return;
       G.i++;
