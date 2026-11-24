@@ -1453,3 +1453,26 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .d2-a.t{background:#eef3ef;justify-self:end}
 .d2-mini{border:1px solid rgba(46,74,62,.25);background:#fff;border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer;color:#2e4a3e}
 .d2-mini:disabled{opacity:.5}
+
+/* Demo v2: clean audio rows */
+.d2-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.d2-words{border:1px solid rgba(46,74,62,.25);background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;color:#2e4a3e}
+.d2-words[aria-pressed="true"]{background:#2e4a3e;color:#fff}
+.d2-row{display:flex;align-items:center;gap:12px;max-width:88%}
+.d2-row.t{flex-direction:row-reverse;justify-self:end;text-align:right}
+.d2-row .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none;background:#eef3ef;color:#2e4a3e}
+.d2-row.t .av{background:#2e4a3e;color:#fff;font-size:10px}
+.d2-col{display:grid;gap:2px;padding:8px 14px;border-radius:14px;background:#fff;border:1px solid var(--line-2,#e7e4de);min-width:120px}
+.d2-row.t .d2-col{background:#eef3ef;border-color:transparent}
+.d2-col .who{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.d2-row.j .said{font-family:var(--serif,Georgia,serif);font-style:italic}
+.d2-pl{width:34px;height:34px;border-radius:50%;border:1px solid rgba(46,74,62,.3);background:#fff;color:#2e4a3e;cursor:pointer;font-size:12px;flex:none}
+.d2-pl.on{background:#2e4a3e;color:#fff}
+.d2-others{display:grid;gap:10px;padding-top:6px;border-top:1px solid var(--line-2,#e7e4de)}
+.d2-other{display:grid;gap:8px}
+.d2-oh{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-2,#e7e4de);background:#fff}
+.d2-oh .k{font-weight:700;color:#b5694f}.d2-oh .t{flex:1;text-align:left}
+.d2-oreact{padding-left:24px}
+
+.d2-col .wave{display:block;width:150px;height:18px;background:repeating-linear-gradient(90deg,#9fb3a6 0 3px,transparent 3px 7px);-webkit-mask:linear-gradient(90deg,#000 0 100%);border-radius:2px;opacity:.8;clip-path:polygon(0 40%,6% 20%,12% 55%,18% 10%,24% 45%,30% 0,36% 50%,42% 25%,48% 60%,54% 15%,60% 40%,66% 5%,72% 55%,78% 30%,84% 50%,90% 20%,96% 45%,100% 35%,100% 65%,96% 55%,90% 80%,84% 50%,78% 70%,72% 45%,66% 95%,60% 60%,54% 85%,48% 40%,42% 75%,36% 50%,30% 100%,24% 55%,18% 90%,12% 45%,6% 80%,0 60%)}
+.d2-row.t .wave{background:repeating-linear-gradient(90deg,#2e4a3e 0 3px,transparent 3px 7px);opacity:.55}
