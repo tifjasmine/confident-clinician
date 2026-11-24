@@ -1477,3 +1477,16 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .d2-col .wave{display:block;width:150px;height:18px;background:repeating-linear-gradient(90deg,#9fb3a6 0 3px,transparent 3px 7px);-webkit-mask:linear-gradient(90deg,#000 0 100%);border-radius:2px;opacity:.8;clip-path:polygon(0 40%,6% 20%,12% 55%,18% 10%,24% 45%,30% 0,36% 50%,42% 25%,48% 60%,54% 15%,60% 40%,66% 5%,72% 55%,78% 30%,84% 50%,90% 20%,96% 45%,100% 35%,100% 65%,96% 55%,90% 80%,84% 50%,78% 70%,72% 45%,66% 95%,60% 60%,54% 85%,48% 40%,42% 75%,36% 50%,30% 100%,24% 55%,18% 90%,12% 45%,6% 80%,0 60%)}
 .d2-row.t .wave{background:repeating-linear-gradient(90deg,#2e4a3e 0 3px,transparent 3px 7px);opacity:.55}
 .d2-restart{justify-self:end;font-size:14px}
+
+.d2-sub{color:var(--muted);font-size:14px}
+.d2-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+@media (max-width:760px){.d2-cards{grid-template-columns:1fr}}
+.d2-card{display:grid;gap:10px;align-content:start;padding:16px;border-radius:16px;border:1px solid var(--line-2,#e7e4de);background:#fff}
+.d2-card.heard{border-color:#9fb3a6;background:#f7faf8}
+.d2-card .big{font-family:var(--serif,Georgia,serif);font-size:2rem;color:#b5694f;line-height:1}
+.d2-card .said{line-height:1.45}
+.d2-card .wave{display:block;width:100%;max-width:180px;height:22px;background:repeating-linear-gradient(90deg,#2e4a3e 0 3px,transparent 3px 7px);opacity:.4;clip-path:polygon(0 40%,6% 20%,12% 55%,18% 10%,24% 45%,30% 0,36% 50%,42% 25%,48% 60%,54% 15%,60% 40%,66% 5%,72% 55%,78% 30%,84% 50%,90% 20%,96% 45%,100% 35%,100% 65%,96% 55%,90% 80%,84% 50%,78% 70%,72% 45%,66% 95%,60% 60%,54% 85%,48% 40%,42% 75%,36% 50%,30% 100%,24% 55%,18% 90%,12% 45%,6% 80%,0 60%)}
+.d2-listen{justify-self:start;border:1px solid rgba(46,74,62,.3);background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;color:#2e4a3e}
+.d2-card .v6-btn{justify-self:stretch}
+button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:left}
+.d2-rec{display:grid;gap:6px;justify-items:start}.d2-rec small{color:var(--muted)}

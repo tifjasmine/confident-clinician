@@ -435,7 +435,7 @@
     const out = [], v2 = actV("l2"), v3 = actV("l3");
     if ((v2.r1 || "").trim()) out.push({ id: "l2", tag: "Lesson 2 · Catch the Reaction", who: "Client", raw: "I think you don’t understand me either.", line: q("I think you don’t understand me either."), first: v2.r1 });
     if ((v3.t1 || "").trim()) out.push({ id: "l3", tag: "Lesson 3 · Two Takes", who: "Client", raw: "I don’t even know what I feel anymore.", line: q("I don’t even know what I feel anymore."), first: v3.t1 });
-    if (S.demo && (S.demo.line || "").trim()) { const jl = S.demo.pm != null && D2() ? D2().moments[S.demo.pm].line : ACTS.demo.moment; out.push({ id: "demo", tag: "Demo · Jordan", who: "Jordan", raw: jl, line: q(jl), first: S.demo.line }); }
+    if (S.demo && (S.demo.line || "").trim()) { const jl = D2() ? D2().moments[0].line : ACTS.demo.moment; out.push({ id: "demo", tag: "Demo · Jordan", who: "Jordan", raw: jl, line: q(jl), first: S.demo.line }); }
     ((S.voice || {}).items || []).forEach((it, k) => { if ((it.said || "").trim()) out.push({ id: "dana:" + k, tag: `Session with Dana · ${it.skill}`, who: "Dana", raw: it.line, line: q(it.line), first: it.said }); });
     D.REPS.filter(r => r.week === 1 && repSaved(r.id)).forEach(r => { const x = S.reps[r.id]; out.push({ id: "rep:" + r.id, rep: r.id, tag: `Rep ${r.id} · ${r.client}`, who: r.client, raw: r.line || r.stageLine || "", line: r.line ? q(r.line) : esc(r.stageLine), first: (x.attempts[0] && x.attempts[0].move) || x.move || x.line || "" }); });
     return out;
@@ -574,13 +574,14 @@
       const DM = S.demo = S.demo || {}, AD = ACTS.demo;
       const fin = !!DM.watched;
       body = demo2HTML();
-      if (fin) { const MS = D2().moments, pm = DM.pm != null ? MS[DM.pm] : null;
-        body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Make one moment yours</span>
-          <div class="field"><b>Which moment would you most want to practice?</b><small>Pick the one that felt hardest, or the one where your choice surprised you.</small><div class="chips-row">${MS.map((mm, k) => `<button type="button" class="chip" data-demo-pm="${k}" aria-pressed="${DM.pm === k}">${k + 1}. ${esc(mm.title)}</button>`).join("")}</div></div>
-          ${pm ? `<div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(pm.line)}</span></span></div>
-          <label class="field">In your own words, what would you say to Jordan here?<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Not one of the three options. Your version.">${esc(DM.line)}</textarea></label>
-          <label class="field">What would that help Jordan do?<textarea class="v6-ta" rows="2" data-demo="why" placeholder="It would help Jordan…">${esc(DM.why)}</textarea></label>` : ""}</div>`; }
-      const dOk = DM.pm != null && (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3;
+      if (fin) { const M1 = D2().moments[0];
+        body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Jordan asks you</span>
+          <span class="ac-t">No options this time. Just you.</span>
+          ${d2Aud("Jordan", M1.line, "j", "m1-jordan")}
+          <div class="d2-rec">${D2REC.url ? `<audio controls src="${D2REC.url}"></audio><button type="button" class="v6-link" data-d2-rec>↺ Record again</button>` : `<button type="button" class="v6-btn ${D2REC.on ? "secondary" : "primary"}" data-d2-rec>${D2REC.on ? "■ Stop" : "🎙 Answer out loud"}</button>`}<small>Only you can hear this. It isn’t saved or sent anywhere.</small></div>
+          <label class="field">Now write what you said, or a cleaner version<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan">${esc(DM.line)}</textarea></label>
+          <div class="field"><b>Which Pull did you feel while choosing today?</b><div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-demo-pull="${p}" aria-pressed="${DM.pull === p}">${p}</button>`).join("")}<button type="button" class="chip" data-demo-pull="None" aria-pressed="${DM.pull === "None"}">None I noticed</button></div></div></div>`; }
+      const dOk = !!DM.pull && (DM.line || "").trim().length >= 3;
       cta = !fin ? "" : (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
     }
     if (s.type === "lab" || s.type === "sim") {
@@ -1003,16 +1004,31 @@
     const m = X.moments[i], pk = st.pick[i], heard = !!st.heard[i], played = !!st.played[i], oth = st.others[i] || {};
     let h = `<div class="d2-moment"><div class="d2-head"><span class="d2-title">${esc(m.title)}</span>${heard ? `<button type="button" class="d2-words" data-d2-words aria-pressed="${!!st.words}">${st.words ? "Hide words" : "Show words"}</button>` : ""}</div>
       ${heard ? d2Aud("Jordan", m.line, "j", `m${i + 1}-jordan`) : `<div class="d2-play"><button type="button" class="v6-btn primary" data-d2-hear>▶ Hear Jordan</button></div>`}`;
-    if (heard && pk == null) h += `<div class="d2-q"><b>What would you say?</b>${m.opts.map((o, k) => `<button type="button" class="d2-opt" data-d2-pick="${k}"><span class="k">${L[k]}</span><span>${q(o)}</span></button>`).join("")}</div>`;
+    const ho = (st.ho || {})[i] || {};
+    if (heard && pk == null) h += `<div class="d2-q"><b>What would you say?</b><span class="d2-sub">Listen to all three, then choose the one you’d go with.</span>
+      <div class="d2-cards">${m.opts.map((o, k) => `<div class="d2-card${ho[k] ? " heard" : ""}"><span class="big">${L[k]}</span>${st.words ? `<span class="said">${q(o)}</span>` : `<span class="wave" aria-hidden="true"></span>`}
+        <button type="button" class="d2-listen" data-d2-opt="${k}">▶ ${ho[k] ? "Listen again" : "Listen"}</button>
+        <button type="button" class="v6-btn primary small" data-d2-pick="${k}"${ho[k] || st.words ? "" : " disabled"}>I’d say ${L[k]}</button></div>`).join("")}</div></div>`;
     if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`) : `<div class="d2-wait">Playing…</div>`}</div>`;
     if (played) {
       h += `<div class="d2-note"><b>Tiffany’s take</b><p>${esc(m.note)}</p></div>
-        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other"><div class="d2-oh"><span class="k">${L[k]}</span><span class="t">${q(m.opts[k])}</span>${oth[k] ? "" : `<button type="button" class="v6-btn secondary small" data-d2-other="${k}">▶ Hear it</button>`}</div>${oth[k] ? `<div class="d2-oreact">${d2Aud("Jordan", m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`)}</div>` : ""}</div>`).join("")}</div>
+        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud(`Jordan, after ${L[k]}`, m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`) : `<button type="button" class="d2-oh" data-d2-other="${k}"><span class="k">${L[k]}</span><span class="t">▶ Hear how Jordan reacts to ${L[k]}</span></button>`}</div>`).join("")}</div>
         <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
     }
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
   }
   let d2Run = 0;
+  /* Your turn: a private recording, kept only in this browser tab */
+  const D2REC = { on: false, url: "", rec: null };
+  async function d2Record() {
+    if (D2REC.on && D2REC.rec) { D2REC.rec.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true }), rec = new MediaRecorder(stream), ch = [];
+      rec.ondataavailable = e => e.data.size && ch.push(e.data);
+      rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); D2REC.on = false; D2REC.url = URL.createObjectURL(new Blob(ch, { type: rec.mimeType || "audio/webm" })); render(); };
+      D2REC.url = ""; D2REC.rec = rec; D2REC.on = true; rec.start(); render();
+    } catch (e) { flash("Your microphone isn’t available. You can just type your answer."); }
+  }
   /* play clips in order; a clip that isn't recorded yet waits a reading-pace pause instead */
   async function d2Play(items) {
     const run = ++d2Run, X = D2();
@@ -1539,12 +1555,13 @@
       if (D2()) {
         const st = d2State(), m = D2().moments[st.i], N = st.i + 1, ab = "abc";
         const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } b.disabled = true; b.textContent = "Playing…"; if (m.pause) await new Promise(r => setTimeout(r, 2500)); if (await d2Play([[`m${N}-jordan`, m.line]])) { st.heard[st.i] = true; save(); render(); } });
-        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); if (await d2Play([[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]])) { st.played[st.i] = true; save(); render(); } });
-        $$("[data-d2-other]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Other; b.disabled = true; b.textContent = "Playing…"; if (await d2Play([[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]])) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } });
+        $$("[data-d2-opt]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Opt; b.disabled = true; b.textContent = "Playing…"; await d2Play([[`m${N}-${ab[k]}`, m.opts[k]]]); st.ho = st.ho || {}; (st.ho[st.i] = st.ho[st.i] || {})[k] = true; save(); render(); });
+        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { st.played[st.i] = true; save(); render(); } });
+        $$("[data-d2-other]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Other; b.disabled = true; b.querySelector(".t").textContent = "Playing…"; if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } });
         $$("[data-d2-replay]", app).forEach(b => b.onclick = async () => { b.classList.add("on"); await d2Play([[b.dataset.d2Replay, ""]]); b.classList.remove("on"); });
         const wt = $("[data-d2-words]", app); if (wt) wt.onclick = () => { st.words = !st.words; save(); render(); };
         const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
-        const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {} }; save(); render(); };
+        const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {}, ho: {}, words: !!(S.demo.d2 || {}).words }; save(); render(); };
       }
       $$("[data-showtext]", app).forEach(b => b.onclick = () => { convoRun++; S.demo.heard = { ...(S.demo.heard || {}), [+b.dataset.showtext]: true }; save(); render(); });
       $$("[data-act]", app).forEach(b => b.onclick = () => {
@@ -1568,8 +1585,9 @@
         }
         save(); render();
       });
-      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && S.demo.pm != null && (S.demo.line || "").trim().length >= 3 && (S.demo.why || "").trim().length >= 3); });
-      $$("[data-demo-pm]", app).forEach(b => b.onclick = () => { S.demo.pm = +b.dataset.demoPm; save(); render(); });
+      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && S.demo.pull && (S.demo.line || "").trim().length >= 3); });
+      $$("[data-demo-pull]", app).forEach(b => b.onclick = () => { S.demo.pull = b.dataset.demoPull; save(); render(); });
+      const rc = $("[data-d2-rec]", app); if (rc) rc.onclick = d2Record;
       $$("[data-demo-ck]", app).forEach(b => b.onclick = () => { S.demo.ck = b.dataset.demoCk; save(); render(); });
       $$("[data-r]", app).forEach(t => t.oninput = t.onchange = () => { S.reflect[t.dataset.r] = t.value; save(); });
       $$("[data-pullchip]", app).forEach(b => b.onclick = () => { S.reflect.pullPick = b.dataset.pullchip; save(); $$("[data-pullchip]", app).forEach(c => c.setAttribute("aria-pressed", c === b)); });
