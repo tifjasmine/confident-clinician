@@ -27,7 +27,7 @@
   const CHECKS = [
     ["What were they really asking for?", "Name it in a few words."],
     ["Did I use their words?", "Their exact words, their meaning, or neither."],
-    ["Where did my Pull show up?", "The part where it took over, or nowhere."]
+    ["Which Pull showed up?", "And the words where it took over."]
   ];
 
   const PULLS = [["Rescue", "Make the feeling stop"], ["Fix", "Solve the problem"], ["Fill", "End the silence"], ["Defend", "Explain yourself"], ["Prove", "Sound like a good therapist"]];

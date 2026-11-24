@@ -439,13 +439,14 @@
     return out;
   }
   const RF_WORDS = [["exact", "Yes, their exact words"], ["meaning", "Their meaning, not their words"], ["none", "Not this time"]];
-  const rfOk3 = () => { const c = S.reflect.c3 || {}; return (c.need || "").trim().length >= 3 && !!c.used && ((c.pullAt || "").trim().length >= 2 || !!c.noPull); };
+  const rfPull = () => (S.reflect.c3 || {}).pl || S.reflect.pullPick || "Rescue";
+  const rfOk3 = () => { const c = S.reflect.c3 || {}; return (c.need || "").trim().length >= 3 && !!c.used && (rfPull() === "none" || (c.pullAt || "").trim().length >= 2); };
   function rfTarget(r) {
-    const c = S.reflect.c3 || {}, P = S.reflect.pullPick || "your Pull";
+    const c = S.reflect.c3 || {}, P = rfPull();
     return `<ul class="rt">
       <li>Respond to what ${esc(r.who === "Client" ? "they" : r.who)} really wanted: <i>${esc(c.need)}</i>.</li>
       <li>${c.used === "exact" ? "You used their words. Keep them in." : c.used === "meaning" ? "You caught their meaning. This time, try using one of their exact words." : "Bring in something they actually said."}</li>
-      <li>${c.noPull ? `${esc(P)} didn’t take over here. Use your redo to try a different angle.` : `Rewrite “${esc((c.pullAt || "").replace(/^[“"\s]+|[”"\s.]+$/g, ""))}.” That’s where ${esc(P)} took over.`}</li></ul>`;
+      <li>${P === "none" ? `No Pull took over here. Use your redo to try a different angle.` : `Rewrite “${esc((c.pullAt || "").replace(/^[“"\s]+|[”"\s.]+$/g, ""))}.” That’s where ${esc(P)} took over.`}</li></ul>`;
   }
   function reflectHTML() {
     const F = S.reflect, st = Math.min(F.step || 0, 3);
@@ -473,8 +474,9 @@
         <div class="ck3">
           <label class="field"><b>1. ${esc(D.CHECKS[0][0])}</b><small>${esc(D.CHECKS[0][1])} Not what they said, what they wanted.</small><input class="v6-in" data-rf3="need" value="${esc(c.need || "")}" placeholder="They wanted…"></label>
           <div class="field"><b>2. ${esc(D.CHECKS[1][0])}</b><small>Look back at what ${esc(r.who === "Client" ? "they" : r.who)} said.</small><div class="chips-row">${RF_WORDS.map(([k, t]) => `<button type="button" class="chip" data-rf-words="${k}" aria-pressed="${c.used === k}">${t}</button>`).join("")}</div></div>
-          <label class="field"><b>3. Where did ${esc(F.pullPick || "my Pull")} show up?</b><small>Copy the few words from your answer where it took over.</small><input class="v6-in" data-rf3="pullAt" value="${esc(c.pullAt || "")}" placeholder="e.g. “Not at all”"${c.noPull ? " disabled" : ""}>
-            <span class="chips-row" style="margin-top:8px"><button type="button" class="chip" data-rf-nopull aria-pressed="${!!c.noPull}">It didn’t show up here</button></span></label>
+          <div class="field"><b>3. Which Pull showed up in this answer?</b><small>We started with the one you picked. Change it if a different one showed up here.</small>
+            <div class="chips-row">${D.PULLS.map(([t]) => `<button type="button" class="chip" data-rf-pl="${t}" aria-pressed="${rfPull() === t}">${t}</button>`).join("")}<button type="button" class="chip" data-rf-pl="none" aria-pressed="${rfPull() === "none"}">None showed up</button></div>
+            ${rfPull() !== "none" ? `<label class="field" style="margin-top:10px">Where did ${esc(rfPull())} take over?<small>Copy the few words from your answer.</small><input class="v6-in" data-rf3="pullAt" value="${esc(c.pullAt || "")}" placeholder="e.g. “Not at all”"></label>` : ""}</div>
         </div>
         ${rfOk3() ? `<div class="reveal"><b>Your redo target</b>${rfTarget(r)}</div>` : ""}`;
       ok = rfOk3();
@@ -1230,7 +1232,7 @@
       $$("[data-rf-rep]", app).forEach(b => b.onclick = () => { if (F.rep !== b.dataset.rfRep) { F.rep = b.dataset.rfRep; F.c3 = {}; } save(); render(); });
       const C3 = () => (F.c3 = F.c3 || {});
             $$("[data-rf-words]", app).forEach(b => b.onclick = () => { C3().used = b.dataset.rfWords; save(); render(); });
-      const rp = $("[data-rf-nopull]", app); if (rp) rp.onclick = () => { const c = C3(); c.noPull = !c.noPull; if (c.noPull) c.pullAt = ""; save(); render(); };
+      $$("[data-rf-pl]", app).forEach(b => b.onclick = () => { C3().pl = b.dataset.rfPl; save(); render(); });
       $$("[data-rf3]", app).forEach(nd => { nd.oninput = () => { C3()[nd.dataset.rf3] = nd.value; save(); const nx = $("[data-rf-nav='1']", app); if (nx) nx.disabled = !rfOk3(); }; nd.onchange = () => render(); });
       $$("[data-rf]", app).forEach(t => t.oninput = () => { F[t.dataset.rf] = t.value; save(); const sv = $("[data-rf-save]", app); if (sv) sv.disabled = !((F.redoLine || "").trim() && (F.redo || "").trim()); });
       $$("[data-rf-nav]", app).forEach(b => b.onclick = () => { F.step = Math.max(0, Math.min(3, (F.step || 0) + +b.dataset.rfNav)); save(); render(); top(); });
