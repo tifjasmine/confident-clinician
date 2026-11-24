@@ -4,28 +4,28 @@
 window.TCC6_SIMS = {
  "jordan": {
   "week": 1,
-  "client": "Jordan",
-  "title": "Jordan’s Advice Request",
+  "client": "Rowan",
+  "title": "Rowan’s Advice Request",
   "skill": "Notice pressure, preserve agency, respond intentionally",
-  "setup": "Jordan, 29, is in session three. They have been discussing a difficult relationship and the fear of disappointing others. No immediate danger has been disclosed. You have 8 decisions; allow time to notice your own pressure cues between choices.",
+  "setup": "Rowan, 29, is in session three. They have been discussing a difficult relationship and the fear of disappointing others. No immediate danger has been disclosed.",
   "moments": [
    {
     "id": "jordan-01",
-    "client": "I’ve been thinking about what we talked about. Should I break up with Sam? I need you to tell me what you would do.",
+    "client": "I’ve been thinking about what we talked about. Should I break up with Jess? I need you to tell me what you would do.",
     "choices": [
      [
       "A",
       "Part of you wants an answer you can rely on. What feels hardest about making the decision yourself?",
       "If I decide, I could be wrong. I feel like I’m going to ruin everything.",
       "Names the wish for certainty while exploring decision pressure.",
-      "May feel indirect if Jordan needs to know you heard the urgency."
+      "May feel indirect if Rowan needs to know you heard the urgency."
      ],
      [
       "B",
       "I can help you think it through, but I don’t want to decide for you. What matters most to you here?",
       "I guess being respected. But that sounds vague when you say it like that.",
       "Sets a collaborative boundary and invites values.",
-      "Values language may arrive before Jordan feels emotionally understood."
+      "Values language may arrive before Rowan feels emotionally understood."
      ],
      [
       "C",
@@ -38,18 +38,18 @@ window.TCC6_SIMS = {
    },
    {
     "id": "jordan-02",
-    "client": "Sam isn’t horrible. They can be really sweet. But when I bring up something that bothers me, I end up apologizing.",
+    "client": "Jess isn’t horrible. They can be really sweet. But when I bring up something that bothers me, I end up apologizing.",
     "choices": [
      [
       "A",
       "Walk me through the most recent time that happened.",
-      "Friday. I said I was hurt, Sam got upset, and somehow I was comforting them.",
+      "Friday. I said I was hurt, Jess got upset, and somehow I was comforting them.",
       "Collects observable interaction data rather than jumping to labels.",
       "A detail-oriented approach can miss the immediate feeling in the room."
      ],
      [
       "B",
-      "It sounds confusing to care about Sam and also feel that your needs disappear.",
+      "It sounds confusing to care about Jess and also feel that your needs disappear.",
       "Yes. It makes me feel selfish even saying any of this.",
       "Reflects competing feelings and reduces shame.",
       "Validation alone may not clarify how the pattern unfolds."
@@ -76,7 +76,7 @@ window.TCC6_SIMS = {
      ],
      [
       "B",
-      "I can tell you the pattern deserves attention. What does it feel like when you disagree with Sam?",
+      "I can tell you the pattern deserves attention. What does it feel like when you disagree with Jess?",
       "I get nervous. Usually I just give up.",
       "Combines a careful clinical observation with exploration.",
       "May need a more direct assessment if fear suggests threats or control."
@@ -86,17 +86,17 @@ window.TCC6_SIMS = {
       "Different people use ‘red flag’ differently. What does it mean to you?",
       "That maybe I’m allowed to take this seriously.",
       "Clarifies client language and meaning.",
-      "May postpone naming your concern when Jordan is asking for help judging safety."
+      "May postpone naming your concern when Rowan is asking for help judging safety."
      ]
     ]
    },
    {
     "id": "jordan-04",
-    "client": "There’s something I haven’t said. Sam checks my phone, and once blocked the door when I tried to leave an argument.",
+    "client": "There’s something I haven’t said. Jess checks my phone, and once blocked the door when I tried to leave an argument.",
     "choices": [
      [
       "A",
-      "I’m glad you told me. Blocking your exit and checking your phone raise safety concerns. Are you safe now, and has Sam threatened or hurt you?",
+      "I’m glad you told me. Blocking your exit and checking your phone raise safety concerns. Are you safe now, and has Jess threatened or hurt you?",
       "I’m safe right now. They haven’t hit me, but I’ve been scared.",
       "Prioritizes present safety and specific assessment.",
       "Do not equate no physical assault with no danger; explore coercive control and safety planning."
@@ -165,7 +165,7 @@ window.TCC6_SIMS = {
      [
       "C",
       "What are the reasons staying feels important, even with the fear you’ve described?",
-      "I love Sam, and our lives are wrapped together.",
+      "I love Jess, and our lives are wrapped together.",
       "Explores attachment and practical barriers without judgment.",
       "Do not let an exploratory stance crowd out safety and consultation as indicated."
      ]

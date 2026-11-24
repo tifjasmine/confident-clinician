@@ -152,7 +152,7 @@
     if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""], ["aiNote", "AI training note", clip(S.demo.aiNote)]].filter(p => p[2]));
     if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", D.LAB.who, 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
     const M = S.sim || {}, SJ = SIMS.jordan;
-    [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Jordan Simulation", "Jordan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
+    [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Rowan Simulation", "Rowan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
       SJ.moments.map((m, j) => [`m${j}`, `Moment ${j + 1}`, C.picks && C.picks[j] != null ? clip((m.choices[C.picks[j]] || [])[1]) : ""]).concat(flatPairs(C.intent, "Intention"), flatPairs(C.ref, "Debrief")).filter(p => p[2])));
     Object.entries(S.reps || {}).forEach(([id, x]) => { const r = REP(id); if (!r) return; (x.attempts && x.attempts.length ? x.attempts : [x]).forEach((a, k) => mk("rep-" + id, "Rep", `Rep ${id} · ${r.client}`, r.week, k + 1, x.saved ? "Finished" : "In progress", flatPairs(a))); });
     const LS = S.live || {};
@@ -423,7 +423,7 @@
     let fwd;
     if (st < 3) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
     else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>See how I’d say it →</button>`;
-    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary next" data-go="week/sim">Next: Jordan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
+    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary next" data-go="week/sim">Next: Rowan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
     return `<div class="flow">${head}${st === 0 ? `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>` : ""}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
 
@@ -490,13 +490,13 @@
     const C = M.cur;
     const fiction = `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>`;
     const hist = M.history || [];
-    if (!C) return `<div class="flow">${fiction}<p class="flow-q">${esc(X.title)}</p>
-      <div class="sim-skill"><small>What you’re practicing</small>${esc(X.skill)}</div>
+    if (!C || C.intro) return `<div class="flow">${fiction}      <div class="sim-skill"><small>What you’re practicing</small>${esc(X.skill)}</div>
       <p class="flow-sub" style="margin:0">${esc(X.setup)}</p>
       <div class="how"><div class="how-h">How this works</div><ol>${[["Read what " + who + " says", ""], ["Pick what you’d say", "There’s no right answer and no score. The order of choices changes each time."], ["See how " + who + " reacts", "Then read what your move was trying to do, and what to watch for."]].map(([t, d], i) => `<li><span class="num lg">${i + 1}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span></li>`).join("")}</ol><div class="how-f">Eight moments, then a short debrief. Take your time.</div></div>
-      <div class="actions"><button type="button" class="v6-btn primary" data-sim-start>Start the session →</button></div>
+      <div class="actions">${C ? `<button type="button" class="v6-btn primary" data-sim-resume>Continue the session →</button>` : `<button type="button" class="v6-btn primary" data-sim-start>Start the session →</button>`}</div>
       ${hist.length ? `<div class="hint">You’ve finished ${hist.length} earlier ${hist.length === 1 ? "attempt" : "attempts"}. They’re saved, and your debrief shows what you chose last time.</div>` : ""}</div>`;
     const i = Math.min(C.i, n);
+    const back = i ? `<button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button>` : `<button type="button" class="v6-btn secondary" data-sim-intro>← Back</button>`;
     const head = `<div class="flow-head"><span class="v6-pill blush">${i < n ? `Moment ${i + 1} of ${n}` : "Debrief"}</span><div class="flow-dots sim8" aria-hidden="true">${X.moments.map((_, k) => `<span class="${k < i ? "done" : k === i ? "on" : ""}"></span>`).join("")}<span class="${i === n ? "on" : ""}"></span></div></div>`;
     const client = (txt, md) => `<div class="speaker${md ? "" : " boxed"}"><span class="av" aria-hidden="true">${who[0]}</span><span class="col"><span class="who">${esc(who)}</span><span class="said${md ? " md" : ""}">${q(txt)}</span></span></div>`;
     if (i < n) {
@@ -504,13 +504,13 @@
       let body = client(m.client);
       if (p == null) {
         body += `<p class="flow-q">What would you say?</p><div class="choices">${C.order[i].map(k => `<button type="button" class="choice" data-sim-pick="${k}"><span>${q(m.choices[k][1])}</span></button>`).join("")}</div>`;
-        return `<div class="flow">${head}${body}${i ? `<div class="actions"><button type="button" class="v6-btn secondary" data-sim-go="${i - 1}">← Back</button></div>` : ""}</div>`;
+        return `<div class="flow">${head}${body}<div class="actions">${back}</div></div>`;
       }
       const c = m.choices[p];
       body += `<div class="you-said"><small>You</small>${q(c[1])}</div>${client(c[2], true)}
         <details class="coach-d" open><summary>Coach note</summary><div class="coach2"><div><small>What this move was trying to do</small>${esc(c[3])}</div><div><small>What to watch for</small>${esc(c[4])}</div></div></details>
         ${INTENT_AT.includes(i) ? `<label class="field intent">Take 20 seconds. What was your intention? <small>Optional, just for you</small><textarea class="v6-ta" rows="2" data-sim-intent="${i}" placeholder="I was trying to…">${esc(C.intent[i])}</textarea></label>` : ""}`;
-      return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button>
+      return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><span style="display:flex;gap:10px;flex-wrap:wrap">${back}<button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button></span>
         <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "Go to the debrief →" : "Continue →"}</button></div></div>`;
     }
     const last = hist[hist.length - 1];
@@ -520,7 +520,7 @@
     return `<div class="flow">${head}<p class="flow-q">Look back at your session.</p>
       <details class="peek"><summary>Your path: all 8 moments</summary><ol class="path">${rows}</ol></details>
       ${X.debrief.map((qq, k) => `<label class="field">${k + 1}. ${esc(qq)}<textarea class="v6-ta" rows="${k === 2 ? 3 : 2}" data-sim-ref="${k}">${esc(R[k])}</textarea></label>`).join("")}
-      <div class="actions">${C.saved ? `<button type="button" class="v6-btn primary next" data-go="week/reflect">Next: Reflect & Redo →</button><button type="button" class="v6-btn secondary" data-sim-again>Try the session again</button>`
+      <div class="actions">${back}${C.saved ? `<button type="button" class="v6-btn primary next" data-go="week/reflect">Next: Reflect & Redo →</button><button type="button" class="v6-btn secondary" data-sim-again>Try the session again</button>`
         : `<button type="button" class="v6-btn primary" data-sim-save${ok ? "" : " disabled"}>Save this session</button>`}<span class="saved-flag" data-flag></span></div>
       ${C.saved ? `<div class="hint">Saved to your Clinical Confidence Profile. Trying again starts a new attempt and keeps this one.</div>` : `<div class="hint">Answer all three to save. Your answers go into your Clinical Confidence Profile.</div>`}</div>`;
   }
@@ -606,10 +606,10 @@
         ${sec("gap", "The gap I want to investigate", "A hypothesis, not a diagnosis", "Add the gap you want to look into")}
         ${sec("pull", "My Pull, and the cue I notice first", "", "Add the Pull that grabs you, and what you notice first")}
         ${sec("move", "My grounded first move", "From the Lab", "Add one line you’d actually say")}
-        <h3 class="pf-h">My Jordan practice</h3>
+        <h3 class="pf-h">My Rowan practice</h3>
         ${path ? `<div class="pf-path">${esc(path).replace(/\n/g, "<br>")}</div>` : `<div class="empty">Your path shows up here after the simulation.</div>`}
-        ${sec("shift", "When the priority changed", "", "Add what changed when Jordan shared new information")}
-        ${sec("adjust", "My closing for Jordan", "Includes a collaborative safety step, without directing them to stay or leave", "Add your closing")}
+        ${sec("shift", "When the priority changed", "", "Add what changed when Rowan shared new information")}
+        ${sec("adjust", "My closing for Rowan", "Includes a collaborative safety step, without directing them to stay or leave", "Add your closing")}
         <h3 class="pf-h">“What I Say When…”</h3>
         ${lines.length ? `<div class="bank">${lines.map(([w, l]) => `<div class="bank-item"><span class="w">${esc(w)}</span><span class="l">${q(l)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here as you finish the lesson activities.</div>`}
         <h3 class="pf-h">My seven-day practice target</h3>
@@ -1222,6 +1222,8 @@
       const M = S.sim, X = SIMS.jordan, C = M.cur;
       const ss = $("[data-sim-start]", app); if (ss) ss.onclick = () => { M.cur = newAttempt(X); save(); render(); top(); };
       $$("[data-sim-pick]", app).forEach(b => b.onclick = () => { C.picks[C.i] = +b.dataset.simPick; save(); render(); });
+      const sr = $("[data-sim-resume]", app); if (sr) sr.onclick = () => { delete C.intro; save(); render(); top(); };
+      const si = $("[data-sim-intro]", app); if (si) si.onclick = () => { C.intro = true; save(); render(); top(); };
       $$("[data-sim-go]", app).forEach(b => b.onclick = () => { C.i = +b.dataset.simGo; save(); render(); top(); });
       $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete C.picks[k]; C.i = k; save(); render(); });
       $$("[data-sim-intent]", app).forEach(t => t.oninput = () => { C.intent[t.dataset.simIntent] = t.value; save(); });
