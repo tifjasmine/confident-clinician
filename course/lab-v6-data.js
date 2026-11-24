@@ -172,8 +172,8 @@
       desc: "A client asks you to just tell them what to do. Listen to a rushed conversation and a steadier one, then try your own.", meta: "Audio role-play", img: IMG.c,
       quoteLabel: "Jordan, 29 · session 3", context: "Jordan has just described another fight with their partner.", moment: "“Just tell me what to do. You’re the therapist. Should I break up with them?”", pull: "Captions: Why this misses · What changed" },
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
-      desc: "Read a short session with Jordan and another therapist. Find the moment it went off track, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
-      itemsLabel: "Five steps", items: [["1", "Spot It", "Tap the line where the session turned."], ["2", "Seen vs. Supplied", "Did Jordan say it, or did the therapist fill it in?"], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "P.A.U.S.E. it", "Rewrite line 4 with one prompt per letter."], ["5", "Your move", "Write your new line 4, then compare it with another version."]] },
+      desc: "Listen to a short session with Jordan and another therapist. Find where Jordan pulled back, trace what caused it, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
+      itemsLabel: "Four steps", items: [["1", "Spot It", "Find where Jordan pulled back, then trace it to the line that caused it."], ["2", "Said or assumed?", "Catch what the therapist filled in, and write a question to check it."], ["3", "The Pull", "Which Pull drove line 4? Which drove line 8?"], ["4", "Your move", "Rewrite line 4 (P.A.U.S.E. helps if you’re stuck), then hear how Jordan responds."]] },
     { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Jordan’s Advice Request", title: "Simulation: Jordan’s Advice Request",
       desc: "Now you’re the therapist. Pick what you’d say at each moment with Jordan and see how Jordan responds.", meta: "12–15 min", img: IMG.c,
       itemsLabel: "Eight moments with Jordan", items: [["1", "“I’ve been thinking about what we talked about. Should I break up with Sam? I need you to tell me what you would do.”", "Where it starts"], ["8", "“I still want you to tell me what I should do. But I think I also know I need a plan.”", "Where it ends"]] },
@@ -246,7 +246,9 @@
 
   /* Week 1 Lab: The Clinical Blind Spot. Copied from the scripts doc (draft pending clinical review). */
   const LAB = {
-    intro: "Jordan’s session 2, with another therapist. It’s far easier to spot a Pull in someone else first. Then you’ll turn the lens on yourself, and this session explains why Jordan asks for advice in session 3.",
+    intro: "Jordan’s session 2, with another therapist. It’s easier to spot a Pull in someone else first. Then you’ll turn the lens on yourself.",
+    pullback: [5, 7],
+    pullWhy: "Line 5 is the first flicker (“I guess”). By line 7 it’s obvious: “Yeah, maybe,” and Jordan looks at their phone.",
     lines: [
       ["Jordan", "We had another fight Sunday. It was about the dishes, but it’s never about the dishes."],
       ["Therapist", "What’s it usually about?"],
@@ -260,14 +262,16 @@
     ],
     turn: 4,
     turnWhy: "Jordan offered something tender (“I’m the bad guy”), and the therapist went straight to a tool.",
+    /* Thoughts the therapist might have had during session 2: did Jordan actually say or show it, or did the therapist fill it in? */
     sort: [
-      ["Jordan feels like the bad guy for bringing things up", "seen"],
-      ["“It’s never about the dishes”", "seen"],
-      ["Jordan pulled back after the advice (“Yeah, maybe” + phone)", "seen"],
-      ["Jordan’s partner doesn’t listen", "supplied"],
-      ["Jordan needs communication skills", "supplied"],
-      ["Jordan is thinking about leaving", "supplied", "until line 9, which the therapist invited with line 8"]
+      ["“The fights aren’t really about the dishes.”", "seen", "it’s right there in line 1"],
+      ["“Jordan’s partner doesn’t listen.”", "supplied", "Jordan never said that. The therapist did, in line 8"],
+      ["“Jordan ends up feeling like the bad guy.”", "seen", "it’s right there in line 3"],
+      ["“Jordan needs better communication skills.”", "supplied", "the therapist decided that and reached for ‘I’ statements"],
+      ["“Jordan checked out after the advice.”", "seen", "Jordan showed it in line 7: “Yeah, maybe” and the phone"],
+      ["“Jordan is ready to leave.”", "supplied", "Jordan only asks in line 9, after the therapist takes sides in line 8"]
     ],
+    checkQ: "Pick one thing the therapist filled in. What could they have asked to check it with Jordan instead?",
     pull4: "Fix", pull8: "Rescue", gap: "pressure",
     gapWhy: "Most likely pressure: the therapist knew how to explore but rushed.",
     pause: [["P", "Pause", "Slow down. What’s rushing you?"], ["A", "Attend", "What’s happening with Jordan, and in you?"], ["U", "Use", "What clinical information do you already have?"], ["S", "Say", "One intentional, clinically appropriate response."], ["E", "Explore", "What will you watch for in Jordan’s response?"]],

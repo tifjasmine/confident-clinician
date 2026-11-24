@@ -1322,3 +1322,13 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .dw-line.now { box-shadow: 0 0 0 3px rgba(194,105,75,.35); }
 .dw-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 .dw-take.rushed, .dw-take.steady { display: none; }
+.lab-listen { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 12px; font-size: 14px; color: var(--muted); }
+.transcript li.now > * { border-color: var(--terra); box-shadow: 0 0 0 2px rgba(194,105,75,.35); }
+.transcript li.pulled > *, .transcript li.back > * { background: #eef3ee; border-color: var(--forest); }
+.reveal.miss { background: var(--blush); }
+.lab-check { margin-top: 16px; }
+.lab-listen { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 12px; font-size: 14px; color: var(--muted); }
+.transcript li.now > * { border-color: var(--terra); box-shadow: 0 0 0 2px rgba(194,105,75,.35); }
+.transcript li.pulled > *, .transcript li.back > * { background: #eef3ee; border-color: var(--forest); }
+.reveal.miss { background: var(--blush); }
+.lab-check { margin-top: 16px; }
