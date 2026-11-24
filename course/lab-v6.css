@@ -1476,3 +1476,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 .d2-col .wave{display:block;width:150px;height:18px;background:repeating-linear-gradient(90deg,#9fb3a6 0 3px,transparent 3px 7px);-webkit-mask:linear-gradient(90deg,#000 0 100%);border-radius:2px;opacity:.8;clip-path:polygon(0 40%,6% 20%,12% 55%,18% 10%,24% 45%,30% 0,36% 50%,42% 25%,48% 60%,54% 15%,60% 40%,66% 5%,72% 55%,78% 30%,84% 50%,90% 20%,96% 45%,100% 35%,100% 65%,96% 55%,90% 80%,84% 50%,78% 70%,72% 45%,66% 95%,60% 60%,54% 85%,48% 40%,42% 75%,36% 50%,30% 100%,24% 55%,18% 90%,12% 45%,6% 80%,0 60%)}
 .d2-row.t .wave{background:repeating-linear-gradient(90deg,#2e4a3e 0 3px,transparent 3px 7px);opacity:.55}
+.d2-restart{justify-self:end;font-size:14px}

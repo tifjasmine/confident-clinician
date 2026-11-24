@@ -992,7 +992,8 @@
     const X = D2(), st = d2State(), n = X.moments.length, i = Math.min(st.i, n), L = "ABC";
     const intro = `<span class="v6-label">Listen · ${i >= n ? "Done" : `Moment ${i + 1} of ${n}`}</span><span class="ac-name">A session with Jordan</span>
       <span class="ac-t">Turn your sound on. Jordan speaks, you pick what you’d say, and you’ll hear how it lands. ${esc(X.setup)}</span>
-      <div class="d2-prog">${X.moments.map((_, k) => `<i class="${k < i ? "done" : k === i ? "cur" : ""}"></i>`).join("")}</div>`;
+      <div class="d2-prog">${X.moments.map((_, k) => `<i class="${k < i ? "done" : k === i ? "cur" : ""}"></i>`).join("")}</div>
+      ${i > 0 || st.heard[0] ? `<button type="button" class="v6-link d2-restart" data-d2-restart>↺ Start the session over</button>` : ""}`;
     if (i >= n) {
       const path = X.moments.map((m, k) => st.pick[k] != null ? `<li><b>${esc(m.title)}</b> · you chose ${L[st.pick[k]]}</li>` : "").join("");
       return `<div class="act-card look-demo d2">${intro}<div class="d2-note"><b>Tiffany’s wrap-up</b><p>${esc(X.wrap)}</p></div>
