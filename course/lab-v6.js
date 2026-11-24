@@ -1190,16 +1190,21 @@
     const lines = VS.hist.map(h => h.who === "client"
       ? `<div class="vs-line c"><span class="av" aria-hidden="true">D</span><div><small>Dana</small>${q(h.text)}</div></div>`
       : `<div class="vs-line me"><div><small>You${h.skill ? ` · ${esc(h.skill)}` : ""}</small>${esc(h.text)}${h.clip ? `<audio controls preload="none" src="${h.clip}"></audio>` : ""}${h.pick ? `<span class="vg-tag ${VG_TAG[h.pick][1]}">${VG_TAG[h.pick][0]}</span>` : ""}</div></div>`).join("");
-    const statusLine = { opening: "Getting Dana ready…", speaking: "Dana is talking…", listening: "Your turn. Answer out loud.", thinking: "Dana is listening…", between: "", done: "" }[st] || "";
+    const statusLine = { opening: "Getting Dana ready…", speaking: "Dana is talking…", listening: "Your turn. Answer out loud.", thinking: "Dana is thinking…", between: "Getting the next moment ready…", review: "", done: "" }[st] || "";
+    const last = VS.hist.length >= 2 ? VS.hist[VS.hist.length - 2] : null;
+    const review = st === "review" && last && last.who === "me" ? `<div class="vg-review ${VG_TAG[last.pick][1]}"><span class="vg-tag ${VG_TAG[last.pick][1]}">${VG_TAG[last.pick][0]}</span>${last.note ? `<p>${esc(last.note)}</p>` : ""}
+      <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn secondary" data-vg-retry>↺ Try this moment again</button><button type="button" class="v6-btn primary" data-vg-adv>${i + 1 >= n ? "Finish the session →" : "Next moment →"}</button></div></div>` : "";
+    const hint = st === "listening" && m ? (G.hint ? `<div class="vg-hint"><b>Nudge</b> ${esc(m.hint || m.focus)}</div>` : `<button type="button" class="v6-link vg-hintbtn" data-vg-hint>Need a nudge?</button>`) : "";
     const momentHead = m && st !== "done" ? `<div class="vg-moment"><span class="v6-label">Moment ${Math.min(i, n - 1) + 1} of ${n} · ${esc(m.skill)}</span><div class="vg-focus">${esc(m.focus)}</div></div>` : "";
-    const nextBox = st === "between" && sc ? `<div class="vg-next"><span class="v6-label">Up next · Moment ${i + 1} of ${n}</span><b>${esc(sc.moments[i].skill)}</b><span>${esc(sc.moments[i].focus)}</span><div class="actions"><button type="button" class="v6-btn primary" data-vg-next${G.ready && G.ready[i] ? "" : " disabled"}>${G.ready && G.ready[i] ? "Next moment →" : "Getting it ready…"}</button></div></div>` : "";
+    const nextBox = st === "between" && sc && sc.moments[i] ? `<div class="vg-next"><span class="v6-label">Up next · Moment ${i + 1} of ${n}</span><b>${esc(sc.moments[i].skill)}</b><span>${esc(sc.moments[i].focus)}</span><div class="actions"><button type="button" class="v6-btn primary" data-vg-next${G.ready && G.ready[i] ? "" : " disabled"}>${G.ready && G.ready[i] ? "Next moment →" : "Getting it ready…"}</button></div></div>` : "";
     const recap = st === "done" && G.picks && G.picks.length ? `<div class="vg-recap"><span class="v6-label">How each moment landed</span>${G.picks.map((p, k) => `<div class="r"><span>${k + 1}. ${esc(sc.moments[k].skill)}</span><span class="vg-tag ${VG_TAG[p][1]}">${VG_TAG[p][0]}</span></div>`).join("")}</div>` : "";
     return { html: `<div class="card stack">
       <div class="rep-top"><span class="v6-pill blush">🎙 Guided voice session · Testing</span><span class="lesson">Goal: what really got in the way of the homework</span></div>
-      ${st === "between" ? "" : momentHead}
+      ${st === "between" || st === "review" ? "" : momentHead}
       ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
       ${lines ? `<div class="vs-log">${lines}</div>` : ""}
-      ${nextBox}
+      ${review}${nextBox}
+      ${hint}
       ${statusLine ? `<div class="vs-status ${st}"><span class="vs-dot"></span><span>${statusLine}</span>${st === "listening" ? `<span class="vs-meter"><i data-vs-meter></i></span>` : ""}</div>` : ""}
       <div class="actions" style="justify-content:space-between">${st === "listening" ? `<button type="button" class="v6-btn primary" data-vs-done>I’m done talking</button>` : "<span></span>"}
         ${st !== "done" ? `<button type="button" class="v6-btn secondary" data-vs-end>End session</button>` : `<button type="button" class="v6-btn secondary" data-vs-again>Start over</button>`}</div>
@@ -1219,7 +1224,7 @@
     try {
       const { out } = await api("/.netlify/functions/lab-voice", { action: "gstart", scenario: "dana", voice: VS.voice });
       if (!out.ok) { vsStopAll(); return vsSet("idle", out.error || "Voice isn’t available right now."); }
-      VS.g = { script: out.script, i: 0, picks: [], audio: { 0: out.audio }, ready: { 0: true } }; VS.fillers = out.fillers || [];
+      VS.g = { script: out.script, i: 0, picks: [], audio: { 0: out.audio }, ready: { 0: true } }; VS.fillers = [];
       vgPrep(1);
       await vgMoment();
     } catch (e) { vsStopAll(); vsSet("idle", "Voice isn’t available right now."); }
@@ -1232,7 +1237,6 @@
   async function vgSend(blob) {
     const G = VS.g; if (VS.status !== "listening" || !G) return;
     vsSet("thinking", "");
-    if (VS.fillers.length) { try { new Audio("data:audio/mpeg;base64," + VS.fillers[Math.floor(Math.random() * VS.fillers.length)]).play().catch(() => {}); } catch (e) {} }
     const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
     const t0 = Date.now();
     try {
@@ -1243,11 +1247,24 @@
       VS.msg = ""; VS.ms.push(Date.now() - t0); if (out.parts) VS.parts.push(out.parts);
       const m = G.script.moments[G.i];
       const land = out.land || "guarded";
-      G.picks.push(land);
-      VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: land, skill: m.skill });
+      G.picks[G.i] = land; G.note = out.note || ""; G.tries = (G.tries || 0) + 1;
+      VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: land, skill: m.skill, note: out.note || "" });
       VS.hist.push({ who: "client", text: out.reply });
       vsSet("speaking"); await vsPlay(out.audio);
       if (VS.status !== "speaking") return;
+      vsSet("review");
+    } catch (e) { VS.msg = "Connection hiccup. Try again."; vsListen(); }
+  }
+  /* after a moment: try it again, or move on */
+  function vgRetry() {
+    const G = VS.g; if (!G) return;
+    VS.hist.splice(-2, 2); G.note = ""; G.hint = false;
+    vsListen();
+  }
+  async function vgAdvance() {
+    const G = VS.g; if (!G) return;
+    G.note = ""; G.hint = false; G.tries = 0;
+    try {
       G.i++;
       if (G.i >= G.script.moments.length) {
         const warm = G.picks.filter(p => p === "open").length >= 3, last = G.audio[G.i - 1];
@@ -1256,8 +1273,8 @@
         vsStopAll(); vsSet("done", ""); return vsWrap();
       }
       vgPrep(G.i + 1);
-      vsSet("between");
-    } catch (e) { VS.msg = "Connection hiccup. Try again."; vsListen(); }
+      if (G.ready[G.i]) vgMoment(); else vsSet("between");
+    } catch (e) { vsSet("between"); }
   }
   function vsSummaryHTML() {
     const avg = a => (a.reduce((x, y) => x + y, 0) / a.length / 1000).toFixed(1);
@@ -1622,6 +1639,9 @@
       const b1 = $("[data-vs-start]", app); if (b1) b1.onclick = vsStart;
       const g1 = $("[data-vg-start]", app); if (g1) g1.onclick = vgStart;
       const g2 = $("[data-vg-next]", app); if (g2) g2.onclick = () => { if (VS.g && VS.g.ready[VS.g.i]) vgMoment(); };
+      const g3 = $("[data-vg-retry]", app); if (g3) g3.onclick = vgRetry;
+      const g4 = $("[data-vg-adv]", app); if (g4) g4.onclick = vgAdvance;
+      const g5 = $("[data-vg-hint]", app); if (g5) g5.onclick = () => { VS.g.hint = true; render(); };
       $$("[data-vs-mode]", app).forEach(b => b.onclick = () => { VS.mode = b.dataset.vsMode; VS.msg = ""; render(); });
       const b2 = $("[data-vs-done]", app); if (b2) b2.onclick = () => { try { VS.rec && VS.rec.state !== "inactive" && VS.rec.stop(); } catch (e) {} };
       const b3 = $("[data-vs-end]", app); if (b3) b3.onclick = () => { vsStopAll(); vsSet("done", ""); vsWrap(); };

@@ -1421,3 +1421,8 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .vg-recap{display:grid;gap:6px;padding:14px;border-radius:14px;background:#fff;border:1px solid var(--line-2,#e7e4de)}
 .vg-recap .r{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .vg-recap .r .vg-tag{margin:0}
+
+.vg-review{display:grid;gap:8px;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid var(--line-2,#e7e4de)}
+.vg-review .vg-tag{justify-self:start;margin:0}.vg-review p{margin:0}
+.vg-hint{padding:10px 14px;border-radius:12px;background:#eef3ef}.vg-hint b{color:#2e4a3e;margin-right:6px}
+.vg-hintbtn{justify-self:start}

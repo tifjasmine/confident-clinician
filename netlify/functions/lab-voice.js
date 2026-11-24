@@ -106,9 +106,9 @@ exports.handler = async event => {
     /* ---- Guided session ---- */
     const G = GUIDED[key];
     if (G && body.action === "gstart") {
-      const [audio, f1, f2] = await Promise.all([prepMoment(G, 0, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
-      const script = { client: G.client, intro: G.intro, goal: G.goal, stretch: G.stretch, moments: G.moments.map(x => ({ skill: x.skill, focus: x.focus, line: x.line, replies: Object.fromEntries(x.replies.map(r => [r.key, { text: r.text, land: r.land }])) })), closings: G.closings };
-      return json(200, { ok: true, script, audio, fillers: [f1, f2] });
+      const audio = await prepMoment(G, 0, voice);
+      const script = { client: G.client, intro: G.intro, goal: G.goal, stretch: G.stretch, moments: G.moments.map(x => ({ skill: x.skill, focus: x.focus, hint: x.hint, line: x.line, replies: Object.fromEntries(x.replies.map(r => [r.key, { text: r.text, land: r.land }])) })), closings: G.closings };
+      return json(200, { ok: true, script, audio });
     }
     if (G && body.action === "gprep") {
       const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0));
@@ -122,22 +122,23 @@ exports.handler = async event => {
       const next = G.moments[i + 1];
       const sys = `You play ${G.client} in a GUIDED spoken practice session for therapists-in-training. Everyone is fictional. The therapist's words were transcribed from speech, so ignore small slips.
 CLIENT BACKGROUND (fictional)\n${sc.background}\n\n${MAPS[key] || ""}\n\n${COURSE}
-Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "..."}
+Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "...", "note": "..."}
 1. "land": how the therapist's response lands, using the GUIDE for this moment. Reasonable, caring attempts that partly do an "open" move count as open.
 2. "reply": ${G.client}'s spoken reply. FIRST respond directly to what the therapist actually said or asked (if they asked a question, answer it, even briefly or reluctantly). Then let it carry the feeling and gist of the GUIDE example for that landing. Use the GUIDE examples as direction, not a script.
+3. "note": a training note for the trainee, ONE sentence, max 25 words, about THIS moment's skill (${m.skill}). If it landed open, name specifically what they did that worked, quoting a few of their words. If guarded or pull, name what happened (a Pull, skipping her words, a question stack, reassurance, advice) and point to one direction to try. Warm and plain. Never give them a line to say, never quote suggested wording, no "try saying".
 Rules for the reply: one or two short sentences, everyday spoken words, no stage directions, no quotes, no therapy-speak. Never mention the course or skills. Don't jump ahead to what she'll say next${next ? ` (her next line will be: "${next.line}")` : ""}, and don't reveal more than this landing allows.`;
       const guide = m.replies.map(r => `- ${r.land.toUpperCase()} when the therapist ${r.when}. Example gist: "${r.text}"`).join("\n");
       const hist = (Array.isArray(body.history) ? body.history : []).slice(-12).map(h => `${h.who === "client" ? G.client : "Therapist"}: ${clip(h.text, 400)}`).join("\n");
       const raw = await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nJSON:`, FAST, 300);
-      const parse = t => { try { const j = JSON.parse((String(t).match(/\{[\s\S]*\}/) || ["{}"])[0]); return { land: ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded", reply: spoken(j.reply || "") }; } catch { return { land: "guarded", reply: "" }; } };
-      let { land, reply } = parse(raw);
+      const parse = t => { try { const j = JSON.parse((String(t).match(/\{[\s\S]*\}/) || ["{}"])[0]); return { land: ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded", reply: spoken(j.reply || ""), note: clip(j.note, 300) }; } catch { return { land: "guarded", reply: "", note: "" }; } };
+      let { land, reply, note } = parse(raw);
       if (!reply) {
         console.error("Guided voice: unparsed reply, retrying with the main model", JSON.stringify(raw).slice(0, 300));
-        ({ land, reply } = parse(await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nReturn the JSON object now.`, MODEL, 1500)));
+        ({ land, reply, note } = parse(await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nReturn the JSON object now.`, MODEL, 1500)));
       }
       if (!reply) { console.error("Guided voice: no reply after retry"); return json(502, { error: "Dana didn’t come through that time. Say it again." }); }
       const t2 = Date.now(), audio = await tts(reply, voice), t3 = Date.now();
-      return json(200, { ok: true, heard, land, reply, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
+      return json(200, { ok: true, heard, land, reply, note, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
     }
     if (body.action === "wrap") {
       const moments = toMoments(sc, body.history);
