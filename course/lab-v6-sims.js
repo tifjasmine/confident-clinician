@@ -35,6 +35,10 @@ window.TCC6_SIMS = {
       "Explores the fear behind the request.",
       "When the fear itself feels important. Come back to her question before she shares anything serious."
      ]
+    ],
+    "best": [
+     0,
+     "Being honest about confidentiality before she shares protects her trust later, especially if safety comes up."
     ]
    },
    {
@@ -62,6 +66,10 @@ window.TCC6_SIMS = {
       "Explores the fear driving the avoidance.",
       "When fear seems to be driving the avoidance. Keep it curious, not a nudge to go."
      ]
+    ],
+    "best": [
+     0,
+     "Concrete details show you the pattern without labeling her, and set up everything that follows."
     ]
    },
    {
@@ -89,6 +97,10 @@ window.TCC6_SIMS = {
       "Explores where the judgment comes from.",
       "When the judgment sounds borrowed from someone else. Give a direct answer too, if she needs one."
      ]
+    ],
+    "best": [
+     0,
+     "She gets a straight answer, then the chance to name it herself."
     ]
    },
    {
@@ -116,6 +128,10 @@ window.TCC6_SIMS = {
       "Explains the reason for direct questions and invites collaboration.",
       "Right now, as long as the direct questions come right away."
      ]
+    ],
+    "best": [
+     0,
+     "When suicide risk comes up, asking directly and checking access to the pills comes first."
     ]
    },
    {
@@ -143,6 +159,10 @@ window.TCC6_SIMS = {
       "Explores what she fears about them finding out.",
       "Once she has an honest answer to her question. Then it shows you what the fear is really about."
      ]
+    ],
+    "best": [
+     0,
+     "It answers her real question honestly and keeps her part of any decision."
     ]
    },
    {
@@ -170,6 +190,10 @@ window.TCC6_SIMS = {
       "Assesses frequency and escalation.",
       "When you need to know how urgent this is. Let her answers lead into a concrete plan."
      ]
+    ],
+    "best": [
+     0,
+     "It takes her seriously without arguing, and she chooses a step that puts distance between her and the pills."
     ]
    },
    {
@@ -197,6 +221,10 @@ window.TCC6_SIMS = {
       "Follows her lead and lowers the tension.",
       "Later in the session, once there’s a safety plan. Before that, it moves on too soon."
      ]
+    ],
+    "best": [
+     0,
+     "It respects what she asked for and still keeps safety first."
     ]
    },
    {
@@ -224,6 +252,10 @@ window.TCC6_SIMS = {
       "Consolidates what shifted for her.",
       "As a last reflection, after the safety plan is written down."
      ]
+    ],
+    "best": [
+     0,
+     "A written plan, including what happens with the pills, is what she needs before she leaves."
     ]
    }
   ],

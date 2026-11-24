@@ -1345,3 +1345,9 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .transcript .lt.clue { background: var(--terra); color: #fff; }
 .transcript .lt.miss { background: var(--ink-2); color: #fff; }
 .transcript li.turn > * { border: 2px dashed var(--ink-2); box-shadow: none; background: #eef3ee; }
+
+/* Simulation: strongest-fit callout */
+.sim-best{margin:0 0 14px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(46,74,62,.18);font-size:.95rem;line-height:1.5}
+.sim-best .sb-tag{display:inline-block;margin:0 0 6px;padding:3px 10px;border-radius:999px;background:#2e4a3e;color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.sim-best .sb-line{display:block;margin:0 0 6px;font-family:var(--serif,Georgia,serif);font-style:italic}
+.coach-d .sim-best{margin:14px 0 0}
