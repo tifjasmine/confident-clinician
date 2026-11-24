@@ -11,6 +11,17 @@ const MODEL = process.env.LAB_VOICE_MODEL || process.env.LAB_AI_MODEL || "claude
 const VOICES = { dana: process.env.LAB_VOICE_DANA || "aura-2-thalia-en" };
 /* Voices the preview account can audition (Deepgram Aura-2, English) */
 const PICK = ["aura-2-thalia-en", "aura-2-andromeda-en", "aura-2-helena-en", "aura-2-luna-en", "aura-2-cora-en", "aura-2-delia-en", "aura-2-asteria-en", "aura-2-athena-en"];
+/* Dana's hidden map (DRAFT for Tiffany's clinical review). She only goes deeper when the therapist earns it. */
+const MAPS = { dana: `DANA'S HIDDEN MAP (for you only; never name the layers)
+LAYER 1, SURFACE (where she starts): tired, didn't do the thought record, expects to be "grilled" about it. Short answers, a little flat, testing whether this session will be another lecture.
+LAYER 2, MIDDLE (opens when the therapist gets curious instead of correcting, uses her words, or asks about her experience rather than the homework): she feels managed by everyone. Checklists and protocols at work, her manager's "just follow the steps," her mom's articles about sleep and self-care. Everyone hands her a fix; nobody asks how she's doing. Some dry humor shows up here.
+LAYER 3, CORE (opens only after the therapist has stayed with layer 2 for a bit, slowly, without fixing): she's scared that if she slips at work, a patient gets hurt, and it would prove what she's always felt from her mom, that she's never quite enough. The homework felt like one more test she could fail. She may get quiet or a little teary here (show it in words like "...yeah" or "I don't know why I'm telling you this").
+MOVING BETWEEN LAYERS:
+- Curiosity, her own words, slowing down, one question at a time: she goes one layer deeper, gradually, never jumping from 1 to 3 in one reply.
+- Interpreting too fast or naming her feelings for her ("you're avoiding your feelings"), lecturing, fixing, re-assigning homework, or stacking questions: she gets a bit defensive and pulls back up a layer for a turn or two.
+- Reassurance that skips what she said: polite, flat, stays where she is.
+- Once a layer is open, she doesn't fully close it again unless the therapist pushes hard.
+Stay consistent with what she's already said earlier in the session.` };
 const SUMMARY_MODEL = process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
 /* What the course teaches, so the client and the feedback use the course's language */
 const COURSE = `COURSE CONTENT (The Confident Clinician's Clinical Confidence Lab, Week 1: Notice)
@@ -80,10 +91,10 @@ exports.handler = async event => {
       const moments = toMoments(sc, body.history);
       if (!moments.some(m => m.attempts.length)) return json(400, { error: "Nothing to review yet" });
       const sys = `You give feedback on a spoken practice session inside The Confident Clinician's Clinical Confidence Lab. Everyone is fictional. The therapist's words were transcribed from speech, so ignore small transcription slips.
-CLIENT BACKGROUND (fictional)\n${sc.background}\n\nSETUP\n${sc.setup}\n\n${COURSE}
+CLIENT BACKGROUND (fictional)\n${sc.background}\n\nSETUP\n${sc.setup}\n\n${MAPS[key] || ""}\n\n${COURSE}
 Voice: warm, direct, practical, like an experienced clinician. Talk to the trainee as "you". Quote their actual words. Use the course's language (gaps, Pulls, resets, P.A.U.S.E., the Three Checks) where it genuinely fits. No grades, no scores, no "correct/wrong", no "great job". Don't write lines for them to say.
 Return ONLY a JSON object:
-{"arc": "one or two sentences: where Dana started and where she ended up, and the moment it shifted most",
+{"arc": "one or two sentences: how deep Dana got (surface, middle, or core, described in plain words like 'she started opening up about feeling managed by everyone', never the word 'layer'), and the therapist's move right before it shifted most, or what pulled her back up",
  "well": ["2 or 3 specific things that worked, each one sentence, quoting their words"],
  "build": ["1 or 2 specific next steps, each one sentence, framed forward (Next time..., To deepen this...), tied to a moment in the session"],
  "noticed": ["1 or 2 patterns you noticed across the session, like pace, question stacking, using her words, a Pull that kept showing up, or how they handled silence"],
@@ -101,7 +112,7 @@ Return ONLY a JSON object:
     if (!heard) return json(200, { ok: true, heard: "", retry: true });
     const moments = toMoments(sc, body.history);
     moments[moments.length - 1].attempts.push({ text: heard });
-    const sys = system("client", sc) + "\n\nTHIS IS A SPOKEN SESSION: the therapist's words were transcribed from speech, so ignore small transcription slips. Keep Dana's line short enough to say out loud: one to three sentences.\n\nThe trainee is taking this course; use it only to recognize their moves (Pulls, using her words, stacking questions, rushing) and react the way a real person would. Dana never names or mentions any of it.\n" + COURSE;
+    const sys = system("client", sc) + "\n\n" + (MAPS[key] || "") + "\n\nTHIS IS A SPOKEN SESSION: the therapist's words were transcribed from speech, so ignore small transcription slips. Keep Dana's line short enough to say out loud: one to three sentences.\n\nThe trainee is taking this course; use it only to recognize their moves (Pulls, using her words, stacking questions, rushing) and react the way a real person would. Dana never names or mentions any of it.\n" + COURSE;
     const ask = `SESSION SO FAR\n\n${transcript(sc, moments)}\n\nWrite Dana's next line, reacting to the therapist's latest attempt. Reply with Dana's spoken words only.`;
     let text = await claude(sys, ask, MODEL, 600);
     if (!spoken(text) && !/SAFETY_PAUSE/.test(text)) { console.error("Voice: empty client reply, retrying", JSON.stringify(text).slice(0, 200)); text = await claude(sys, ask + "\n\nWrite one or two plain spoken sentences from Dana now.", MODEL, 600); }
