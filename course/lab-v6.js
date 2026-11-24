@@ -341,7 +341,7 @@
       <div class="pick">
         <h2>${anyProgress() ? "Pick up where you <em>left off.</em>" : "Everything else, <em>in one place.</em>"}</h2>
         <div class="pick-grid">${[
-          ["playbook", D.IMG.b, "Clinical Playbook", "Your “What I Say When…” lines, saved as you go.", "Open your Playbook"],
+          ["playbook", D.IMG.b, "Clinical Playbook", "Your saved lines, your tools, and what you’re building each week.", "Open your Playbook"],
           ["reproom", D.IMG.a, "Rep Room", "Extra Reps in the same format. Never blocks your progress.", "Browse Reps"],
           ["growth", D.IMG.c, "My growth", "Your Day 1 answers. In Week 4, see how far you’ve come.", "See your growth"]
         ].map(([k, img, t2, d2, cta]) => `<button type="button" class="pick-card" data-go="${k}"><img src="${img}" alt=""><span class="pc"><small>${esc(t2)}</small><b>${esc(d2)}</b><span class="go">${esc(cta)} →</span></span></button>`).join("")}</div>

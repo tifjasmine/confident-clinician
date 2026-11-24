@@ -294,7 +294,7 @@
     intro: "Choose one small skill you can actually rehearse this week. You’re looking for observable practice, not a feeling of confidence.",
     fields: [
       ["skill", "One skill", ["Pause before answering a client’s request for advice.", "Separate observations from assumptions.", "Notice a pressure cue and give myself one breath.", "Ask a purposeful clarification question.", "Recognize when I need consultation or further assessment."]],
-      ["rehearse", "How I’ll rehearse", ["Three Reps in the Rep Room", "A live session with the practice partner", "Saying my line out loud before sessions", "My own plan"]],
+      ["rehearse", "How I’ll rehearse", ["Three Reps in the Rep Room", "A live session with Dana (in the Rep Room)", "Saying my line out loud before sessions", "My own plan"]],
       ["evidence", "How I’ll know it’s working", ["I can say one grounded response and explain its purpose", "I can name one observation and one hypothesis", "I can notice and interrupt my rush to reassure"]],
       ["support", "Support plan", ["Consult supervisor/clinical mentor", "Review an assessment or practice protocol", "Seek focused training", "Peer role-play with fictional cases", "Not needed for this selected practice rep"]],
       ["adjust", "One adjustment I will test next time", null]
