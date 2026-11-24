@@ -228,6 +228,7 @@
     baseline: ["Day 1 Baseline", "Four client moments, before any teaching. Just answer like you would today."],
     reproom: ["Rep Room", "Extra practice whenever you want it. Totally optional, and it never blocks your progress."],
     playbook: ["Clinical Playbook", "Everything you write and save in the Lab, in one place. Come back to it anytime."],
+    bonus: ["Bonus Rep", "Extra practice in a new format."],
     growth: ["My growth", "Your four Day 1 answers live here. In Week 4 you’ll answer the same moments again and see both side by side."]
   };
 

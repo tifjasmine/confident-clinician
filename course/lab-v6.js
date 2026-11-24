@@ -63,7 +63,7 @@
   const weekDone = n => n === 1 ? curIdx() >= D.WEEK1.length : false; /* Weeks 2-4 not built yet */
   const opensAt = n => S.start ? S.start + (n - 1) * DRIP_DAYS * 864e5 : null;
   const timeReached = n => n === 1 || (S.start && Date.now() >= opensAt(n));
-  const weekOpen = n => n === 1 || S.reviewer || (weekDone(n - 1) && timeReached(n));
+  const weekOpen = n => n === 1 || S.reviewer || isTestAccount() || (weekDone(n - 1) && timeReached(n));
   const fmtDay = (t, long) => new Date(t).toLocaleDateString("en-US", long ? { weekday: "short", month: "short", day: "numeric" } : { month: "short", day: "numeric" });
   const weekStatus = n => {
     if (weekOpen(n)) return S.reviewer && !(weekDone(n - 1) && timeReached(n)) ? "Preview open" : "Open now";
@@ -213,14 +213,15 @@
     if (trail.length > 50) trail.splice(0, trail.length - 50);
     setMenu(false);
     $$("[data-back]").forEach(b => { b.hidden = scr === "home"; });
-    const navKey = scr === "rep" ? "reproom" : scr === "baseline" || scr === "act" ? "week" : scr;
+    const navKey = scr === "rep" || scr === "bonus" ? "reproom" : scr === "baseline" || scr === "act" ? "week" : scr;
     if (scr === "live" && liveState().cur && liveState().showIntro === undefined) liveState().showIntro = !!liveState().cur.done;
     const tabs = NAV.map(([k, label, short], i) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${i === -1 ? short : label}</button>`).join("");
     $("[data-tabs]").innerHTML = tabs;
     $("[data-bottom]").innerHTML = NAV.map(([k, , short]) => `<button type="button" data-go="${k}"${navKey === k ? ' aria-current="page"' : ""}>${short}</button>`).join("");
-    $$("[data-preview-toggle]").forEach(pv => { pv.textContent = S.reviewer ? "Preview · all open" : "Preview"; pv.classList.toggle("on", S.reviewer); pv.setAttribute("aria-pressed", S.reviewer); });
+    if (!isTestAccount() && S.reviewer) S.reviewer = false;
+    $$("[data-preview-toggle]").forEach(pv => { pv.hidden = !isTestAccount(); pv.textContent = S.reviewer ? "Preview · all open" : "Preview"; pv.classList.toggle("on", S.reviewer); pv.setAttribute("aria-pressed", S.reviewer); });
 
-    const views = { home: homeView, week: weekView, act: actView, live: liveView, rep: repView, baseline: baselineView, reproom: roomView, playbook: playbookView, growth: growthView };
+    const views = { home: homeView, week: weekView, act: actView, live: liveView, rep: repView, baseline: baselineView, reproom: roomView, bonus: bonusView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
     $("[data-side]").innerHTML = sideHTML(navKey, scr === "week" ? v.sel : -1);
     $(".v6-frame").classList.toggle("side-min", !!SB.min);
@@ -1135,18 +1136,93 @@
           <div class="m">${r.pending ? esc(r.moment) : r.roomMoment ? esc(r.roomMoment) : r.line ? q(r.line) : esc(r.stageLine) + " " + r.silence + " seconds of silence."}</div>
           <div class="meta">Week ${r.week} · ${esc(r.theme)} · ${esc(r.lesson)}</div><div class="go">${btn}</div></div>`;
       }).join("")}</div>` : `<div class="empty">Reps you save show up here. Start with Rep 1.1.</div>`}
-      <div class="bonus"><span class="t">Bonus Reps<small>${esc(D.BONUS)}</small></span><span class="v6-pill white">Coming soon</span></div>`;
+      <div class="bonus-head"><h2 class="h">Bonus Reps</h2><p>Six extra moments, six different ways to practice. Always open.</p></div>
+      <div class="room-grid">${BONUS().map(B => { const bx = (S.bonus || {})[B.id] || {}; return `<div class="room-card bonus-card"><div class="top"><span>${B.icon} ${esc(B.fmtLabel)}</span>${bx.saved ? `<span class="v6-pill sage">Practiced</span>` : `<span class="v6-pill blush">Open</span>`}</div>
+        <div class="m">${q(B.line)}</div><div class="meta">${esc(B.client)}, ${B.age} · ${esc(B.setting)}</div><div class="go"><button type="button" class="v6-btn secondary small" data-go="bonus/${B.id}">${bx.saved ? "Practice again" : "Start"}</button></div></div>`; }).join("")}</div>`;
     return { html, tight: true };
+  }
+
+  /* ---------- Bonus Reps (lab-v6-bonus.js) ---------- */
+  const BONUS = () => window.TCC6_BONUS || [];
+  let bxTimer = null;
+  function bonusView(id) {
+    const B = BONUS().find(b => b.id === id) || BONUS()[0];
+    S.bonus = S.bonus || {}; const x = S.bonus[B.id] = S.bonus[B.id] || {};
+    const AU = window.TCC6_BONUS_AUDIO || { ready: [] };
+    const has = f => (x[f] || "").trim().length >= 3;
+    const heard = c => !!(x.heard || {})[c];
+    const spk = (line, stage) => `<div class="speaker boxed"><span class="av" aria-hidden="true">${B.client[0]}</span><span class="col"><span class="who">${esc(B.client)}</span>${stage ? `<span class="stage">${esc(stage)}</span>` : ""}<span class="said md">${q(line)}</span></span></div>`;
+    const play = (code, label) => `<button type="button" class="v6-btn primary bx-play" data-bx-play="${code}">▶ ${esc(label)}</button>${AU.ready.includes(code) ? "" : `<small class="bx-soon">Audio coming soon. For now, the words appear when you press play.</small>`}`;
+    const ta = (f, ph, rows) => `<textarea class="v6-ta" rows="${rows || 3}" data-bx="${f}" placeholder="${esc(ph)}">${esc(x[f] || "")}</textarea>`;
+    const chipB = (f, v, on) => `<button type="button" class="chip" data-bx-pick="${f}" data-v="${esc(v)}" aria-pressed="${on}">${esc(v)}</button>`;
+    const ai = f => aiBox(`bonus-${B.id}-${f}`, `Hear how ${B.client} responds`, "react", () => ({ who: `${B.client}, ${B.age}`, context: B.context, line: B.line, response: (x[f] || "").trim(), guide: B.guide || "" }), () => {}, { req: ["response"], who: B.client, wait: `${B.client} is responding…`, rkey: `bonus-${B.id}`, akeys: [], where: `Bonus · ${B.client}` });
+    const takeBtn = ok => ok && !x.showTake ? `<div class="actions"><button type="button" class="v6-btn primary" data-bx-pick="showTake" data-v="1">See one way to handle it →</button></div>` : "";
+    let body = "", ready = false;
+    if (B.format === "listen") {
+      const c = B.audio[0];
+      body = !heard(c) ? `<p class="flow-q">Listen before you read.</p><p class="flow-sub">Notice how ${esc(B.client)} says it, not just what.</p><div class="bx-playrow">${play(c, "Hear " + B.client)}</div>`
+        : spk(B.line, B.delivery) + `<div class="field"><b>${esc(B.hearQ)}</b><div class="chips-row">${B.hearOpts.map(o => chipB("hear", o, x.hear === o)).join("")}</div>${x.hear ? `<span class="hint">${esc(B.hearNote)}</span>` : ""}</div>`
+          + (x.hear ? `<label class="field"><b>What do you say?</b>${ta("move", "Say it the way you’d actually say it")}</label>${has("move") ? ai("move") : ""}` : "");
+      ready = x.hear && has("move");
+    }
+    if (B.format === "tones") {
+      body = `<p class="flow-q">Same words, two ways.</p><p class="flow-sub">Hear each version, then write what you’d say to that one.</p>` + B.tones.map(([c, label, stage], i) => `<div class="bx-tone"><span class="v6-label">${esc(label)}</span>${heard(c) ? spk(B.line, stage) + `<label class="field">What would you say to this version?${ta("move" + i, "Your response", 2)}</label>` : `<div class="bx-playrow">${play(c, "Hear " + label.toLowerCase())}</div>`}</div>`).join("");
+      ready = B.tones.every((_, i) => has("move" + i));
+      if (ready) body += `<div class="reveal"><b>What changed?</b> ${esc(B.compare)}</div>${ai("move1")}`;
+    }
+    if (B.format === "rank") {
+      const n = B.options.length;
+      if (!x.order) { x.order = [...Array(n).keys()].sort(() => Math.random() - .5); save(); }
+      body = spk(B.line) + `<p class="flow-q" style="margin-top:14px">Put these in order, from best fit to least.</p><p class="flow-sub">Use the arrows. There’s no score.</p>
+        <ol class="bx-rank">${x.order.map((k, i) => `<li><span class="n">${i + 1}</span><span class="t">${q(B.options[k][0])}</span>${x.ranked ? "" : `<span class="mv"><button type="button" data-bx-mv="${i}:-1" aria-label="Move up"${i ? "" : " disabled"}>↑</button><button type="button" data-bx-mv="${i}:1" aria-label="Move down"${i < n - 1 ? "" : " disabled"}>↓</button></span>`}</li>`).join("")}</ol>
+        ${x.ranked ? `<div class="reveal"><b>How Tiffany would order them</b><ol class="bx-key">${B.options.map(([t, why], k) => `<li><span class="t">${q(t)}</span><small>${esc(why)}${x.order[k] === k ? " <b>You put this one in the same spot.</b>" : ""}</small></li>`).join("")}</ol></div>`
+          : `<div class="actions"><button type="button" class="v6-btn primary" data-bx-pick="ranked" data-v="1">Lock in my order</button></div>`}`;
+      ready = !!x.ranked;
+    }
+    if (B.format === "fix") {
+      body = spk(B.line) + `<div class="you-said sm"><small>A therapist said</small>${q(B.original)}</div>
+        <label class="field"><b>How would you say it?</b><small>It’s kind and natural. What would you change? Rewrite it your way.</small>${ta("move", "Your version")}</label>
+        ${has("move") ? `<div class="reveal"><b>About the original</b> ${esc(B.originalNote)}</div>${ai("move")}` : ""}`;
+      ready = has("move");
+    }
+    if (B.format === "spot") {
+      const sp = x.spot || {};
+      body = spk(B.line) + `<p class="flow-q" style="margin-top:14px">Three therapists answered. Which Pull drove each one?</p>` + B.responses.map(([t, pull, why], i) => `<div class="bx-spot"><div class="you-said sm"><small>Therapist ${i + 1}</small>${q(t)}</div>
+        <div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-bx-spot="${i}" data-v="${p}" aria-pressed="${sp[i] === p}">${p}</button>`).join("")}</div>
+        ${sp[i] ? `<span class="hint">${sp[i] === pull ? "✓ " : `Most people would call this <b>${pull}</b>. `}${esc(why)}</span>` : ""}</div>`).join("");
+      const allSpot = B.responses.every((_, i) => sp[i]);
+      if (allSpot) body += `<label class="field" style="margin-top:8px"><b>Your turn. What would you say to ${esc(B.client)}?</b>${ta("move", "Say it the way you’d actually say it")}</label>${has("move") ? ai("move") : ""}`;
+      ready = allSpot && has("move");
+    }
+    if (B.format === "clock") {
+      const left = x.started && !x.timeUp ? Math.max(0, Math.ceil(B.seconds - (Date.now() - x.started) / 1000)) : 0;
+      if (x.started && !x.timeUp && left <= 0) { x.timeUp = true; save(); }
+      if (!x.started) body = `<p class="flow-q">You’ll have ${B.seconds} seconds to respond, like in a real session.</p><p class="flow-sub">Don’t overthink it. Type what you’d actually say.</p><div class="actions"><button type="button" class="v6-btn primary" data-bx-start>Start the clock</button></div>`;
+      else if (!x.timeUp) body = spk(B.line) + `<div class="bx-clock"><b data-bx-count>${left}</b> seconds</div>${ta("first", "Type fast…", 2)}`;
+      else body = spk(B.line) + `<div class="you-said sm"><small>Your first ${B.seconds} seconds</small>${(x.first || "").trim() ? q(x.first) : "(Time ran out. That happens in real sessions too.)"}</div>
+        <label class="field"><b>Now take a breath. Same moment, no clock.</b><small>What would you say with a little more space?</small>${ta("move", "Your second try")}</label>${has("move") ? ai("move") : ""}
+        ${has("move") ? `<div class="reveal sm"><b>Compare</b> What changed between your first ${B.seconds} seconds and your second try? That gap is what a pause buys you.</div>` : ""}`;
+      ready = x.timeUp && has("move");
+    }
+    const take = `<div class="card sage stack-12 take"><span class="v6-label forest">One way to handle it</span><div class="pull">${esc(B.take.text)}</div>
+      <div class="say"><small>One way to say it</small><div>${q(B.take.say)}</div></div><div class="why"><b>Watch for</b> ${esc(B.take.watch)}</div></div>
+      <div class="card stack-12"><span class="v6-label">Your line to keep</span><label class="field"><small>${esc(B.bank)}…</small>${ta("line", "Your best line, in your own words", 2)}</label>
+        ${x.saved ? `<div class="saved-box"><span><b>✓ Saved</b> to your Playbook.</span><button type="button" class="v6-link" data-go="reproom">Back to the Rep Room</button></div>` : `<div class="actions"><button type="button" class="v6-btn primary" data-bx-save${(x.line || "").trim() ? "" : " disabled"}>Save to “What I Say When…”</button></div>`}</div>`;
+    const html = `<div class="card stack"><div class="rep-top"><span class="v6-pill blush">${B.icon} ${esc(B.fmtLabel)}</span><span class="lesson">${esc(B.client)}, ${B.age} · ${esc(B.setting)}</span></div>
+      <div class="rep-ctx">${esc(B.context)}</div>${body}${takeBtn(ready)}</div>${ready && x.showTake ? take : ""}`;
+    return { html, title: `Bonus · ${B.client}`, sub: B.sub, crumb: ["Rep Room", `Bonus · ${B.client}`, "reproom"], solo: true };
   }
 
   /* ---------- Playbook ---------- */
   function playbookView() {
     const lines = bankLines();
+    const blines = BONUS().filter(B => ((S.bonus || {})[B.id] || {}).saved && (S.bonus[B.id].line || "").trim());
     const html = `<div class="card">
         <div class="between" style="margin-bottom:6px"><h2 class="pb-title">What I Say When…</h2><span style="font-size:13px;font-weight:600;color:var(--forest)">${lines.length} of 12+ lines</span></div>
         <p class="note" style="margin:0 0 16px;font-size:14px">Your best line from every Rep, in your own words. Three new lines each week.</p>
         ${lines.length ? `<div class="bank">${lines.map(r => `<div class="bank-item"><span class="w">${esc(r.bank)}…</span><span class="l">${q(S.reps[r.id].line)}</span><span class="f">Rep ${r.id} · ${esc(r.client)}<button type="button" data-go="rep/${r.id}">Edit</button></span></div>`).join("")}</div>`
           : `<div class="empty">Your first line lands here after the Lesson 1 Rep.</div>`}
+        ${blines.length ? `<div class="bank" style="margin-top:12px">${blines.map(B => `<div class="bank-item"><span class="w">${esc(B.bank)}…</span><span class="l">${q(S.bonus[B.id].line)}</span><span class="f">Bonus · ${esc(B.client)}<button type="button" data-go="bonus/${B.id}">Practice again</button></span></div>`).join("")}</div>` : ""}
       </div>
       <div class="card"><h2 class="h">Your tools</h2><div class="grid2">
         <div class="words pull"><span class="t">The Pull</span><span class="d">The automatic urge that grabs you under pressure.</span><div class="chips">${D.PULLS.map(([t, d]) => `<span title="${esc(d)}">${esc(t)}</span>`).join("")}</div></div>
@@ -1333,6 +1409,18 @@
         if (z.dataset.act === "bnext") { if (i === 3) S.sealed = true; else S.baseIdx = i + 1; }
         save(); render(); scrollTo({ top: 0 });
       });
+    }
+    if (bxTimer) { clearInterval(bxTimer); bxTimer = null; }
+    if (scr === "bonus") {
+      const B = BONUS().find(b => b.id === arg) || BONUS()[0], x = S.bonus[B.id], AU = window.TCC6_BONUS_AUDIO || { ready: [], base: "" };
+      $$("[data-bx]", app).forEach(t => { t.oninput = () => { x[t.dataset.bx] = t.value; save(); const sv = $("[data-bx-save]", app); if (sv) sv.disabled = !(x.line || "").trim(); }; if (t.dataset.bx !== "line" && t.dataset.bx !== "first") t.onchange = () => render(); });
+      $$("[data-bx-pick]", app).forEach(b => b.onclick = () => { x[b.dataset.bxPick] = b.dataset.v; save(); render(); });
+      $$("[data-bx-play]", app).forEach(b => b.onclick = () => { const c = b.dataset.bxPlay; x.heard = x.heard || {}; if (AU.ready.includes(c)) { try { const a = new Audio(AU.base + c + ".mp3"); a.onended = () => { x.heard[c] = true; save(); render(); }; a.play(); b.disabled = true; b.textContent = "Playing…"; return; } catch (e) {} } x.heard[c] = true; save(); render(); });
+      $$("[data-bx-mv]", app).forEach(b => b.onclick = () => { const [i, d] = b.dataset.bxMv.split(":").map(Number), o = x.order, j = i + d; [o[i], o[j]] = [o[j], o[i]]; save(); render(); });
+      $$("[data-bx-spot]", app).forEach(b => b.onclick = () => { x.spot = x.spot || {}; x.spot[b.dataset.bxSpot] = b.dataset.v; save(); render(); });
+      const st = $("[data-bx-start]", app); if (st) st.onclick = () => { x.started = Date.now(); save(); render(); const t = $("[data-bx=first]", app); if (t) t.focus(); };
+      if (B.format === "clock" && x.started && !x.timeUp) bxTimer = setInterval(() => { const left = Math.ceil(B.seconds - (Date.now() - x.started) / 1000), el = $("[data-bx-count]", app); if (el) el.textContent = Math.max(0, left); if (left <= 0) { clearInterval(bxTimer); bxTimer = null; const t = $("[data-bx=first]", app); if (t) x.first = t.value; x.timeUp = true; save(); render(); } }, 250);
+      const sv = $("[data-bx-save]", app); if (sv) sv.onclick = () => { x.saved = true; save(); render(); };
     }
     if (scr === "reproom") $$("[data-chip]", app).forEach(b => b.onclick = () => { chip = b.dataset.chip; render(); });
   }

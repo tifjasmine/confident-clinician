@@ -1363,3 +1363,20 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .reveal .rt{margin:8px 0 0;padding-left:20px}
 .reveal .rt li{margin:4px 0}
 .v6-in{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid rgba(46,74,62,.22);border-radius:10px;font:inherit;background:#fff}
+
+/* Bonus Reps */
+.bonus-head{margin:28px 0 12px}.bonus-head .h{margin:0}.bonus-head p{margin:4px 0 0;color:var(--muted)}
+.bx-playrow{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:12px 0}
+.bx-soon{color:var(--muted);font-size:12.5px}
+.bx-tone{padding:14px 0;border-top:1px solid var(--line-2,#e7e4de)}
+.bx-rank,.bx-key{list-style:none;margin:10px 0;padding:0;display:grid;gap:8px}
+.bx-rank li,.bx-key li{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line-2,#e7e4de);border-radius:12px;background:#fff}
+.bx-key li{flex-direction:column;align-items:flex-start;gap:4px}
+.bx-key small{color:var(--ink-2,#555)}
+.bx-rank .n{font-weight:700;color:var(--terra,#b5694f);min-width:18px}
+.bx-rank .t{flex:1}
+.bx-rank .mv{display:flex;gap:4px}
+.bx-rank .mv button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line-2,#ddd);background:#fff;cursor:pointer;font-size:16px}
+.bx-rank .mv button:disabled{opacity:.35;cursor:default}
+.bx-spot{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--line-2,#e7e4de)}
+.bx-clock{margin:14px 0 8px;font-size:15px;color:var(--ink-2)}.bx-clock b{font-size:30px;color:var(--terra,#b5694f);margin-right:4px}
