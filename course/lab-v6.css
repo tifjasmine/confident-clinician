@@ -1341,3 +1341,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .transcript li.ther > * { background: #eef3ee; }
 .transcript li.client > button { border: 1px dashed var(--terra); }
 .transcript li.spot > * { border: 2px solid var(--terra); background: var(--blush); box-shadow: none; }
+.transcript .lt { align-self: flex-start; margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+.transcript .lt.clue { background: var(--terra); color: #fff; }
+.transcript .lt.miss { background: var(--ink-2); color: #fff; }
+.transcript li.turn > * { border: 2px dashed var(--ink-2); box-shadow: none; background: #eef3ee; }

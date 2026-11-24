@@ -37,7 +37,7 @@
   if (S.actV !== 2) { S.act = {}; S.actV = 2; }
   if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
   if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 2) { ["c0", "c1", "c2", "c3", "c4", "c5"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 2; } /* side-by-side questions: one per P.A.U.S.E. letter + takeaway */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
-  if (S.labV !== 4) { S.lab = {}; S.labV = 4; } /* Lab Spot It + Said or assumed? redesigned */
+  if (S.labV !== 5) { S.lab = {}; S.labV = 5; } /* Lab Spot It + Said or assumed? redesigned */
   const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
 
   const REP = id => D.REPS.find(r => r.id === id);
@@ -363,8 +363,9 @@
   /* mode: "spot" (tap the client line the therapist missed) or false (read only) */
   const transcriptHTML = (L, mode) => `<ol class="transcript">${D.LAB.lines.map(([who, text, act], i) => {
     const n = i + 1, A = D.LAB;
-    const cls = [who !== "Therapist" ? "client" : "ther", L.spotPick === n ? "picked" : "", L.spotPick && n === A.spot ? "spot" : "", L.spotPick && n === A.turn ? "turn" : ""].filter(Boolean).join(" ");
-    const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}</span>`;
+    const cls = [who !== "Therapist" ? "client" : "ther", L.spotPick === n ? "picked" : "", L.spotPick === A.spot || (L.spotTries || 0) >= 2 ? (n === A.spot ? "spot" : n === A.turn ? "turn" : "") : ""].filter(Boolean).join(" ");
+    const tag = L.spotPick && (L.spotPick === A.spot || (L.spotTries || 0) >= 2) ? (n === A.spot ? `<span class="lt clue">The clue</span>` : n === A.turn ? `<span class="lt miss">Where it slipped by</span>` : "") : "";
+    const inner = `<span class="ln">${n}</span><span class="tx"><b>${who}</b>${q(text)}${act ? ` <i>(${esc(act)})</i>` : ""}${tag}</span>`;
     const can = mode === "spot" && who !== "Therapist";
     return `<li class="${cls}" data-ln="${n}">${can ? `<button type="button" data-lab-spot="${n}">${inner}</button>` : `<div>${inner}</div>`}</li>`;
   }).join("")}</ol>`;
@@ -382,7 +383,7 @@
         <p class="flow-q">The therapist is warm and on topic. But Gene says something they don’t catch. Find the quiet clue.</p>
         ${transcriptHTML(L, found ? false : "spot")}
         ${spot && !found ? `<div class="reveal miss"><b>Not quite.</b> ${esc((A.spotNear && A.spotNear[spot]) || "Look again. Listen for what Gene starts to say and then steps away from.")} <span class="you">Tap another line.</span></div>` : ""}
-        ${found ? `<div class="reveal"><b>${hit ? "You caught it: line 5." : "It’s line 5."}</b> What tipped you off? Pick everything you noticed.${clueChips}
+        ${found ? `<div class="reveal"><b>${hit ? `You caught it: line ${A.spot}.` : `It’s line ${A.spot}.`}</b> What tipped you off? Pick everything you noticed.${clueChips}
           ${L.cluesDone ? `<p style="margin-top:10px">${esc(A.spotWhy)}</p>` : `<button type="button" class="v6-btn secondary" data-lab-clues${Object.values(cl).some(Boolean) ? "" : " disabled"} style="margin-top:10px">Check</button>`}</div>` : ""}`;
       ok = !!(found && L.cluesDone);
     }
@@ -408,7 +409,7 @@
     if (st === 3) {
       const pz = L.pause || {}, mv = L.move || "";
       body = `<p class="flow-q">Now you’re the therapist. Rewrite line ${A.turn}.</p>
-        <div class="speaker boxed"><span class="av" aria-hidden="true">${esc(A.av)}</span><span class="col"><span class="who">${esc(A.client)} · lines 5–6</span><span class="said md">${q(A.react.line)}</span></span></div>
+        <div class="speaker boxed"><span class="av" aria-hidden="true">${esc(A.av)}</span><span class="col"><span class="who">${esc(A.client)} · line ${A.spot}</span><span class="said md">${q(A.react.line)}</span></span></div>
         <div class="orig"><small>What the therapist said (line ${A.turn})</small>${q(A.lines[A.turn - 1][1])}</div>
         <details class="peek"${Object.values(pz).some(v => (v || "").trim()) ? " open" : ""}><summary>Stuck? Use P.A.U.S.E. to get there</summary><div class="pause-form" style="margin-top:10px">${A.pause.map(([l, w, qq]) => `<label class="field"><span class="pl"><b>${l}</b>${esc(w)} · <span>${esc(qq)}</span></span><textarea class="v6-ta" rows="1" data-lab-pause="${l}">${esc(pz[l])}</textarea></label>`).join("")}</div></details>
         <label class="field">Your new line ${A.turn} <small>Say it out loud first, then write it here.</small><textarea class="v6-ta" rows="3" data-lab-move placeholder="What you’d say instead">${esc(mv)}</textarea></label>
