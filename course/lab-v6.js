@@ -1224,7 +1224,7 @@
     try {
       const { out } = await api("/.netlify/functions/lab-voice", { action: "gstart", scenario: "dana", voice: VS.voice });
       if (!out.ok) { vsStopAll(); return vsSet("idle", out.error || "Voice isn’t available right now."); }
-      VS.g = { script: out.script, i: 0, picks: [], audio: { 0: out.audio }, ready: { 0: true } }; VS.fillers = [];
+      VS.g = { script: out.script, i: 0, picks: [], attempts: [], audio: { 0: out.audio }, ready: { 0: true }, id: "v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), started: new Date().toISOString() }; VS.fillers = [];
       vgPrep(1);
       await vgMoment();
     } catch (e) { vsStopAll(); vsSet("idle", "Voice isn’t available right now."); }
@@ -1248,8 +1248,10 @@
       const m = G.script.moments[G.i];
       const land = out.land || "guarded";
       G.picks[G.i] = land; G.note = out.note || ""; G.tries = (G.tries || 0) + 1;
+      G.attempts.push({ moment: G.i + 1, skill: m.skill, said: out.heard, land, reply: out.reply, note: out.note || "" });
       VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: land, skill: m.skill, note: out.note || "" });
       VS.hist.push({ who: "client", text: out.reply });
+      vgLog("In progress");
       vsSet("speaking"); await vsPlay(out.audio);
       if (VS.status !== "speaking") return;
       vsSet("review");
@@ -1260,6 +1262,13 @@
     const G = VS.g; if (!G) return;
     VS.hist.splice(-2, 2); G.note = ""; G.hint = false;
     vsListen();
+  }
+  /* save the session to Airtable (Voice Sessions): in progress after each moment, then completed/ended with the breakdown */
+  function vgLog(status) {
+    const G = VS.g; if (!G) return;
+    const S2 = VS.sum, breakdown = S2 ? [S2.goal && `Goal: ${S2.goal}`, S2.arc, S2.well.length && `What went well:\n- ${S2.well.join("\n- ")}`, S2.build.length && `What to build next:\n- ${S2.build.join("\n- ")}`, S2.noticed.length && `What I noticed:\n- ${S2.noticed.join("\n- ")}`, S2.next && `Practice next: ${S2.next}`].filter(Boolean).join("\n\n") : "";
+    const avgWait = VS.ms.length ? VS.ms.reduce((a, b) => a + b, 0) / VS.ms.length / 1000 : 0;
+    api("/.netlify/functions/lab-voice", { action: "log", scenario: "dana", sessionId: G.id, started: G.started, status, picks: G.picks, attempts: G.attempts, history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })), breakdown, avgWait }).catch(() => {});
   }
   async function vgAdvance() {
     const G = VS.g; if (!G) return;
@@ -1296,8 +1305,9 @@
     VS.sum = null; VS.sumErr = "";
     if (!VS.hist.some(h => h.who === "me")) return;
     try {
-      const { out } = await api("/.netlify/functions/lab-voice", { action: "wrap", scenario: "dana", picks: VS.mode === "guided" && VS.g ? VS.g.picks : [], history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "wrap", scenario: "dana", picks: VS.mode === "guided" && VS.g ? VS.g.picks : [], retries: VS.mode === "guided" && VS.g ? Math.max(0, VS.g.attempts.length - VS.g.picks.filter(Boolean).length) : 0, history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
       if (out.ok) VS.sum = out.summary; else VS.sumErr = out.error || "The breakdown didn’t come through.";
+      if (VS.mode === "guided" && VS.g) vgLog(VS.g.picks.filter(Boolean).length >= VS.g.script.moments.length ? "Completed" : "Ended early");
     } catch (e) { VS.sumErr = "The breakdown didn’t come through."; }
     if (location.hash.startsWith("#voice")) render();
   }

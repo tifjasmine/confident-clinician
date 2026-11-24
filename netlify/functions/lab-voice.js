@@ -35,7 +35,7 @@ const COURSE = `COURSE CONTENT (The Confident Clinician's Clinical Confidence La
 - Later weeks: choosing a focus when there's more than one direction; giving a session purpose without getting rigid; reviewing sessions, repairing ruptures, and building confidence from evidence.`;
 const MAX_TURNS = 12;
 /* Words the trainee is likely to say in session, so speech-to-text spells them right */
-const KEYTERMS = ["Dana", "homework", "thought record", "worksheet", "the sheet", "ER", "shifts", "burnout", "anxiety", "session"].map(k => "keyterm=" + encodeURIComponent(k)).join("&");
+const KEYTERMS = ["Dana", "homework", "thought record", "worksheet", "the sheet", "ER", "shifts", "burnout", "anxiety", "session", "checklist", "protocols", "articles", "manager"].map(k => "keyterm=" + encodeURIComponent(k)).join("&");
 const json = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) });
 const clip = (v, n) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
 
@@ -73,6 +73,32 @@ async function claude(sys, user, model, maxTokens) {
   return (out.content || []).filter(c => c.type === "text").map(c => c.text).join("").trim();
 }
 
+/* ---- Airtable: one row per voice session, upserted by Session ID ---- */
+const AT_BASE = process.env.AIRTABLE_LAB_BASE_ID || "appO3gcHI0Qc3e0OC";
+const AT_VOICE = process.env.AIRTABLE_LAB_VOICE_TABLE_ID || "tblPju0hLIU30m5Ro";
+async function logSession(user, b, G) {
+  const tok = process.env.AIRTABLE_LAB_TOKEN || process.env.AIRTABLE_ACCESS_TOKEN; if (!tok) return;
+  const atts = (Array.isArray(b.attempts) ? b.attempts : []).slice(0, 60);
+  const picks = (Array.isArray(b.picks) ? b.picks : []).slice(0, 10);
+  const word = { open: "opened up", guarded: "stayed guarded", pull: "pulled back" };
+  const fields = {
+    "Session ID": clip(b.sessionId, 60), "Email": user.email, "Client": G ? G.client : "Dana",
+    "Status": ["In progress", "Completed", "Ended early"].includes(b.status) ? b.status : "In progress",
+    "Moments done": picks.filter(Boolean).length, "Opened up": picks.filter(p => p === "open").length,
+    "Retries": Math.max(0, atts.length - picks.filter(Boolean).length),
+    "Reached stretch goal": G ? picks[G.moments.length - 1] === "open" : false,
+    "How each moment landed": picks.map((p, k) => `${k + 1}. ${G && G.moments[k] ? G.moments[k].skill : ""}: Dana ${word[p] || "-"}`).join("\n"),
+    "Transcript": clip((Array.isArray(b.history) ? b.history : []).map(h => `${h.who === "client" ? "Dana" : "Trainee"}: ${h.text}`).join("\n"), 90000).replace(/ (Dana|Trainee): /g, "\n$1: "),
+    "All attempts": atts.map(a => `Moment ${a.moment} · ${a.skill}\nSaid: ${a.said}\nDana ${word[a.land] || ""}: ${a.reply}${a.note ? `\nNote: ${a.note}` : ""}`).join("\n\n").slice(0, 90000),
+    "Test account": !!user.test
+  };
+  if (b.started) fields.Started = b.started;
+  if (b.breakdown) fields.Breakdown = clip(b.breakdown, 20000);
+  if (b.avgWait) fields["Avg wait (sec)"] = Math.round(b.avgWait * 10) / 10;
+  const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_VOICE}`, { method: "PATCH", headers: { Authorization: `Bearer ${tok}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ performUpsert: { fieldsToMergeOn: ["Session ID"] }, typecast: true, records: [{ fields }] }) });
+  if (!res.ok) console.error("Voice log failed", res.status, (await res.text()).slice(0, 200));
+}
 /* TTS for one guided moment: the line + every reply (+ closings on the last moment) */
 async function prepMoment(G, i, voice) {
   const m = G.moments[i], jobs = [["line", m.line]];
@@ -140,6 +166,11 @@ Rules for the reply: one or two short sentences, everyday spoken words, no stage
       const t2 = Date.now(), audio = await tts(reply, voice), t3 = Date.now();
       return json(200, { ok: true, heard, land, reply, note, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
     }
+    if (body.action === "log") {
+      if (!body.sessionId) return json(400, { error: "Missing session" });
+      try { await logSession(user, body, GUIDED[key]); } catch (e) { console.error("Voice log error", e.message); }
+      return json(200, { ok: true });
+    }
     if (body.action === "wrap") {
       const moments = toMoments(sc, body.history);
       if (!moments.some(m => m.attempts.length)) return json(400, { error: "Nothing to review yet" });
@@ -153,7 +184,7 @@ Return ONLY a JSON object:
  "noticed": ["1 or 2 patterns you noticed across the session, like pace, question stacking, using her words, a Pull that kept showing up, or how they handled silence"],
  "goal": "one or two sentences: how close they got to the session goal (and the stretch, if they got there), naming the move that got them closer or what got in the way. No grade or yes/no verdict.",
  "next": "the one course skill to practice next, and in one sentence why"}`;
-      const gnote = G && Array.isArray(body.picks) && body.picks.length ? `\n\nThis was a GUIDED session. Each moment practiced one course skill, and Dana's reply showed how it landed (open = she opened up, guarded = she stayed where she was, pull = she pulled back):\n${body.picks.map((p, k) => `Moment ${k + 1} (${(G.moments[k] || {}).skill}): ${p}`).join("\n")}\nUse this. Say which skills landed and which to practice.` : "";
+      const gnote = G && Array.isArray(body.picks) && body.picks.length ? `\n\nThis was a GUIDED session. Each moment practiced one course skill, and Dana's reply showed how it landed (open = she opened up, guarded = she stayed where she was, pull = she pulled back):\n${body.picks.map((p, k) => `Moment ${k + 1} (${(G.moments[k] || {}).skill}): ${p}`).join("\n")}${body.retries ? `\nThey used "try this moment again" ${body.retries} time(s). If a retry changed how a moment landed, name what they changed.` : ""}\nUse this. Say which skills landed and which to practice.` : "";
       const text = await claude(sys + gnote, `FULL SESSION\n\n${transcript(sc, moments)}`, SUMMARY_MODEL, 1500);
       let parts = null; const m = text.match(/\{[\s\S]*\}/);
       try { parts = m ? JSON.parse(m[0]) : null; } catch { parts = null; }
