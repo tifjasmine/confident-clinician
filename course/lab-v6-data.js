@@ -306,7 +306,7 @@
   };
 
   /* Wistia IDs go here when videos are recorded, e.g. VIDEOS["w1-l1"] = "abc123xyz". */
-  const VIDEOS = { "welcome": "ovp00pc6zn", "w1-l1": "7ncvbi8e46" };
+  const VIDEOS = { "welcome": "ovp00pc6zn", "w1-l1": "7ncvbi8e46", "w1-l2": "kdq8n3oocw", "w1-l3": "04h5bvxnlt" };
 
   window.TCC6 = { IMG, AIMS, REP_STEPS, CHECKS, PULLS, PAUSE, BASELINE_PROMPT, BASELINE, GAPS, REPS, WEEKS, WEEK1, REFLECT, PROFILE, STRUCTURE, DELIVERABLES, HEADS, TIPS, BONUS, VIDEOS, LAB, PLAN };
 })();
