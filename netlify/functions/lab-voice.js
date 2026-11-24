@@ -7,7 +7,8 @@ const { verify } = require("../lib/lab-auth");
 const { SCENARIOS, system, transcript } = require("./lab-live-session").shared;
 
 const DG = () => process.env.TESTING_DEEPGRAM || "";
-const MODEL = process.env.LAB_VOICE_MODEL || process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
+const MODEL = process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
+const FAST = process.env.LAB_VOICE_MODEL || "claude-haiku-5-5";
 const VOICES = { dana: process.env.LAB_VOICE_DANA || "aura-2-thalia-en" };
 /* Voices the preview account can audition (Deepgram Aura-2, English) */
 const PICK = ["aura-2-thalia-en", "aura-2-andromeda-en", "aura-2-helena-en", "aura-2-luna-en", "aura-2-cora-en", "aura-2-delia-en", "aura-2-asteria-en", "aura-2-athena-en"];
@@ -60,7 +61,8 @@ async function claude(sys, user, model, maxTokens) {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: model || MODEL, max_tokens: maxTokens || 400, system: sys, messages: [{ role: "user", content: user }] }),
+    /* the long instructions are cached between turns: faster and cheaper */
+    body: JSON.stringify({ model: model || MODEL, max_tokens: maxTokens || 400, system: [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }], messages: [{ role: "user", content: user }] }),
   });
   if (!res.ok) { const e = new Error(`Anthropic ${res.status}`); e.detail = (await res.text()).slice(0, 300); throw e; }
   const out = await res.json();
@@ -87,7 +89,10 @@ exports.handler = async event => {
   let body; try { body = JSON.parse(event.body || "{}"); } catch { return json(400, { error: "Bad JSON" }); }
   const key = body.scenario in SCENARIOS ? body.scenario : "dana", sc = SCENARIOS[key], voice = PICK.includes(body.voice) ? body.voice : (VOICES[key] || VOICES.dana);
   try {
-    if (body.action === "open") return json(200, { ok: true, text: sc.opening, audio: await tts(sc.opening, voice) });
+    if (body.action === "open") {
+      const [audio, f1, f2] = await Promise.all([tts(sc.opening, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
+      return json(200, { ok: true, text: sc.opening, audio, fillers: [f1, f2] });
+    }
     if (body.action === "wrap") {
       const moments = toMoments(sc, body.history);
       if (!moments.some(m => m.attempts.length)) return json(400, { error: "Nothing to review yet" });
@@ -111,18 +116,19 @@ Return ONLY a JSON object:
     if (body.action !== "turn" || !body.audio) return json(400, { error: "Missing audio" });
     const t0 = Date.now();
     const heard = await stt(body.audio, body.mime);
+    const t1 = Date.now(), model = body.speed === "smart" ? MODEL : FAST;
     if (!heard) return json(200, { ok: true, heard: "", retry: true });
     const moments = toMoments(sc, body.history);
     moments[moments.length - 1].attempts.push({ text: heard });
     const sys = system("client", sc) + "\n\n" + (MAPS[key] || "") + "\n\nTHIS IS A SPOKEN SESSION: the therapist's words were transcribed from speech, so ignore small transcription slips. Keep Dana's line short enough to say out loud: one to three sentences.\n\nThe trainee is taking this course; use it only to recognize their moves (Pulls, using her words, stacking questions, rushing) and react the way a real person would. Dana never names or mentions any of it.\n" + COURSE;
     const ask = `SESSION SO FAR\n\n${transcript(sc, moments)}\n\nWrite Dana's next line, reacting to the therapist's latest attempt. Reply with Dana's spoken words only.`;
-    let text = await claude(sys, ask, MODEL, 600);
-    if (!spoken(text) && !/SAFETY_PAUSE/.test(text)) { console.error("Voice: empty client reply, retrying", JSON.stringify(text).slice(0, 200)); text = await claude(sys, ask + "\n\nWrite one or two plain spoken sentences from Dana now.", MODEL, 600); }
+    let text = await claude(sys, ask, model, 600);
+    if (!spoken(text) && !/SAFETY_PAUSE/.test(text)) { console.error("Voice: empty client reply, retrying", JSON.stringify(text).slice(0, 200)); text = await claude(sys, ask + "\n\nWrite one or two plain spoken sentences from Dana now.", model, 600); }
     if (/SAFETY_PAUSE/.test(text)) return json(200, { ok: true, heard, safety: true, text: "Let’s pause the role-play here. If a real client brings up safety, follow your assessment and safety protocol and consult your supervisor." });
     text = spoken(text);
     if (!text) { console.error("Voice: empty client reply after retry"); return json(502, { error: "Dana didn’t come through that time. Say it again." }); }
-    const audio = await tts(text, voice);
-    return json(200, { ok: true, heard, text, audio, ms: Date.now() - t0 });
+    const t2 = Date.now(), audio = await tts(text, voice), t3 = Date.now();
+    return json(200, { ok: true, heard, text, audio, ms: t3 - t0, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 } });
   } catch (error) {
     console.error("Voice session failed", error.message, error.detail || "");
     return json(502, { error: "Dana didn’t come through that time. Try again.", status: error.message });

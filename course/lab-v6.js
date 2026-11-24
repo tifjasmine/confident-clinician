@@ -1143,7 +1143,7 @@
   }
 
   /* ---------- Voice session (TESTING: preview account only) ---------- */
-  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-thalia-en", sum: null, sumErr: "" };
+  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-thalia-en", sum: null, sumErr: "", speed: "fast", fillers: [], parts: [] };
   const VS_VOICES = [["aura-2-thalia-en", "Thalia"], ["aura-2-andromeda-en", "Andromeda"], ["aura-2-helena-en", "Helena"], ["aura-2-luna-en", "Luna"], ["aura-2-cora-en", "Cora"], ["aura-2-delia-en", "Delia"], ["aura-2-asteria-en", "Asteria"], ["aura-2-athena-en", "Athena"]];
   const VS_MAX = 8;
   function voiceView() {
@@ -1160,6 +1160,7 @@
         <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
         <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
         <div class="field"><b>Dana’s voice</b><small>Testing only: try a few and see which sounds most like Dana.</small><div class="chips-row">${VS_VOICES.map(([v, n]) => `<button type="button" class="chip" data-vs-voice="${v}" aria-pressed="${VS.voice === v}">${n}</button>`).join("")}</div></div>
+        <div class="field"><b>Dana’s thinking</b><small>Testing only: Fast replies quicker, Smart follows you more closely.</small><div class="chips-row"><button type="button" class="chip" data-vs-speed="fast" aria-pressed="${VS.speed === "fast"}">Fast</button><button type="button" class="chip" data-vs-speed="smart" aria-pressed="${VS.speed === "smart"}">Smart</button></div></div>
         <div class="actions"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button></div>` : ""}
       ${st !== "idle" ? `<div class="vs-goal sm"><b>Goal</b> Find out what really got in the way of the homework, without assigning anything new.</div>` : ""}
       ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
@@ -1172,7 +1173,8 @@
     return { html, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
   }
   function vsSummaryHTML() {
-    const wait = VS.ms.length ? `<small class="vs-wait">Average wait for Dana: ${(VS.ms.reduce((a, b) => a + b, 0) / VS.ms.length / 1000).toFixed(1)} seconds.</small>` : "";
+    const avg = a => (a.reduce((x, y) => x + y, 0) / a.length / 1000).toFixed(1);
+    const wait = VS.ms.length ? `<small class="vs-wait">Average wait for Dana (${VS.speed === "smart" ? "Smart" : "Fast"}): ${avg(VS.ms)} seconds${VS.parts.length ? ` · listening ${avg(VS.parts.map(p => p.listen))}s, thinking ${avg(VS.parts.map(p => p.think))}s, voice ${avg(VS.parts.map(p => p.voice))}s, plus sending it back and forth` : ""}.</small>` : "";
     if (!VS.hist.some(h => h.who === "me")) return wait;
     if (VS.sumErr) return `<div class="banner-soft">${esc(VS.sumErr)} <button type="button" class="v6-link" data-vs-sum>Try again</button></div>${wait}`;
     if (!VS.sum) return `<div class="vs-status thinking"><span class="vs-dot"></span><span>Putting together your session breakdown…</span></div>${wait}`;
@@ -1229,14 +1231,15 @@
   async function vsSend(blob) {
     if (VS.status !== "listening") return;
     vsSet("thinking", "");
+    if (VS.fillers.length) { try { const f = new Audio("data:audio/mpeg;base64," + VS.fillers[Math.floor(Math.random() * VS.fillers.length)]); f.play().catch(() => {}); } catch (e) {} }
     const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
     const t0 = Date.now();
     try {
-      const { out } = await api("/.netlify/functions/lab-voice", { action: "turn", scenario: "dana", voice: VS.voice, audio: b64, mime: blob.type.split(";")[0], history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "turn", scenario: "dana", voice: VS.voice, speed: VS.speed, audio: b64, mime: blob.type.split(";")[0], history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
       if (VS.status !== "thinking") return;
       if (!out.ok) { vsSet("listening", out.error || "Something went wrong. Try again."); return vsListen(); }
       if (out.retry) { VS.msg = "Dana didn’t catch that. Try saying it again."; return vsListen(); }
-      VS.ms.push(Date.now() - t0);
+      VS.ms.push(Date.now() - t0); if (out.parts) VS.parts.push(out.parts);
       VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob) });
       VS.hist.push({ who: "client", text: out.text });
       if (out.safety) { vsStopAll(); vsSet("done", ""); return; }
@@ -1245,13 +1248,14 @@
     } catch (e) { vsSet("listening", "Connection hiccup. Try again."); vsListen(); }
   }
   async function vsStart() {
-    VS.hist = []; VS.ms = []; VS.msg = ""; VS.sum = null; VS.sumErr = "";
+    VS.hist = []; VS.ms = []; VS.parts = []; VS.msg = ""; VS.sum = null; VS.sumErr = "";
     try { VS.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
     catch (e) { return vsSet("idle", "Your microphone isn’t available. Check your browser’s permission for this site and try again."); }
     vsSet("opening");
     try {
       const { out } = await api("/.netlify/functions/lab-voice", { action: "open", scenario: "dana", voice: VS.voice });
       if (!out.ok) { vsStopAll(); return vsSet("idle", out.error || "Voice isn’t available right now."); }
+      VS.fillers = out.fillers || [];
       VS.hist.push({ who: "client", text: out.text }); vsSet("speaking"); await vsPlay(out.audio);
       if (VS.status === "speaking") vsListen();
     } catch (e) { vsStopAll(); vsSet("idle", "Voice isn’t available right now."); }
@@ -1533,6 +1537,7 @@
       const b3 = $("[data-vs-end]", app); if (b3) b3.onclick = () => { vsStopAll(); vsSet("done", ""); vsWrap(); };
       const b5 = $("[data-vs-sum]", app); if (b5) b5.onclick = () => { VS.sumErr = ""; render(); vsWrap(); };
       $$("[data-vs-voice]", app).forEach(b => b.onclick = () => { VS.voice = b.dataset.vsVoice; render(); });
+      $$("[data-vs-speed]", app).forEach(b => b.onclick = () => { VS.speed = b.dataset.vsSpeed; render(); });
       const b4 = $("[data-vs-again]", app); if (b4) b4.onclick = () => { vsStopAll(); VS.hist = []; vsSet("idle", ""); };
     }
     if (scr === "bonus") {
