@@ -64,7 +64,8 @@ async function claude(sys, user, model, maxTokens) {
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     /* the long instructions are cached between turns: faster and cheaper */
     /* same settings as the typed live session: minimal thinking, so the word budget goes to the reply */
-    body: JSON.stringify({ model: model || MODEL, max_tokens: Math.max(1500, maxTokens || 0), system: [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }], messages: [{ role: "user", content: user }], thinking: { type: "between_tools" }, output_config: { effort: "low" } }),
+    body: JSON.stringify(Object.assign({ model: model || MODEL, max_tokens: Math.max(1500, maxTokens || 0), system: [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }], messages: [{ role: "user", content: user }] },
+      /sonnet|opus/.test(model || MODEL) ? { thinking: { type: "between_tools" }, output_config: { effort: "low" } } : {})),
   });
   if (!res.ok) { const e = new Error(`Anthropic ${res.status}`); e.detail = (await res.text()).slice(0, 300); throw e; }
   const out = await res.json();
@@ -177,6 +178,6 @@ Return ONLY a JSON object:
     return json(200, { ok: true, heard, text, audio, ms: t3 - t0, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 } });
   } catch (error) {
     console.error("Voice session failed", error.message, error.detail || "");
-    return json(502, { error: "Dana didn’t come through that time. Try again.", status: error.message });
+    return json(502, { error: `Dana didn’t come through that time. Try again. (Testing detail: ${error.message}${error.detail ? " " + String(error.detail).slice(0, 160) : ""})` });
   }
 };
