@@ -435,7 +435,7 @@
     const out = [], v2 = actV("l2"), v3 = actV("l3");
     if ((v2.r1 || "").trim()) out.push({ id: "l2", tag: "Lesson 2 · Catch the Reaction", who: "Client", raw: "I think you don’t understand me either.", line: q("I think you don’t understand me either."), first: v2.r1 });
     if ((v3.t1 || "").trim()) out.push({ id: "l3", tag: "Lesson 3 · Two Takes", who: "Client", raw: "I don’t even know what I feel anymore.", line: q("I don’t even know what I feel anymore."), first: v3.t1 });
-    if (S.demo && (S.demo.line || "").trim()) out.push({ id: "demo", tag: "Demo · Jordan", who: "Jordan", raw: ACTS.demo.moment, line: q(ACTS.demo.moment), first: S.demo.line });
+    if (S.demo && (S.demo.line || "").trim()) { const jl = S.demo.pm != null && D2() ? D2().moments[S.demo.pm].line : ACTS.demo.moment; out.push({ id: "demo", tag: "Demo · Jordan", who: "Jordan", raw: jl, line: q(jl), first: S.demo.line }); }
     ((S.voice || {}).items || []).forEach((it, k) => { if ((it.said || "").trim()) out.push({ id: "dana:" + k, tag: `Session with Dana · ${it.skill}`, who: "Dana", raw: it.line, line: q(it.line), first: it.said }); });
     D.REPS.filter(r => r.week === 1 && repSaved(r.id)).forEach(r => { const x = S.reps[r.id]; out.push({ id: "rep:" + r.id, rep: r.id, tag: `Rep ${r.id} · ${r.client}`, who: r.client, raw: r.line || r.stageLine || "", line: r.line ? q(r.line) : esc(r.stageLine), first: (x.attempts[0] && x.attempts[0].move) || x.move || x.line || "" }); });
     return out;
@@ -574,13 +574,13 @@
       const DM = S.demo = S.demo || {}, AD = ACTS.demo;
       const fin = !!DM.watched;
       body = demo2HTML();
-      if (fin) body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
-          <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(AD.moment)}</span></span></div>
-          <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
-          <label class="field">Why that sentence? <small>${esc(AD.hintWhy)}</small><textarea class="v6-ta" rows="2" data-demo="why" placeholder="I chose it because…">${esc(DM.why)}</textarea></label>
-          <div class="field">${esc(AD.check)}<div class="chips-row">${["Yes", "Not quite", "Not sure"].map(o => `<button type="button" class="chip" data-demo-ck="${o}" aria-pressed="${DM.ck === o}">${o}</button>`).join("")}</div></div>
-          ${aiBox("demo-why", "Get a training note on my sentence", "why", () => ({ line: AD.moment, sentence: DM.line || "", why: DM.why || "", check: DM.ck || "" }), res => { DM.aiNote = res.note; }, { req: ["sentence", "why"], rkey: "demo#1", akeys: ["aiNote"], where: "Demo · Your why" })}</div>`;
-      const dOk = (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3 && DM.ck;
+      if (fin) { const MS = D2().moments, pm = DM.pm != null ? MS[DM.pm] : null;
+        body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Make one moment yours</span>
+          <div class="field"><b>Which moment would you most want to practice?</b><small>Pick the one that felt hardest, or the one where your choice surprised you.</small><div class="chips-row">${MS.map((mm, k) => `<button type="button" class="chip" data-demo-pm="${k}" aria-pressed="${DM.pm === k}">${k + 1}. ${esc(mm.title)}</button>`).join("")}</div></div>
+          ${pm ? `<div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(pm.line)}</span></span></div>
+          <label class="field">In your own words, what would you say to Jordan here?<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Not one of the three options. Your version.">${esc(DM.line)}</textarea></label>
+          <label class="field">What would that help Jordan do?<textarea class="v6-ta" rows="2" data-demo="why" placeholder="It would help Jordan…">${esc(DM.why)}</textarea></label>` : ""}</div>`; }
+      const dOk = DM.pm != null && (DM.line || "").trim().length >= 3 && (DM.why || "").trim().length >= 3;
       cta = !fin ? "" : (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
     }
     if (s.type === "lab" || s.type === "sim") {
@@ -985,6 +985,9 @@
   const D2 = () => window.TCC6_DEMO2;
   const d2State = () => { const DM = S.demo = S.demo || {}; return DM.d2 = DM.d2 || { i: 0, heard: {}, pick: {}, played: {}, others: {} }; };
   const d2Bub = (who, text, cls) => `<div class="d2-b ${cls}"><span class="who">${who}</span><span class="said">${q(text)}</span></div>`;
+  /* audio-first: a compact "heard" pill with Replay; the words show only if the student taps Read it */
+  const d2Aud = (who, text, cls, code, key) => { const st = d2State(), open = !!(st.read || {})[key];
+    return `<div class="d2-a ${cls}"><span class="who">${who}</span><span class="ctl"><button type="button" class="d2-mini" data-d2-replay="${code}">▶ Replay</button><button type="button" class="d2-mini" data-d2-read="${key}">${open ? "Hide words" : "Read it"}</button></span>${open ? `<span class="said">${q(text)}</span>` : ""}</div>`; };
   function demo2HTML() {
     const X = D2(), st = d2State(), n = X.moments.length, i = Math.min(st.i, n), L = "ABC";
     const intro = `<span class="v6-label">Listen · ${i >= n ? "Done" : `Moment ${i + 1} of ${n}`}</span><span class="ac-name">A session with Jordan</span>
@@ -998,12 +1001,12 @@
     }
     const m = X.moments[i], pk = st.pick[i], heard = !!st.heard[i], played = !!st.played[i], oth = st.others[i] || {};
     let h = `<div class="d2-moment"><span class="d2-title">${esc(m.title)}</span>
-      ${heard ? d2Bub("Jordan", m.line, "j") : `<div class="d2-play"><button type="button" class="v6-btn primary" data-d2-hear>▶ Hear Jordan</button><button type="button" class="v6-link" data-d2-hear="text">Just show the text</button></div>`}`;
+      ${heard ? d2Aud("Jordan", m.line, "j", `m${i + 1}-jordan`, `${i}-line`) : `<div class="d2-play"><button type="button" class="v6-btn primary" data-d2-hear>▶ Hear Jordan</button></div>`}`;
     if (heard && pk == null) h += `<div class="d2-q"><b>What would you say?</b>${m.opts.map((o, k) => `<button type="button" class="d2-opt" data-d2-pick="${k}"><span class="k">${L[k]}</span><span>${q(o)}</span></button>`).join("")}</div>`;
-    if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Bub("You · " + L[pk], m.opts[pk], "t")}${played ? d2Bub("Jordan", m.reacts[pk], "j") : `<div class="d2-wait">Playing…</div>`}</div>`;
+    if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`, `${i}-o${pk}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`, `${i}-r${pk}`) : `<div class="d2-wait">Playing…</div>`}</div>`;
     if (played) {
       h += `<div class="d2-note"><b>Tiffany’s take</b><p>${esc(m.note)}</p></div>
-        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Bub("You · " + L[k], m.opts[k], "t") + d2Bub("Jordan", m.reacts[k], "j") : `<button type="button" class="v6-btn secondary small" data-d2-other="${k}">▶ ${L[k]}: ${esc(m.opts[k].slice(0, 60))}${m.opts[k].length > 60 ? "…" : ""}</button>`}</div>`).join("")}</div>
+        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud("You · " + L[k], m.opts[k], "t", `m${i + 1}-${"abc"[k]}`, `${i}-o${k}`) + d2Aud("Jordan", m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`, `${i}-r${k}`) : `<button type="button" class="v6-btn secondary small" data-d2-other="${k}">▶ ${L[k]}: ${esc(m.opts[k].slice(0, 60))}${m.opts[k].length > 60 ? "…" : ""}</button>`}</div>`).join("")}</div>
         <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
     }
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
@@ -1537,6 +1540,8 @@
         const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } b.disabled = true; b.textContent = "Playing…"; if (m.pause) await new Promise(r => setTimeout(r, 2500)); if (await d2Play([[`m${N}-jordan`, m.line]])) { st.heard[st.i] = true; save(); render(); } });
         $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); if (await d2Play([[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]])) { st.played[st.i] = true; save(); render(); } });
         $$("[data-d2-other]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Other; b.disabled = true; b.textContent = "Playing…"; if (await d2Play([[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]])) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } });
+        $$("[data-d2-replay]", app).forEach(b => b.onclick = async () => { const c = b.dataset.d2Replay, X = D2(); b.disabled = true; await d2Play([[c, ""]]); b.disabled = false; });
+        $$("[data-d2-read]", app).forEach(b => b.onclick = () => { st.read = st.read || {}; st.read[b.dataset.d2Read] = !st.read[b.dataset.d2Read]; save(); render(); });
         const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
         const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {} }; save(); render(); };
       }
@@ -1562,7 +1567,8 @@
         }
         save(); render();
       });
-      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && (S.demo.line || "").trim().length >= 3 && (S.demo.why || "").trim().length >= 3 && S.demo.ck); });
+      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && S.demo.pm != null && (S.demo.line || "").trim().length >= 3 && (S.demo.why || "").trim().length >= 3); });
+      $$("[data-demo-pm]", app).forEach(b => b.onclick = () => { S.demo.pm = +b.dataset.demoPm; save(); render(); });
       $$("[data-demo-ck]", app).forEach(b => b.onclick = () => { S.demo.ck = b.dataset.demoCk; save(); render(); });
       $$("[data-r]", app).forEach(t => t.oninput = t.onchange = () => { S.reflect[t.dataset.r] = t.value; save(); });
       $$("[data-pullchip]", app).forEach(b => b.onclick = () => { S.reflect.pullPick = b.dataset.pullchip; save(); $$("[data-pullchip]", app).forEach(c => c.setAttribute("aria-pressed", c === b)); });
