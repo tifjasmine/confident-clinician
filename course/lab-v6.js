@@ -570,24 +570,9 @@
         + `<button type="button" class="v6-btn ${S.watched[s.key] ? "primary" : "secondary"}" data-go="act/${s.key}">${st.done ? "Do it again" : started ? "Continue the activity" : "Start the activity"}</button>`;
     }
     if (s.type === "demo") {
-      const DM = S.demo = S.demo || {}, AD = ACTS.demo, W = AD.walk;
-      const at = Math.min(DM.step || 0, W.length - 1), fin = !!DM.watched;
-      const shown = fin ? W : W.slice(0, at + 1);
-      const stepHTML = (w, k) => {
-        if (w.kind === "convo") {
-          const heard = (DM.heard || {})[k];
-          return `<div class="dw-convo ${w.tone}" data-convo="${k}"><span class="dw-label">${esc(w.label)}</span>${w.ctx ? `<span class="dw-ctx">${esc(w.ctx)}</span>` : ""}
-            <div class="dw-lines">${heard ? w.lines.map(convoLine).join("") : ""}</div>
-            <div class="dw-ctl"><button type="button" class="v6-btn ${heard ? "secondary" : "primary"}" data-play="${k}">▶ ${heard ? "Play again" : "Play the conversation"}</button>${heard ? "" : `<button type="button" class="v6-link" data-showtext="${k}">Just show the text</button>`}</div></div>`;
-        }
-        if (w.kind === "client") return `<div class="dw-client"><span class="av" aria-hidden="true">J</span><div><span class="who">Jordan${w.ctx ? ` <small>${esc(w.ctx)}</small>` : ""}</span><span class="said">${q(w.text)}</span></div></div>`;
-        if (w.kind === "take") return `<div class="dw-take ${w.tone}"><span class="dw-label">${esc(w.label)}</span><span class="said">${q(w.text)}</span>${w.audio ? `<audio controls preload="none" src="${esc(w.audio)}"></audio>` : ""}</div>`;
-        return `<div class="dw-explain${w.safety ? " safety" : ""}"><span class="dw-label">${esc(w.title)}</span><ul>${w.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>${w.line ? `<p class="said">${q(w.line)}</p>` : ""}</div>`;
-      };
-      const curW = W[at], waitHeard = !fin && curW.kind === "convo" && !(DM.heard || {})[at];
-      body = `<div class="act-card look-demo dw"><span class="v6-label">Listen · ${fin ? "Done" : `Step ${at + 1} of ${W.length}`}</span><span class="ac-name">One moment, two ways</span><span class="ac-t">Turn your sound on. You’ll hear the same moment twice: a rushed response, then a steady one.</span>
-          <div class="dw-steps">${shown.map(stepHTML).join("")}</div>
-          <div class="dw-nav">${fin ? `<button type="button" class="v6-link" data-act="demoreset">Walk through it again</button>` : `<button type="button" class="v6-btn primary" data-act="demonext"${waitHeard ? " disabled" : ""}>${at === W.length - 1 ? "Done: my turn →" : "Next"}</button>`}</div></div>`;
+      const DM = S.demo = S.demo || {}, AD = ACTS.demo;
+      const fin = !!DM.watched;
+      body = demo2HTML();
       if (fin) body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
           <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(AD.moment)}</span></span></div>
           <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
@@ -992,6 +977,49 @@
     $$("[data-ai]").forEach(b => b.onclick = () => aiRun(b.dataset.ai));
     bindRate();
     Object.entries(AIREQ).forEach(([id, R]) => { const r = (S.ai || {})[id]; if (R.auto && !AIBUSY[id] && !(r && r.sig === aiSig(R.dataFn()) && (r.res || r.err)) && document.querySelector(`[data-ai="${id}"]`)) setTimeout(() => aiRun(id), 50); });
+  }
+
+  /* ---------- Demo v2: branching audio session with Jordan (lab-v6-demo2.js) ---------- */
+  const D2 = () => window.TCC6_DEMO2;
+  const d2State = () => { const DM = S.demo = S.demo || {}; return DM.d2 = DM.d2 || { i: 0, heard: {}, pick: {}, played: {}, others: {} }; };
+  const d2Bub = (who, text, cls) => `<div class="d2-b ${cls}"><span class="who">${who}</span><span class="said">${q(text)}</span></div>`;
+  function demo2HTML() {
+    const X = D2(), st = d2State(), n = X.moments.length, i = Math.min(st.i, n), L = "ABC";
+    const intro = `<span class="v6-label">Listen · ${i >= n ? "Done" : `Moment ${i + 1} of ${n}`}</span><span class="ac-name">A session with Jordan</span>
+      <span class="ac-t">Turn your sound on. Jordan speaks, you pick what you’d say, and you’ll hear how it lands. ${esc(X.setup)}</span>
+      <div class="d2-prog">${X.moments.map((_, k) => `<i class="${k < i ? "done" : k === i ? "cur" : ""}"></i>`).join("")}</div>`;
+    if (i >= n) {
+      const path = X.moments.map((m, k) => st.pick[k] != null ? `<li><b>${esc(m.title)}</b> · you chose ${L[st.pick[k]]}</li>` : "").join("");
+      return `<div class="act-card look-demo d2">${intro}<div class="d2-note"><b>Tiffany’s wrap-up</b><p>${esc(X.wrap)}</p></div>
+        <details class="d2-path"><summary>Your path through the session</summary><ol>${path}</ol></details>
+        <div class="dw-nav"><button type="button" class="v6-link" data-d2-restart>Go through the session again</button></div></div>`;
+    }
+    const m = X.moments[i], pk = st.pick[i], heard = !!st.heard[i], played = !!st.played[i], oth = st.others[i] || {};
+    let h = `<div class="d2-moment"><span class="d2-title">${esc(m.title)}</span>
+      ${heard ? d2Bub("Jordan", m.line, "j") : `<div class="d2-play"><button type="button" class="v6-btn primary" data-d2-hear>▶ Hear Jordan</button><button type="button" class="v6-link" data-d2-hear="text">Just show the text</button></div>`}`;
+    if (heard && pk == null) h += `<div class="d2-q"><b>What would you say?</b>${m.opts.map((o, k) => `<button type="button" class="d2-opt" data-d2-pick="${k}"><span class="k">${L[k]}</span><span>${q(o)}</span></button>`).join("")}</div>`;
+    if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Bub("You · " + L[pk], m.opts[pk], "t")}${played ? d2Bub("Jordan", m.reacts[pk], "j") : `<div class="d2-wait">Playing…</div>`}</div>`;
+    if (played) {
+      h += `<div class="d2-note"><b>Tiffany’s take</b><p>${esc(m.note)}</p></div>
+        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Bub("You · " + L[k], m.opts[k], "t") + d2Bub("Jordan", m.reacts[k], "j") : `<button type="button" class="v6-btn secondary small" data-d2-other="${k}">▶ ${L[k]}: ${esc(m.opts[k].slice(0, 60))}${m.opts[k].length > 60 ? "…" : ""}</button>`}</div>`).join("")}</div>
+        <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
+    }
+    return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
+  }
+  let d2Run = 0;
+  /* play clips in order; a clip that isn't recorded yet waits a reading-pace pause instead */
+  async function d2Play(items) {
+    const run = ++d2Run, X = D2();
+    for (const [code, text] of items) {
+      if (run !== d2Run) return false;
+      await new Promise(done => {
+        const wait = () => setTimeout(done, Math.min(6000, 700 + text.length * 40));
+        if (!X.ready.includes(code)) return wait();
+        const au = new Audio(X.audioBase + code + ".mp3"); au.onended = () => done(); au.onerror = wait; au.play().catch(wait);
+      });
+      await new Promise(r => setTimeout(r, 300));
+    }
+    return run === d2Run;
   }
 
   /* ---------- Demo audio conversation ---------- */
@@ -1496,6 +1524,14 @@
     $$("[data-sb-sec]", app).forEach(b => b.onclick = () => { const k = b.dataset.sbSec; SB.closed[k] = !SB.closed[k]; sbSave(); const open = !SB.closed[k]; b.setAttribute("aria-expanded", open); b.querySelector("i").textContent = open ? "−" : "+"; b.nextElementSibling.hidden = !open; });
     if (scr === "week") {
       $$("[data-play]", app).forEach(b => b.onclick = () => playConvo(+b.dataset.play));
+      if (D2()) {
+        const st = d2State(), m = D2().moments[st.i], N = st.i + 1, ab = "abc";
+        const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } b.disabled = true; b.textContent = "Playing…"; if (m.pause) await new Promise(r => setTimeout(r, 2500)); if (await d2Play([[`m${N}-jordan`, m.line]])) { st.heard[st.i] = true; save(); render(); } });
+        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); if (await d2Play([[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]])) { st.played[st.i] = true; save(); render(); } });
+        $$("[data-d2-other]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Other; b.disabled = true; b.textContent = "Playing…"; if (await d2Play([[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]])) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } });
+        const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
+        const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {} }; save(); render(); };
+      }
       $$("[data-showtext]", app).forEach(b => b.onclick = () => { convoRun++; S.demo.heard = { ...(S.demo.heard || {}), [+b.dataset.showtext]: true }; save(); render(); });
       $$("[data-act]", app).forEach(b => b.onclick = () => {
         const k = b.dataset.key, act = b.dataset.act;
