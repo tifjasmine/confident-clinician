@@ -618,7 +618,7 @@
       const lines = [[ "When a client says I don’t understand them…", v2.r2 || v2.r1 ], ["When a client doesn’t know what they feel…", v3.t2], ["When a client starts to open up…", v3.t4], ["When a client asks me to decide for them…", S.demo && S.demo.line]].filter(x => (x[1] || "").trim())
         .concat(D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim()).map(r => [r.bank + "…", S.reps[r.id].line]));
       body = `<div class="profile">
-        <div class="banner-soft">Not a personality test. Filled in from your Week 1 choices. Edit anything.</div>
+        <div class="banner-soft">Filled in from your Week 1 choices. Edit anything.</div>
         <h3 class="pf-h">What I noticed</h3>
         ${sec("gap", "The gap I want to investigate", "A hypothesis, not a diagnosis", "Add the gap you want to look into")}
         ${sec("pull", "My Pull, and the cue I notice first", "", "Add the Pull that grabs you, and what you notice first")}
