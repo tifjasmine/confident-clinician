@@ -1380,3 +1380,20 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .bx-rank .mv button:disabled{opacity:.35;cursor:default}
 .bx-spot{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--line-2,#e7e4de)}
 .bx-clock{margin:14px 0 8px;font-size:15px;color:var(--ink-2)}.bx-clock b{font-size:30px;color:var(--terra,#b5694f);margin-right:4px}
+
+/* Voice session (testing) */
+.vs-tips{margin:0;padding-left:20px;color:var(--ink-2)}
+.vs-log{display:grid;gap:10px;margin:8px 0}
+.vs-line{display:flex;gap:10px;align-items:flex-start}
+.vs-line > div{padding:10px 14px;border-radius:14px;max-width:85%;line-height:1.5}
+.vs-line small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.vs-line.c > div{background:#fff;border:1px solid var(--line-2,#e7e4de);font-family:var(--serif,Georgia,serif);font-style:italic}
+.vs-line.me{justify-content:flex-end}.vs-line.me > div{background:#eef3ef}
+.vs-line audio{display:block;margin-top:6px;height:32px;max-width:100%}
+.vs-line .av{width:32px;height:32px;border-radius:50%;background:#eef3ef;display:grid;place-items:center;font-weight:700;flex:none}
+.vs-status{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:#f6f1ea;font-weight:600}
+.vs-dot{width:10px;height:10px;border-radius:50%;background:#b5694f;flex:none}
+.vs-status.listening .vs-dot{background:#2e4a3e;animation:vsp 1.2s infinite}
+.vs-status.thinking .vs-dot,.vs-status.opening .vs-dot{animation:vsp .8s infinite}
+@keyframes vsp{50%{opacity:.3}}
+.vs-meter{flex:1;max-width:160px;height:6px;border-radius:6px;background:#e7e4de;overflow:hidden}.vs-meter i{display:block;height:100%;width:0;background:#2e4a3e}

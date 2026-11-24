@@ -221,7 +221,7 @@
     if (!isTestAccount() && S.reviewer) S.reviewer = false;
     $$("[data-preview-toggle]").forEach(pv => { pv.hidden = !isTestAccount(); pv.textContent = S.reviewer ? "Preview · all open" : "Preview"; pv.classList.toggle("on", S.reviewer); pv.setAttribute("aria-pressed", S.reviewer); });
 
-    const views = { home: homeView, week: weekView, act: actView, live: liveView, rep: repView, baseline: baselineView, reproom: roomView, bonus: bonusView, playbook: playbookView, growth: growthView };
+    const views = { home: homeView, week: weekView, act: actView, live: liveView, rep: repView, baseline: baselineView, reproom: roomView, bonus: bonusView, voice: voiceView, playbook: playbookView, growth: growthView };
     const v = views[scr](arg);
     $("[data-side]").innerHTML = sideHTML(navKey, scr === "week" ? v.sel : -1);
     $(".v6-frame").classList.toggle("side-min", !!SB.min);
@@ -273,7 +273,7 @@
     }).join("");
     return sec("today", "Today", "", item("home", "Home", navKey === "home"))
       + sec("week1", "Week 1 · Notice", `${doneCount()}/${D.WEEK1.length}`, steps)
-      + sec("practice", "Practice", "", item("live", "Live session · Dana", navKey === "live", "New", "ai") + item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
+      + sec("practice", "Practice", "", item("live", "Live session · Dana", navKey === "live", "New", "ai") + (isTestAccount() ? item("voice", "Voice session · Dana", navKey === "voice", "Test", "ai") : "") + item("reproom", "Rep Room", navKey === "reproom") + item("playbook", "Clinical Playbook", navKey === "playbook") + item("growth", "My growth", navKey === "growth"))
       + sec("later", "Coming up", "", D.WEEKS.slice(1).map(w => `<div class="sb-item off"><i aria-hidden="true"></i><span>Week ${w.n} · ${esc(w.theme)}</span><em>${S.start && !weekOpen(w.n) ? fmtDay(opensAt(w.n)) : weekOpen(w.n) ? "Open" : "Soon"}</em></div>`).join(""));
   }
 
@@ -1142,6 +1142,93 @@
     return { html, tight: true };
   }
 
+  /* ---------- Voice session (TESTING: preview account only) ---------- */
+  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [] };
+  const VS_MAX = 10;
+  function voiceView() {
+    if (!isTestAccount()) return { html: `<div class="card"><p>Voice sessions aren’t open yet.</p></div>`, title: "Voice session" };
+    const st = VS.status, turns = VS.hist.filter(h => h.who === "me").length;
+    const statusLine = { idle: "", opening: "Dana is getting ready…", speaking: "Dana is talking…", listening: "Your turn. Answer out loud. When you pause, Dana will reply.", thinking: "Dana is thinking…", done: "Session complete." }[st] || "";
+    const lines = VS.hist.map((h, i) => h.who === "client"
+      ? `<div class="vs-line c"><span class="av" aria-hidden="true">D</span><div><small>Dana</small>${q(h.text)}</div></div>`
+      : `<div class="vs-line me"><div><small>You</small>${esc(h.text)}${h.clip ? `<audio controls preload="none" src="${h.clip}"></audio>` : ""}</div></div>`).join("");
+    const html = `<div class="card stack">
+      <div class="rep-top"><span class="v6-pill blush">🎙 Voice session · Testing</span><span class="lesson">Only your preview account can see this</span></div>
+      ${st === "idle" ? `<p class="flow-q">A spoken mock session with Dana.</p>
+        <p class="flow-sub">Dana, 34, is an ER nurse in session 6. She didn’t do last week’s homework, and she’s guarded. She’ll speak first. Answer out loud, like you would in session. When you stop talking, she replies. Up to ${VS_MAX} back-and-forths.</p>
+        <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
+        <div class="actions"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button></div>` : ""}
+      ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
+      ${lines ? `<div class="vs-log">${lines}</div>` : ""}
+      ${st !== "idle" ? `<div class="vs-status ${st}"><span class="vs-dot"></span><span>${statusLine}</span>${st === "listening" ? `<span class="vs-meter"><i data-vs-meter></i></span>` : ""}</div>
+        <div class="actions" style="justify-content:space-between">${st === "listening" ? `<button type="button" class="v6-btn primary" data-vs-done>I’m done talking</button>` : "<span></span>"}
+        ${st !== "done" ? `<button type="button" class="v6-btn secondary" data-vs-end>End session</button>` : `<button type="button" class="v6-btn secondary" data-vs-again>Start over</button>`}</div>` : ""}
+      ${st === "done" ? `<div class="reveal"><b>What happens next</b> In the full version, this recording and transcript go to Tiffany for feedback. For this test, you can replay your answers above.${VS.ms.length ? ` Average wait for Dana: ${(VS.ms.reduce((a, b) => a + b, 0) / VS.ms.length / 1000).toFixed(1)} seconds.` : ""}</div>` : ""}
+    </div>`;
+    return { html, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
+  }
+  const vsPlay = b64 => new Promise(res => { try { const a = new Audio("data:audio/mpeg;base64," + b64); VS.audio = a; a.onended = res; a.onerror = res; a.play().catch(res); } catch (e) { res(); } });
+  const vsSet = (st, msg) => { VS.status = st; if (msg !== undefined) VS.msg = msg; if (location.hash.startsWith("#voice")) render(); };
+  function vsStopAll() {
+    cancelAnimationFrame(VS.raf); VS.raf = 0;
+    try { if (VS.rec && VS.rec.state !== "inactive") { VS.rec.onstop = null; VS.rec.stop(); } } catch (e) {}
+    try { VS.audio && VS.audio.pause(); } catch (e) {}
+    try { VS.stream && VS.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    VS.stream = null; VS.rec = null;
+  }
+  async function vsListen() {
+    if (VS.hist.filter(h => h.who === "me").length >= VS_MAX) return vsSet("done", "");
+    vsSet("listening");
+    const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
+    const rec = new MediaRecorder(VS.stream, mime ? { mimeType: mime } : {}), chunks = [];
+    VS.rec = rec; rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+    rec.onstop = () => vsSend(new Blob(chunks, { type: rec.mimeType || mime || "audio/webm" }));
+    rec.start(250);
+    const ctx = new (window.AudioContext || window.webkitAudioContext)(), src = ctx.createMediaStreamSource(VS.stream), an = ctx.createAnalyser();
+    an.fftSize = 1024; src.connect(an); const buf = new Uint8Array(an.fftSize);
+    let spoke = false, quietSince = 0; const t0 = Date.now();
+    const tick = () => {
+      if (VS.rec !== rec || rec.state === "inactive") { ctx.close(); return; }
+      an.getByteTimeDomainData(buf); let sum = 0; for (const v of buf) sum += (v - 128) * (v - 128);
+      const rms = Math.sqrt(sum / buf.length), now = Date.now(), m = document.querySelector("[data-vs-meter]");
+      if (m) m.style.width = Math.min(100, rms * 4) + "%";
+      if (rms > 6) { spoke = true; quietSince = 0; } else if (spoke && !quietSince) quietSince = now;
+      if ((spoke && quietSince && now - quietSince > 1400) || now - t0 > 90000) { rec.stop(); ctx.close(); return; }
+      VS.raf = requestAnimationFrame(tick);
+    };
+    VS.raf = requestAnimationFrame(tick);
+  }
+  async function vsSend(blob) {
+    if (VS.status !== "listening") return;
+    vsSet("thinking", "");
+    const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
+    const t0 = Date.now();
+    try {
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "turn", scenario: "dana", audio: b64, mime: blob.type.split(";")[0], history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })) });
+      if (VS.status !== "thinking") return;
+      if (!out.ok) { vsSet("listening", out.error || "Something went wrong. Try again."); return vsListen(); }
+      if (out.retry) { VS.msg = "Dana didn’t catch that. Try saying it again."; return vsListen(); }
+      VS.ms.push(Date.now() - t0);
+      VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob) });
+      VS.hist.push({ who: "client", text: out.text });
+      if (out.safety) return vsSet("done", "");
+      vsSet("speaking"); await vsPlay(out.audio);
+      if (VS.status === "speaking") vsListen();
+    } catch (e) { vsSet("listening", "Connection hiccup. Try again."); vsListen(); }
+  }
+  async function vsStart() {
+    VS.hist = []; VS.ms = []; VS.msg = "";
+    try { VS.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+    catch (e) { return vsSet("idle", "Your microphone isn’t available. Check your browser’s permission for this site and try again."); }
+    vsSet("opening");
+    try {
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "open", scenario: "dana" });
+      if (!out.ok) { vsStopAll(); return vsSet("idle", out.error || "Voice isn’t available right now."); }
+      VS.hist.push({ who: "client", text: out.text }); vsSet("speaking"); await vsPlay(out.audio);
+      if (VS.status === "speaking") vsListen();
+    } catch (e) { vsStopAll(); vsSet("idle", "Voice isn’t available right now."); }
+  }
+
   /* ---------- Bonus Reps (lab-v6-bonus.js) ---------- */
   const BONUS = () => window.TCC6_BONUS || [];
   let bxTimer = null;
@@ -1411,6 +1498,13 @@
       });
     }
     if (bxTimer) { clearInterval(bxTimer); bxTimer = null; }
+    if (scr !== "voice" && VS.status !== "idle" && VS.status !== "done") { vsStopAll(); VS.status = "done"; }
+    if (scr === "voice") {
+      const b1 = $("[data-vs-start]", app); if (b1) b1.onclick = vsStart;
+      const b2 = $("[data-vs-done]", app); if (b2) b2.onclick = () => { try { VS.rec && VS.rec.state !== "inactive" && VS.rec.stop(); } catch (e) {} };
+      const b3 = $("[data-vs-end]", app); if (b3) b3.onclick = () => { vsStopAll(); vsSet("done", ""); };
+      const b4 = $("[data-vs-again]", app); if (b4) b4.onclick = () => { vsStopAll(); VS.hist = []; vsSet("idle", ""); };
+    }
     if (scr === "bonus") {
       const B = BONUS().find(b => b.id === arg) || BONUS()[0], x = S.bonus[B.id], AU = window.TCC6_BONUS_AUDIO || { ready: [], base: "" };
       $$("[data-bx]", app).forEach(t => { t.oninput = () => { x[t.dataset.bx] = t.value; save(); const sv = $("[data-bx-save]", app); if (sv) sv.disabled = !(x.line || "").trim(); }; if (t.dataset.bx !== "line" && t.dataset.bx !== "first") t.onchange = () => render(); });

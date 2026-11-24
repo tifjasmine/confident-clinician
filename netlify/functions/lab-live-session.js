@@ -158,3 +158,6 @@ exports.handler = async event => {
     return json(502, { error: "The practice partner is unavailable right now.", status: error.status || 0 });
   }
 };
+
+/* Shared with lab-voice.js (spoken mock sessions) */
+exports.shared = { SCENARIOS, system, transcript };
