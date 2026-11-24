@@ -19,21 +19,21 @@ window.TCC6_SIMS = {
       "I want you to be able to tell me. I also want to be honest first: almost everything stays here, but if I’m worried about your safety, I may need to bring someone in. What are you worried I’d share?",
       "That’s kind of what I was afraid of. … It’s about school. And my parents can’t find out.",
       "Is honest about the limits of confidentiality before she discloses.",
-      "A long, formal explanation can feel like a wall. Keep it brief and warm."
+      "When she’s about to share something serious. Keep it short and warm, not a formal speech."
      ],
      [
       "B",
       "Most of what you tell me stays between us. What’s on your mind?",
       "Most? … Okay. It’s not a big deal anyway.",
       "Keeps the door open without overpromising.",
-      "A vague “most” leaves her guessing. Say plainly what would and wouldn’t stay private."
+      "When she just needs a little reassurance to start. Be ready to say what “most” means if she asks."
      ],
      [
       "C",
       "It sounds like this is hard to say. What makes you worried about it getting out?",
       "My parents would make me come home. And the school might pull me from clinicals.",
       "Explores the fear behind the request.",
-      "You still owe her an honest answer about confidentiality before she shares something serious."
+      "When the fear itself feels important. Come back to her question before she shares anything serious."
      ]
     ]
    },
@@ -46,21 +46,21 @@ window.TCC6_SIMS = {
       "Walk me through what happens on the mornings you call in.",
       "I wake up, feel sick about going, text my instructor, and then lie in bed all day.",
       "Collects concrete detail rather than jumping to labels.",
-      "A detail-oriented approach can miss the shame in the room."
+      "When you need a clear picture of what’s happening. Watch for shame as she tells it."
      ],
      [
       "B",
       "That sounds like a lot to be carrying by yourself.",
       "I mean, it’s my own fault. I’m the one not going.",
       "Reflects the weight of it and reduces isolation.",
-      "Validation alone may not show how the pattern unfolds."
+      "When she seems ashamed or alone in it. A question about what’s been happening can follow."
      ],
      [
       "C",
       "What do you imagine would happen if you went?",
       "Everyone would see I don’t know what I’m doing.",
       "Explores the fear driving the avoidance.",
-      "Can sound like you’re building a case for going. Stay curious, not persuasive."
+      "When fear seems to be driving the avoidance. Keep it curious, not a nudge to go."
      ]
     ]
    },
@@ -73,21 +73,21 @@ window.TCC6_SIMS = {
       "I don’t. I’m more curious what you call it, when you can’t get out of bed.",
       "Honestly? I don’t know. Everything just feels heavy.",
       "Answers her honestly, then hands the meaning back to her.",
-      "A quick “I don’t” can sound automatic. Make sure the follow-up shows you mean it."
+      "When she needs to hear where you stand. Your follow-up shows you mean it."
      ],
      [
       "B",
       "Lazy people don’t usually lie awake feeling this bad about it.",
       "… Maybe. It still feels like I’m lazy.",
       "Offers a reframe grounded in what she’s told you.",
-      "Arguing with self-judgment can turn into a debate she has to win or lose."
+      "When she seems open to another view. If she argues back, get curious instead of debating."
      ],
      [
       "C",
       "What makes you expect that I’d think that?",
       "Because that’s what my dad would say.",
       "Explores where the judgment comes from.",
-      "She may need a direct answer first, or the question can feel like a dodge."
+      "When the judgment sounds borrowed from someone else. Give a direct answer too, if she needs one."
      ]
     ]
    },
@@ -100,21 +100,21 @@ window.TCC6_SIMS = {
       "I’m really glad you told me. I want to ask you directly: are you thinking about killing yourself? And do you still have the pills with you?",
       "Not right now. But I’ve thought about it more than I want to admit. They’re in my nightstand.",
       "Asks about suicide directly and checks access to means.",
-      "Asking directly doesn’t plant the idea. Follow with a full risk assessment, not a single question."
+      "Right now. Asking directly doesn’t plant the idea. Next, finish the risk assessment: plan, intent, timing, and what keeps her safe."
      ],
      [
       "B",
       "That changes what I want us to focus on today. Can we set school aside and talk about these thoughts?",
       "Okay. I didn’t know if I was allowed to say it.",
       "Recalibrates the session’s priority when high-risk information appears.",
-      "Follow through with direct suicide risk questions. Shifting focus alone isn’t an assessment."
+      "Right now. It sets up the conversation. Next, ask about suicide directly."
      ],
      [
       "C",
       "I’m concerned about your safety. Is it okay if I ask some direct questions about these thoughts and the pills?",
       "Yeah. I’ve never told anyone this.",
       "Explains the reason for direct questions and invites collaboration.",
-      "Asking permission shouldn’t delay the assessment."
+      "Right now, as long as the direct questions come right away."
      ]
     ]
    },
@@ -127,21 +127,21 @@ window.TCC6_SIMS = {
       "Right now I’m not planning to call anyone. I want to understand how safe you are. And if I ever did need to involve someone, I’d tell you first and we’d talk about it together.",
       "… Okay. As long as you tell me first.",
       "Answers honestly and keeps her part of any decision.",
-      "Don’t promise more than your risk assessment and your setting’s rules allow."
+      "When she’s worried about trust. Promise only what your assessment and your setting allow."
      ],
      [
       "B",
       "What happens next depends on how safe you are. Can I ask a few more questions so we can figure that out together?",
       "Fine. But I’m not going to do anything.",
       "Ties the answer to safety and keeps the assessment moving.",
-      "Without some reassurance about the process, she may start holding back."
+      "When you need more information to know what’s next. A little warmth about the process helps her keep talking."
      ],
      [
       "C",
       "What would it be like if your parents knew?",
       "They’d panic. My mom would drive up tonight.",
       "Explores what she fears about them finding out.",
-      "Leaves her question unanswered at the moment she’s most worried about trust."
+      "Once she has an honest answer to her question. Then it shows you what the fear is really about."
      ]
     ]
    },
@@ -154,21 +154,21 @@ window.TCC6_SIMS = {
       "We don’t need to decide whether you’re being dramatic to take this seriously. What would help you feel safer this week?",
       "Maybe asking my roommate to hold onto the pills.",
       "Validates the concern and invites a client-led safety step.",
-      "Make it specific: who, when, and what she’ll do if the thoughts get stronger."
+      "When she’s minimizing. Make the step specific: who, when, and what she’ll do if the thoughts get stronger."
      ],
      [
       "B",
       "When the thoughts get strong, what do you usually do, and who could you reach?",
       "Scroll on my phone until I fall asleep. My roommate’s usually home.",
       "Works toward a safety plan with coping steps and contacts.",
-      "Include crisis resources, like 988, alongside personal contacts."
+      "When you’re building the plan together. Add crisis resources like 988 alongside her own people."
      ],
      [
       "C",
       "How often have these thoughts been coming up, and have they been getting stronger?",
       "More since midterms. Most nights this month.",
       "Assesses frequency and escalation.",
-      "Assessment needs to lead to a concrete plan, not just more questions."
+      "When you need to know how urgent this is. Let her answers lead into a concrete plan."
      ]
     ]
    },
@@ -181,21 +181,21 @@ window.TCC6_SIMS = {
       "We can come back to school. Before we do, I want us to make a plan for the hard nights, because that matters most to me today.",
       "Okay. Yeah. That’s fair.",
       "Respects her request while keeping safety first.",
-      "Say it warmly, so it doesn’t feel like you’re overruling her."
+      "When safety still needs a plan. Said warmly, it doesn’t feel like you’re overruling her."
      ],
      [
       "B",
       "I hear that this feels like a lot. What would make it feel less like a whole thing?",
       "If it stayed small. Like, just between us, and small steps.",
       "Explores her discomfort and invites her to shape the plan.",
-      "“Just between us” may come up again. Stay honest about the limits."
+      "When you want her to shape the plan. If “just between us” comes up, stay honest about the limits."
      ],
      [
       "C",
       "Of course. What’s coming up at school this week?",
       "Clinicals Tuesday. I’ll probably call in.",
       "Follows her lead and lowers the tension.",
-      "Moving on before there’s a safety plan leaves the risk unaddressed."
+      "Later in the session, once there’s a safety plan. Before that, it moves on too soon."
      ]
     ]
    },
@@ -208,21 +208,21 @@ window.TCC6_SIMS = {
       "Let’s write down your plan for hard nights before you go: the warning signs, what you’ll do, who you’ll reach, and what happens with the pills.",
       "I’ll ask my roommate to hold them tonight. Can I text you if it gets bad?",
       "Turns the session toward a specific, written safety plan, including access to means.",
-      "Be clear about how and when she can reach you, include 988, and set your next check-in."
+      "When you’re closing a session like this. Include 988, how she can reach you, and your next check-in."
      ],
      [
       "B",
       "Here’s what I’d like: a plan for tonight, a check-in before our next session, and one person you’d let in. What feels doable?",
       "Tonight and the check-in. I’m still thinking about the person.",
       "Gives clear structure while letting her choose the pieces.",
-      "Follow up on the support person next time, and consult as your setting requires."
+      "When she does well with structure. Follow up on the support person next time, and consult as your setting requires."
      ],
      [
       "C",
       "What feels different now compared with when you walked in?",
       "I said it out loud and nothing exploded.",
       "Consolidates what shifted for her.",
-      "Don’t close without a concrete safety plan and a next contact."
+      "As a last reflection, after the safety plan is written down."
      ]
     ]
    }
@@ -231,6 +231,10 @@ window.TCC6_SIMS = {
    "Which choice was driven most by your own urge to keep Imani comfortable?",
    "Where did new information require a change in clinical priority?",
    "Draft one brief closing that includes a collaborative safety step and is honest about what stays private and what doesn’t."
+  ],
+  "noteLabels": [
+   "What it does well",
+   "When it works best"
   ]
  },
  "avery": {

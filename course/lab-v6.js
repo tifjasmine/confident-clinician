@@ -508,7 +508,7 @@
       }
       const c = m.choices[p];
       body += `<div class="you-said"><small>You</small>${q(c[1])}</div>${client(c[2], true)}
-        <details class="coach-d" open><summary>Coach note</summary><div class="coach2"><div><small>What this move was trying to do</small>${esc(c[3])}</div><div><small>What to watch for</small>${esc(c[4])}</div></div></details>
+        <details class="coach-d" open><summary>Coach note</summary><div class="coach2"><div><small>${esc((X.noteLabels || [])[0] || "What this move was trying to do")}</small>${esc(c[3])}</div><div><small>${esc((X.noteLabels || [])[1] || "What to watch for")}</small>${esc(c[4])}</div></div></details>
         ${INTENT_AT.includes(i) ? `<label class="field intent">Take 20 seconds. What was your intention? <small>Optional, just for you</small><textarea class="v6-ta" rows="2" data-sim-intent="${i}" placeholder="I was trying to…">${esc(C.intent[i])}</textarea></label>` : ""}`;
       return `<div class="flow">${head}${body}<div class="actions" style="justify-content:space-between"><span style="display:flex;gap:10px;flex-wrap:wrap">${back}<button type="button" class="v6-btn secondary" data-sim-rewind="${i}">↺ Try a different response</button></span>
         <button type="button" class="v6-btn primary" data-sim-go="${i + 1}">${i === n - 1 ? "Go to the debrief →" : "Continue →"}</button></div></div>`;
