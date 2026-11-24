@@ -63,7 +63,8 @@ async function claude(sys, user, model, maxTokens) {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     /* the long instructions are cached between turns: faster and cheaper */
-    body: JSON.stringify({ model: model || MODEL, max_tokens: maxTokens || 400, system: [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }], messages: [{ role: "user", content: user }] }),
+    /* same settings as the typed live session: minimal thinking, so the word budget goes to the reply */
+    body: JSON.stringify({ model: model || MODEL, max_tokens: Math.max(1500, maxTokens || 0), system: [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }], messages: [{ role: "user", content: user }], thinking: { type: "between_tools" }, output_config: { effort: "low" } }),
   });
   if (!res.ok) { const e = new Error(`Anthropic ${res.status}`); e.detail = (await res.text()).slice(0, 300); throw e; }
   const out = await res.json();
@@ -127,9 +128,13 @@ Rules for the reply: one or two short sentences, everyday spoken words, no stage
       const guide = m.replies.map(r => `- ${r.land.toUpperCase()} when the therapist ${r.when}. Example gist: "${r.text}"`).join("\n");
       const hist = (Array.isArray(body.history) ? body.history : []).slice(-12).map(h => `${h.who === "client" ? G.client : "Therapist"}: ${clip(h.text, 400)}`).join("\n");
       const raw = await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nJSON:`, FAST, 300);
-      let land = "guarded", reply = "";
-      try { const j = JSON.parse((raw.match(/\{[\s\S]*\}/) || ["{}"])[0]); land = ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded"; reply = spoken(j.reply || ""); } catch { reply = ""; }
-      if (!reply) { const r = m.replies.find(x => x.land === land && x.key !== "other") || m.replies[m.replies.length - 1]; reply = r.text; }
+      const parse = t => { try { const j = JSON.parse((String(t).match(/\{[\s\S]*\}/) || ["{}"])[0]); return { land: ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded", reply: spoken(j.reply || "") }; } catch { return { land: "guarded", reply: "" }; } };
+      let { land, reply } = parse(raw);
+      if (!reply) {
+        console.error("Guided voice: unparsed reply, retrying with the main model", JSON.stringify(raw).slice(0, 300));
+        ({ land, reply } = parse(await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nReturn the JSON object now.`, MODEL, 1500)));
+      }
+      if (!reply) { console.error("Guided voice: no reply after retry"); return json(502, { error: "Dana didn’t come through that time. Say it again." }); }
       const t2 = Date.now(), audio = await tts(reply, voice), t3 = Date.now();
       return json(200, { ok: true, heard, land, reply, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
     }
