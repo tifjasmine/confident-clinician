@@ -10,11 +10,13 @@ const DG = () => process.env.TESTING_DEEPGRAM || "";
 const MODEL = process.env.LAB_VOICE_MODEL || "claude-haiku-5-5";
 const VOICES = { dana: process.env.LAB_VOICE_DANA || "aura-2-thalia-en" };
 const MAX_TURNS = 12;
+/* Words the trainee is likely to say in session, so speech-to-text spells them right */
+const KEYTERMS = ["Dana", "homework", "thought record", "worksheet", "the sheet", "ER", "shifts", "burnout", "anxiety", "session"].map(k => "keyterm=" + encodeURIComponent(k)).join("&");
 const json = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) });
 const clip = (v, n) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
 
 async function stt(b64, mime) {
-  const res = await fetch("https://api.deepgram.com/v1/listen?model=nova-3&smart_format=true&punctuate=true", {
+  const res = await fetch("https://api.deepgram.com/v1/listen?model=nova-3&language=en&smart_format=true&punctuate=true&" + KEYTERMS, {
     method: "POST", headers: { Authorization: `Token ${DG()}`, "Content-Type": mime || "audio/webm" }, body: Buffer.from(b64, "base64"),
   });
   if (!res.ok) { const e = new Error(`STT ${res.status}`); e.detail = (await res.text()).slice(0, 300); throw e; }
