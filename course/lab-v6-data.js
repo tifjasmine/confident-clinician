@@ -177,6 +177,8 @@
     { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Imani’s Secret", title: "Simulation: Imani’s Secret",
       desc: "Now you’re the therapist. Pick what you’d say at each moment with Imani and see how she responds.", meta: "12–15 min", img: IMG.c,
       itemsLabel: "Eight moments with Imani", items: [["1", "“Before I say this… can you promise you won’t tell anyone? Not my parents, not the school. Anyone.”", "Where it starts"], ["8", "“Thanks for not freaking out. So… what now?”", "Where it ends"]] },
+    { key: "voice", type: "voice", label: "Live it", kind: "Live it · Voice session", short: "Session with Dana", title: "Live it: A session with Dana",
+      desc: "Your first spoken session. Dana, an ER nurse, walks in guarded after skipping last week’s homework. Answer out loud across five moments, each built on a skill from this week.", meta: "Voice · 12–15 min", img: IMG.b },
     { key: "reflect", type: "reflect", label: "Reflect", kind: "Reflect & Redo", short: "Reflect & Redo", title: "Reflect & Redo",
       desc: "Pick one of your Reps, check how it went, and try it one more time.", meta: "10 min", img: IMG.b },
     { key: "save", type: "save", label: "Save", kind: "Save it", short: "Clinical Confidence Profile", title: "Your Clinical Confidence Profile",
@@ -296,7 +298,7 @@
     intro: "Choose one small skill you can actually rehearse this week. You’re looking for observable practice, not a feeling of confidence.",
     fields: [
       ["skill", "One skill", ["Pause before answering a client’s request for advice.", "Separate observations from assumptions.", "Notice a pressure cue and give myself one breath.", "Ask a purposeful clarification question.", "Recognize when I need consultation or further assessment."]],
-      ["rehearse", "How I’ll rehearse", ["Three Reps in the Rep Room", "A live session with Dana (in the Rep Room)", "Saying my line out loud before sessions", "My own plan"]],
+      ["rehearse", "How I’ll rehearse", ["Three Reps in the Rep Room", "Another session with Dana (Week 1, step 8)", "Saying my line out loud before sessions", "My own plan"]],
       ["evidence", "How I’ll know it’s working", ["I can say one grounded response and explain its purpose", "I can name one observation and one hypothesis", "I can notice and interrupt my rush to reassure"]],
       ["support", "Support plan", ["Consult supervisor/clinical mentor", "Review an assessment or practice protocol", "Seek focused training", "Peer role-play with fictional cases", "Not needed for this selected practice rep"]],
       ["adjust", "One adjustment I will test next time", null]

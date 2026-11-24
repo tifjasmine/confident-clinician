@@ -3,7 +3,7 @@
    (same client prompt as the typed live session) -> Deepgram text-to-speech -> back to the page.
    Key: TESTING_DEEPGRAM (Netlify environment variable). AI key: ANTHROPIC_API_KEY.
    Voice model for speed: LAB_VOICE_MODEL (default Claude Haiku 5.5). Client voice: LAB_VOICE_DANA. */
-const { verify } = require("../lib/lab-auth");
+const { verify, useLive } = require("../lib/lab-auth");
 const { SCENARIOS, system, transcript } = require("./lab-live-session").shared;
 const GUIDED = require("../lib/voice-guided");
 
@@ -133,8 +133,13 @@ exports.handler = async event => {
   if ((event.body || "").length > 4500000) return json(413, { error: "That recording was too long. Try a shorter answer." });
   const user = verify(event);
   if (!user) return json(401, { error: "Please sign in again.", auth: true });
-  if (!user.test) return json(403, { error: "Voice sessions are still in testing." });
   let body; try { body = JSON.parse(event.body || "{}"); } catch { return json(400, { error: "Bad JSON" }); }
+  /* The open conversation is still a test feature; the guided session (Week 1, step 8) is open to students, with daily limits. */
+  if (!user.test && ["open", "turn"].includes(body.action)) return json(403, { error: "That’s still in testing." });
+  if (["gstart", "gturn"].includes(body.action)) {
+    try { const u = await useLive(user, body.sessionId); if (!u.ok) return json(429, { error: u.message, limit: true }); }
+    catch (e) { console.error("Voice usage check failed (allowing)", e.message); }
+  }
   const key = body.scenario in SCENARIOS ? body.scenario : "dana", sc = SCENARIOS[key], voice = PICK.includes(body.voice) ? body.voice : (VOICES[key] || VOICES.dana);
   try {
     if (body.action === "open") {
@@ -154,12 +159,12 @@ exports.handler = async event => {
     }
     if (G && body.action === "gturn") {
       const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m = G.moments[i];
-      const t0 = Date.now(), heard = await stt(body.audio, body.mime);
+      const t0 = Date.now(), typed = clip(body.text, 1200), heard = typed || (body.audio ? await stt(body.audio, body.mime) : "");
       if (!heard) return json(200, { ok: true, heard: "", retry: true });
       const t1 = Date.now();
       const next = G.moments[i + 1];
       const sys = `You play ${G.client} in a GUIDED spoken practice session for therapists-in-training. Everyone is fictional. The therapist's words were transcribed from speech, so ignore small slips.
-CLIENT BACKGROUND (fictional)\n${sc.background}\n\n${MAPS[key] || ""}\n\n${COURSE}
+CLIENT BACKGROUND (fictional)\n${sc.background}\n\n${MAPS[key] || ""}\n\n${COURSE}${typed ? "\nThis time the therapist typed their response instead of speaking it." : ""}
 Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "...", "note": "..."}
 1. "land": how the therapist's response lands, using the GUIDE for this moment. Reasonable, caring attempts that partly do an "open" move count as open.
 2. "reply": ${G.client}'s spoken reply. FIRST respond directly to what the therapist actually said or asked (if they asked a question, answer it, even briefly or reluctantly). Then let it carry the feeling and gist of the GUIDE example for that landing. Use the GUIDE examples as direction, not a script.
