@@ -53,9 +53,15 @@ ${VOICE}\n${OUT} Shape: {"working": "...", "skill": "...", "build": "..."}`,
     user: `Client line: "${clip(d.line, 600)}"\nTake 1: "${clip(d.take1)}"\nTake 2: "${clip(d.take2)}"`,
   };
   if (task === "why") return {
-    system: `${BASE}\n\nIn the Demo, a client (Jordan) asks the therapist to just decide for them. The trainee wrote their first sentence back and explained why. "working": the real reasoning in their why, in plain words. "skill": "Explain your choice". "build": max 32 words deepening it: what their sentence helps them learn, what it avoids, and whether it gives Jordan the decision back while still helping. If their why is just a label like "because it validates," gently say what's missing.
-${VOICE}\n${OUT} Shape: {"working": "...", "skill": "...", "build": "..."}`,
-    user: `Jordan said: "${clip(d.line, 600)}"\nTrainee's first sentence: "${clip(d.sentence)}"\nTheir why: "${clip(d.why)}"`,
+    system: `${BASE}\n\nIn the Demo, a fictional client (Jordan, 29, session 3) has just described another fight with their partner and asks the therapist to decide for them: "Just tell me what to do. You're the therapist. Should I break up with them?" The trainee wrote the FIRST SENTENCE they would say back, plus a short why.
+Your job is mostly about the SENTENCE ITSELF and how Jordan would likely hear it in this exact moment. Read it literally, as Jordan would. Mention their why only if it helps.
+Things that matter here: does the sentence acknowledge what Jordan actually asked (a direct request for a decision) and the strain behind it; does it avoid deciding for Jordan without sounding like a dodge or a flat refusal; does it invite Jordan into the decision (their fear, what they value, what's hardest); is every phrase clear in context (e.g. a "no" or "not at all" that doesn't answer anything Jordan asked can confuse them).
+"working": max 26 words, one specific thing THE SENTENCE does well for Jordan, quoting at most four of the trainee's own words. Positive only.
+"skill": the ONE course skill that would most improve this sentence, copied exactly from: Respond to their meaning, not your discomfort · Ask a question you genuinely want answered · Leave room to be corrected · Clarify when they're confused · Explore before explaining · Notice your Pull (Rescue, Fix, Fill, Defend, Prove) · P.A.U.S.E. · Use what the client gave you.
+"build": 2 sentences, max 45 words. Sentence 1: name concretely how Jordan might hear a specific part of THEIR sentence (quote it). Sentence 2: the one direction to strengthen it in this moment (for example, acknowledge the request before turning it back, or name what Jordan could explore). Point the direction; never write the new sentence for them.
+"mode": "keep" only if the sentence already acknowledges Jordan's request and hands the decision back while still helping; then "build" says why it works with Jordan, no fix.
+${VOICE}\n${OUT} Shape: {"working": "...", "mode": "build", "skill": "...", "build": "..."}`,
+    user: `Jordan said: "${clip(d.line, 600)}"\nTrainee's first sentence: "${clip(d.sentence)}"\nTheir why (secondary): "${clip(d.why)}"${d.check ? `\nTheir own check, "Did you give Jordan the decision back while still helping?": ${clip(d.check, 40)}` : ""}`,
   };
   return null;
 }
