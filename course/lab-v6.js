@@ -547,13 +547,20 @@
       const at = Math.min(DM.step || 0, W.length - 1), fin = !!DM.watched;
       const shown = fin ? W : W.slice(0, at + 1);
       const stepHTML = (w, k) => {
+        if (w.kind === "convo") {
+          const heard = (DM.heard || {})[k];
+          return `<div class="dw-convo ${w.tone}" data-convo="${k}"><span class="dw-label">${esc(w.label)}</span>${w.ctx ? `<span class="dw-ctx">${esc(w.ctx)}</span>` : ""}
+            <div class="dw-lines">${heard ? w.lines.map(convoLine).join("") : ""}</div>
+            <div class="dw-ctl"><button type="button" class="v6-btn ${heard ? "secondary" : "primary"}" data-play="${k}">▶ ${heard ? "Play again" : "Play the conversation"}</button>${heard ? "" : `<button type="button" class="v6-link" data-showtext="${k}">Just show the text</button>`}</div></div>`;
+        }
         if (w.kind === "client") return `<div class="dw-client"><span class="av" aria-hidden="true">J</span><div><span class="who">Jordan${w.ctx ? ` <small>${esc(w.ctx)}</small>` : ""}</span><span class="said">${q(w.text)}</span></div></div>`;
         if (w.kind === "take") return `<div class="dw-take ${w.tone}"><span class="dw-label">${esc(w.label)}</span><span class="said">${q(w.text)}</span>${w.audio ? `<audio controls preload="none" src="${esc(w.audio)}"></audio>` : ""}</div>`;
         return `<div class="dw-explain${w.safety ? " safety" : ""}"><span class="dw-label">${esc(w.title)}</span><ul>${w.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>${w.line ? `<p class="said">${q(w.line)}</p>` : ""}</div>`;
       };
-      body = `<div class="act-card look-demo dw"><span class="v6-label">Walk-through · ${fin ? "Done" : `Step ${at + 1} of ${W.length}`}</span><span class="ac-name">One moment, two ways</span>
+      const curW = W[at], waitHeard = !fin && curW.kind === "convo" && !(DM.heard || {})[at];
+      body = `<div class="act-card look-demo dw"><span class="v6-label">Listen · ${fin ? "Done" : `Step ${at + 1} of ${W.length}`}</span><span class="ac-name">One moment, two ways</span><span class="ac-t">Turn your sound on. You’ll hear the same moment twice: a rushed response, then a steady one.</span>
           <div class="dw-steps">${shown.map(stepHTML).join("")}</div>
-          <div class="dw-nav">${fin ? `<button type="button" class="v6-link" data-act="demoreset">Walk through it again</button>` : `<button type="button" class="v6-btn primary" data-act="demonext">${at === W.length - 1 ? "Done: my turn →" : "Next"}</button>`}</div></div>`;
+          <div class="dw-nav">${fin ? `<button type="button" class="v6-link" data-act="demoreset">Walk through it again</button>` : `<button type="button" class="v6-btn primary" data-act="demonext"${waitHeard ? " disabled" : ""}>${at === W.length - 1 ? "Done: my turn →" : "Next"}</button>`}</div></div>`;
       if (fin) body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Your sentence + your why</span>
           <div class="speaker boxed"><span class="av" aria-hidden="true">J</span><span class="col"><span class="who">Jordan</span><span class="said md">${q(AD.moment)}</span></span></div>
           <label class="field">Your first sentence to Jordan<textarea class="v6-ta" rows="2" data-demo="line" placeholder="Say it out loud first, then write it">${esc(DM.line)}</textarea></label>
@@ -960,6 +967,33 @@
     Object.entries(AIREQ).forEach(([id, R]) => { const r = (S.ai || {})[id]; if (R.auto && !AIBUSY[id] && !(r && r.sig === aiSig(R.dataFn()) && (r.res || r.err)) && document.querySelector(`[data-ai="${id}"]`)) setTimeout(() => aiRun(id), 50); });
   }
 
+  /* ---------- Demo audio conversation ---------- */
+  const convoLine = l => `<div class="dw-line ${l[1] === "T" ? "t" : "j"}"><span class="who">${l[1] === "T" ? "Therapist" : "Jordan"}</span><span class="said">${esc(l[2])}</span></div>`;
+  let convoRun = 0;
+  async function playConvo(k) {
+    const run = ++convoRun, AD = ACTS.demo, w = AD.walk[k], box = $(`[data-convo="${k}"] .dw-lines`);
+    if (!box || !w) return;
+    box.innerHTML = "";
+    const btn = $(`[data-play="${k}"]`); if (btn) { btn.disabled = true; btn.textContent = "Playing…"; }
+    for (const l of w.lines) {
+      if (run !== convoRun || !document.body.contains(box)) return;
+      box.insertAdjacentHTML("beforeend", convoLine(l).replace('class="dw-line', 'class="dw-line now'));
+      const el = box.lastElementChild; el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      const ready = (AD.audioReady || []).includes(l[0]);
+      await new Promise(done => {
+        const fallback = () => setTimeout(done, Math.min(5200, 900 + l[2].length * 38));
+        if (!ready) return fallback();
+        const au = new Audio(AD.audioBase + l[0] + ".mp3");
+        au.onended = () => done(); au.onerror = fallback;
+        au.play().catch(fallback);
+      });
+      el.classList.remove("now");
+      await new Promise(r => setTimeout(r, 350));
+    }
+    if (run !== convoRun) return;
+    S.demo.heard = { ...(S.demo.heard || {}), [k]: true }; save(); render();
+  }
+
   /* ---------- AI live session: Dana (lab-live-session function) ----------
      Flow per moment: Dana speaks -> trainee attempt -> Training note (Dana hasn't reacted yet)
        -> Refine (same moment, 3 per session) or Continue (Dana reacts; that's the next moment). 10 moments, then wrap-up.
@@ -1124,13 +1158,15 @@
     $$("[data-go]", app).forEach(b => b.onclick = () => go(b.dataset.go));
     $$("[data-sb-sec]", app).forEach(b => b.onclick = () => { const k = b.dataset.sbSec; SB.closed[k] = !SB.closed[k]; sbSave(); const open = !SB.closed[k]; b.setAttribute("aria-expanded", open); b.querySelector("i").textContent = open ? "−" : "+"; b.nextElementSibling.hidden = !open; });
     if (scr === "week") {
+      $$("[data-play]", app).forEach(b => b.onclick = () => playConvo(+b.dataset.play));
+      $$("[data-showtext]", app).forEach(b => b.onclick = () => { convoRun++; S.demo.heard = { ...(S.demo.heard || {}), [+b.dataset.showtext]: true }; save(); render(); });
       $$("[data-act]", app).forEach(b => b.onclick = () => {
         const k = b.dataset.key, act = b.dataset.act;
         if (act === "welcome") { S.welcome = !S.welcome; }
         if (act === "watch") { S.watched[k] = !S.watched[k]; }
         if (act === "demowatch") { S.demo.watched = !S.demo.watched; }
         if (act === "demonext") { const W = ACTS.demo.walk; S.demo.step = (S.demo.step || 0) + 1; if (S.demo.step >= W.length) { S.demo.watched = true; S.demo.step = W.length - 1; } }
-        if (act === "demoreset") { S.demo.step = 0; S.demo.watched = false; }
+        if (act === "demoreset") { S.demo.step = 0; S.demo.watched = false; S.demo.heard = {}; }
         if (act === "demosave") { S.steps.demo = true; save(); render(); flash("Saved"); return; }
         if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); render(); flash("Saved"); return; }
         if (act === "copyprofile" || act === "printprofile") {

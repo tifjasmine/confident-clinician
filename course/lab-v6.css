@@ -1308,3 +1308,17 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .dw-explain .said { margin-top: 10px; font-size: 17px; }
 .dw-nav { margin-top: 16px; display: flex; justify-content: flex-end; }
 .dw-nav .v6-btn { min-width: 140px; }
+.dw-convo { border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.dw-convo.rushed { background: #fbefe9; border-left: 4px solid var(--terra); }
+.dw-convo.steady { background: #eef3ee; border-left: 4px solid var(--forest); }
+.dw-ctx { font-size: 13px; color: var(--muted); }
+.dw-lines { display: flex; flex-direction: column; gap: 10px; }
+.dw-lines:empty { display: none; }
+.dw-line { max-width: 88%; padding: 12px 16px; border-radius: 18px; display: flex; flex-direction: column; gap: 3px; animation: dwIn .3s ease-out both; }
+.dw-line .who { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .75; }
+.dw-line .said { font-size: 16px; line-height: 1.45; }
+.dw-line.j { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.dw-line.t { align-self: flex-end; background: var(--forest); color: #f5f2ec; border-bottom-right-radius: 6px; }
+.dw-line.now { box-shadow: 0 0 0 3px rgba(194,105,75,.35); }
+.dw-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.dw-take.rushed, .dw-take.steady { display: none; }

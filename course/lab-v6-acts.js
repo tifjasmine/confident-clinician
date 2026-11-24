@@ -198,16 +198,38 @@
     moment: "Just tell me what to do. You’re the therapist. Should I break up with them?",
     hintWhy: "“Because it validates” isn’t enough. What does it help you learn, and what does it avoid?",
     check: "Did you give Jordan the decision back while still being helpful?",
-    /* Tap-through demo. Add an audio file URL to a take (audio: "...") to let students hear the tone. */
+    /* Audio demo: two takes of the same moment. Each line has a code; when its audio file is in
+       /course/audio/demo/<code>.mp3, list the code in audioReady and it plays. Until then lines appear at reading pace. */
+    audioBase: "/course/audio/demo/",
+    audioReady: [],
     walk: [
-      { kind: "client", text: "Just tell me what to do. You’re the therapist. Should I break up with them?", ctx: "Jordan, 29 · session 3 · just described another fight with their partner" },
-      { kind: "take", tone: "rushed", label: "Take 1 · rushed", text: "From everything you’ve said, it sounds like you should leave.", audio: "" },
-      { kind: "client", text: "Okay… but what if I regret it?" },
-      { kind: "explain", title: "What happened", points: ["Pressure, not a knowledge gap: Jordan wanted a decision, and handing one over felt useful.", "It answered with half the story. We don’t know enough yet about safety, practical constraints, the relationship, or what matters most to Jordan.", "It took the decision away. Now Jordan is worried about regretting the therapist’s choice instead of thinking through their own."] },
-      { kind: "take", tone: "steady", label: "Take 2 · steady", text: "I hear how exhausted you are, and I get why you’d want someone to just give you a clear answer. I can help you sort through it, but I don’t want to decide something this important for you. Can we start with what feels hardest about staying, or about leaving?", audio: "" },
-      { kind: "client", text: "I’m scared I’ll make the wrong choice." },
-      { kind: "explain", title: "Why it works", points: ["It names what Jordan is carrying before turning anything back.", "It opens up the fear instead of answering it, so you can explore how Jordan decides and what they value.", "It’s still helpful. It just gives the decision back."] },
-      { kind: "explain", safety: true, title: "If safety comes up", points: ["If Jordan shows any sign they don’t feel safe, are being controlled, or can’t choose freely, assessment comes first. You’re not assuming abuse; you’re making room to assess when the information calls for it."], line: "Before we weigh your options, I want to understand whether you feel safe and free to make decisions in this relationship." }
+      { kind: "convo", tone: "rushed", label: "Take 1 · rushed", ctx: "Jordan, 29 · session 3 · just described another fight with their partner", lines: [
+        ["t1-01", "J", "Just tell me what to do. You’re the therapist. Should I break up with them?"],
+        ["t1-02", "T", "Honestly? From everything you’ve said, it sounds like you should leave."],
+        ["t1-03", "J", "Okay… but what if I regret it? We’ve been together four years."],
+        ["t1-04", "T", "That’s a normal thing to feel. But you deserve someone who treats you better. You’ve told me how much the fighting wears you down."],
+        ["t1-05", "J", "I mean… it’s not always bad. You’ve only heard about the bad parts."],
+        ["t1-06", "T", "Sure, but patterns like this usually don’t change on their own."],
+        ["t1-07", "J", "Yeah. I guess. … Can we talk about something else?"]
+      ] },
+      { kind: "explain", title: "What happened in Take 1", points: ["The answer came from pressure to be useful, with only half the story.", "Jordan started defending the relationship instead of exploring it.", "The decision became the therapist’s, and Jordan shut down."] },
+      { kind: "convo", tone: "steady", label: "Take 2 · steady", lines: [
+        ["t2-01", "J", "Just tell me what to do. You’re the therapist. Should I break up with them?"],
+        ["t2-02", "T", "I can hear how exhausted you are, and I get why you’d want someone to just give you a clear answer. I don’t want to make a decision this big for you, but I do want to help you sort through it. What feels hardest right now, staying or leaving?"],
+        ["t2-03", "J", "Both. If I stay, I’m scared it’s going to be like this forever. If I leave, I’m scared I’m throwing away four years over stuff that’s fixable."],
+        ["t2-04", "T", "So part of you is afraid of being stuck, and part of you is afraid of giving up on something that might still work."],
+        ["t2-05", "J", "Yeah. Exactly that."],
+        ["t2-06", "T", "When you picture a year from now, what would tell you that you made the right call, either way?"],
+        ["t2-07", "J", "… That I’m not walking on eggshells. That I feel like myself again."],
+        ["t2-08", "T", "Not walking on eggshells. What happens when you feel like you’re walking on eggshells?"],
+        ["t2-09", "J", "I watch everything I say. If I bring something up the wrong way, it turns into a whole fight."],
+        ["t2-10", "T", "When the fights happen, do you ever feel unsafe, or like you can’t make your own choices?"],
+        ["t2-11", "J", "No, nothing like that. It’s just loud and exhausting. We both say stuff we don’t mean."],
+        ["t2-12", "T", "Thank you for telling me. So it sounds like what matters most is feeling like yourself again. Maybe that’s where we start: what would need to change for that to happen, whether you stay or go?"],
+        ["t2-13", "J", "… Yeah. I can work with that."]
+      ] },
+      { kind: "explain", title: "Why Take 2 works", points: ["It names what Jordan is carrying before handing anything back.", "It reflects both fears in Jordan’s own words.", "It asks what matters to Jordan and follows “walking on eggshells.”", "It checks safety plainly, without assuming.", "It ends with a next step Jordan owns."] },
+      { kind: "explain", safety: true, title: "If safety comes up", points: ["Had Jordan said yes to feeling unsafe or controlled, assessment and your safety protocol come first, before weighing any options."] }
     ],
     ai: "AI could reply to your “why” with one follow-up question."
   };
