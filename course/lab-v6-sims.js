@@ -2,226 +2,227 @@
    'TCC Four Text Simulations Codex Master'. Clinical review required before publishing.
    Choice tuple: [id, therapist line, client reaction, what this move was trying to do, what to watch for]. */
 window.TCC6_SIMS = {
+ /* Week 1 (key kept as "jordan" so saved progress still loads): Imani, DRAFT awaiting Tiffany's clinical review. */
  "jordan": {
   "week": 1,
-  "client": "Rowan",
-  "title": "Rowan’s Advice Request",
+  "client": "Imani",
+  "title": "Imani’s Advice Request",
   "skill": "Notice pressure, preserve agency, respond intentionally",
-  "setup": "Rowan, 29, is in session three. They have been discussing a difficult relationship and the fear of disappointing others. No immediate danger has been disclosed.",
+  "setup": "Imani, 22, is in session three. She’s in her third year of nursing school and has been describing burnout and the fear of letting her family down. No safety concerns have been disclosed so far.",
   "moments": [
    {
     "id": "jordan-01",
-    "client": "I’ve been thinking about what we talked about. Should I break up with Jess? I need you to tell me what you would do.",
+    "client": "I’ve been thinking about what we talked about. Should I drop out of nursing school? I need you to tell me what you would do.",
     "choices": [
      [
       "A",
       "Part of you wants an answer you can rely on. What feels hardest about making the decision yourself?",
-      "If I decide, I could be wrong. I feel like I’m going to ruin everything.",
+      "If I decide, I could be wrong. Then I’ve wasted three years and everyone’s money.",
       "Names the wish for certainty while exploring decision pressure.",
-      "May feel indirect if Rowan needs to know you heard the urgency."
+      "May feel indirect if Imani needs to know you heard the urgency."
      ],
      [
       "B",
       "I can help you think it through, but I don’t want to decide for you. What matters most to you here?",
-      "I guess being respected. But that sounds vague when you say it like that.",
+      "I guess not letting my parents down. But I don’t know if that’s what I want or what they want.",
       "Sets a collaborative boundary and invites values.",
-      "Values language may arrive before Rowan feels emotionally understood."
+      "Values language may arrive before Imani feels emotionally understood."
      ],
      [
       "C",
       "We can look at what staying and leaving each might mean. Where should we start?",
-      "Leaving sounds terrifying. Staying has been exhausting.",
+      "Leaving feels like failing. Staying feels like drowning.",
       "Offers structure for a stuck choice.",
-      "A pros/cons frame may flatten emotional or relational dynamics."
+      "A pros/cons frame may flatten the emotional and family pressure underneath."
      ]
     ]
    },
    {
     "id": "jordan-02",
-    "client": "Jess isn’t horrible. They can be really sweet. But when I bring up something that bothers me, I end up apologizing.",
+    "client": "Nursing isn’t awful. I’m actually good with the patients. But when I open my books, I just stare at the page, and then I’m up until 3 a.m. feeling guilty.",
     "choices": [
      [
       "A",
-      "Walk me through the most recent time that happened.",
-      "Friday. I said I was hurt, Jess got upset, and somehow I was comforting them.",
-      "Collects observable interaction data rather than jumping to labels.",
-      "A detail-oriented approach can miss the immediate feeling in the room."
+      "Walk me through the last night that happened.",
+      "Sunday. I sat down at eight, read the same page for an hour, then lay in bed hating myself until it got light out.",
+      "Collects concrete detail rather than jumping to labels.",
+      "A detail-oriented approach can miss the feeling in the room."
      ],
      [
       "B",
-      "It sounds confusing to care about Jess and also feel that your needs disappear.",
-      "Yes. It makes me feel selfish even saying any of this.",
+      "It sounds confusing to be good at the part that matters to you and still feel stuck everywhere else.",
+      "Yes. And then I feel ungrateful for even complaining.",
       "Reflects competing feelings and reduces shame.",
-      "Validation alone may not clarify how the pattern unfolds."
+      "Validation alone may not show how the pattern unfolds."
      ],
      [
       "C",
-      "When you end up apologizing, what are you hoping will happen next?",
-      "That things will calm down. I hate the tension.",
-      "Explores the function of the behavior.",
-      "Can sound like analysis if not balanced with compassion."
+      "When you’re up at 3 a.m., what are you telling yourself?",
+      "That I’m lazy. That everyone would be disappointed if they saw how far behind I am.",
+      "Explores the thoughts driving the guilt.",
+      "Can sound like analysis if not balanced with warmth."
      ]
     ]
    },
    {
     "id": "jordan-03",
-    "client": "You’re the professional, though. Can’t you at least tell me if this is a red flag?",
+    "client": "You’re the professional, though. Can’t you at least tell me if this is just normal burnout?",
     "choices": [
      [
       "A",
-      "It is concerning that you feel unable to bring up needs safely. I’d like to understand the context before making conclusions.",
-      "Okay. I was afraid you’d think I was being dramatic.",
-      "Names concern without making a global relationship judgment.",
-      "Be specific about observed behavior and assess for coercion when indicated."
+      "A lot of students feel burned out. What you’re describing sounds heavy, and I’d like to understand more before I put a label on it.",
+      "Okay. I was afraid you’d say I just need better time management.",
+      "Normalizes without dismissing, and holds off on a quick label.",
+      "“Normal burnout” can miss depression or risk. Keep asking about mood, sleep, and hopelessness."
      ],
      [
       "B",
-      "I can tell you the pattern deserves attention. What does it feel like when you disagree with Jess?",
-      "I get nervous. Usually I just give up.",
-      "Combines a careful clinical observation with exploration.",
-      "May need a more direct assessment if fear suggests threats or control."
+      "I can tell you this deserves attention. How has your mood been outside of school?",
+      "Kind of flat. Even stuff I used to like feels like a chore.",
+      "Pairs a careful observation with a broader mood check.",
+      "Flat mood and loss of interest call for more direct questions about depression and safety."
      ],
      [
       "C",
-      "Different people use ‘red flag’ differently. What does it mean to you?",
-      "That maybe I’m allowed to take this seriously.",
-      "Clarifies client language and meaning.",
-      "May postpone naming your concern when Rowan is asking for help judging safety."
+      "Different people mean different things by burnout. What does it mean to you?",
+      "That I’m allowed to be this tired without it meaning I’m weak.",
+      "Clarifies the client’s language and meaning.",
+      "May postpone a needed mood and risk check when she’s asking how serious this is."
      ]
     ]
    },
    {
     "id": "jordan-04",
-    "client": "There’s something I haven’t said. Jess checks my phone, and once blocked the door when I tried to leave an argument.",
+    "client": "There’s something I haven’t said. Some nights I think everyone would be better off without me. Last week I counted my sleeping pills.",
     "choices": [
      [
       "A",
-      "I’m glad you told me. Blocking your exit and checking your phone raise safety concerns. Are you safe now, and has Jess threatened or hurt you?",
-      "I’m safe right now. They haven’t hit me, but I’ve been scared.",
-      "Prioritizes present safety and specific assessment.",
-      "Do not equate no physical assault with no danger; explore coercive control and safety planning."
+      "I’m really glad you told me. I want to ask you directly: are you thinking about killing yourself? And do you still have the pills with you?",
+      "Not right now. But I’ve thought about it more than I want to admit. They’re in my nightstand.",
+      "Asks about suicide directly and checks access to means.",
+      "Asking directly doesn’t plant the idea. Follow with a full risk assessment, not a single question."
      ],
      [
       "B",
-      "That changes how I’m understanding this. Can we pause our decision discussion and talk about what happens when you try to leave an argument?",
-      "Yes. That part really scares me.",
-      "Recalibrates when high-risk context appears.",
-      "Follow through with immediate safety assessment; exploratory questions alone are insufficient."
+      "That changes what I want us to focus on today. Can we set the school question aside and talk about these thoughts?",
+      "Okay. I didn’t know if I was allowed to say it.",
+      "Recalibrates the session’s priority when high-risk information appears.",
+      "Follow through with direct suicide risk questions. Shifting focus alone isn’t an assessment."
      ],
      [
       "C",
-      "I’m concerned about your safety. Would it be okay if I asked a few direct questions about whether you can leave safely and what support you have?",
-      "Please. I don’t really talk about this with anyone.",
-      "Explains the reason for focused safety questions and requests collaboration.",
-      "Permission-seeking should not delay necessary urgent assessment or intervention."
+      "I’m concerned about your safety. Is it okay if I ask some direct questions about these thoughts and the pills?",
+      "Yeah. I’ve never told anyone this.",
+      "Explains the reason for direct questions and invites collaboration.",
+      "Asking permission shouldn’t delay the assessment."
      ]
     ]
    },
    {
     "id": "jordan-05",
-    "client": "I’m not in danger right now. But I keep wondering whether I’m overreacting.",
+    "client": "I’m not going to do anything. I just get so tired. Maybe I’m being dramatic.",
     "choices": [
      [
       "A",
-      "We don’t need to settle whether you’re overreacting to take these behaviors seriously. What would help you feel safer this week?",
-      "Maybe telling my sister what’s been happening.",
-      "Validates concern and invites a client-led safety step.",
-      "Check whether contacting others or using devices could increase risk."
+      "We don’t need to decide whether you’re being dramatic to take this seriously. What would help you feel safer this week?",
+      "Maybe asking my roommate to hold onto the pills.",
+      "Validates the concern and invites a client-led safety step.",
+      "Make it specific: who, when, and what she’ll do if the thoughts get stronger."
      ],
      [
       "B",
-      "What options do you have if an argument escalates or you need somewhere to go?",
-      "My sister is close. I’ve never made an actual plan.",
-      "Works toward practical safety planning.",
-      "Avoid assuming leaving is always the safest immediate action."
+      "When the thoughts get strong, what do you usually do, and who could you reach?",
+      "Scroll on my phone until I fall asleep. My roommate’s usually home.",
+      "Works toward a safety plan with coping steps and contacts.",
+      "Include crisis resources, like 988, alongside personal contacts."
      ],
      [
       "C",
-      "I want to understand how often this occurs and whether it’s getting worse before we decide how to respond.",
-      "It’s been happening more often lately.",
-      "Assesses escalation and pattern.",
-      "Needs an actionable safety response, not assessment indefinitely."
+      "How often have these thoughts been coming up, and have they been getting stronger?",
+      "More since midterms. Most nights this month.",
+      "Assesses frequency and escalation.",
+      "Assessment needs to lead to a concrete plan, not just more questions."
      ]
     ]
    },
    {
     "id": "jordan-06",
-    "client": "If I tell my sister, she’ll tell me to leave. I’m not ready for that.",
+    "client": "If I tell my parents any of this, they’ll make me come home and quit. I’m not ready for that.",
     "choices": [
      [
       "A",
-      "You get to decide what you share and when. Could we think about what support would feel helpful without pressuring you?",
-      "Maybe I could say I need someone to check in, not tell me what to do.",
+      "You get a say in who you tell and when. Could we think about one person who could support you without taking over?",
+      "Maybe my cousin. She’d check on me without calling my mom.",
       "Protects autonomy while widening support.",
-      "Review confidentiality/device safety and what a check-in would actually look like."
+      "Be honest about the limits of confidentiality if risk becomes imminent."
      ],
      [
       "B",
-      "It makes sense that leaving feels complicated. Would it help to plan for what you could do if you ever needed space quickly?",
-      "I could do that even if I’m not ending things.",
-      "Frames safety planning without demanding separation.",
-      "Avoid implying the plan guarantees safety."
+      "It makes sense that this feels complicated. Could we make a plan for hard nights that doesn’t depend on deciding about school?",
+      "Yeah. I could do that even if I’m not dropping out.",
+      "Separates safety planning from the bigger decision.",
+      "Avoid implying the plan guarantees safety. Set a clear follow-up."
      ],
      [
       "C",
-      "What are the reasons staying feels important, even with the fear you’ve described?",
-      "I love Jess, and our lives are wrapped together.",
-      "Explores attachment and practical barriers without judgment.",
-      "Do not let an exploratory stance crowd out safety and consultation as indicated."
+      "What makes staying in school feel so important, even with how exhausted you are?",
+      "My parents gave up a lot for this. I’d be the first nurse in our family.",
+      "Explores values and family meaning without judgment.",
+      "Don’t let exploration crowd out safety planning and consultation."
      ]
     ]
    },
    {
     "id": "jordan-07",
-    "client": "I feel embarrassed that I didn’t tell you the phone thing earlier. Are you upset with me?",
+    "client": "I feel embarrassed that I didn’t tell you this earlier. Are you upset with me?",
     "choices": [
      [
       "A",
-      "No. I appreciate you trusting me with it now. What was it like to bring it up today?",
-      "Honestly, a relief. I thought you’d judge me.",
+      "No. I’m glad you told me today. What was it like to say it out loud?",
+      "Scary. But kind of lighter, too.",
       "Repairs shame and reinforces disclosure.",
-      "Avoid reassurance so broad that it shuts down what made disclosure difficult."
+      "Avoid reassurance so broad that it shuts down what made telling you hard."
      ],
      [
       "B",
-      "I’m not upset. You can share at your pace; I do want us to keep your safety in view.",
-      "That helps. I don’t want to be pushed.",
+      "I’m not upset. We can go at your pace, and I do want us to keep your safety in view.",
+      "Okay. I just don’t want this to become a huge thing.",
       "Balances relational reassurance and clinical responsibility.",
-      "Pacing matters, but emerging danger needs direct response."
+      "Pacing matters, but risk still needs a direct response today."
      ],
      [
       "C",
       "What made you worry I’d be upset?",
-      "I thought you’d say I should have known better.",
-      "Explores fear of judgment and past experience.",
-      "A direct answer to the relational question could be useful first."
+      "I thought you’d think I was wasting your time talking about school when it was really this.",
+      "Explores her fear of judgment.",
+      "A direct answer to her question could be useful first."
      ]
     ]
    },
    {
     "id": "jordan-08",
-    "client": "I still want you to tell me what I should do. But I think I also know I need a plan.",
+    "client": "I still want you to tell me whether to drop out. But I think I need a plan for the nights first.",
     "choices": [
      [
       "A",
-      "Before we end, let’s name one safety step you choose, how you’ll carry it out safely, and what support you might use.",
-      "I want to make a plan that doesn’t show up on my phone.",
-      "Turns the session toward a specific, safer next step.",
-      "Confirm privacy and urgent resources without prescribing one relationship decision."
+      "Before we end, let’s write down your plan for hard nights: the warning signs, what you’ll do, who you’ll reach, and what happens with the pills.",
+      "I’ll ask my roommate to hold them tonight. Can I text you if it gets bad?",
+      "Turns the session toward a specific, written safety plan, including access to means.",
+      "Be clear about how and when she can reach you, include 988, and set your next check-in."
      ],
      [
       "B",
-      "I won’t choose for you, but I will be direct: the behaviors you described concern me. Let’s review safety and options together.",
-      "I needed you to say that without telling me I’m stupid.",
+      "I won’t choose for you, but I’ll be direct: what you told me today concerns me, and your safety comes first. Let’s plan together.",
+      "I needed someone to say that without freaking out.",
       "Gives a clear professional concern while preserving agency.",
-      "Follow the concern with concrete safety planning and appropriate consultation."
+      "Follow the concern with concrete safety planning and consultation as your setting requires."
      ],
      [
       "C",
-      "What feels different about the decision now compared with the start of our session?",
-      "I’m less worried about picking the perfect answer and more worried about staying safe.",
+      "What feels different now compared with the start of our session?",
+      "I came in thinking school was the problem. Maybe it’s that I’ve been carrying this alone.",
       "Consolidates a change in the client’s focus.",
-      "Do not close without a concrete safety check and next-step plan."
+      "Don’t close without a concrete safety plan and a next contact."
      ]
     ]
    }
@@ -229,7 +230,7 @@ window.TCC6_SIMS = {
   "debrief": [
    "Which choice was driven most by your own urge to help quickly?",
    "Where did new information require a change in clinical priority?",
-   "Draft one brief closing that includes a collaborative safety step and appropriate support, without directing the client to stay or leave."
+   "Draft one brief closing that includes a collaborative safety step and appropriate support, without making the school decision for her."
   ]
  },
  "avery": {

@@ -152,7 +152,7 @@
     if (S.demo && (S.demo.line || S.demo.why)) mk("demo", "Demo: Your Sentence + Why", "Jordan", 1, 1, S.steps.demo ? "Finished" : "In progress", [["line", "Your first sentence", clip(S.demo.line)], ["why", "Why that sentence", clip(S.demo.why)], ["ck", "Gave Jordan the decision back?", S.demo.ck || ""], ["aiNote", "AI training note", clip(S.demo.aiNote)]].filter(p => p[2]));
     if (S.lab && Object.keys(S.lab).length) mk("lab", "The Clinical Blind Spot", D.LAB.who, 1, 1, S.steps.lab ? "Finished" : "In progress", flatPairs(S.lab));
     const M = S.sim || {}, SJ = SIMS.jordan;
-    [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Rowan Simulation", "Rowan’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
+    [...(M.history || []), M.cur].filter(Boolean).forEach((C, k) => mk("sim", "Imani Simulation", "Imani’s Advice Request", 1, k + 1, C.saved ? "Finished" : "In progress",
       SJ.moments.map((m, j) => [`m${j}`, `Moment ${j + 1}`, C.picks && C.picks[j] != null ? clip((m.choices[C.picks[j]] || [])[1]) : ""]).concat(flatPairs(C.intent, "Intention"), flatPairs(C.ref, "Debrief")).filter(p => p[2])));
     Object.entries(S.reps || {}).forEach(([id, x]) => { const r = REP(id); if (!r) return; (x.attempts && x.attempts.length ? x.attempts : [x]).forEach((a, k) => mk("rep-" + id, "Rep", `Rep ${id} · ${r.client}`, r.week, k + 1, x.saved ? "Finished" : "In progress", flatPairs(a))); });
     const LS = S.live || {};
@@ -423,7 +423,7 @@
     let fwd;
     if (st < 3) fwd = `<button type="button" class="v6-btn primary" data-lab-nav="1"${ok ? "" : " disabled"}>Next: ${LAB_STEPS[st + 1]} →</button>`;
     else if (!L.compared) fwd = `<button type="button" class="v6-btn primary" data-lab-compare${ok ? "" : " disabled"}>See how I’d say it →</button>`;
-    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary next" data-go="week/sim">Next: Rowan’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
+    else fwd = S.steps.lab ? `<button type="button" class="v6-btn primary next" data-go="week/sim">Next: Imani’s Advice Request →</button>` : `<button type="button" class="v6-btn primary" data-lab-finish>Finish the Lab ✓</button>`;
     return `<div class="flow">${head}${st === 0 ? `<div class="fiction">Fictional practice scenario. Never enter real client details.</div>` : ""}${body}<div class="actions" style="justify-content:space-between">${back}${fwd}</div></div>`;
   }
 
@@ -606,10 +606,10 @@
         ${sec("gap", "The gap I want to investigate", "A hypothesis, not a diagnosis", "Add the gap you want to look into")}
         ${sec("pull", "My Pull, and the cue I notice first", "", "Add the Pull that grabs you, and what you notice first")}
         ${sec("move", "My grounded first move", "From the Lab", "Add one line you’d actually say")}
-        <h3 class="pf-h">My Rowan practice</h3>
+        <h3 class="pf-h">My Imani practice</h3>
         ${path ? `<div class="pf-path">${esc(path).replace(/\n/g, "<br>")}</div>` : `<div class="empty">Your path shows up here after the simulation.</div>`}
-        ${sec("shift", "When the priority changed", "", "Add what changed when Rowan shared new information")}
-        ${sec("adjust", "My closing for Rowan", "Includes a collaborative safety step, without directing them to stay or leave", "Add your closing")}
+        ${sec("shift", "When the priority changed", "", "Add what changed when Imani shared new information")}
+        ${sec("adjust", "My closing for Imani", "Includes a collaborative safety step, without making the school decision for her", "Add your closing")}
         <h3 class="pf-h">“What I Say When…”</h3>
         ${lines.length ? `<div class="bank">${lines.map(([w, l]) => `<div class="bank-item"><span class="w">${esc(w)}</span><span class="l">${q(l)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here as you finish the lesson activities.</div>`}
         <h3 class="pf-h">My seven-day practice target</h3>

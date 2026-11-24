@@ -151,7 +151,7 @@
   ];
 
   const WEEKS = [
-    { n: 1, theme: "Notice", title: "The Therapist Behind the Therapy", question: "“What’s happening in me right now?”", anchor: "Spotting", anchorLine: "Fix your eyes on one point so the spin doesn’t take you.", client: "Rowan, 29", keep: "Clinical Confidence Profile" },
+    { n: 1, theme: "Notice", title: "The Therapist Behind the Therapy", question: "“What’s happening in me right now?”", anchor: "Spotting", anchorLine: "Fix your eyes on one point so the spin doesn’t take you.", client: "Imani, 22", keep: "Clinical Confidence Profile" },
     { n: 2, theme: "Decide", title: "Getting Unstuck in the Room", question: "“What matters most right now?”", anchor: "Pick the trick", client: "Avery, 32", keep: "Clinical Decision-Making Map" },
     { n: 3, theme: "Guide", title: "From Conversation to Clinical Movement", question: "“Where is this session going?”", anchor: "The routine", client: "Morgan, 41", keep: "Session Roadmap" },
     { n: 4, theme: "Adapt", title: "Recover, Reflect & Recalibrate", question: "“What do I do when it doesn’t go to plan?”", anchor: "The save", client: "Riley, 36", keep: "Showcase, Playbook & 30-Day Plan" }
@@ -174,9 +174,9 @@
     { key: "lab", type: "lab", label: "Lab", kind: "Lab · Study the case", short: "The Clinical Blind Spot", title: "Lab: The Clinical Blind Spot",
       desc: "Read a first session with Gene, a retired firefighter. Find the quiet clue the therapist missed, then rewrite that moment your way.", meta: "10–15 min", img: IMG.b,
       itemsLabel: "Four steps", items: [["1", "Spot It", "Find the quiet clue the therapist missed, and what tipped you off."], ["2", "Said or assumed?", "Catch what the therapist filled in, and write a question to check it."], ["3", "The Pull", "Which Pulls steered the therapist away?"], ["4", "Your move", "Rewrite line 6, then hear how Gene responds."]] },
-    { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Rowan’s Advice Request", title: "Simulation: Rowan’s Advice Request",
-      desc: "Now you’re the therapist. Pick what you’d say at each moment with Rowan and see how Rowan responds.", meta: "12–15 min", img: IMG.c,
-      itemsLabel: "Eight moments with Rowan", items: [["1", "“I’ve been thinking about what we talked about. Should I break up with Jess? I need you to tell me what you would do.”", "Where it starts"], ["8", "“I still want you to tell me what I should do. But I think I also know I need a plan.”", "Where it ends"]] },
+    { key: "sim", type: "sim", label: "Simulation", kind: "Simulation · Sit with the client", short: "Imani’s Advice Request", title: "Simulation: Imani’s Advice Request",
+      desc: "Now you’re the therapist. Pick what you’d say at each moment with Imani and see how she responds.", meta: "12–15 min", img: IMG.c,
+      itemsLabel: "Eight moments with Imani", items: [["1", "“I’ve been thinking about what we talked about. Should I drop out of nursing school? I need you to tell me what you would do.”", "Where it starts"], ["8", "“I still want you to tell me whether to drop out. But I think I need a plan for the nights first.”", "Where it ends"]] },
     { key: "reflect", type: "reflect", label: "Reflect", kind: "Reflect & Redo", short: "Reflect & Redo", title: "Reflect & Redo",
       desc: "Pick one of your Reps, check how it went, and try it one more time.", meta: "10 min", img: IMG.b },
     { key: "save", type: "save", label: "Save", kind: "Save it", short: "Clinical Confidence Profile", title: "Your Clinical Confidence Profile",
