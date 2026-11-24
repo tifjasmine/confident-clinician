@@ -99,6 +99,18 @@ async function logSession(user, b, G) {
     body: JSON.stringify({ performUpsert: { fieldsToMergeOn: ["Session ID"] }, typecast: true, records: [{ fields }] }) });
   if (!res.ok) console.error("Voice log failed", res.status, (await res.text()).slice(0, 200));
 }
+/* Attach one recording to the session's row (Recordings field) */
+const AT_REC_FIELD = process.env.AIRTABLE_LAB_VOICE_REC_FIELD || "fldwd70bPUu8y3ojZ";
+async function saveClip(user, b) {
+  const tok = process.env.AIRTABLE_LAB_TOKEN || process.env.AIRTABLE_ACCESS_TOKEN; if (!tok) return;
+  const up = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_VOICE}`, { method: "PATCH", headers: { Authorization: `Bearer ${tok}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ performUpsert: { fieldsToMergeOn: ["Session ID"] }, typecast: true, records: [{ fields: { "Session ID": clip(b.sessionId, 60), "Email": user.email } }] }) });
+  if (!up.ok) { console.error("Voice clip row failed", up.status); return; }
+  const rec = ((await up.json()).records || [])[0]; if (!rec) return;
+  const res = await fetch(`https://content.airtable.com/v0/${AT_BASE}/${rec.id}/${AT_REC_FIELD}/uploadAttachment`, { method: "POST", headers: { Authorization: `Bearer ${tok}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ contentType: clip(b.mime || "audio/webm", 60), filename: clip(b.name || "answer.webm", 80).replace(/[^\w.-]/g, "_"), file: b.audio }) });
+  if (!res.ok) console.error("Voice clip upload failed", res.status, (await res.text()).slice(0, 200));
+}
 /* TTS for one guided moment: the line + every reply (+ closings on the last moment) */
 async function prepMoment(G, i, voice) {
   const m = G.moments[i], jobs = [["line", m.line]];
@@ -165,6 +177,11 @@ Rules for the reply: one or two short sentences, everyday spoken words, no stage
       if (!reply) { console.error("Guided voice: no reply after retry"); return json(502, { error: "Dana didn’t come through that time. Say it again." }); }
       const t2 = Date.now(), audio = await tts(reply, voice), t3 = Date.now();
       return json(200, { ok: true, heard, land, reply, note, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
+    }
+    if (body.action === "clip") {
+      if (!body.sessionId || !body.audio) return json(400, { error: "Missing clip" });
+      try { await saveClip(user, body); } catch (e) { console.error("Voice clip error", e.message); }
+      return json(200, { ok: true });
     }
     if (body.action === "log") {
       if (!body.sessionId) return json(400, { error: "Missing session" });

@@ -1251,7 +1251,9 @@
       G.attempts.push({ moment: G.i + 1, skill: m.skill, said: out.heard, land, reply: out.reply, note: out.note || "" });
       VS.hist.push({ who: "me", text: out.heard, clip: URL.createObjectURL(blob), pick: land, skill: m.skill, note: out.note || "" });
       VS.hist.push({ who: "client", text: out.reply });
-      vgLog("In progress");
+      const tryNo = G.attempts.filter(a => a.moment === G.i + 1).length, ext = (blob.type.split("/")[1] || "webm").split(";")[0];
+      const logged = vgLog("In progress");
+      if (logged) logged.then(() => api("/.netlify/functions/lab-voice", { action: "clip", scenario: "dana", sessionId: G.id, name: `m${G.i + 1}-try${tryNo}.${ext}`, mime: blob.type.split(";")[0], audio: b64 })).catch(() => {});
       vsSet("speaking"); await vsPlay(out.audio);
       if (VS.status !== "speaking") return;
       vsSet("review");
@@ -1268,7 +1270,7 @@
     const G = VS.g; if (!G) return;
     const S2 = VS.sum, breakdown = S2 ? [S2.goal && `Goal: ${S2.goal}`, S2.arc, S2.well.length && `What went well:\n- ${S2.well.join("\n- ")}`, S2.build.length && `What to build next:\n- ${S2.build.join("\n- ")}`, S2.noticed.length && `What I noticed:\n- ${S2.noticed.join("\n- ")}`, S2.next && `Practice next: ${S2.next}`].filter(Boolean).join("\n\n") : "";
     const avgWait = VS.ms.length ? VS.ms.reduce((a, b) => a + b, 0) / VS.ms.length / 1000 : 0;
-    api("/.netlify/functions/lab-voice", { action: "log", scenario: "dana", sessionId: G.id, started: G.started, status, picks: G.picks, attempts: G.attempts, history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })), breakdown, avgWait }).catch(() => {});
+    return api("/.netlify/functions/lab-voice", { action: "log", scenario: "dana", sessionId: G.id, started: G.started, status, picks: G.picks, attempts: G.attempts, history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })), breakdown, avgWait }).catch(() => {});
   }
   async function vgAdvance() {
     const G = VS.g; if (!G) return;
