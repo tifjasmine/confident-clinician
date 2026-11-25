@@ -105,6 +105,14 @@
     .next{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
     .next-h{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);margin-bottom:10px}
     .next ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px}
+    .pop{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(20,30,25,.62)}
+    .pop[hidden]{display:none}
+    .pop-card{position:relative;max-width:480px;width:100%;background:var(--cream);color:var(--forest);border-radius:26px;padding:34px 28px 28px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+    .pop-card h2{font-size:34px;margin:6px 0 16px}
+    .pop-card .eyebrow{margin:0}
+    .pop-card ol{margin:0 0 22px;padding-left:20px;display:grid;gap:12px;font-size:16px;line-height:1.55}
+    .pop-card .btn{width:100%}
+    .pop-x{position:absolute;top:12px;right:14px;border:0;background:none;font-size:30px;line-height:1;color:var(--forest);cursor:pointer;padding:6px}
     .card.wait .btn.ghost{background:transparent;color:var(--cream);border:1.5px solid var(--cream)}
     .card.wait .btn.ghost:hover{background:var(--cream);color:var(--forest)}
     .card.wait .status{color:var(--forest)}
@@ -160,7 +168,7 @@
       <div class="video">
         <div class="wistia_embed wistia_async_o7163fk1fn videoFoam=true seo=false playerColor=98452F">&nbsp;</div>
       </div>
-      <p class="dealbar"><b>Only 10 founding spots.</b> Claim yours free today, then get Week 1 for just <b>$37</b>. Opens December 1.</p>
+      <p class="dealbar"><b>Only 10 founding spots.</b> Get Week 1 for just <b>$37</b>. Opens December 1.</p>
       <div class="ctas">
         <a class="btn" href="#join">Claim my spot</a>
         <a class="btn ghost" href="#message">Ask me a question</a>
@@ -235,15 +243,15 @@
       </div>
       <div class="offer2">
         <div class="card">
-          <h3>Claim your founding spot</h3>
-          <p class="spots" data-spots>Only 10 spots</p>
+          <h3>Become a Founding Clinician</h3>
+          <p class="spots" data-spots>Only 10 exclusive founding spots available.</p>
           <ul>
-            <li><b>Week 1 for just $37</b>, a price only the founding 10 get</li>
-            <li><b>Know what to say</b> when your mind goes blank in session</li>
-            <li><b>Practice out loud</b> with a fictional client who reacts to your exact words</li>
-            <li><b>Short video lessons</b>, each followed by hands-on practice</li>
-            <li><b>Your Clinical Confidence Profile:</b> see where you freeze and what to work on</li>
-            <li><b>Help shape the Lab.</b> Your feedback builds Weeks 2–4</li>
+            <li>Get immediate access to Week 1 for just $37 — exclusive pricing for our first 10 clinicians.</li>
+            <li>Discover what’s really happening when your mind goes blank in session.</li>
+            <li>Practice responding out loud to a simulated client who reacts to what you actually say.</li>
+            <li>Turn clinical knowledge into practical skills through bite-sized lessons and hands-on exercises.</li>
+            <li>Uncover your clinical blind spots with your personalized Clinical Confidence Profile.</li>
+            <li>Identify what’s holding back your confidence and where to focus your growth.</li>
           </ul>
           <div data-claim>
             <form id="claim-form" novalidate>
@@ -253,19 +261,10 @@
               <button class="btn" type="submit">Claim my spot</button>
               <p class="status" id="claim-status" role="status"></p>
             </form>
-            <p class="plan">Free to claim. Pay $37 by December 1 to keep it. Already paid? <a href="/course/lab/" data-track="account">Log in</a></p>
-            <div class="next">
-              <p class="next-h">What happens next</p>
-              <ol>
-                <li><b>Today:</b> claim your spot with your name and email.</li>
-                <li><b>Check your inbox</b> for your next steps.</li>
-                <li><b>Pay $37 by December 1</b> to keep your spot.</li>
-                <li><b>December 1:</b> Week 1 opens and you get access.</li>
-              </ol>
-            </div>
+            <p class="plan">Free to sign up. Spots go to the first 10 clinicians who pay.</p>
           </div>
-          <p class="sold" data-sold hidden>All 10 founding spots are saved. Join the waitlist and you’ll hear first if one opens up.</p>
-          <p class="status ok" data-saved hidden></p>
+          <p class="sold" data-sold hidden>All 10 founding spots are taken. Join the waitlist and you’ll hear first when the full Lab opens.</p>
+          <p class="status" data-saved hidden></p>
         </div>
         <div class="card wait" id="waitlist">
           <h3>Rather wait for the full Lab?</h3>
@@ -281,6 +280,20 @@
       </div>
     </div>
   </section>
+
+  <div class="pop" id="next-pop" hidden role="dialog" aria-modal="true" aria-labelledby="next-pop-h">
+    <div class="pop-card">
+      <button class="pop-x" type="button" aria-label="Close" data-pop-close>×</button>
+      <p class="eyebrow">You’re on the founding list</p>
+      <h2 id="next-pop-h">Here’s what’s next<span data-pop-first></span>!</h2>
+      <ol>
+        <li><b>Check your inbox.</b> An email from me is on its way. (Don’t see it? Look in spam or promotions.)</li>
+        <li><b>Pay $37 to lock in your spot.</b> I’ll send your link before December 1. Spots go to the first 10 clinicians who pay, so don’t wait.</li>
+        <li><b>December 1:</b> Week 1 opens.</li>
+      </ol>
+      <button class="btn" type="button" data-pop-close>Got it</button>
+    </div>
+  </div>
 
   <section id="message">
     <div class="wrap msg center">
@@ -345,6 +358,14 @@
       track("bought");
       try { history.replaceState(null, "", location.pathname); } catch (e) {}
     }
+    var pop = document.getElementById("next-pop"), popLast = null;
+    function openPop(first) {
+      document.querySelector("[data-pop-first]").textContent = first ? ", " + first : "";
+      popLast = document.activeElement; pop.hidden = false; pop.querySelector(".pop-card .btn").focus();
+    }
+    function closePop() { pop.hidden = true; if (popLast && popLast.focus) popLast.focus(); }
+    pop.addEventListener("click", function (e) { if (e.target === pop || e.target.closest("[data-pop-close]")) closePop(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pop.hidden) closePop(); });
     var FOUND = "/.netlify/functions/lab-founding";
     function post(body) {
       return fetch(FOUND, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
@@ -362,7 +383,7 @@
     }
 
     /* Founding spots left */
-    function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots saved"; }
+    function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
     fetch(FOUND).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.ok) return;
       if (j.left <= 0) soldOut(); /* never show how many are left */
@@ -387,9 +408,9 @@
         track("join");
         var done = document.querySelector("[data-saved]");
         done.innerHTML = j.paid ? "<b>You’re already in!</b> Your spot is paid for. Watch your inbox for how to sign in on December 1."
-          : j.already ? "<b>Your spot is already saved!</b> Check your inbox for your next steps."
-          : "<b>You’re one of the 10! ✉️</b> Check your inbox for your next steps. (Don’t see it? Look in spam or promotions.)";
-        done.hidden = false; done.style.display = "block"; document.querySelector("[data-claim]").hidden = true;
+          : "<b>You’re on the founding list! ✉️</b> Check your inbox for what’s next.";
+        done.hidden = false; done.className = "status ok"; done.style.display = "block"; document.querySelector("[data-claim]").hidden = true;
+        if (!j.paid) openPop(String(new FormData(f).get("first") || "").trim());
         return;
       }
       if (j.full) { soldOut(); return; }

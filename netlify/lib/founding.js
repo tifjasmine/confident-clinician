@@ -1,5 +1,6 @@
 /* Clinical Confidence Lab: founding spots (Week 1 for $37, 10 spots, Week 1 opens Dec 1) and the Jan 1 waitlist.
-   Lab base "Founding Spots" table: people save a spot free on the video page (Status Reserved, at most 10 held at once).
+   Lab base "Founding Spots" table: people join the founding list free on the video page (Status Reserved, no limit);
+   the first 10 to pay get the spots.
    Emails (Airtable automations) send each person their "Pay link" (?pay=<record id>), which opens a $37 Stripe checkout.
    Status -> Paid when Stripe confirms payment. Tiffany sets Status to Released to give an unpaid spot away.
    Paid spots are also added to the course roster (Airtable course participants) so they can sign in from Dec 1.
@@ -39,8 +40,8 @@ async function countStatus(formula) {
   const r = await at(LAB_BASE, `${SPOTS}?pageSize=100&fields%5B%5D=Status&filterByFormula=${f}`);
   return (r.records || []).length;
 }
-const spotsLeft = async () => Math.max(0, TOTAL - await countStatus(`OR({Status}='Reserved',{Status}='Paid',{Status}='Started checkout')`));
 const paidCount = () => countStatus(`{Status}='Paid'`);
+const spotsLeft = async () => Math.max(0, TOTAL - await paidCount()); /* sign-ups are unlimited; the first 10 to pay get the spots */
 
 /* Save a spot (free). Same email again = the same spot. */
 async function reserve({ email, first, source }) {
