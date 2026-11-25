@@ -352,8 +352,7 @@
     function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
     fetch(FOUND).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.ok) return;
-      if (j.left <= 0) soldOut();
-      else document.querySelector("[data-spots]").textContent = j.left === 1 ? "Only 1 spot left" : "Only " + j.left + " of " + j.total + " spots left";
+      if (j.left <= 0) soldOut(); /* never show how many are left */
     }).catch(function () {});
 
     function wire(formId, statusId, action, busy, done) {
