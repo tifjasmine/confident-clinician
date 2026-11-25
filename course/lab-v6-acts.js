@@ -130,7 +130,7 @@
           ["P", "Pause", "Your urge: give her an answer, or start listing pros and cons. Notice it. Take one breath before you speak."],
           ["A", "Attend", "Notice her: she looks worn out, and she’s been stuck on this for weeks. Notice you: you want to rescue her from not knowing."],
           ["U", "Use", "Pick up her words: “just tell me.” Wanting someone else to decide is the part worth exploring."],
-          ["S", "Say", "One grounded thing: “You sound really tired of carrying this decision.”"],
+          ["S", "Say", "One intentional thing: “It sounds like you really want someone to just tell you.”"],
           ["E", "Explore", "Then let her lead: “What makes it feel like someone else should decide?”"]
         ],
         after: "Notice you’re not refusing to help. You’re helping the client think, while respecting their autonomy." },
