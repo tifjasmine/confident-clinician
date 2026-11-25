@@ -122,7 +122,7 @@ const sessionIsFounding = s => s && (s.metadata?.product === PRODUCT);
 
 /* Mark a paid founding checkout: Founding Spots row -> Paid, and add them to the course roster. Safe to run twice. */
 async function markPaid(session) {
-  if (!sessionIsFounding(session) || session.payment_status !== "paid") return { ok: false };
+  if (!sessionIsFounding(session) || !["paid", "no_payment_required"].includes(session.payment_status)) return { ok: false };
   const email = cleanEmail(session.customer_details?.email || session.customer_email);
   const first = text(session.metadata?.first_name, 80) || text((session.customer_details?.name || "").split(/\s+/)[0], 80);
   const fields = { Email: email, "First name": first, Status: "Paid", "Paid at": new Date((session.created || Date.now() / 1000) * 1000).toISOString(), Amount: (session.amount_total || 3700) / 100, "Stripe checkout ID": session.id, Test: isTest(email) };

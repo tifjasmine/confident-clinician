@@ -46,7 +46,7 @@ exports.handler = async event => {
       if (!/^cs_[\w]+$/.test(id)) return json(400, { ok: false });
       const s = await F.stripe(`checkout/sessions/${encodeURIComponent(id)}`);
       if (!F.sessionIsFounding(s)) return json(400, { ok: false });
-      if (s.payment_status !== "paid") return json(200, { ok: false, pending: true });
+      if (!["paid", "no_payment_required"].includes(s.payment_status)) return json(200, { ok: false, pending: true });
       const out = await F.markPaid(s);
       return json(200, { ok: true, first: out.first || "" });
     }
