@@ -26,6 +26,7 @@ exports.handler = async event => {
       if (st === "Paid") return page("You’re already in! 🎉", "Your founding spot is paid for. Week 1 opens December 1. Watch your email for how to sign in.");
       if (st === "Released") return page("This spot was released", "This founding spot has gone to someone else. You can still join the waitlist for the full Lab, which opens January 1.");
       if (!email) return page("That link didn’t work", "Please reply to the email and I’ll help.");
+      if (!F.isTest(email) && Date.now() >= F.PAY_CLOSES_AT) return page("Founding spots are closed", "The founding spots closed at the end of December 1. You can still join the waitlist for the full Lab, which opens January 1.");
       if (!F.isTest(email) && (await F.paidCount()) >= F.TOTAL) return page("All 10 spots are taken", "All 10 founding spots have been paid for. You can still join the waitlist for the full Lab, which opens January 1.");
       if (!process.env.STRIPE_SECRET_KEY) return page("Checkout isn’t available", "Please try again in a little while.");
       const s = await F.checkout({ origin: originOf(event), email, first: F.text(row.fields?.["First name"], 80), rowId: id });

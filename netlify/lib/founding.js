@@ -15,6 +15,7 @@ const PRODUCT = "lab-founding-week1";
 const TOTAL = 10;
 const COHORT = "Founding Spots · Week 1 opens Dec 1, 2026";
 const OPENS_AT = Date.parse("2026-12-01T05:00:00Z"); /* Dec 1, 12:00 am Eastern */
+const PAY_CLOSES_AT = Date.parse(process.env.LAB_FOUNDING_PAY_CLOSES || "2026-12-02T05:00:00Z"); /* end of Dec 1, Eastern */
 const TEST_EMAILS = ["studentpreview@theconfidentclinician.me"];
 
 const labToken = () => process.env.AIRTABLE_LAB_TOKEN || process.env.AIRTABLE_ACCESS_TOKEN;
@@ -120,4 +121,4 @@ async function joinWaitlist({ email, first, source }) {
 /* For sign-in: founding students can't get in before Week 1 opens. */
 const foundingNotOpenYet = cohort => String(cohort || "") === COHORT && Date.now() < OPENS_AT;
 
-module.exports = { PRICE_ID, PRODUCT, TOTAL, COHORT, OPENS_AT, text, cleanEmail, isTest, spotsLeft, paidCount, reserve, getRow, setCheckoutId, checkout, stripe, markPaid, joinWaitlist, sessionIsFounding, foundingNotOpenYet };
+module.exports = { PRICE_ID, PRODUCT, TOTAL, COHORT, OPENS_AT, PAY_CLOSES_AT, text, cleanEmail, isTest, spotsLeft, paidCount, reserve, getRow, setCheckoutId, checkout, stripe, markPaid, joinWaitlist, sessionIsFounding, foundingNotOpenYet };
