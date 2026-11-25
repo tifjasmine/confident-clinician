@@ -43,9 +43,9 @@
         options: Object.entries(GAP), correct: ["pressure", "knowledge"],
         fb: "Pressure is still there: she nodded to look like she knew. But now there’s a knowledge gap too: she needs to look up the diagnosis and check it with someone. More than one gap can be true at once. The point is the next responsible action, not one perfect label." },
       { kind: "own", title: "Your turn.",
-        text: "Think of one recent moment. No client details. Describe what you did, not how you felt.",
+        text: "Think of one recent moment in session when you felt stuck, unsure, or lost. Leave out any client details. Write what you did in that moment, not how you felt.",
         fields: [
-          ["what", "What happened, as a behavior", "I moved to reassurance before clarifying what the client meant."],
+          ["what", "What you did in that moment", "I moved to reassurance before clarifying what the client meant."],
           ["action", "One thing you’ll do this week", ""]
         ],
         gapActions: { knowledge: "Name what to study and where you’ll check it.", skill: "Pick one response to rehearse three times.", pressure: "Name one body cue and one grounding action.", support: "Decide who to consult or what procedure to follow." },
