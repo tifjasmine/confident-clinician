@@ -1139,12 +1139,12 @@
     const L = liveState(), C = L.cur;
     const intro = `<div class="live-intro">
         <span class="live-eyebrow">✦ Live session · Practice partner</span>
-        <h2>Sit with Dana for ten moments.</h2>
-        <p>Dana is a fictional client, six sessions in and a little guarded today. Respond the way you would in the room. Before she reacts, you’ll get a training note to help you slow down and look again. Then it’s your call.</p>
-        <ol class="live-how"><li><span><b>Dana talks</b>You respond in your own words.</span></li><li><span><b>You get a training note</b>What your response might invite, and a question to sit with. You find the next move.</span></li><li><span><b>You decide</b>Refine your answer (3 per session) or hear how Dana responds.</span></li><li><span><b>Ten moments</b>Then a summary of where the session opened up, and where it closed.</span></li></ol>
-        <div class="live-meta"><span>About 15 minutes</span><span>Fictional practice only</span><span>A training tool for The Confident Clinician</span></div>
+        <h2>Ten moments with Dana.</h2>
+        <p>Dana is a fictional client, six sessions in and a little guarded today. Answer the way you would in the room.</p>
+        <ol class="live-how"><li><span><b>Dana talks</b>You answer in your own words.</span></li><li><span><b>You get a training note</b>A question to help you look again.</span></li><li><span><b>You decide</b>Try again (3 per session) or hear Dana’s reaction.</span></li><li><span><b>You get a summary</b>Where the session opened up, and where it closed.</span></li></ol>
+        <div class="live-meta"><span>About 15 minutes</span><span>Fictional practice only</span></div>
         ${(() => { const used = liveUses().length, left = Math.max(0, LIVE.perDay - used), test = isTestAccount(), blocked = !left && !test;
-          return `<div class="live-allow"><b>${left} of ${LIVE.perDay} sessions left today</b>${used ? `<span>${left ? "One more opens" : "Your next session opens"} in ${liveResetIn()}</span>` : `<span>Sessions reset every 24 hours</span>`}${test && !left ? `<span>Test account: keep going</span>` : ""}</div>
+          return `<div class="live-allow"><b>${left} of ${LIVE.perDay} sessions left today</b>${used ? `<span>${left ? "One more opens" : "Your next session opens"} in ${liveResetIn()}</span>` : `<span>Resets every 24 hours</span>`}${test && !left ? `<span>Test account: keep going</span>` : ""}</div>
             <button type="button" class="v6-btn primary live-go" data-live="start"${blocked ? " disabled" : ""}>${blocked ? `Next session opens in ${liveResetIn()}` : "Start the session"}</button>`; })()}
         ${L.past.filter(p => p.done).length ? `<p class="live-past">You’ve finished ${L.past.filter(p => p.done).length} session${L.past.filter(p => p.done).length > 1 ? "s" : ""}. <button type="button" class="v6-link" data-live="lastsum">See your last summary</button></p>` : ""}
       </div>`;
