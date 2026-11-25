@@ -1490,3 +1490,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .d2-card .v6-btn{justify-self:stretch}
 button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:left}
 .d2-rec{display:grid;gap:6px;justify-items:start}.d2-rec small{color:var(--muted)}
+.rf-q .rf-hint{display:block;margin-top:2px;font-size:13px;font-weight:400;color:var(--muted,#6b6b66)}

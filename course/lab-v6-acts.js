@@ -170,11 +170,11 @@
           ["U · Use", "Which take uses something she actually said?", ["Take 1", "Take 2", "Both", "Neither"],
             { "Take 1": "Your instinct already reached for her words. Keep that.", "Take 2": "That’s Use in action: the next question connects to what she brought.", "Both": "You’re already anchoring in her language. That’s a strength.", "Neither": "Look again at her line. “Anymore” is a word worth picking up." }],
           ["S · Say", "Which take has one clear purpose, instead of doing several things at once?", ["Take 1", "Take 2", "Both"],
-            { "Take 1": "A clear first instinct. Notice what made it focused.", "Take 2": "That’s Say: one grounded thing is usually enough.", "Both": "Both stay focused. That makes it easier for her to answer." }],
+            { "Take 1": "A clear first instinct. Notice what made it focused.", "Take 2": "That’s Say: one intentional thing is usually enough.", "Both": "Both stay focused. That makes it easier for her to answer." }],
           ["E · Explore", "Which take makes it easier for her to tell you more?", ["Take 1", "Take 2", "About the same"],
             { "Take 1": "Interesting. Notice what in Take 1 opens the door, and keep it.", "Take 2": "That’s explore before explaining: room for her to go further.", "About the same": "Then both leave room. Next, notice which one has one clear purpose." }],
           ["Your takeaway", "What changed most between your takes?", ["I slowed down", "I used her words", "I picked one purpose", "I got curious instead of fixing", "Not much yet"],
-            { "I slowed down": "That’s P doing its job. The space is what lets you listen again.", "I used her words": "That’s U. It shows her your question is connected to what she brought.", "I picked one purpose": "That’s S. One grounded thing is usually enough.", "I got curious instead of fixing": "That’s E: explore before explaining.", "Not much yet": "That’s okay. The steps get familiar with reps, not on the first try." }]
+            { "I slowed down": "That’s P doing its job. The space is what lets you listen again.", "I used her words": "That’s U. It shows her your question is connected to what she brought.", "I picked one purpose": "That’s S. One intentional thing is usually enough.", "I got curious instead of fixing": "That’s E: explore before explaining.", "Not much yet": "That’s okay. The steps get familiar with reps, not on the first try." }, { multi: true }]
         ],
         ai: true },
       { kind: "follow", stage: "Try it", title: "She answers. What’s your next move?",

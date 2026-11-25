@@ -931,10 +931,14 @@
     }
     if (K === "compare") {
       h += `<div class="act-cmp"><div><small>Take 1 · instinct</small>${q(v.t1 || "")}</div><div class="t2"><small>Take 2 · P.A.U.S.E.</small>${q(v.t2 || "")}</div></div>
-        ${sc.text ? `<p class="act-p">${esc(sc.text)}</p>` : ""}<div class="act-reflect">${sc.qs.map(([tag, qq, opts, fb], k) => { const cur = v["c" + k];
+        ${sc.text ? `<p class="act-p">${esc(sc.text)}</p>` : ""}<div class="act-reflect">${sc.qs.map(([tag, qq, opts, fb, how], k) => { const cur = v["c" + k];
+          if (how && how.multi) { /* pick as many as fit */
+            const sel = Array.isArray(cur) ? cur : [];
+            return `<div class="rf-q"><span class="rf-tag">${esc(tag)}</span><span class="rf-t">${esc(qq)} <small class="rf-hint">Pick all that fit.</small></span><div class="act-chips">${opts.map(o => `<button type="button" class="act-chip" data-avm="${esc(o)}" data-f="c${k}" aria-pressed="${sel.includes(o)}">${esc(o)}</button>`).join("")}</div>${sel.filter(o => fb[o]).map(o => `<div class="act-fb yes">${esc(fb[o])}</div>`).join("")}</div>`;
+          }
           return `<div class="rf-q"><span class="rf-tag">${esc(tag)}</span><span class="rf-t">${esc(qq)}</span>${pickChips("data-av", opts, cur, ` data-f="c${k}"`)}${cur && fb[cur] ? `<div class="act-fb yes">${esc(fb[cur])}</div>` : ""}</div>`; }).join("")}</div>
         ${aiBox(`act-${X.key}-${i}`, "What changed between my takes?", "compare", () => ({ line: (X.screens.find(z => z.kind === "take") || {}).moment.line, take1: v.t1 || "", take2: v.t2 || "" }), res => { v[`ai${i}_note`] = res.note; }, { req: ["take1", "take2"], rkey: `act-${X.key}#${(S.act[X.key] || {}).n || 1}`, akeys: [`ai${i}_client`, `ai${i}_note`], where: `${X.name} · ${sc.title}` })}`;
-      ok = sc.qs.every((_, k) => v["c" + k]);
+      ok = sc.qs.every((_, k) => Array.isArray(v["c" + k]) ? v["c" + k].length : v["c" + k]);
     }
     if (K === "summary") {
       const row = (l, t) => t ? `<div class="sm-row"><small>${esc(l)}</small><span>${t}</span></div>` : "";
@@ -1706,6 +1710,11 @@
       const st = ACT(arg), X = ACTS[arg], v = st.v;
       if (!X) return;
       $$("[data-av]", app).forEach(b => b.onclick = () => { v[b.dataset.f] = b.dataset.av; save(); render(); });
+      $$("[data-avm]", app).forEach(b => b.onclick = () => {
+        const cur = Array.isArray(v[b.dataset.f]) ? v[b.dataset.f].slice() : [], o = b.dataset.avm, ex = "Not much yet";
+        let nx = cur.includes(o) ? cur.filter(x => x !== o) : (o === ex ? [ex] : cur.filter(x => x !== ex).concat(o)); /* "Not much yet" stands alone */
+        v[b.dataset.f] = nx; save(); render();
+      });
       $$("[data-mv]", app).forEach(b => b.onclick = () => { const f = b.dataset.f; if (v[f + "c"]) return; const g = v[f] = v[f] || [], k = b.dataset.mv; const at = g.indexOf(k); at === -1 ? g.push(k) : g.splice(at, 1); save(); render(); });
       $$("[data-walk]", app).forEach(b => b.onclick = () => { const k = "w" + b.dataset.walk; v[k] = (v[k] || 1) + 1; save(); render(); });
       $$("[data-mcheck]", app).forEach(b => b.onclick = () => { v[b.dataset.mcheck] = true; save(); render(); });
