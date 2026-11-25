@@ -579,6 +579,8 @@ exports.handler = async (event) => {
       }
     }
     await syncClinicalConfidenceLabEnrollment(session, lineItems);
+    /* Founding spots ($37 Week 1): mark the spot Paid and add them to the roster. The video page also does this on return. */
+    try { await require('../lib/founding').markPaid(session); } catch (error) { console.error('Founding spot sync failed', error.message); }
     const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
     const resourceAccess = getPurchasedResource(lineItems) || getResourceAccessFromMetadata(session);
     const existingRecord = await findExistingAirtableRecord(session.id, fieldMap);

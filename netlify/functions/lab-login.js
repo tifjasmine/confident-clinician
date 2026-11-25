@@ -46,6 +46,7 @@ exports.handler = async event => {
     const rec = ((await r.json()).records || [])[0];
     if (!rec) return json(403, { ok: false, message: "Your account works, but it isn’t enrolled in the Lab yet. Email admin@theconfidentclinician.me and we’ll sort it out." });
 
+    if (require("../lib/founding").foundingNotOpenYet(rec.fields?.Cohort)) return json(403, { ok: false, message: "You’re in! Week 1 opens December 1. Come back then and sign in with this email." });
     const name = String(rec.fields?.Name || "").trim();
     return json(200, { ok: true, email, first: name && !name.includes("@") ? name.split(/\s+/)[0] : "", test: false, token: issue(email, false) });
   } catch (error) {

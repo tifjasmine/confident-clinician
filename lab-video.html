@@ -97,6 +97,18 @@
     .bought{margin:8px 0 8px;background:var(--forest);color:var(--cream);border-radius:24px;padding:32px;text-align:center}
     .bought h2{margin:0 0 8px;color:var(--cream)}
     .bought p{max-width:560px;margin:0 auto 20px;color:#D6E0D9}
+    .offer2{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;max-width:940px;margin:34px auto 0;align-items:start}
+    .card.wait{background:#23382F;color:var(--cream);border:1px solid #ffffff26}
+    .card.wait h3{color:var(--cream)}
+    .card.wait p{color:#D6E0D9}
+    .card.wait label{color:#D6E0D9}
+    .card.wait .btn.ghost{background:transparent;color:var(--cream);border:1.5px solid var(--cream)}
+    .card.wait .btn.ghost:hover{background:var(--cream);color:var(--forest)}
+    .card.wait .status{color:var(--forest)}
+    .spots{display:inline-block;margin:4px 0 2px;background:var(--blush);color:var(--terra-dark);font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px}
+    .card form{display:grid;gap:12px;margin-top:6px}
+    .card .status{margin-top:4px}
+    .sold{font-size:15px;background:var(--blush);color:var(--terra-dark);border-radius:14px;padding:14px 16px}
     .plan{margin-top:12px;font-size:13px;color:var(--olive);text-align:center}
     .msg{max-width:680px;margin:0 auto}
     .form{display:grid;gap:14px;margin-top:26px;text-align:left}
@@ -113,7 +125,7 @@
     footer a{margin:0 8px}
     @media (max-width:860px){
       .weeks{grid-template-columns:1fr 1fr}
-      .split,.offer{grid-template-columns:1fr}
+      .split,.offer,.offer2{grid-template-columns:1fr}
       section{padding:48px 0}
     }
     @media (max-width:520px){
@@ -133,7 +145,8 @@
   </div>
 
   <div class="wrap" id="bought" hidden>
-    <div class="bought"><h2>You're in! 🎉</h2><p>Your payment went through. Set up your account with the email you used at checkout, and you can start right away.</p><a class="btn" href="/course/lab/#setup" data-track="account">Set up my account</a></div>
+    <div class="bought" data-bought-full hidden><h2>You're in! 🎉</h2><p>Your payment went through. Set up your account with the email you used at checkout, and you can start right away.</p><a class="btn" href="/course/lab/#setup" data-track="account">Set up my account</a></div>
+    <div class="bought" data-bought-founding hidden><h2>You’re one of the 10<span data-first></span>! 🎉</h2><p>Your founding spot is saved. Week 1 opens <b>December 1</b>. Watch your email for everything you need to get started.</p></div>
   </div>
 
   <header class="hero">
@@ -144,9 +157,9 @@
       <div class="video">
         <div class="wistia_embed wistia_async_o7163fk1fn videoFoam=true seo=false playerColor=98452F">&nbsp;</div>
       </div>
-      <p class="dealbar" data-early><b>Early-bird deal:</b> join by December 31 for <b>$297</b> <s>$397</s> and save $100.</p>
+      <p class="dealbar"><b>Founding spots:</b> get Week 1 for <b>$37</b>. Only 10 spots. Week 1 opens December 1.</p>
       <div class="ctas">
-        <a class="btn" href="#join" data-track="join">Join the Lab</a>
+        <a class="btn" href="#join">Claim a founding spot</a>
         <a class="btn ghost" href="#message">Ask me a question</a>
       </div>
     </div>
@@ -213,24 +226,43 @@
   <section class="join" id="join">
     <div class="wrap">
       <div class="center">
-        <p class="eyebrow">Join the Lab</p>
-        <h2>Start practicing this week.</h2>
-        <p class="lede">Check out securely and get access right away.</p>
+        <p class="eyebrow">Founding spots</p>
+        <h2>Be one of the first 10.</h2>
+        <p class="lede">Start with Week 1 on December 1, before anyone else.</p>
       </div>
-      <div class="offer">
+      <div class="offer2">
         <div class="card">
-          <h3>The Clinical Confidence Lab</h3>
-          <p style="color:var(--olive);font-size:15px">All four weeks, every lesson, exercise, and tool.</p>
-          <p class="price"><s class="was" data-early>$397</s> <span data-price>$297</span></p>
-          <p class="deal" data-early>Early-bird price: save $100 when you join by December 31.</p>
+          <h3>Week 1 for $37</h3>
+          <p class="spots" data-spots>Only 10 spots</p>
           <ul>
-            <li>Four weeks of short lessons, each paired with hands-on practice</li>
-            <li>Live sessions with a fictional client who responds to what you actually say</li>
-            <li>Personal training notes on what’s working and what to build next</li>
-            <li>Four tools you keep: your Confidence Profile, Decision Map, Session Roadmap, and Clinical Playbook</li>
+            <li>Week 1 opens December 1</li>
+            <li>Short video lessons, each paired with hands-on practice</li>
+            <li>A live voice session with a fictional client who responds to what you actually say</li>
+            <li>Your Clinical Confidence Profile</li>
+            <li>A say in how the rest of the Lab is built</li>
           </ul>
-          <a class="btn" href="/.netlify/functions/create-clinical-confidence-lab-checkout?from=video" data-track="join"><span>Join now for <span data-price>$297</span></span></a>
-          <p class="plan">Already enrolled? <a href="/course/lab/" data-track="account">Log in</a></p>
+          <div data-claim>
+            <form id="claim-form" novalidate>
+              <label>First name<input name="first" autocomplete="given-name" maxlength="80" required></label>
+              <label>Email<input name="email" type="email" autocomplete="email" maxlength="200" required></label>
+              <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+              <button class="btn" type="submit">Claim my spot for $37</button>
+              <p class="status" id="claim-status" role="status"></p>
+            </form>
+            <p class="plan">Secure checkout with Stripe. Already have a spot? <a href="/course/lab/" data-track="account">Log in</a></p>
+          </div>
+          <p class="sold" data-sold hidden>All 10 founding spots are taken. Join the waitlist and you’ll hear first when the full Lab opens.</p>
+        </div>
+        <div class="card wait" id="waitlist">
+          <h3>Rather wait for the full Lab?</h3>
+          <p style="font-size:15px">All four weeks unlock <b>January 1</b>. Join the waitlist for updates and first access.</p>
+          <form id="wait-form" novalidate>
+            <label>First name<input name="first" autocomplete="given-name" maxlength="80" required></label>
+            <label>Email<input name="email" type="email" autocomplete="email" maxlength="200" required></label>
+            <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+            <button class="btn ghost" type="submit">Join the waitlist</button>
+            <p class="status" id="wait-status" role="status"></p>
+          </form>
         </div>
       </div>
     </div>
@@ -292,17 +324,60 @@
     }
     track("view");
 
-    /* Early-bird ends Dec 31, 2026 (Eastern). After that the page shows the regular price on its own. */
-    if (Date.now() >= Date.parse("2027-01-01T05:00:00Z")) {
-      document.querySelectorAll("[data-early]").forEach(function (el) { el.hidden = true; el.style.display = "none"; });
-      document.querySelectorAll("[data-price]").forEach(function (el) { el.textContent = "$397"; });
-    }
     /* Back from checkout */
     if (q.get("purchase") === "success") {
       document.getElementById("bought").hidden = false;
+      document.querySelector("[data-bought-full]").hidden = false;
       track("bought");
       try { history.replaceState(null, "", location.pathname); } catch (e) {}
     }
+    var FOUND = "/.netlify/functions/lab-founding";
+    function post(body) {
+      return fetch(FOUND, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._ok = r.ok; return j; }); })
+        .catch(function () { return { ok: false }; });
+    }
+    var cameFrom = [base.source, base.medium, base.campaign].filter(Boolean).join(" / ") || base.referrer || "";
+    if (q.get("founding") === "success") {
+      document.getElementById("bought").hidden = false;
+      document.querySelector("[data-bought-founding]").hidden = false;
+      track("bought");
+      var sid = q.get("session_id");
+      if (sid) post({ action: "confirm", session_id: sid }).then(function (j) { if (j.first) document.querySelector("[data-first]").textContent = ", " + j.first; });
+      try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    }
+
+    /* Founding spots left */
+    function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
+    fetch(FOUND).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) return;
+      if (j.left <= 0) soldOut();
+      else document.querySelector("[data-spots]").textContent = j.left === 1 ? "Only 1 spot left" : "Only " + j.left + " of " + j.total + " spots left";
+    }).catch(function () {});
+
+    function wire(formId, statusId, action, busy, done) {
+      var f = document.getElementById(formId), st = document.getElementById(statusId);
+      f.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var d = new FormData(f), first = String(d.get("first") || "").trim(), email = String(d.get("email") || "").trim();
+        st.className = "status";
+        if (!first || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { st.textContent = "Please add your first name and email."; st.className = "status err"; return; }
+        var btn = f.querySelector("button"), label = btn.textContent; btn.disabled = true; btn.textContent = busy;
+        post({ action: action, first: first, email: email, website: d.get("website"), source: cameFrom }).then(function (j) {
+          btn.disabled = false; btn.textContent = label;
+          done(j, f, st);
+        });
+      });
+    }
+    wire("claim-form", "claim-status", "start", "Opening checkout…", function (j, f, st) {
+      if (j.ok && j.url) { track("join"); location.href = j.url; return; }
+      if (j.soldOut) { soldOut(); return; }
+      st.textContent = j.message || "That didn’t go through. Please try again."; st.className = "status err";
+    });
+    wire("wait-form", "wait-status", "waitlist", "Joining…", function (j, f, st) {
+      if (j.ok) { f.reset(); st.textContent = "You’re on the waitlist! Watch your email for updates."; st.className = "status ok"; return; }
+      st.textContent = j.message || "That didn’t go through. Please try again."; st.className = "status err";
+    });
 
     document.querySelectorAll("[data-track]").forEach(function (a) {
       a.addEventListener("click", function () { track(a.getAttribute("data-track")); });
