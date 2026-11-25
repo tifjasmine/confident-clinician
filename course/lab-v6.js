@@ -1,7 +1,7 @@
 /* Clinical Confidence Lab v6 "Workspace" student experience.
    Screens: sign in, Home, My week, Rep, Day 1 Baseline, Rep Room, Playbook, My growth.
-   Data and copy live in lab-v6-data.js. Learner work is saved in this browser (localStorage) for the preview;
-   TODO: move progress and answers to authenticated storage, and replace the reviewer toggle with server-side drip. */
+   Data and copy live in lab-v6-data.js. Learner work is saved in this browser (localStorage) and to the student's account
+   (lab-progress function, Airtable "Saved Progress"), so it follows them to any device. */
 (function () {
   const D = window.TCC6;
   const $ = (s, r = document) => r.querySelector(s);
@@ -32,13 +32,59 @@
   const blank = () => ({ welcome: false, base: {}, baseIdx: 0, sealed: false, watched: {}, reps: {}, steps: {}, reflect: {}, profile: {}, lab: {}, sim: { v: 3 }, act: {}, demo: {}, reviewer: false });
   let S = blank();
   const loadS = () => { S = blank(); try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { /* storage unavailable */ } };
-  loadS();
-  if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
-  if (S.actV !== 2) { S.act = {}; S.actV = 2; }
-  if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
-  if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 2) { ["c0", "c1", "c2", "c3", "c4", "c5"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 2; } /* side-by-side questions: one per P.A.U.S.E. letter + takeaway */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
-  if (S.labV !== 5) { S.lab = {}; S.labV = 5; } /* Lab Spot It + Said or assumed? redesigned */
-  const save = () => { if (!S.start && anyProgress()) S.start = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
+  /* One-time cleanups when an activity's content changes. Run after loading from this browser or from the account. */
+  const migrate = () => {
+    if (!S.sim || S.sim.v !== 3) S.sim = { v: 3 };
+    if (S.actV !== 2) { S.act = {}; S.actV = 2; }
+    if (S.actL3 !== 4) { if (S.act) delete S.act.l3; S.actL3 = 4; }
+    if (S.act && S.act.l3 && S.act.l3.v && S.actL3c !== 2) { ["c0", "c1", "c2", "c3", "c4", "c5"].forEach(k => delete S.act.l3.v[k]); S.actL3c = 2; } /* side-by-side questions: one per P.A.U.S.E. letter + takeaway */ /* Two Takes restructured */ /* activities rewritten (harder versions): start them fresh */ /* simulation content changed (8-moment text simulations): start it fresh */
+    if (S.labV !== 5) { S.lab = {}; S.labV = 5; } /* Lab Spot It + Said or assumed? redesigned */
+  };
+  loadS(); migrate();
+  /* Progress is saved in this browser AND to the student's account (lab-progress function), so it follows them to any device.
+     S._t is when the student last changed anything; the newest copy always wins. */
+  const sig = () => JSON.stringify(S, (k, v) => (k === "_t" ? undefined : v));
+  const SYNC = { pulled: false, busy: false, again: false, timer: null, loadT: S._t || 0, sig: sig(), lastPull: 0 };
+  const save = () => {
+    if (!S.start && anyProgress()) S.start = Date.now();
+    const g = sig();
+    if (g !== SYNC.sig) { SYNC.sig = g; S._t = Date.now(); syncSoon(); }
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ }
+  };
+  const PROGRESS_URL = "/.netlify/functions/lab-progress";
+  function syncSoon() { if (!session()) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(() => { SYNC.timer = null; syncSend(); }, 1500); }
+  function adopt(state, t) {
+    S = Object.assign(blank(), state || {}); migrate(); S._t = t; SYNC.sig = sig(); SYNC.loadT = t;
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    render();
+  }
+  async function syncSend(keep) {
+    if (!session()) return;
+    if (!SYNC.pulled || SYNC.busy) { SYNC.again = true; return; }
+    SYNC.busy = true;
+    try {
+      const { res, out } = await api(PROGRESS_URL, { action: "save", state: S, t: S._t || Date.now() }, keep ? { keepalive: true } : {});
+      if (res.ok && out.stale && out.state) adopt(out.state, out.t);
+    } catch (e) { /* offline: it stays saved in this browser and goes up with the next change */ }
+    finally { SYNC.busy = false; if (SYNC.again) { SYNC.again = false; syncSoon(); } }
+  }
+  async function syncPull() {
+    if (!session() || SYNC.busy) return;
+    SYNC.lastPull = Date.now();
+    try {
+      const { res, out } = await api(PROGRESS_URL, { action: "load" });
+      if (!res.ok || !out.ok) throw new Error("load failed");
+      SYNC.pulled = true;
+      const mine = SYNC.loadT ? (S._t || 0) : 0; /* a browser that never saved anything takes the account's copy */
+      if (out.state && out.t > mine) adopt(out.state, out.t);
+      else if (!out.state && anyProgress()) { S._t = S._t || Date.now(); syncSend(); } /* first time on the account: send up what this browser already has */
+      else if (out.state && (S._t || 0) > (out.t || 0)) syncSend();
+      if (SYNC.again) { SYNC.again = false; syncSoon(); }
+    } catch (e) { setTimeout(syncPull, 20000); }
+  }
+  const loadAll = () => { loadS(); migrate(); SYNC.pulled = false; SYNC.loadT = S._t || 0; SYNC.sig = sig(); syncPull(); };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && SYNC.pulled && !SYNC.timer && Date.now() - SYNC.lastPull > 15000) syncPull(); });
+  addEventListener("pagehide", () => { if (SYNC.timer) { clearTimeout(SYNC.timer); SYNC.timer = null; syncSend(true); } });
 
   const REP = id => D.REPS.find(r => r.id === id);
   const R = id => (S.reps[id] = S.reps[id] || { move: "", aim: null, map: {}, gap: null, beat2: "", line: "", saved: false, attempts: [] });
@@ -1754,7 +1800,7 @@
     const f = e.currentTarget, email = f.email.value.trim().toLowerCase(), pw = f.password.value;
     const err = $("[data-login-error]");
     signedOutMsg = "";
-    const enter = s => { sessionStorage.setItem(SESSION, JSON.stringify(s)); KEY = keyFor(s); loadS(); err.textContent = ""; f.reset(); render(); };
+    const enter = s => { sessionStorage.setItem(SESSION, JSON.stringify(s)); KEY = keyFor(s); loadAll(); err.textContent = ""; f.reset(); render(); };
     const btn = f.querySelector("button[type=submit]"), label = btn.innerHTML;
     btn.disabled = true; btn.textContent = "Signing in…"; err.textContent = "";
     fetch("/.netlify/functions/lab-login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pw }) })
@@ -1785,11 +1831,12 @@
       .finally(() => { btn.disabled = false; });
   });
   $$("[data-preview-toggle]").forEach(b => b.onclick = () => { S.reviewer = !S.reviewer; save(); render(); });
-  /* Preview only: wipe this browser's progress and start over */
+  /* Preview only: wipe this account's progress and start over (on every device) */
   $$("[data-reset]").forEach(b => b.onclick = () => {
-    if (!confirm("Erase all your answers and progress in this browser and start over?")) return;
+    if (!confirm("Erase all your answers and progress and start over? This clears it on every device you use.")) return;
     S = blank(); save(); go("home");
   });
   addEventListener("hashchange", render);
   render();
+  if (session()) syncPull();
 })();

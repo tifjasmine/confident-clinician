@@ -2,8 +2,9 @@
    Airtable base "Confident Clinician – Lab Attempts" (The Daily Session workspace), four linked tables:
      Students   one row per student (matched on Email)
      Activities the list of Lab activities (matched on Key; managed in Airtable)
-     Attempts   one row per student per activity per try (matched on Attempt ID), links Student + Activity
-     Answers    one row per question in an attempt (matched on Answer ID), links Attempt
+     Attempts   one row per student per activity per try (matched on Attempt ID), links Student + Activity.
+                All of the try's answers are written into its "Answers" text box, in order (one row per try keeps the base small).
+     AI Feedback one row per thumbs up/down, links Attempt
    First answers are locked by the page; this function only writes what it is sent.
    Token: AIRTABLE_LAB_TOKEN, or AIRTABLE_ACCESS_TOKEN if that token has access to the base.
    Nothing here is shown to students. */
@@ -12,7 +13,6 @@ const T = {
   students: process.env.AIRTABLE_LAB_STUDENTS_TABLE_ID || "tblCPF6nJf5FdYsjq",
   activities: process.env.AIRTABLE_LAB_ACTIVITIES_TABLE_ID || "tblzr9GMPbs82pCGO",
   attempts: process.env.AIRTABLE_LAB_ATTEMPTS_TABLE_ID || "tblbJ8NPny5fM6WaY",
-  answers: process.env.AIRTABLE_LAB_ANSWERS_TABLE_ID || "tblt6WfYx5LTM4aNo",
   feedback: process.env.AIRTABLE_LAB_FEEDBACK_TABLE_ID || "tbliDu3irWehb4dCQ",
 };
 const MAX_TEXT = 20000;
@@ -25,6 +25,23 @@ const iso = v => { const d = new Date(v); return Number.isNaN(d.getTime()) ? und
 const cleanEmail = v => { const e = text(v, 200).trim().toLowerCase(); return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : ""; };
 const idOk = v => /^[\w@.+\-·#| ]{6,240}$/.test(String(v || ""));
 const strip = f => { Object.keys(f).forEach(k => (f[k] === undefined || f[k] === "" || (Array.isArray(f[k]) && !f[k].length)) && delete f[k]); return f; };
+/* Readable answers block for the Attempts row. */
+const oneLine = v => String(v == null ? "" : v).trim();
+function answersText(list) {
+  const out = (Array.isArray(list) ? list : []).slice(0, 150).filter(a => a && a.key).sort((a, b) => (+a.order || 0) - (+b.order || 0)).map((a, j) => {
+    const first = oneLine(a.first), fin = oneLine(a.final);
+    const lines = [`${j + 1}. ${oneLine(a.q) || a.key}`];
+    if (a.clientLine) lines.push(`   Client said: ${oneLine(a.clientLine)}`);
+    if (!first && !fin) lines.push("   (no answer yet)");
+    else if (!first || first === fin) lines.push(`   Answer: ${fin || first}`);
+    else { lines.push(`   First: ${first}`); lines.push(`   Final: ${fin || "(cleared)"}`); }
+    if (a.expected) lines.push(`   Expected: ${oneLine(a.expected)}`);
+    if (a.note) lines.push(`   Training note: ${oneLine(a.note)}`);
+    return lines.join("\n");
+  });
+  const t = out.join("\n\n");
+  return t.length > 95000 ? t.slice(0, 95000) + "\n…(cut off: too long)" : t;
+}
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function at(token, path, method = "GET", body) {
@@ -90,30 +107,10 @@ exports.handler = async event => {
       Started: iso(r.started),
       "Last updated": iso(r.updated) || now,
       Source: source,
+      Answers: answersText(r.answers),
     })));
     const idByAttempt = {};
     (attemptRecs.records || []).forEach(x => { idByAttempt[x.fields["Attempt ID"]] = x.id; });
-    const answers = [];
-    rows.forEach(r => (Array.isArray(r.answers) ? r.answers : []).slice(0, 120).forEach(a => {
-      const attemptRec = idByAttempt[text(r.attemptId, 240)];
-      if (!attemptRec || !a || !a.key) return;
-      answers.push(strip({
-        "Answer ID": text(`${r.attemptId}|${a.key}`, 300),
-        Attempt: [attemptRec],
-        Order: num(a.order),
-        Question: text(a.q, 300),
-        "First answer": text(a.first),
-        "Final answer": text(a.final),
-        Expected: text(a.expected, 300),
-        "Client line": text(a.clientLine, 2000),
-        "Training note": text(a.note, 3000),
-      }));
-    }));
-    const idByAnswer = {};
-    for (let k = 0; k < answers.length; k += 10) {
-      const res = await upsert(token, T.answers, "Answer ID", answers.slice(k, k + 10));
-      (res.records || []).forEach(x => { if (x.fields && x.fields["Answer ID"]) idByAnswer[x.fields["Answer ID"]] = x.id; });
-    }
     const TYPES = { "Training note": 1, "Client reply": 1, "Session summary": 1 };
     const fb = [];
     rows.forEach(r => (Array.isArray(r.feedback) ? r.feedback : []).slice(0, 60).forEach(f => {
@@ -128,13 +125,12 @@ exports.handler = async event => {
         "What the practice partner said": text(f.ai, 4000),
         "Student's words": text(f.input, 2000),
         Attempt: [attemptRec],
-        Answer: (Array.isArray(f.akeys) ? f.akeys : []).map(k => idByAnswer[text(`${r.attemptId}|${k}`, 300)]).filter(Boolean),
         Student: [studentId],
         "Rated at": iso(f.at),
       }));
     }));
     for (let k = 0; k < fb.length; k += 10) await upsert(token, T.feedback, "Feedback ID", fb.slice(k, k + 10));
-    return json(200, { ok: true, attempts: rows.length, answers: answers.length, feedback: fb.length });
+    return json(200, { ok: true, attempts: rows.length, feedback: fb.length });
   } catch (error) {
     console.error("Lab attempts save failed", error.message, error.detail || "");
     return json(502, { error: "Could not save attempts", status: error.status || 0 });
