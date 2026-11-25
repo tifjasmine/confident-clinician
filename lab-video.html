@@ -102,6 +102,9 @@
     .card.wait h3{color:var(--cream)}
     .card.wait p{color:#D6E0D9}
     .card.wait label{color:#D6E0D9}
+    .next{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+    .next-h{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);margin-bottom:10px}
+    .next ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px}
     .card.wait .btn.ghost{background:transparent;color:var(--cream);border:1.5px solid var(--cream)}
     .card.wait .btn.ghost:hover{background:var(--cream);color:var(--forest)}
     .card.wait .status{color:var(--forest)}
@@ -251,6 +254,14 @@
               <p class="status" id="claim-status" role="status"></p>
             </form>
             <p class="plan">Secure checkout with Stripe. Already have a spot? <a href="/course/lab/" data-track="account">Log in</a></p>
+            <div class="next">
+              <p class="next-h">What happens next</p>
+              <ol>
+                <li><b>Today:</b> you pay $37 and your spot is reserved. You’ll get a confirmation email.</li>
+                <li><b>Before December 1:</b> I’ll email you how to set up your account.</li>
+                <li><b>December 1:</b> sign in and start Week 1.</li>
+              </ol>
+            </div>
           </div>
           <p class="sold" data-sold hidden>All 10 founding spots are taken. Join the waitlist and you’ll hear first when the full Lab opens.</p>
         </div>
