@@ -124,6 +124,7 @@ const escapeHtml = (value) => String(value || '')
   .replace(/'/g, '&#039;');
 
 const sendOwnerPurchaseNotification = async ({ session, resourceAccess, lineItems }) => {
+  if (session?.metadata?.product === 'lab-founding-week1') return false; /* founding spots email Tiffany from lib/founding.js */
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn('Purchase notification skipped because RESEND_API_KEY is missing.');

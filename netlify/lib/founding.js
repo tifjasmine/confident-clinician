@@ -25,6 +25,25 @@ const text = (v, n = 200) => String(v == null ? "" : v).replace(/[\u0000-\u001f]
 const cleanEmail = v => { const e = text(v, 200).toLowerCase(); return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : ""; };
 const isTest = email => TEST_EMAILS.includes(email) || /\+test@/.test(email);
 
+/* Email Tiffany (Resend, same setup as purchase notices). Never blocks the student if it fails. */
+const esc = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+async function notifyOwner(subject, rows, replyTo) {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) { console.warn("Founding notice skipped: RESEND_API_KEY missing"); return; }
+  try {
+    const res = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: process.env.FORM_NOTIFICATION_FROM || process.env.PURCHASE_NOTIFICATION_FROM || "The Confident Clinician <notifications@theconfidentclinician.me>",
+        to: ["admin@theconfidentclinician.me"],
+        reply_to: replyTo && replyTo.includes("@") ? replyTo : undefined,
+        subject,
+        text: rows.map(([k, v]) => `${k}: ${v}`).join("\n"),
+        html: `<h2>${esc(subject)}</h2>` + rows.map(([k, v]) => `<p><strong>${esc(k)}:</strong> ${esc(v)}</p>`).join("")
+      }) });
+    if (!res.ok) console.error("Founding notice failed", res.status, (await res.text()).slice(0, 200));
+  } catch (e) { console.error("Founding notice failed", e.message); }
+}
+
 async function at(base, path, method = "GET", body, token = labToken()) {
   for (let i = 0; i < 3; i++) {
     const res = await fetch(`https://api.airtable.com/v0/${base}/${path}`, { method, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
@@ -51,6 +70,7 @@ async function reserve({ email, first, source }) {
   if (found) return { id: found.id, already: true, paid: found.fields?.Status === "Paid" };
   if (!isTest(email) && (await spotsLeft()) <= 0) return { full: true };
   const r = await at(LAB_BASE, SPOTS, "POST", { records: [{ fields: { Email: email, "First name": first, Status: "Reserved", "Reserved at": new Date().toISOString(), "Came from": source, Test: isTest(email) } }], typecast: true });
+  await notifyOwner(`New founding list sign-up: ${first}`, [["Name", first], ["Email", email], ["Came from", source || "Not known"], ["Status", "Reserved (not paid yet)"]], email);
   return { id: r.records[0].id };
 }
 const getRow = id => at(LAB_BASE, `${SPOTS}/${id}`);
@@ -91,13 +111,19 @@ async function markPaid(session) {
   const first = text(session.metadata?.first_name, 80) || text((session.customer_details?.name || "").split(/\s+/)[0], 80);
   const fields = { Email: email, "First name": first, Status: "Paid", "Paid at": new Date((session.created || Date.now() / 1000) * 1000).toISOString(), Amount: (session.amount_total || 3700) / 100, "Stripe checkout ID": session.id, Test: isTest(email) };
   let rowId = text(session.metadata?.spot_row || session.client_reference_id, 40);
+  let wasPaid = false;
   if (rowId) {
-    try { const cur = await at(LAB_BASE, `${SPOTS}/${rowId}`); if (cur.fields?.Status === "Paid") { delete fields["Paid at"]; } }
+    try { const cur = await at(LAB_BASE, `${SPOTS}/${rowId}`); if (cur.fields?.Status === "Paid") { wasPaid = true; delete fields["Paid at"]; } }
     catch { rowId = ""; }
   }
   if (rowId) await at(LAB_BASE, SPOTS, "PATCH", { records: [{ id: rowId, fields }], typecast: true });
   else await at(LAB_BASE, SPOTS, "PATCH", { performUpsert: { fieldsToMergeOn: ["Stripe checkout ID"] }, records: [{ fields }], typecast: true });
   if (email && !isTest(email)) await addToRoster({ email, name: session.customer_details?.name || first || email });
+  if (!wasPaid) {
+    let paid = "";
+    try { paid = String(await paidCount()); } catch {}
+    await notifyOwner(`Founding spot paid: ${first || email}`, [["Name", session.customer_details?.name || first], ["Email", email], ["Amount", `$${((session.amount_total || 3700) / 100).toFixed(2)}`], ["Paid spots so far", paid ? `${paid} of ${TOTAL}` : "See Airtable"], ["Stripe checkout", session.id]], email);
+  }
   return { ok: true, first };
 }
 
@@ -115,7 +141,9 @@ async function addToRoster({ email, name }) {
 }
 
 async function joinWaitlist({ email, first, source }) {
-  return at(LAB_BASE, WAITLIST, "PATCH", { performUpsert: { fieldsToMergeOn: ["Email"] }, records: [{ fields: { Email: email, "First name": first, Joined: new Date().toISOString(), "Came from": source, Test: isTest(email) } }], typecast: true });
+  const r = await at(LAB_BASE, WAITLIST, "PATCH", { performUpsert: { fieldsToMergeOn: ["Email"] }, records: [{ fields: { Email: email, "First name": first, Joined: new Date().toISOString(), "Came from": source, Test: isTest(email) } }], typecast: true });
+  if ((r.createdRecords || []).length) await notifyOwner(`New waitlist sign-up: ${first}`, [["Name", first], ["Email", email], ["Came from", source || "Not known"]], email);
+  return r;
 }
 
 /* For sign-in: founding students can't get in before Week 1 opens. */
