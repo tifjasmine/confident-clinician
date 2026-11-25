@@ -92,13 +92,12 @@
         example: "“I want to understand what I’ve missed. What have I been getting wrong?” Notice it doesn’t defend the homework or drop it. It asks.",
         ai: true },
       { kind: "reflect", title: "Check your response.",
-        text: "Four quick questions. Go with your gut.",
+        text: "Three questions from the lesson. Go with your gut.",
         show: "r1",
         items: [
           ["q1", "Could the client disagree with you without having to take care of your feelings?", [["Yes", "Then there’s room in the conversation for the client’s real reaction.", 1], ["Not quite", "Look for anything that explains, defends, or apologizes a lot. Each one makes it harder to push back.", 0], ["Not sure", "Read it out loud as the client, arms still crossed. Would you feel free to say “that’s not it either”?", 0]]],
           ["q2", "Did you respond to the client’s meaning, or mainly to your own discomfort?", [["Their meaning", "You stayed with what the client was telling you.", 1], ["Some of both", "Honest answer. Noticing the mix is what gives you a choice next time.", 0], ["My discomfort", "That’s useful to see. It’s the pressure talking, not a lack of skill.", 0]]],
-          ["q3", "Did you ask a question you genuinely wanted answered?", [["Yes", "Real curiosity tends to land as real interest.", 1], ["Not really", "Questions we ask to fill space or steer often feel that way to clients.", 0], ["No question", "That can work too. The question is whether it left them room to keep going.", 1]]],
-          ["q4", "Is it short enough to say in one breath?", [["Yes", "Short leaves more room for the client to answer.", 1], ["It ran long", "Long answers often carry an explanation or a defense. Try cutting it down to the one sentence that matters most.", 0]]]
+          ["q3", "Did you ask a question you genuinely wanted answered?", [["Yes", "Real curiosity tends to land as real interest.", 1], ["Not really", "Questions we ask to fill space or steer often feel that way to clients.", 0], ["No question", "That can work too. The question is whether it left them room to keep going.", 1]]]
         ],
         revise: "Want to adjust your response?",
         closing: "We don’t need perfection here. We need enough awareness to create a little room for choice." },
