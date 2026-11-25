@@ -124,14 +124,14 @@
         moment: { who: "Client · session 4", ctx: "She’s been describing a hard month. Then she stops and says flatly:", line: "I don’t even know what I feel anymore." },
         text: "Before you learn the steps, answer off the top of your head. Don’t overthink it. You’ll come back to this line." },
       { kind: "walk", stage: "Learn it", title: "Watch it work, one letter at a time.",
-        moment: { who: "Client", line: "Just tell me if I should break up with my partner." },
-        text: "You feel the pressure to have an answer. Tap through each step.",
-        steps: [
-          ["P", "Pause", "Notice the pressure to have an answer. Don’t fight it; just don’t let it choose for you."],
-          ["A", "Attend", "The client seems distressed, is asking for certainty, and needs help navigating a decision."],
-          ["U", "Use", "Use what they gave you: their exact request for help deciding."],
-          ["S", "Say", "One grounded thing: “It sounds exhausting to feel stuck between two options.”"],
-          ["E", "Explore", "Let their answer lead: “What has made this decision especially difficult lately?”"]
+        moment: { who: "Client · session 3", ctx: "She’s been going back and forth about her partner for weeks. Today she looks worn out:", line: "Just tell me if I should break up with my partner." },
+        text: "Here’s what P.A.U.S.E. sounds like inside your head in a real moment. Tap to see each step.",
+        steps: [ /* DRAFT clinical content: for Tiffany's review */
+          ["P", "Pause", "Your urge: give her an answer, or start listing pros and cons. Notice it. Take one breath before you speak."],
+          ["A", "Attend", "Notice her: she looks worn out, and she’s been stuck on this for weeks. Notice you: you want to rescue her from not knowing."],
+          ["U", "Use", "Pick up her words: “just tell me.” Wanting someone else to decide is the part worth exploring."],
+          ["S", "Say", "One grounded thing: “You sound really tired of carrying this decision.”"],
+          ["E", "Explore", "Then let her lead: “What makes it feel like someone else should decide?”"]
         ],
         after: "Notice you’re not refusing to help. You’re helping the client think, while respecting their autonomy." },
       { kind: "tag", stage: "Learn it", title: "What does each response invite?",
