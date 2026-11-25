@@ -125,7 +125,7 @@ async function markPaid(session) {
   if (!sessionIsFounding(session) || !["paid", "no_payment_required"].includes(session.payment_status)) return { ok: false };
   const email = cleanEmail(session.customer_details?.email || session.customer_email);
   const first = text(session.metadata?.first_name, 80) || text((session.customer_details?.name || "").split(/\s+/)[0], 80);
-  const fields = { Email: email, "First name": first, Status: "Paid", "Paid at": new Date((session.created || Date.now() / 1000) * 1000).toISOString(), Amount: (session.amount_total || 3700) / 100, "Stripe checkout ID": session.id, Test: isTest(email) };
+  const fields = { Email: email, "First name": first, Status: "Paid", "Paid at": new Date((session.created || Date.now() / 1000) * 1000).toISOString(), Amount: (session.amount_total ?? 3700) / 100, "Stripe checkout ID": session.id, Test: isTest(email) };
   let rowId = text(session.metadata?.spot_row || session.client_reference_id, 40);
   let wasPaid = false;
   if (rowId) {
@@ -138,7 +138,7 @@ async function markPaid(session) {
   if (!wasPaid) {
     let paid = "";
     try { paid = String(await paidCount()); } catch {}
-    await notifyOwner(`Founding spot paid: ${first || email}`, [["Name", session.customer_details?.name || first], ["Email", email], ["Amount", `$${((session.amount_total || 3700) / 100).toFixed(2)}`], ["Paid spots so far", paid ? `${paid} of ${TOTAL}` : "See Airtable"], ["Stripe checkout", session.id]], email);
+    await notifyOwner(`Founding spot paid: ${first || email}`, [["Name", session.customer_details?.name || first], ["Email", email], ["Amount", `$${((session.amount_total ?? 3700) / 100).toFixed(2)}`], ["Paid spots so far", paid ? `${paid} of ${TOTAL}` : "See Airtable"], ["Stripe checkout", session.id]], email);
   }
   return { ok: true, first };
 }
