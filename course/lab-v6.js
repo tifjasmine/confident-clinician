@@ -332,7 +332,7 @@
         </div>
       </section>
       <section class="card weeks4">
-        <div class="w4-head"><h2><em>Four</em> weeks.</h2><p>A new week opens every ${DRIP_DAYS} days, once you’ve finished the week before.</p></div>
+        <div class="w4-head"><h2><em>Four</em> weeks.</h2><p>Each week opens one week after the last, counted from the day you start. You’ll also need to finish each week before the next one opens.</p></div>
         <ol>${D.WEEKS.map(w => {
           const cur = w.n === 1, open = weekOpen(w.n);
           const status = cur ? (d ? `${d} of ${t} done` : "Open now") : weekStatus(w.n);
