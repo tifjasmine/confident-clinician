@@ -108,6 +108,7 @@ async function checkout({ origin, email, first, rowId }) {
     "payment_intent_data[metadata][product]": PRODUCT,
     "payment_intent_data[description]": "Clinical Confidence Lab: Founding Spot (Week 1)",
     submit_type: "pay",
+    allow_promotion_codes: "true", /* lets Tiffany use Stripe promo codes (e.g. for testing) */
     "custom_text[submit][message]": "Week 1 opens December 1. Right after you pay, you’ll get an email with how to sign in.",
     expires_at: String(Math.floor(Date.now() / 1000) + 31 * 60),
     success_url: `${origin}/lab-video?founding=success&session_id={CHECKOUT_SESSION_ID}`,
