@@ -1,5 +1,7 @@
 /* Clinical Confidence Lab: founding spots (Week 1 for $37, 10 spots, Week 1 opens Dec 1) and the Jan 1 waitlist.
-   Lab base "Founding Spots" table: a row per checkout started; Status -> Paid when Stripe confirms payment.
+   Lab base "Founding Spots" table: people save a spot free on the video page (Status Reserved, at most 10 held at once).
+   Emails (Airtable automations) send each person their "Pay link" (?pay=<record id>), which opens a $37 Stripe checkout.
+   Status -> Paid when Stripe confirms payment. Tiffany sets Status to Released to give an unpaid spot away.
    Paid spots are also added to the course roster (Airtable course participants) so they can sign in from Dec 1.
    Shared by lab-founding.js (page + return from checkout) and stripe-purchase-webhook.js (Stripe's own notice). */
 const LAB_BASE = process.env.AIRTABLE_LAB_BASE_ID || "appO3gcHI0Qc3e0OC";
@@ -10,7 +12,6 @@ const PARTICIPANTS = process.env.AIRTABLE_COURSE_PARTICIPANTS_TABLE_ID || "tbl9G
 const PRICE_ID = process.env.LAB_FOUNDING_PRICE_ID || "price_1UfjA3ASlf43jszVfdzukGYa"; /* $37 */
 const PRODUCT = "lab-founding-week1";
 const TOTAL = 10;
-const HOLD_MIN = 35; /* a started checkout holds a spot this long (Stripe checkout expires after 30 minutes) */
 const COHORT = "Founding Spots · Week 1 opens Dec 1, 2026";
 const OPENS_AT = Date.parse("2026-12-01T05:00:00Z"); /* Dec 1, 12:00 am Eastern */
 const TEST_EMAILS = ["studentpreview@theconfidentclinician.me"];
@@ -32,17 +33,26 @@ async function at(base, path, method = "GET", body, token = labToken()) {
   throw new Error("Airtable rate limited");
 }
 
-/* Spots taken = Paid, plus checkouts started in the last HOLD_MIN minutes. Test rows never count. */
-async function spotsLeft() {
-  const f = encodeURIComponent(`AND(NOT({Test}),OR({Status}='Paid',AND({Status}='Started checkout',IS_AFTER({Signed up},DATEADD(NOW(),-${HOLD_MIN},'minutes')))))`);
+/* Spots held = Reserved or Paid (test rows never count). Paid = spots actually sold. */
+async function countStatus(formula) {
+  const f = encodeURIComponent(`AND(NOT({Test}),${formula})`);
   const r = await at(LAB_BASE, `${SPOTS}?pageSize=100&fields%5B%5D=Status&filterByFormula=${f}`);
-  return Math.max(0, TOTAL - (r.records || []).length);
+  return (r.records || []).length;
 }
+const spotsLeft = async () => Math.max(0, TOTAL - await countStatus(`OR({Status}='Reserved',{Status}='Paid',{Status}='Started checkout')`));
+const paidCount = () => countStatus(`{Status}='Paid'`);
 
-async function startRow({ email, first, source }) {
-  const r = await at(LAB_BASE, SPOTS, "POST", { records: [{ fields: { Email: email, "First name": first, Status: "Started checkout", "Signed up": new Date().toISOString(), "Came from": source, Test: isTest(email) } }], typecast: true });
-  return r.records[0].id;
+/* Save a spot (free). Same email again = the same spot. */
+async function reserve({ email, first, source }) {
+  const f = encodeURIComponent(`AND(LOWER({Email})='${fstr(email)}',{Status}!='Released')`);
+  const found = (await at(LAB_BASE, `${SPOTS}?maxRecords=1&filterByFormula=${f}`)).records?.[0];
+  if (found) return { id: found.id, already: true, paid: found.fields?.Status === "Paid" };
+  if (!isTest(email) && (await spotsLeft()) <= 0) return { full: true };
+  const r = await at(LAB_BASE, SPOTS, "POST", { records: [{ fields: { Email: email, "First name": first, Status: "Reserved", "Reserved at": new Date().toISOString(), "Came from": source, Test: isTest(email) } }], typecast: true });
+  return { id: r.records[0].id };
 }
+const getRow = id => at(LAB_BASE, `${SPOTS}/${id}`);
+
 const setCheckoutId = (id, sessionId) => at(LAB_BASE, SPOTS, "PATCH", { records: [{ id, fields: { "Stripe checkout ID": sessionId } }] });
 
 async function stripe(path, method = "GET", params) {
@@ -66,7 +76,7 @@ async function checkout({ origin, email, first, rowId }) {
     allow_promotion_codes: "false",
     expires_at: String(Math.floor(Date.now() / 1000) + 31 * 60),
     success_url: `${origin}/lab-video?founding=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/lab-video#join`,
+    cancel_url: `${origin}/lab-video?founding=later`,
   });
 }
 
@@ -109,4 +119,4 @@ async function joinWaitlist({ email, first, source }) {
 /* For sign-in: founding students can't get in before Week 1 opens. */
 const foundingNotOpenYet = cohort => String(cohort || "") === COHORT && Date.now() < OPENS_AT;
 
-module.exports = { PRICE_ID, PRODUCT, TOTAL, COHORT, OPENS_AT, text, cleanEmail, isTest, spotsLeft, startRow, setCheckoutId, checkout, stripe, markPaid, joinWaitlist, sessionIsFounding, foundingNotOpenYet };
+module.exports = { PRICE_ID, PRODUCT, TOTAL, COHORT, OPENS_AT, text, cleanEmail, isTest, spotsLeft, paidCount, reserve, getRow, setCheckoutId, checkout, stripe, markPaid, joinWaitlist, sessionIsFounding, foundingNotOpenYet };

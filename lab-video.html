@@ -149,7 +149,7 @@
 
   <div class="wrap" id="bought" hidden>
     <div class="bought" data-bought-full hidden><h2>You're in! 🎉</h2><p>Your payment went through. Set up your account with the email you used at checkout, and you can start right away.</p><a class="btn" href="/course/lab/#setup" data-track="account">Set up my account</a></div>
-    <div class="bought" data-bought-founding hidden><h2>You’re one of the 10<span data-first></span>! 🎉</h2><p>Your founding spot is reserved. Week 1 opens <b>December 1</b>. Watch your email for everything you need to get started.</p></div>
+    <div class="bought" data-bought-founding hidden><h2>You’re one of the 10<span data-first></span>! 🎉</h2><p>Your payment went through and your founding spot is yours. Week 1 opens <b>December 1</b>. Watch your email for everything you need to get started.</p></div>
   </div>
 
   <header class="hero">
@@ -160,9 +160,9 @@
       <div class="video">
         <div class="wistia_embed wistia_async_o7163fk1fn videoFoam=true seo=false playerColor=98452F">&nbsp;</div>
       </div>
-      <p class="dealbar"><b>Only 10 founding spots!</b> Reserve yours now for <b>$37</b>. Week 1 opens December 1.</p>
+      <p class="dealbar"><b>Only 10 founding spots!</b> Save yours now and get Week 1 for <b>$37</b>. Opens December 1.</p>
       <div class="ctas">
-        <a class="btn" href="#join">Reserve my spot</a>
+        <a class="btn" href="#join">Save my spot</a>
         <a class="btn ghost" href="#message">Ask me a question</a>
       </div>
     </div>
@@ -231,15 +231,15 @@
       <div class="center">
         <p class="eyebrow">Founding spots</p>
         <h2>Only 10 founding spots.</h2>
-        <p class="lede">Pay $37 today to reserve your spot. Week 1 opens December 1, before anyone else gets in.</p>
+        <p class="lede">Save your spot today with just your name and email. Week 1 opens December 1, before anyone else gets in.</p>
       </div>
       <div class="offer2">
         <div class="card">
-          <h3>Reserve your spot: $37</h3>
+          <h3>Save your spot</h3>
           <p class="spots" data-spots>Only 10 spots</p>
           <ul>
-            <li><b>Pay now to lock in 1 of only 10 spots</b></li>
-            <li>Week 1 opens December 1</li>
+            <li><b>Week 1 for just $37</b>, the founding price</li>
+            <li>Opens December 1</li>
             <li>Short video lessons, each paired with hands-on practice</li>
             <li>A live voice session with a fictional client who responds to what you actually say</li>
             <li>Your Clinical Confidence Profile</li>
@@ -250,20 +250,22 @@
               <label>First name<input name="first" autocomplete="given-name" maxlength="80" required></label>
               <label>Email<input name="email" type="email" autocomplete="email" maxlength="200" required></label>
               <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-              <button class="btn" type="submit">Reserve my spot for $37</button>
+              <button class="btn" type="submit">Save my spot</button>
               <p class="status" id="claim-status" role="status"></p>
             </form>
-            <p class="plan">Secure checkout with Stripe. Already have a spot? <a href="/course/lab/" data-track="account">Log in</a></p>
+            <p class="plan">Nothing to pay today. Already paid? <a href="/course/lab/" data-track="account">Log in</a></p>
             <div class="next">
               <p class="next-h">What happens next</p>
               <ol>
-                <li><b>Today:</b> you pay $37 and your spot is reserved. You’ll get a confirmation email.</li>
-                <li><b>Before December 1:</b> I’ll email you how to set up your account.</li>
-                <li><b>December 1:</b> sign in and start Week 1.</li>
+                <li><b>Today:</b> enter your name and email to save your spot.</li>
+                <li><b>Check your inbox</b> for your next steps.</li>
+                <li><b>Pay $37 by December 1</b> to keep your spot.</li>
+                <li><b>December 1:</b> Week 1 opens and you get access.</li>
               </ol>
             </div>
           </div>
-          <p class="sold" data-sold hidden>All 10 founding spots are taken. Join the waitlist and you’ll hear first when the full Lab opens.</p>
+          <p class="sold" data-sold hidden>All 10 founding spots are saved. Join the waitlist and you’ll hear first if one opens up.</p>
+          <p class="status ok" data-saved hidden></p>
         </div>
         <div class="card wait" id="waitlist">
           <h3>Rather wait for the full Lab?</h3>
@@ -360,7 +362,7 @@
     }
 
     /* Founding spots left */
-    function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
+    function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots saved"; }
     fetch(FOUND).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.ok) return;
       if (j.left <= 0) soldOut(); /* never show how many are left */
@@ -380,9 +382,17 @@
         });
       });
     }
-    wire("claim-form", "claim-status", "start", "Opening checkout…", function (j, f, st) {
-      if (j.ok && j.url) { track("join"); location.href = j.url; return; }
-      if (j.soldOut) { soldOut(); return; }
+    wire("claim-form", "claim-status", "reserve", "Saving…", function (j, f, st) {
+      if (j.ok) {
+        track("join");
+        var done = document.querySelector("[data-saved]");
+        done.innerHTML = j.paid ? "<b>You’re already in!</b> Your spot is paid for. Watch your inbox for how to sign in on December 1."
+          : j.already ? "<b>Your spot is already saved!</b> Check your inbox for your next steps."
+          : "<b>Your spot is saved! ✉️</b> Check your inbox for your next steps. (Don’t see it? Look in spam or promotions.)";
+        done.hidden = false; done.style.display = "block"; document.querySelector("[data-claim]").hidden = true;
+        return;
+      }
+      if (j.full) { soldOut(); return; }
       st.textContent = j.message || "That didn’t go through. Please try again."; st.className = "status err";
     });
     wire("wait-form", "wait-status", "waitlist", "Joining…", function (j, f, st) {
