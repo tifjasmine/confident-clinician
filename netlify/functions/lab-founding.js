@@ -61,7 +61,7 @@ exports.handler = async event => {
     if (b.action === "reserve") {
       const r = await F.reserve({ email, first, source });
       if (r.full) return json(200, { ok: false, full: true, message: "All 10 founding spots are saved. Join the waitlist below and you’ll hear first if a spot opens up." });
-      return json(200, { ok: true, already: !!r.already, paid: !!r.paid });
+      return json(200, { ok: true, already: !!r.already, paid: !!r.paid, pay: r.paid ? "" : F.payPath(r.id) });
     }
     return json(400, { ok: false });
   } catch (error) {

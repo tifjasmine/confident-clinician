@@ -117,6 +117,8 @@
     .pop-card .eyebrow{margin:0}
     .pop-card ol{margin:0 0 22px;padding-left:20px;display:grid;gap:12px;font-size:16px;line-height:1.55}
     .pop-card .btn{width:100%}
+    .pop-card .pop-later{margin-top:10px}
+    .pop-card [hidden]{display:none}
     .pop-x{position:absolute;top:12px;right:14px;border:0;background:none;font-size:30px;line-height:1;color:var(--forest);cursor:pointer;padding:6px}
     .card.wait .btn.ghost{background:transparent;color:var(--cream);border:1.5px solid var(--cream)}
     .card.wait .btn.ghost:hover{background:var(--cream);color:var(--forest)}
@@ -293,10 +295,11 @@
       <h2 id="next-pop-h">Here’s what’s next<span data-pop-first></span>!</h2>
       <ol>
         <li><b>Check your inbox.</b> An email from me is on its way. (Don’t see it? Look in spam or promotions.)</li>
-        <li><b>Pay $37 to lock in your spot.</b> I’ll send your link before December 1. Spots go to the first 10 clinicians who pay, so don’t wait.</li>
+        <li><b>Lock in your spot for $37.</b> Spots go to the first 10 clinicians who pay. Pay now below, or anytime from the link in your email.</li>
         <li><b>December 1:</b> Week 1 opens.</li>
       </ol>
-      <button class="btn" type="button" data-pop-close>Got it</button>
+      <a class="btn" href="#" data-pop-pay>Lock in my spot now: $37</a>
+      <button class="btn ghost pop-later" type="button" data-pop-close>I’ll pay later</button>
     </div>
   </div>
 
@@ -364,9 +367,11 @@
       try { history.replaceState(null, "", location.pathname); } catch (e) {}
     }
     var pop = document.getElementById("next-pop"), popLast = null;
-    function openPop(first) {
+    function openPop(first, pay) {
       document.querySelector("[data-pop-first]").textContent = first ? ", " + first : "";
-      popLast = document.activeElement; pop.hidden = false; pop.querySelector(".pop-card .btn").focus();
+      var pb = pop.querySelector("[data-pop-pay]"); pb.hidden = !pay; if (pay) pb.href = pay;
+      pb.onclick = function () { track("join"); pb.textContent = "Opening checkout…"; };
+      popLast = document.activeElement; pop.hidden = false; (pay ? pop.querySelector("[data-pop-pay]") : pop.querySelector(".pop-later")).focus();
     }
     function closePop() { pop.hidden = true; if (popLast && popLast.focus) popLast.focus(); }
     pop.addEventListener("click", function (e) { if (e.target === pop || e.target.closest("[data-pop-close]")) closePop(); });
@@ -387,6 +392,13 @@
       try { history.replaceState(null, "", location.pathname); } catch (e) {}
     }
 
+    if (q.get("founding") === "later") {
+      try { history.replaceState(null, "", location.pathname + "#join"); } catch (e) {}
+      var sv = document.querySelector("[data-saved]");
+      sv.innerHTML = "<b>No worries, you’re still on the founding list.</b> Your pay link is in your email whenever you’re ready. Spots go to the first 10 who pay.";
+      sv.hidden = false; sv.className = "status ok"; sv.style.display = "block"; document.querySelector("[data-claim]").hidden = true;
+      setTimeout(function () { var j = document.getElementById("join"); if (j) j.scrollIntoView(); }, 50);
+    }
     /* Founding spots left */
     function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
     fetch(FOUND).then(function (r) { return r.json(); }).then(function (j) {
@@ -413,9 +425,9 @@
         track("join");
         var done = document.querySelector("[data-saved]");
         done.innerHTML = j.paid ? "<b>You’re already in!</b> Your spot is paid for. Watch your inbox for how to sign in on December 1."
-          : "<b>You’re on the founding list! ✉️</b> Check your inbox for what’s next.";
+          : "<b>You’re on the founding list! ✉️</b> Check your inbox for what’s next." + (j.pay ? " <a href=\"" + j.pay + "\">Lock in your spot now for $37 →</a>" : "");
         done.hidden = false; done.className = "status ok"; done.style.display = "block"; document.querySelector("[data-claim]").hidden = true;
-        if (!j.paid) openPop(String(new FormData(f).get("first") || "").trim());
+        if (!j.paid) openPop(String(new FormData(f).get("first") || "").trim(), j.pay);
         return;
       }
       if (j.full) { soldOut(); return; }

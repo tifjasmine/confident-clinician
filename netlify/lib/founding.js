@@ -84,8 +84,19 @@ async function stripe(path, method = "GET", params) {
   return j;
 }
 
+/* Stripe checkout for one founding spot, styled to match the site. If Stripe rejects the styling
+   (older account API version), it tries again without it so checkout never breaks. */
+const BRAND = {
+  "branding_settings[display_name]": "The Confident Clinician",
+  "branding_settings[background_color]": "#F6F2EB",
+  "branding_settings[button_color]": "#98452F",
+  "branding_settings[border_style]": "rounded",
+  "branding_settings[font_family]": "lato",
+  "branding_settings[icon][type]": "url",
+  "branding_settings[icon][url]": "https://theconfidentclinician.me/apple-touch-icon.png",
+};
 async function checkout({ origin, email, first, rowId }) {
-  return stripe("checkout/sessions", "POST", {
+  const base = {
     mode: "payment",
     "line_items[0][price]": PRICE_ID,
     "line_items[0][quantity]": "1",
@@ -95,11 +106,15 @@ async function checkout({ origin, email, first, rowId }) {
     "metadata[spot_row]": rowId,
     "metadata[first_name]": first,
     "payment_intent_data[metadata][product]": PRODUCT,
-    allow_promotion_codes: "false",
+    "payment_intent_data[description]": "Clinical Confidence Lab: Founding Spot (Week 1)",
+    submit_type: "pay",
+    "custom_text[submit][message]": "Week 1 opens December 1. Right after you pay, you’ll get an email with how to sign in.",
     expires_at: String(Math.floor(Date.now() / 1000) + 31 * 60),
     success_url: `${origin}/lab-video?founding=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/lab-video?founding=later`,
-  });
+  };
+  try { return await stripe("checkout/sessions", "POST", { ...base, ...BRAND }); }
+  catch (e) { console.warn("Checkout styling skipped:", e.message); return stripe("checkout/sessions", "POST", base); }
 }
 
 const sessionIsFounding = s => s && (s.metadata?.product === PRODUCT);
@@ -149,4 +164,6 @@ async function joinWaitlist({ email, first, source }) {
 /* For sign-in: founding students can't get in before Week 1 opens. */
 const foundingNotOpenYet = cohort => String(cohort || "") === COHORT && Date.now() < OPENS_AT;
 
-module.exports = { PRICE_ID, PRODUCT, TOTAL, COHORT, OPENS_AT, PAY_CLOSES_AT, text, cleanEmail, isTest, spotsLeft, paidCount, reserve, getRow, setCheckoutId, checkout, stripe, markPaid, joinWaitlist, sessionIsFounding, foundingNotOpenYet };
+const payPath = id => `/.netlify/functions/lab-founding?pay=${id}`;
+
+module.exports = { payPath, PRICE_ID, PRODUCT, TOTAL, COHORT, OPENS_AT, PAY_CLOSES_AT, text, cleanEmail, isTest, spotsLeft, paidCount, reserve, getRow, setCheckoutId, checkout, stripe, markPaid, joinWaitlist, sessionIsFounding, foundingNotOpenYet };
