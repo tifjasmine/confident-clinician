@@ -1037,7 +1037,7 @@
       await new Promise(done => {
         const wait = () => setTimeout(done, Math.min(6000, 700 + text.length * 40));
         if (!X.ready.includes(code)) return wait();
-        const au = new Audio(X.audioBase + code + ".mp3"); au.onended = () => done(); au.onerror = wait; au.play().catch(wait);
+        const au = new Audio(X.audioBase + code + ".mp3?v=" + (X.v || 1)); au.onended = () => done(); au.onerror = wait; au.play().catch(wait);
       });
       await new Promise(r => setTimeout(r, 300));
     }

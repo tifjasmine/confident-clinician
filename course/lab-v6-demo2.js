@@ -2,14 +2,9 @@
    Audio: /course/audio/demo2/m<N>-jordan|a|b|c|ra|rb|rc.mp3. List a code in `ready` once its file is added. */
 window.TCC6_DEMO2 = {
  "audioBase": "/course/audio/demo2/",
+ "v": 2,
  "ready": [
-  "m1-jordan",
-  "m1-a",
-  "m1-b",
-  "m1-c",
-  "m1-ra",
-  "m1-rb",
-  "m1-rc"
+  "m1-jordan", "m1-a", "m1-b", "m1-c", "m1-ra", "m1-rb", "m1-rc", "m2-jordan", "m2-a", "m2-b", "m2-c", "m2-ra", "m2-rb", "m2-rc", "m3-jordan", "m3-a", "m3-b", "m3-c", "m3-ra", "m3-rb", "m3-rc", "m4-jordan", "m4-a", "m4-b", "m4-c", "m4-ra", "m4-rb", "m4-rc", "m5-jordan", "m5-a", "m5-b", "m5-c", "m5-ra", "m5-rb", "m5-rc", "m6-jordan", "m6-a", "m6-b", "m6-c", "m6-ra", "m6-rb", "m6-rc", "m7-jordan", "m7-a", "m7-b", "m7-c", "m7-ra", "m7-rb", "m7-rc", "m8-jordan", "m8-a", "m8-b", "m8-c", "m8-ra", "m8-rb", "m8-rc", "m9-jordan", "m9-a", "m9-b", "m9-c", "m9-ra", "m9-rb", "m9-rc", "m10-jordan", "m10-a", "m10-b", "m10-c", "m10-ra", "m10-rb", "m10-rc", "m11-jordan", "m11-a", "m11-b", "m11-c", "m11-ra", "m11-rb", "m11-rc", "m12-jordan", "m12-a", "m12-b", "m12-c", "m12-ra", "m12-rb", "m12-rc"
  ],
  "setup": "Jordan, 29, session 3. Jordan has been talking about a four-year relationship and how exhausting the fights have been.",
  "wrap": "That’s the whole session. Notice the pattern. Every time Jordan asked you to decide, the strongest move wasn’t to refuse and it wasn’t to answer. It was to get curious about what was underneath the ask. And when safety came up, it came first. That’s what you’re practicing all week.",
