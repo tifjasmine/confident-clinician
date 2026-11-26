@@ -1541,3 +1541,4 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
   .d2 .d2-card .wave{min-width:56px}
 }
 @media (max-width:350px){ .d2 .d2-card .wave{display:none} .d2-card{grid-template-columns:auto 1fr auto} }
+.d2-run{scroll-margin-top:96px}

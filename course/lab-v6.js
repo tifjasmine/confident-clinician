@@ -1083,6 +1083,8 @@
     } catch (e) { flash("Your microphone isn’t available. You can just type your answer."); }
   }
   /* play clips in order; a clip that isn't recorded yet waits a reading-pace pause instead */
+  /* after a pick the page gets shorter: bring the student's answer and Jordan's reaction into view */
+  function d2ToRun() { requestAnimationFrame(() => { const r = document.querySelector("[data-d2-run]"); if (r) r.scrollIntoView({ behavior: "smooth", block: "start" }); }); }
   async function d2Play(items) {
     const run = ++d2Run, X = D2();
     for (const [code, text] of items) {
@@ -1609,7 +1611,7 @@
         const st = d2State(), m = D2().moments[st.i], N = st.i + 1, ab = "abc";
         const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } b.disabled = true; b.textContent = "Playing…"; if (m.pause) await new Promise(r => setTimeout(r, 2500)); if (await d2Play([[`m${N}-jordan`, m.line]])) { st.heard[st.i] = true; save(); render(); } });
         $$("[data-d2-opt]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Opt; b.disabled = true; b.textContent = "Playing…"; await d2Play([[`m${N}-${ab[k]}`, m.opts[k]]]); st.ho = st.ho || {}; (st.ho[st.i] = st.ho[st.i] || {})[k] = true; save(); render(); });
-        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { st.played[st.i] = true; save(); render(); } });
+        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); d2ToRun(); if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { const y = scrollY; st.played[st.i] = true; save(); render(); scrollTo(0, y); } });
         $$("[data-d2-other]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Other; b.disabled = true; b.querySelector(".t").textContent = "Playing…"; if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } });
         $$("[data-d2-replay]", app).forEach(b => b.onclick = async () => { b.classList.add("on"); await d2Play([[b.dataset.d2Replay, ""]]); b.classList.remove("on"); });
         const wt = $("[data-d2-words]", app); if (wt) wt.onclick = () => { st.words = !st.words; save(); render(); };
