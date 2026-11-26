@@ -1073,9 +1073,14 @@
       <div class="d2-prog">${X.moments.map((_, k) => `<i class="${k < i ? "done" : k === i ? "cur" : ""}"></i>`).join("")}</div>
       ${i > 0 || st.heard[0] ? `<button type="button" class="v6-link d2-restart" data-d2-restart>↺ Start the session over</button>` : ""}`;
     if (i >= n) {
-      const path = X.moments.map((m, k) => st.pick[k] != null ? `<li><b>${esc(m.title)}</b> · you chose ${L[st.pick[k]]}</li>` : "").join("");
+      /* each moment: what Jordan said, what you said, how Jordan took it, and Tiffany's take on your choice */
+      const path = X.moments.map((m, k) => { const p = st.pick[k]; if (p == null) return "";
+        const take = (m.takes || [])[p] || m.note || "";
+        return `<li><details class="d2-step"><summary><span class="n">${k + 1}</span><span class="t">${esc(m.title)}</span><span class="c">You said ${L[p]}</span></summary>
+          <div class="d2-step-b"><p class="d2-oth-line j"><small>Jordan</small>${q(m.line)}</p><p class="d2-oth-line"><small>You</small>${q(m.opts[p])}</p><p class="d2-oth-line j"><small>Jordan</small>${q(m.reacts[p])}</p>
+          ${take ? `<div class="d2-oth-take"><b>Tiffany’s take</b><p>${esc(take)}</p></div>` : ""}</div></details></li>`; }).join("");
       return `<div class="act-card look-demo d2">${intro}<div class="d2-note"><b>Tiffany’s wrap-up</b><p>${esc(X.wrap)}</p></div>
-        <details class="d2-path"><summary>Your path through the session</summary><ol>${path}</ol></details>
+        <div class="d2-path"><b>Look back at your session</b><span class="d2-sub">Tap a moment to see what you said, how Jordan took it, and Tiffany’s take.</span><ol>${path}</ol></div>
         <div class="dw-nav d2-nav"><button type="button" class="v6-btn secondary" data-d2-back>← Back</button><button type="button" class="v6-link" data-d2-restart>Go through the session again</button></div></div>`;
     }
     const m = X.moments[i], pk = st.pick[i], heard = !!st.heard[i], played = !!st.played[i], oth = st.others[i] || {};

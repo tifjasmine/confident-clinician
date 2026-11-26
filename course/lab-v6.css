@@ -1577,3 +1577,15 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 
 .d2-nav{justify-content:space-between;align-items:center;gap:12px}
 .d2-nav .v6-btn{min-width:0;flex:1 1 0;white-space:nowrap}
+
+.d2-path{margin-top:18px;display:grid;gap:6px}
+.d2-path ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.d2-step{border:1px solid var(--line-2,#e7e4de);border-radius:14px;background:#fff}
+.d2-step summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}
+.d2-step summary::-webkit-details-marker{display:none}
+.d2-step summary::after{content:"▾";margin-left:6px;color:#7a857d;transition:transform .2s}
+.d2-step[open] summary::after{transform:rotate(180deg)}
+.d2-step .n{flex:none;width:26px;height:26px;border-radius:50%;background:#eef2ef;color:#2e4a3e;display:grid;place-items:center;font-size:.85rem;font-weight:600}
+.d2-step .t{flex:1;min-width:0;font-weight:600}
+.d2-step .c{flex:none;font-size:.85rem;color:#98452F;white-space:nowrap}
+.d2-step-b{padding:0 14px 14px;display:grid;gap:8px}
