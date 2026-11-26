@@ -1546,3 +1546,11 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 .d2-other{display:grid;gap:8px}
 .d2-note.sm{padding:12px 14px}
 .d2-note.sm b{font-size:.92em}
+.d2-drop{padding:0}
+.d2-drop summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:700;color:#b5694f;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.d2-drop summary::-webkit-details-marker{display:none}
+.d2-drop summary::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin-right:4px;transition:transform .15s}
+.d2-drop[open] summary::after{transform:rotate(-135deg)}
+.d2-drop p{margin:0;padding:0 14px 14px}
+.d2-note.d2-drop{padding:0}
+.d2-note.d2-drop summary{padding:10px 14px;font-size:15px}
