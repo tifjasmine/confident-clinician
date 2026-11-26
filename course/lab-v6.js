@@ -141,7 +141,7 @@
   /* Routing: #home · #week/<step> · #rep/<id> · #baseline · #reproom · #playbook · #growth */
   const route = () => { const [scr, arg] = (location.hash.slice(1) || "home").split("/"); return { scr: D.HEADS[scr] ? scr : "home", arg: arg ? decodeURIComponent(arg) : null }; };
   const go = h => { if (location.hash === "#" + h) render(); else location.hash = h; };
-  let lastSig = "";
+  let lastSig = "", holdScroll = false;
   let lastScr = null;
 
   const NAV = [["home", "Home", "Home"], ["week", "My week", "Week"], ["reproom", "Rep Room", "Reps"], ["playbook", "Playbook", "Playbook"], ["growth", "My growth", "Growth"]];
@@ -303,6 +303,10 @@
        looking at the wrong spot. If the step counter changed, bring the top of the exercise back into view. */
     const sig = [...col.querySelectorAll(".act-count, .d2-prog, .lv-prog, .v6-pill, .v6-label, .fl-m")].map(e => e.textContent.trim()).join("|") + "#" + (location.hash || "");
     if (scr !== lastScr) scrollTo({ top: 0 });
+    else if (holdScroll) { /* after Save: stay put and show the ✓ and the Next button */
+      holdScroll = false;
+      requestAnimationFrame(() => { const nx = col.querySelector(".v6-btn.next"); if (nx) { const r = nx.getBoundingClientRect(); if (r.bottom > innerHeight - 90 || r.top < 80) scrollBy({ top: r.bottom - innerHeight + 140, behavior: "smooth" }); } });
+    }
     else if (sig !== lastSig) {
       const top = col.getBoundingClientRect().top + scrollY - 80;
       if (scrollY > top + 40) scrollTo({ top: Math.max(0, top), behavior: "smooth" });
@@ -1701,7 +1705,7 @@
         if (act === "demowatch") { S.demo.watched = !S.demo.watched; }
         if (act === "demonext") { const W = ACTS.demo.walk; S.demo.step = (S.demo.step || 0) + 1; if (S.demo.step >= W.length) { S.demo.watched = true; S.demo.step = W.length - 1; } }
         if (act === "demoreset") { S.demo.step = 0; S.demo.watched = false; S.demo.heard = {}; }
-        if (act === "demosave") { S.steps.demo = true; save(); render(); flash("Saved"); return; }
+        if (act === "demosave") { S.steps.demo = true; save(); holdScroll = true; render(); flash("Saved"); return; }
         if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); render(); flash("Saved"); return; }
         if (act === "copyprofile" || act === "printprofile") {
           const txt = $$(".profile .field, .profile .pf-h, .profile .pf-path", app).map(el => el.matches(".pf-h") ? "\n" + el.textContent.toUpperCase() : el.matches(".pf-path") ? el.innerText : (el.querySelector("textarea, input") ? `${el.firstChild.textContent.trim()}: ${(el.querySelector("[aria-pressed=true]") || {}).textContent || el.querySelector("textarea, input").value || "—"}` : "")).join("\n");
