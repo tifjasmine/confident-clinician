@@ -126,6 +126,7 @@
   /* Routing: #home · #week/<step> · #rep/<id> · #baseline · #reproom · #playbook · #growth */
   const route = () => { const [scr, arg] = (location.hash.slice(1) || "home").split("/"); return { scr: D.HEADS[scr] ? scr : "home", arg: arg ? decodeURIComponent(arg) : null }; };
   const go = h => { if (location.hash === "#" + h) render(); else location.hash = h; };
+  let lastSig = "";
   let lastScr = null;
 
   const NAV = [["home", "Home", "Home"], ["week", "My week", "Week"], ["reproom", "Rep Room", "Reps"], ["playbook", "Playbook", "Playbook"], ["growth", "My growth", "Growth"]];
@@ -283,8 +284,15 @@
     col.innerHTML = v.html;
     $("[data-aside]").innerHTML = v.solo ? "" : asideHTML(scr, v);
     $("[data-foot]").textContent = "Use fictional or generalized examples only. Never enter identifiable client information. This course is professional education and does not replace clinical supervision or independent clinical judgment.";
+    /* When "Next" moves to a new step inside the same exercise, the page often gets shorter and leaves you
+       looking at the wrong spot. If the step counter changed, bring the top of the exercise back into view. */
+    const sig = [...col.querySelectorAll(".act-count, .d2-prog, .lv-prog, .v6-pill, .v6-label, .fl-m")].map(e => e.textContent.trim()).join("|") + "#" + (location.hash || "");
     if (scr !== lastScr) scrollTo({ top: 0 });
-    lastScr = scr;
+    else if (sig !== lastSig) {
+      const top = col.getBoundingClientRect().top + scrollY - 80;
+      if (scrollY > top + 40) scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    }
+    lastScr = scr; lastSig = sig;
     bind(scr, arg);
     bindAI();
     logTick();
