@@ -1076,7 +1076,7 @@
       const path = X.moments.map((m, k) => st.pick[k] != null ? `<li><b>${esc(m.title)}</b> · you chose ${L[st.pick[k]]}</li>` : "").join("");
       return `<div class="act-card look-demo d2">${intro}<div class="d2-note"><b>Tiffany’s wrap-up</b><p>${esc(X.wrap)}</p></div>
         <details class="d2-path"><summary>Your path through the session</summary><ol>${path}</ol></details>
-        <div class="dw-nav"><button type="button" class="v6-link" data-d2-restart>Go through the session again</button></div></div>`;
+        <div class="dw-nav d2-nav"><button type="button" class="v6-btn secondary" data-d2-back>← Back</button><button type="button" class="v6-link" data-d2-restart>Go through the session again</button></div></div>`;
     }
     const m = X.moments[i], pk = st.pick[i], heard = !!st.heard[i], played = !!st.played[i], oth = st.others[i] || {};
     let h = `<div class="d2-moment"><div class="d2-head"><span class="d2-title">${esc(m.title)}</span>${heard ? `<button type="button" class="d2-words" data-d2-words aria-pressed="${!!st.words}">${st.words ? "Hide words" : "Show words"}</button>` : ""}</div>
@@ -1094,9 +1094,9 @@
           return `<details class="d2-oth${oth[k] ? " heard" : ""}" data-d2-tk="o${k}"${isOpen ? " open" : ""}><summary><span class="k">${L[k]}</span><span class="s">What if you’d said ${L[k]}?</span>${oth[k] ? `<span class="ok" aria-label="heard">✓</span>` : ""}</summary>
             <div class="d2-oth-b"><button type="button" class="d2-listen" data-d2-other="${k}"><span class="t">▶ ${oth[k] ? "Play again" : `Hear ${L[k]}, then Jordan`}</span></button>
             ${st.words ? `<p class="d2-oth-line"><small>You</small>${q(m.opts[k])}</p><p class="d2-oth-line j"><small>Jordan</small>${q(m.reacts[k])}</p>` : ""}
-            ${oth[k] && tk(k) ? `<div class="d2-oth-take"><b>Tiffany’s take</b><p>${esc(tk(k))}</p></div>` : ""}</div></details>`; }).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>
-        <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
+            ${oth[k] && tk(k) ? `<div class="d2-oth-take"><b>Tiffany’s take</b><p>${esc(tk(k))}</p></div>` : ""}</div></details>`; }).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>`;
     }
+    if (i > 0 || played) h += `<div class="dw-nav d2-nav">${i > 0 ? `<button type="button" class="v6-btn secondary" data-d2-back>← Back</button>` : "<span></span>"}${played ? `<button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button>` : ""}</div>`;
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
   }
   let d2Run = 0;
@@ -1661,6 +1661,7 @@
         $$("[data-d2-other]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Other; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]], ok => { if (ok) { (st.others[st.i] = st.others[st.i] || {})[k] = true; st.tko = st.tko || {}; (st.tko[st.i] = st.tko[st.i] || {})["o" + k] = true; save(); render(); } }); });
         $$("[data-d2-replay]", app).forEach(b => b.onclick = () => d2Btn(b, [[b.dataset.d2Replay, ""]], null, "❚❚"));
         const wt = $("[data-d2-words]", app); if (wt) wt.onclick = () => { st.words = !st.words; save(); render(); };
+        const bk = $("[data-d2-back]", app); if (bk) bk.onclick = () => { d2Stop(); st.i = Math.max(0, Math.min(st.i, D2().moments.length) - 1); save(); render(); };
         const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
         const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {}, ho: {}, words: !!(S.demo.d2 || {}).words }; save(); render(); };
       }

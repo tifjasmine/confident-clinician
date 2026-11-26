@@ -1574,3 +1574,6 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 @media (max-width:760px){.d2-oth-b{padding-left:14px}}
 .d2-about summary{cursor:pointer;font-size:14px;color:var(--muted);font-weight:600;padding:2px 0}
 .d2-about p{margin:6px 0 0;color:var(--ink-2);line-height:1.5}
+
+.d2-nav{justify-content:space-between;align-items:center;gap:12px}
+.d2-nav .v6-btn{min-width:0;flex:1 1 0;white-space:nowrap}
