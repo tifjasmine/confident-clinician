@@ -1073,14 +1073,14 @@
       <div class="d2-prog">${X.moments.map((_, k) => `<i class="${k < i ? "done" : k === i ? "cur" : ""}"></i>`).join("")}</div>
       ${i > 0 || st.heard[0] ? `<button type="button" class="v6-link d2-restart" data-d2-restart>↺ Start the session over</button>` : ""}`;
     if (i >= n) {
-      /* each moment: what Jordan said, what you said, how Jordan took it, and Tiffany's note on your choice */
+      /* each moment: what Jordan said, what you said, how Jordan took it, and Tiffany's take on your choice */
       const path = X.moments.map((m, k) => { const p = st.pick[k]; if (p == null) return "";
         const take = (m.takes || [])[p] || m.note || "";
         return `<li><details class="d2-step"><summary><span class="n">${k + 1}</span><span class="t">${esc(m.title)}</span><span class="c">You said ${L[p]}</span></summary>
           <div class="d2-step-b"><p class="d2-oth-line j"><small>Jordan</small>${q(m.line)}</p><p class="d2-oth-line"><small>You</small>${q(m.opts[p])}</p><p class="d2-oth-line j"><small>Jordan</small>${q(m.reacts[p])}</p>
           ${take ? `<div class="d2-oth-take"><b>Tiffany’s note</b><p>${esc(take)}</p></div>` : ""}</div></details></li>`; }).join("");
       return `<div class="act-card look-demo d2">${intro}<div class="d2-note"><b>Tiffany’s wrap-up</b><p>${esc(X.wrap)}</p></div>
-        <div class="d2-path"><b>Look back at your session</b><span class="d2-sub">Tap a moment to see what you said, how Jordan took it, and Tiffany’s note.</span><ol>${path}</ol></div>
+        <div class="d2-path"><b>Look back at your session</b><span class="d2-sub">Tap a moment to see what you said, how Jordan took it, and Tiffany’s note on your choice.</span><ol>${path}</ol></div>
         <div class="dw-nav d2-nav"><button type="button" class="v6-btn secondary" data-d2-back>← Back</button><button type="button" class="v6-link" data-d2-restart>Go through the session again</button></div></div>`;
     }
     const m = X.moments[i], pk = st.pick[i], heard = !!st.heard[i], played = !!st.played[i], oth = st.others[i] || {};
@@ -1094,12 +1094,12 @@
     if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`) : `<div class="d2-wait">Playing… <button type="button" class="d2-listen" data-d2-stop>❚❚ Pause</button></div>`}</div>`;
     if (played) {
       const tk = k => (m.takes || [])[k] || "";
-      h += `<div class="d2-note"><b>Tiffany’s note on ${L[pk]}</b><p>${esc(m.takes ? tk(pk) : m.note)}</p></div>
+      h += `<div class="d2-note"><b>Tiffany’s take on ${L[pk]}</b><p>${esc(m.takes ? tk(pk) : m.note)}</p></div>
         <div class="d2-others"><b>Hear the other options</b>${[0, 1, 2].filter(k => k !== pk).map(k => { const isOpen = ((st.tko || {})[i] || {})["o" + k];
           return `<details class="d2-oth${oth[k] ? " heard" : ""}" data-d2-tk="o${k}"${isOpen ? " open" : ""}><summary><span class="k">${L[k]}</span><span class="s">What if you’d said ${L[k]}?</span>${oth[k] ? `<span class="ok" aria-label="heard">✓</span>` : ""}</summary>
             <div class="d2-oth-b"><button type="button" class="d2-listen" data-d2-other="${k}"><span class="t">▶ ${oth[k] ? "Play again" : `Hear ${L[k]}, then Jordan`}</span></button>
             ${st.words ? `<p class="d2-oth-line"><small>You</small>${q(m.opts[k])}</p><p class="d2-oth-line j"><small>Jordan</small>${q(m.reacts[k])}</p>` : ""}
-            ${oth[k] && tk(k) ? `<div class="d2-oth-take"><b>Tiffany’s note</b><p>${esc(tk(k))}</p></div>` : ""}</div></details>`; }).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>`;
+            ${oth[k] && tk(k) ? `<div class="d2-oth-take"><b>Tiffany’s take</b><p>${esc(tk(k))}</p></div>` : ""}</div></details>`; }).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>`;
     }
     if (i > 0 || heard) h += `<div class="dw-nav d2-nav">${i > 0 || heard ? `<button type="button" class="v6-btn secondary" data-d2-back>← Back</button>` : "<span></span>"}${played ? `<button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button>` : ""}</div>`;
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
