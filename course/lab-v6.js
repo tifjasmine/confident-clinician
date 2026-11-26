@@ -3,6 +3,19 @@
    Data and copy live in lab-v6-data.js. Learner work is saved in this browser (localStorage) and to the student's account
    (lab-progress function, Airtable "Saved Progress"), so it follows them to any device. */
 (function () {
+  /* ---------- One sound at a time ----------
+     Whenever any audio starts (a Demo clip, a Rep, the voice session, a recording), anything else that was playing stops,
+     including a lesson video. A stopped clip counts as finished, so its button doesn't get stuck on "Playing…". */
+  (() => {
+    const P = HTMLMediaElement.prototype, orig = P.play;
+    let cur = null;
+    const stopVideos = () => { try { (window.Wistia && Wistia.api && Wistia.api.all ? Wistia.api.all() : []).forEach(v => { if (v.state && v.state() === "playing") v.pause(); }); } catch (e) {} };
+    const stopCur = except => { if (cur && cur !== except && !cur.paused) { const old = cur; old.pause(); old.dispatchEvent(new Event("ended")); } };
+    P.play = function () { stopCur(this); stopVideos(); cur = this; return orig.apply(this, arguments); };
+    window._wq = window._wq || [];
+    window._wq.push({ id: "_all", onReady: v => v.bind("play", () => { stopCur(null); try { Wistia.api.all().forEach(o => { if (o !== v && o.state() === "playing") o.pause(); }); } catch (e) {} }) });
+  })();
+
   const D = window.TCC6;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -407,7 +420,7 @@
   /* ---------- My week ---------- */
   const video = (id, img, isVideo) => {
     const wid = id && D.VIDEOS[id];
-    if (wid) return `<div class="media video"><iframe src="https://fast.wistia.net/embed/iframe/${esc(wid)}?seo=false" title="Lesson video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+    if (wid) return `<div class="media video"><iframe src="https://fast.wistia.net/embed/iframe/${esc(wid)}?seo=false" class="wistia_embed" name="wistia_embed" title="Lesson video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
     return `<div class="media"><img src="${img}" alt="">${isVideo ? `<div class="play"><span aria-hidden="true">▶</span></div><span class="soon">Video coming soon</span>` : ""}</div>`;
   };
   const itemsHTML = (label, items) => `<div class="items"><div class="lab">${esc(label)}</div>${items.map(([k, a, b, done]) => `<div class="row"><span class="k${done ? " done" : ""}">${done ? "✓" : esc(k)}</span><span class="t"><b>${esc(a)}</b>${b ? `<small>${esc(b)}</small>` : ""}</span></div>`).join("")}</div>`;
