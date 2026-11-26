@@ -1060,7 +1060,7 @@
     const ho = (st.ho || {})[i] || {};
     if (heard && pk == null) h += `<div class="d2-q"><b>What would you say?</b><span class="d2-sub">Listen to all three, then choose the one you’d go with.</span>
       <div class="d2-cards">${m.opts.map((o, k) => `<div class="d2-card${ho[k] ? " heard" : ""}"><span class="big">${L[k]}</span>${st.words ? `<span class="said">${q(o)}</span>` : `<span class="wave" aria-hidden="true"></span>`}
-        <button type="button" class="d2-listen" data-d2-opt="${k}">▶ ${ho[k] ? "Listen again" : "Listen"}</button>
+        <button type="button" class="d2-listen" data-d2-opt="${k}">▶ ${ho[k] ? "Replay" : "Listen"}</button>
         <button type="button" class="v6-btn primary small" data-d2-pick="${k}"${ho[k] || st.words ? "" : " disabled"}>I’d say ${L[k]}</button></div>`).join("")}</div></div>`;
     if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`) : `<div class="d2-wait">Playing…</div>`}</div>`;
     if (played) {

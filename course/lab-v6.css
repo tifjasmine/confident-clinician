@@ -1518,3 +1518,26 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 
 /* cleaner waveform: rounded bars */
 .d2 .wave{clip-path:none !important;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22144%22%20height%3D%2222%22%20viewBox%3D%220%200%20144%2022%22%20fill%3D%22%232e4a3e%22%3E%3Crect%20x%3D%220%22%20y%3D%228.0%22%20width%3D%223%22%20height%3D%226%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%226%22%20y%3D%225.0%22%20width%3D%223%22%20height%3D%2212%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2212%22%20y%3D%226.5%22%20width%3D%223%22%20height%3D%229%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2218%22%20y%3D%223.0%22%20width%3D%223%22%20height%3D%2216%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2224%22%20y%3D%221.0%22%20width%3D%223%22%20height%3D%2220%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2230%22%20y%3D%225.5%22%20width%3D%223%22%20height%3D%2211%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2236%22%20y%3D%227.5%22%20width%3D%223%22%20height%3D%227%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2242%22%20y%3D%224.0%22%20width%3D%223%22%20height%3D%2214%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2248%22%20y%3D%222.0%22%20width%3D%223%22%20height%3D%2218%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2254%22%20y%3D%226.0%22%20width%3D%223%22%20height%3D%2210%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2260%22%20y%3D%228.0%22%20width%3D%223%22%20height%3D%226%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2266%22%20y%3D%224.5%22%20width%3D%223%22%20height%3D%2213%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2272%22%20y%3D%221.5%22%20width%3D%223%22%20height%3D%2219%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2278%22%20y%3D%223.5%22%20width%3D%223%22%20height%3D%2215%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2284%22%20y%3D%227.0%22%20width%3D%223%22%20height%3D%228%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2290%22%20y%3D%225.0%22%20width%3D%223%22%20height%3D%2212%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%2296%22%20y%3D%222.5%22%20width%3D%223%22%20height%3D%2217%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22102%22%20y%3D%226.5%22%20width%3D%223%22%20height%3D%229%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22108%22%20y%3D%228.0%22%20width%3D%223%22%20height%3D%226%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22114%22%20y%3D%225.5%22%20width%3D%223%22%20height%3D%2211%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22120%22%20y%3D%223.5%22%20width%3D%223%22%20height%3D%2215%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22126%22%20y%3D%227.0%22%20width%3D%223%22%20height%3D%228%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22132%22%20y%3D%225.0%22%20width%3D%223%22%20height%3D%2212%22%20rx%3D%221.5%22/%3E%3Crect%20x%3D%22138%22%20y%3D%227.5%22%20width%3D%223%22%20height%3D%227%22%20rx%3D%221.5%22/%3E%3C/svg%3E") left center/auto 100% no-repeat !important;opacity:.35;height:22px;width:144px;max-width:100%}
+
+/* Demo cards, phones (round 2): never wider than the screen; lighter choice buttons */
+@media (max-width:760px){
+  .d2-cards,.d2-card{min-width:0;max-width:100%;box-sizing:border-box}
+  .d2-card{grid-template-columns:auto minmax(0,1fr) auto;column-gap:10px}
+  .d2 .d2-card .wave{width:100%;min-width:0}
+  .d2-card .d2-listen{font-size:14px;padding:7px 12px}
+  .d2-card [data-d2-pick]{background:#fff;color:var(--forest,#2e4a3e);border:1.5px solid var(--forest,#2e4a3e);box-shadow:none;min-height:44px}
+  .d2-card [data-d2-pick]:disabled{background:#f1f0ec;border-color:transparent;color:#8a8a84}
+}
+/* Demo: grids follow the screen width, not their widest child */
+.d2-moment,.d2-q{grid-template-columns:minmax(0,1fr)}
+.d2-head{flex-wrap:wrap;min-width:0}
+.d2 .d2-col .wave{width:144px;max-width:100%}
+.d2-col{min-width:0}
+.d2-col{grid-template-columns:minmax(0,1fr)}
+.d2-row{min-width:0}
+@media (max-width:760px){
+  .d2 .d2-card .v6-btn.primary[data-d2-pick]{background:#fff;color:var(--forest,#2e4a3e);border:1.5px solid var(--forest,#2e4a3e)}
+  .d2 .d2-card .v6-btn.primary[data-d2-pick]:disabled{background:#f1f0ec;border-color:transparent;color:#8a8a84}
+  .d2 .d2-card .wave{min-width:56px}
+}
+@media (max-width:350px){ .d2 .d2-card .wave{display:none} .d2-card{grid-template-columns:auto 1fr auto} }
