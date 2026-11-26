@@ -163,7 +163,7 @@
       { kind: "compare", stage: "Try it", title: "Side by side.",
         text: "Look at both takes and answer from your gut. Different answers are information, not grades.",
         examples: { /* DRAFT clinical content: for Tiffany's review. Shown only after the student has written both takes. */
-          title: "Other strong Take 2s",
+          title: "Other ways to say it",
           note: "There’s no one right line. These are slower, and each one uses her words.",
           items: [
             ["Reflects “anymore”", "Anymore. So there was a time you did know."],
