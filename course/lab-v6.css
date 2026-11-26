@@ -1589,3 +1589,6 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 .d2-step .t{flex:1;min-width:0;font-weight:600}
 .d2-step .c{flex:none;font-size:.85rem;color:#98452F;white-space:nowrap}
 .d2-step-b{padding:0 14px 14px;display:grid;gap:8px}
+
+.d2-col{min-width:0;overflow:hidden}
+.d2-rec audio{width:100%;max-width:100%;display:block}

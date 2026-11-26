@@ -142,6 +142,11 @@ exports.handler = async event => {
   }
   const key = body.scenario in SCENARIOS ? body.scenario : "dana", sc = SCENARIOS[key], voice = PICK.includes(body.voice) ? body.voice : (VOICES[key] || VOICES.dana);
   try {
+    /* Demo "Your turn": turn the student's spoken answer into text for their box. Nothing is stored. */
+    if (body.action === "transcribe") {
+      if (!body.audio) return json(400, { error: "Missing audio" });
+      return json(200, { ok: true, text: await stt(body.audio, body.mime) });
+    }
     if (body.action === "open") {
       const [audio, f1, f2] = await Promise.all([tts(sc.opening, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
       return json(200, { ok: true, text: sc.opening, audio, fillers: [f1, f2] });

@@ -647,8 +647,8 @@
         body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Jordan asks you</span>
           <span class="ac-t">No options this time. Just you.</span>
           ${d2Aud("Jordan", M1.line, "j", "m1-jordan")}
-          <div class="d2-rec">${D2REC.url ? `<audio controls src="${D2REC.url}"></audio><button type="button" class="v6-link" data-d2-rec>↺ Record again</button>` : `<button type="button" class="v6-btn ${D2REC.on ? "secondary" : "primary"}" data-d2-rec>${D2REC.on ? "■ Stop" : "🎙 Answer out loud"}</button>`}<small>Only you can hear this. It isn’t saved or sent anywhere.</small></div>
-          <label class="field">Now write what you said, or a cleaner version<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan">${esc(DM.line)}</textarea></label>
+          <div class="d2-rec">${D2REC.url ? `<audio controls src="${D2REC.url}"></audio><button type="button" class="v6-link" data-d2-rec>↺ Record again</button>` : `<button type="button" class="v6-btn ${D2REC.on ? "secondary" : "primary"}" data-d2-rec>${D2REC.on ? "■ Stop" : "🎙 Answer out loud"}</button>`}<small>${D2REC.busy ? "Typing out what you said…" : "Say it like you would in session. Your words show up below, ready to tidy up. The Lab doesn’t save the recording."}</small></div>
+          <label class="field">${D2REC.url ? "Here’s what you said. Fix any words, or tighten it up" : "What you said (or type it here)"}<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan">${esc(DM.line)}</textarea></label>
           <div class="field"><b>Which Pull did you feel while choosing today?</b><div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-demo-pull="${p}" aria-pressed="${DM.pull === p}">${p}</button>`).join("")}<button type="button" class="chip" data-demo-pull="None" aria-pressed="${DM.pull === "None"}">None I noticed</button></div></div></div>`; }
       const dOk = !!DM.pull && (DM.line || "").trim().length >= 3;
       cta = !fin ? "" : (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
@@ -1112,7 +1112,18 @@
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true }), rec = new MediaRecorder(stream), ch = [];
       rec.ondataavailable = e => e.data.size && ch.push(e.data);
-      rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); D2REC.on = false; D2REC.url = URL.createObjectURL(new Blob(ch, { type: rec.mimeType || "audio/webm" })); render(); };
+      rec.onstop = async () => { stream.getTracks().forEach(t => t.stop()); D2REC.on = false;
+        const mime = (rec.mimeType || "audio/webm").split(";")[0], blob = new Blob(ch, { type: mime });
+        D2REC.url = URL.createObjectURL(blob); D2REC.busy = true; render();
+        /* type it out for them: their words land in the box, ready to tidy up */
+        try {
+          const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
+          const { out } = await api("/.netlify/functions/lab-voice", { action: "transcribe", audio: b64, mime });
+          const DM = S.demo = S.demo || {};
+          if (out && out.ok && out.text) { DM.line = out.text; save(); }
+          else flash("I couldn’t catch that. You can type your answer instead.");
+        } catch (e) { flash("I couldn’t catch that. You can type your answer instead."); }
+        D2REC.busy = false; render(); };
       D2REC.url = ""; D2REC.rec = rec; D2REC.on = true; rec.start(); render();
     } catch (e) { flash("Your microphone isn’t available. You can just type your answer."); }
   }
