@@ -454,7 +454,7 @@
       const spot = L.spotPick, hit = spot === A.spot, tries = L.spotTries || 0, found = hit || tries >= 2, cl = L.clues || {};
       const clueChips = `<div class="chips-row">${A.clues.map(([k, l]) => { const on = !!cl[k], right = A.cluesRight.includes(k); return `<button type="button" class="chip${L.cluesDone && on ? (right ? " right" : " wrong") : ""}" data-lab-clue="${k}" aria-pressed="${on}"${L.cluesDone ? " disabled" : ""}>${L.cluesDone && right ? "✓ " : ""}${esc(l)}</button>`; }).join("")}</div>`;
       body = `<p class="flow-sub">${esc(A.intro)}</p>
-        <p class="flow-q">The therapist is warm and on topic. But Gene says something they don’t catch. Find the quiet clue.</p>
+        <p class="flow-q">The therapist is warm and on topic. But Gene says something they don’t catch. Find the quiet clue, then tap that line.</p>
         ${transcriptHTML(L, found ? false : "spot")}
         ${spot && !found ? `<div class="reveal miss"><b>Not quite.</b> ${esc((A.spotNear && A.spotNear[spot]) || "Look again. Listen for what Gene starts to say and then steps away from.")} <span class="you">Tap another line.</span></div>` : ""}
         ${found ? `<div class="reveal"><b>${hit ? `You caught it: line ${A.spot}.` : `It’s line ${A.spot}.`}</b> What tipped you off? Pick everything you noticed.${clueChips}
