@@ -1556,3 +1556,19 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 .d2-note.d2-drop summary{padding:10px 14px;font-size:15px}
 .d2-wait{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .d2-pl.on{background:var(--forest,#2e4a3e);color:#fff;border-color:var(--forest,#2e4a3e)}
+/* "What if you'd said…" dropdowns */
+.d2-others{display:grid;gap:10px}
+.d2-oth{border:1px solid var(--line-2,#e7e4de);border-radius:14px;background:#fff;overflow:hidden}
+.d2-oth summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;font-weight:600}
+.d2-oth summary::-webkit-details-marker{display:none}
+.d2-oth summary .k{font-family:var(--serif,Georgia,serif);font-size:1.4rem;color:#b5694f;width:20px;text-align:center}
+.d2-oth summary .s{flex:1}
+.d2-oth summary .ok{color:var(--forest,#2e4a3e);font-size:14px}
+.d2-oth summary::after{content:"";width:8px;height:8px;border-right:2px solid #b5694f;border-bottom:2px solid #b5694f;transform:rotate(45deg);margin-right:4px;transition:transform .15s}
+.d2-oth[open] summary::after{transform:rotate(-135deg)}
+.d2-oth.heard{background:#f7faf8}
+.d2-oth-b{display:grid;gap:10px;padding:0 14px 14px 46px;justify-items:start}
+.d2-oth-line{margin:0;line-height:1.45}.d2-oth-line small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.d2-oth-take{justify-self:stretch;padding:12px 14px;border-radius:12px;background:#f5efe7}
+.d2-oth-take b{color:#b5694f;font-size:14px}.d2-oth-take p{margin:4px 0 0;line-height:1.5}
+@media (max-width:760px){.d2-oth-b{padding-left:14px}}

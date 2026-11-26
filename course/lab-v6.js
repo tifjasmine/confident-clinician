@@ -1087,7 +1087,11 @@
     if (played) {
       const tk = k => (m.takes || [])[k] || "";
       h += `<div class="d2-note"><b>Tiffany’s take on ${L[pk]}</b><p>${esc(m.takes ? tk(pk) : m.note)}</p></div>
-        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud(`You · ${L[k]}`, m.opts[k], "t", `m${i + 1}-${"abc"[k]}`) + d2Aud(`Jordan, after ${L[k]}`, m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`) + (tk(k) ? `<details class="d2-note sm d2-drop" data-d2-tk="${k}"${((st.tko || {})[i] || {})[k] ? " open" : ""}><summary>Tiffany’s take on ${L[k]}</summary><p>${esc(tk(k))}</p></details>` : "") : `<button type="button" class="d2-oh" data-d2-other="${k}"><span class="k">${L[k]}</span><span class="t">▶ Hear ${L[k]}, then Jordan’s reaction</span></button>`}</div>`).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>
+        <div class="d2-others"><b>Hear the other options</b>${[0, 1, 2].filter(k => k !== pk).map(k => { const isOpen = ((st.tko || {})[i] || {})["o" + k];
+          return `<details class="d2-oth${oth[k] ? " heard" : ""}" data-d2-tk="o${k}"${isOpen ? " open" : ""}><summary><span class="k">${L[k]}</span><span class="s">What if you’d said ${L[k]}?</span>${oth[k] ? `<span class="ok" aria-label="heard">✓</span>` : ""}</summary>
+            <div class="d2-oth-b"><button type="button" class="d2-listen" data-d2-other="${k}"><span class="t">▶ ${oth[k] ? "Play again" : `Hear ${L[k]}, then Jordan`}</span></button>
+            ${st.words ? `<p class="d2-oth-line"><small>You</small>${q(m.opts[k])}</p><p class="d2-oth-line j"><small>Jordan</small>${q(m.reacts[k])}</p>` : ""}
+            ${oth[k] && tk(k) ? `<div class="d2-oth-take"><b>Tiffany’s take</b><p>${esc(tk(k))}</p></div>` : ""}</div></details>`; }).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>
         <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
     }
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
@@ -1648,7 +1652,7 @@
         $$("[data-d2-tk]", app).forEach(d => d.ontoggle = () => { st.tko = st.tko || {}; (st.tko[st.i] = st.tko[st.i] || {})[d.dataset.d2Tk] = d.open; save(); });
         $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); d2ToRun(); await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]]); if (st.pick[st.i] === k && !st.played[st.i]) { const y = scrollY; st.played[st.i] = true; save(); render(); scrollTo(0, y); } });
         $$("[data-d2-stop]", app).forEach(b => b.onclick = () => d2Stop());
-        $$("[data-d2-other]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Other; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]], ok => { if (ok) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } }); });
+        $$("[data-d2-other]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Other; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]], ok => { if (ok) { (st.others[st.i] = st.others[st.i] || {})[k] = true; st.tko = st.tko || {}; (st.tko[st.i] = st.tko[st.i] || {})["o" + k] = true; save(); render(); } }); });
         $$("[data-d2-replay]", app).forEach(b => b.onclick = () => d2Btn(b, [[b.dataset.d2Replay, ""]], null, "❚❚"));
         const wt = $("[data-d2-words]", app); if (wt) wt.onclick = () => { st.words = !st.words; save(); render(); };
         const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
