@@ -1096,7 +1096,7 @@
             ${st.words ? `<p class="d2-oth-line"><small>You</small>${q(m.opts[k])}</p><p class="d2-oth-line j"><small>Jordan</small>${q(m.reacts[k])}</p>` : ""}
             ${oth[k] && tk(k) ? `<div class="d2-oth-take"><b>Tiffany’s take</b><p>${esc(tk(k))}</p></div>` : ""}</div></details>`; }).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>`;
     }
-    if (i > 0 || played) h += `<div class="dw-nav d2-nav">${i > 0 ? `<button type="button" class="v6-btn secondary" data-d2-back>← Back</button>` : "<span></span>"}${played ? `<button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button>` : ""}</div>`;
+    if (i > 0 || heard) h += `<div class="dw-nav d2-nav">${i > 0 || heard ? `<button type="button" class="v6-btn secondary" data-d2-back>← Back</button>` : "<span></span>"}${played ? `<button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button>` : ""}</div>`;
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
   }
   let d2Run = 0;
@@ -1661,7 +1661,13 @@
         $$("[data-d2-other]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Other; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]], ok => { if (ok) { (st.others[st.i] = st.others[st.i] || {})[k] = true; st.tko = st.tko || {}; (st.tko[st.i] = st.tko[st.i] || {})["o" + k] = true; save(); render(); } }); });
         $$("[data-d2-replay]", app).forEach(b => b.onclick = () => d2Btn(b, [[b.dataset.d2Replay, ""]], null, "❚❚"));
         const wt = $("[data-d2-words]", app); if (wt) wt.onclick = () => { st.words = !st.words; save(); render(); };
-        const bk = $("[data-d2-back]", app); if (bk) bk.onclick = () => { d2Stop(); st.i = Math.max(0, Math.min(st.i, D2().moments.length) - 1); save(); render(); };
+        const bk = $("[data-d2-back]", app); if (bk) bk.onclick = () => { d2Stop(); const n = D2().moments.length;
+          /* one screen back: result -> choose again, choose -> previous moment (Moment 1: back to "Hear Jordan"), wrap-up -> last moment */
+          if (st.i >= n) st.i = n - 1;
+          else if (st.pick[st.i] != null) { delete st.pick[st.i]; delete st.played[st.i]; delete st.others[st.i]; if (st.tko) delete st.tko[st.i]; }
+          else if (st.i > 0) st.i--;
+          else delete st.heard[0];
+          save(); render(); };
         const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
         const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {}, ho: {}, words: !!(S.demo.d2 || {}).words }; save(); render(); };
       }
