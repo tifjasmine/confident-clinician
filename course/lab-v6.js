@@ -1064,8 +1064,9 @@
         <button type="button" class="v6-btn primary small" data-d2-pick="${k}"${ho[k] || st.words ? "" : " disabled"}>I’d say ${L[k]}</button></div>`).join("")}</div></div>`;
     if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`) : `<div class="d2-wait">Playing…</div>`}</div>`;
     if (played) {
-      h += `<div class="d2-note"><b>Tiffany’s take</b><p>${esc(m.note)}</p></div>
-        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud(`Jordan, after ${L[k]}`, m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`) : `<button type="button" class="d2-oh" data-d2-other="${k}"><span class="k">${L[k]}</span><span class="t">▶ Hear how Jordan reacts to ${L[k]}</span></button>`}</div>`).join("")}</div>
+      const tk = k => (m.takes || [])[k] || "";
+      h += `<div class="d2-note"><b>Tiffany’s take on ${L[pk]}</b><p>${esc(m.takes ? tk(pk) : m.note)}</p></div>
+        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud(`Jordan, after ${L[k]}`, m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`) + (tk(k) ? `<div class="d2-note sm"><b>Tiffany’s take on ${L[k]}</b><p>${esc(tk(k))}</p></div>` : "") : `<button type="button" class="d2-oh" data-d2-other="${k}"><span class="k">${L[k]}</span><span class="t">▶ Hear Jordan’s reaction</span></button>`}</div>`).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<div class="d2-note sm"><b>All three</b><p>${esc(m.takeAll)}</p></div>` : ""}</div>
         <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
     }
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;

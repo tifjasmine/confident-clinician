@@ -1542,3 +1542,7 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 }
 @media (max-width:350px){ .d2 .d2-card .wave{display:none} .d2-card{grid-template-columns:auto 1fr auto} }
 .d2-run{scroll-margin-top:96px}
+.d2-note .d2-all{margin-top:10px;padding-top:10px;border-top:1px solid rgba(46,74,62,.12);color:var(--ink-2)}
+.d2-other{display:grid;gap:8px}
+.d2-note.sm{padding:12px 14px}
+.d2-note.sm b{font-size:.92em}
