@@ -1649,7 +1649,10 @@
       if (D2()) {
         const st = d2State(), m = D2().moments[st.i], N = st.i + 1, ab = "abc";
         const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } if (m.pause && !b.dataset.playing) { b.disabled = true; b.textContent = "…"; await new Promise(r => setTimeout(r, 2500)); b.disabled = false; } d2Btn(b, [[`m${N}-jordan`, m.line]], ok => { if (ok) { st.heard[st.i] = true; save(); render(); } }); });
-        $$("[data-d2-opt]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Opt; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]]], ok => { if (ok) { st.ho = st.ho || {}; (st.ho[st.i] = st.ho[st.i] || {})[k] = true; save(); render(); } }); });
+        $$("[data-d2-opt]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Opt;
+          /* one second of listening unlocks "I'd say" for that option, no need to wait for the end */
+          if (!b.dataset.playing) { const at = st.i; setTimeout(() => { if (!b.dataset.playing || st.i !== at) return; st.ho = st.ho || {}; (st.ho[at] = st.ho[at] || {})[k] = true; save(); const c = b.closest(".d2-card"), pb = c && c.querySelector("[data-d2-pick]"); if (c) c.classList.add("heard"); if (pb) pb.disabled = false; }, 1000); }
+          d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]]], ok => { if (ok) { st.ho = st.ho || {}; (st.ho[st.i] = st.ho[st.i] || {})[k] = true; save(); render(); } }); });
         $$("[data-d2-tk]", app).forEach(d => d.ontoggle = () => { st.tko = st.tko || {}; (st.tko[st.i] = st.tko[st.i] || {})[d.dataset.d2Tk] = d.open; save(); });
         $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); d2ToRun(); await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]]); if (st.pick[st.i] === k && !st.played[st.i]) { const y = scrollY; st.played[st.i] = true; save(); render(); scrollTo(0, y); } });
         $$("[data-d2-stop]", app).forEach(b => b.onclick = () => d2Stop());
