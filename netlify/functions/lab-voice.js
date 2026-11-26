@@ -147,6 +147,21 @@ exports.handler = async event => {
       if (!body.audio) return json(400, { error: "Missing audio" });
       return json(200, { ok: true, text: await stt(body.audio, body.mime) });
     }
+    /* Demo "Your turn": Jordan answers the student's line, in writing. */
+    if (body.action === "jordan") {
+      const said = clip(body.text, 600);
+      if (said.length < 2) return json(400, { error: "Missing answer" });
+      const sys = `You are playing Jordan, a fictional therapy client, for a training exercise for new therapists. Jordan is 29, in session 3, and has been talking about a four-year relationship and how exhausting the fights have been. Jordan is tired, ambivalent, and wants someone else to make the call.
+Jordan just said: "Just tell me what to do. You're the therapist. Should I break up with them?"
+The therapist answers. Write Jordan's next line only.
+- Stay in character. React honestly to what the therapist actually said: if they give advice or a verdict, Jordan leans on it or pushes back; if they hand the decision back flatly, Jordan gets a little frustrated; if they get curious or name what's underneath, Jordan opens up a bit more.
+- One to three short spoken sentences, plain everyday words, like real speech. No stage directions, no quotation marks, no name label.
+- Never coach or grade the therapist, never mention training, and never break character.
+- Nothing about self-harm or harm to others unless the therapist raised it; if they did, answer calmly and say Jordan is safe.`;
+      const reply = String(await claude(sys, `The therapist said: ${said}`, FAST, 300) || "").replace(/^(Jordan|Client)\s*:\s*/i, "").replace(/^["“]|["”]$/g, "").trim();
+      if (!reply || reply === "SAFETY_PAUSE") return json(200, { ok: false, error: "Jordan couldn’t answer that one. Try saying it another way." });
+      return json(200, { ok: true, reply: clip(reply, 400) });
+    }
     if (body.action === "open") {
       const [audio, f1, f2] = await Promise.all([tts(sc.opening, voice), tts("Mm.", voice), tts("Hmm...", voice)]);
       return json(200, { ok: true, text: sc.opening, audio, fillers: [f1, f2] });

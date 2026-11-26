@@ -643,20 +643,20 @@
       const DM = S.demo = S.demo || {}, AD = ACTS.demo;
       const fin = !!DM.watched;
       body = demo2HTML();
-      if (fin) { const M1 = D2().moments[0], st0 = d2State();
+      if (fin) { const M1 = D2().moments[0];
         body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Jordan asks you</span>
           <span class="ac-t">No options this time. Just you.</span>
           ${d2Aud("Jordan", M1.line, "j", "m1-jordan")}
-          <div class="d2-rec">${D2REC.on ? `<button type="button" class="v6-btn secondary" data-d2-rec>■ Stop</button><small>Listening… tap Stop when you’re done.</small>`
+          ${DM.reply ? "" : `<div class="d2-rec">${D2REC.on ? `<button type="button" class="v6-btn secondary" data-d2-rec>■ Stop</button><small>Listening… tap Stop when you’re done.</small>`
             : D2REC.busy ? `<button type="button" class="v6-btn secondary" disabled>Typing out what you said…</button>`
-            : `<button type="button" class="v6-btn ${(DM.line || "").trim() ? "secondary" : "primary"}" data-d2-rec>🎙 ${(DM.line || "").trim() ? "Say it again" : "Answer out loud"}</button><small>Say it like you would in session. Your words appear below so they can be saved to your profile. The Lab never saves the recording.</small>`}</div>
-          <label class="field">${(DM.line || "").trim() ? "What you said (fix any words)" : "Or type it here"}<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan">${esc(DM.line)}</textarea></label>
-          <div class="field"><b>Which Pull did you feel when Jordan asked?</b><div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-demo-pull="${p}" aria-pressed="${DM.pull === p}">${p}</button>`).join("")}<button type="button" class="chip" data-demo-pull="None" aria-pressed="${DM.pull === "None"}">None I noticed</button></div></div>
-          ${done && st0.pick[0] != null ? `<div class="d2-compare"><b>Then and now</b>
-            <div class="d2-cmp-row"><small>Moment 1 · you chose ${"ABC"[st0.pick[0]]}</small><p>${q(M1.opts[st0.pick[0]])}</p></div>
-            <div class="d2-cmp-row now"><small>Just now · in your own words</small><p>${q(DM.line)}</p></div>
-            <label class="field">What’s different? <span class="rf-hint">Optional</span><textarea class="v6-ta" rows="2" data-demo="diff" placeholder="One thing you notice">${esc(DM.diff || "")}</textarea></label></div>` : ""}</div>`; }
-      const dOk = !!DM.pull && (DM.line || "").trim().length >= 3;
+            : `<button type="button" class="v6-btn ${(DM.line || "").trim() ? "secondary" : "primary"}" data-d2-rec>🎙 ${(DM.line || "").trim() ? "Say it again" : "Answer out loud"}</button><small>Say it like you would in session. Your words appear below so they can be saved to your profile. The Lab never saves the recording.</small>`}</div>`}
+          <label class="field">${DM.reply ? "You said" : (DM.line || "").trim() ? "What you said (fix any words)" : "Or type it here"}<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan"${DM.reply ? " readonly" : ""}>${esc(DM.line)}</textarea></label>
+          ${DM.reply ? `<div class="d2-row j d2-typed"><span class="av" aria-hidden="true">J</span><div class="d2-col"><span class="who">Jordan</span><span class="said">${q(DM.reply)}</span></div></div>
+              <button type="button" class="v6-link" data-d2-again>↺ Try a different answer</button>
+              <div class="field"><b>Which Pull did you feel when Jordan asked?</b><div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-demo-pull="${p}" aria-pressed="${DM.pull === p}">${p}</button>`).join("")}<button type="button" class="chip" data-demo-pull="None" aria-pressed="${DM.pull === "None"}">None I noticed</button></div></div>`
+            : D2REC.jbusy ? `<button type="button" class="v6-btn secondary" disabled>Jordan is thinking…</button>`
+            : `<button type="button" class="v6-btn primary" data-d2-send${(DM.line || "").trim().length >= 3 ? "" : " disabled"}>Send to Jordan →</button>`}</div>`; }
+      const dOk = !!DM.pull && !!DM.reply && (DM.line || "").trim().length >= 3;
       cta = !fin ? "" : (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
     }
     if (s.type === "lab" || s.type === "sim") {
@@ -1715,8 +1715,15 @@
         }
         save(); render();
       });
-      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && S.demo.pull && (S.demo.line || "").trim().length >= 3); });
+      $$("[data-demo]", app).forEach(t => t.oninput = () => { S.demo[t.dataset.demo] = t.value; save(); const b = $("[data-act=demosave]", app); if (b) b.disabled = !(S.demo.watched && S.demo.pull && S.demo.reply && (S.demo.line || "").trim().length >= 3); const sd = $("[data-d2-send]", app); if (sd) sd.disabled = (S.demo.line || "").trim().length < 3; });
       $$("[data-demo-pull]", app).forEach(b => b.onclick = () => { S.demo.pull = b.dataset.demoPull; save(); render(); });
+      { const sd = $("[data-d2-send]", app); if (sd) sd.onclick = async () => { const line = (S.demo.line || "").trim(); if (line.length < 3) return;
+          D2REC.jbusy = true; render();
+          try { const { out } = await api("/.netlify/functions/lab-voice", { action: "jordan", text: line });
+            if (out && out.ok && out.reply) { S.demo.reply = out.reply; save(); } else flash((out && out.error) || "Jordan couldn’t answer just now. Try again."); }
+          catch (e) { flash("Jordan couldn’t answer just now. Try again."); }
+          D2REC.jbusy = false; render(); };
+        const ag = $("[data-d2-again]", app); if (ag) ag.onclick = () => { delete S.demo.reply; S.demo.line = ""; delete S.demo.pull; save(); render(); }; }
       const rc = $("[data-d2-rec]", app); if (rc) rc.onclick = d2Record;
       $$("[data-demo-ck]", app).forEach(b => b.onclick = () => { S.demo.ck = b.dataset.demoCk; save(); render(); });
       $$("[data-r]", app).forEach(t => t.oninput = t.onchange = () => { S.reflect[t.dataset.r] = t.value; save(); });
