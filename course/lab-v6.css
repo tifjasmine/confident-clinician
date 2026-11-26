@@ -1554,3 +1554,5 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 .d2-drop p{margin:0;padding:0 14px 14px}
 .d2-note.d2-drop{padding:0}
 .d2-note.d2-drop summary{padding:10px 14px;font-size:15px}
+.d2-wait{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.d2-pl.on{background:var(--forest,#2e4a3e);color:#fff;border-color:var(--forest,#2e4a3e)}

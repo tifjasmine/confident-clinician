@@ -1083,11 +1083,11 @@
       <div class="d2-cards">${m.opts.map((o, k) => `<div class="d2-card${ho[k] ? " heard" : ""}"><span class="big">${L[k]}</span>${st.words ? `<span class="said">${q(o)}</span>` : `<span class="wave" aria-hidden="true"></span>`}
         <button type="button" class="d2-listen" data-d2-opt="${k}">▶ ${ho[k] ? "Replay" : "Listen"}</button>
         <button type="button" class="v6-btn primary small" data-d2-pick="${k}"${ho[k] || st.words ? "" : " disabled"}>I’d say ${L[k]}</button></div>`).join("")}</div></div>`;
-    if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`) : `<div class="d2-wait">Playing…</div>`}</div>`;
+    if (pk != null) h += `<div class="d2-run" data-d2-run>${d2Aud("You · " + L[pk], m.opts[pk], "t", `m${i + 1}-${"abc"[pk]}`)}${played ? d2Aud("Jordan", m.reacts[pk], "j", `m${i + 1}-r${"abc"[pk]}`) : `<div class="d2-wait">Playing… <button type="button" class="d2-listen" data-d2-stop>❚❚ Pause</button></div>`}</div>`;
     if (played) {
       const tk = k => (m.takes || [])[k] || "";
       h += `<div class="d2-note"><b>Tiffany’s take on ${L[pk]}</b><p>${esc(m.takes ? tk(pk) : m.note)}</p></div>
-        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud(`Jordan, after ${L[k]}`, m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`) + (tk(k) ? `<details class="d2-note sm d2-drop" data-d2-tk="${k}"${((st.tko || {})[i] || {})[k] ? " open" : ""}><summary>Tiffany’s take on ${L[k]}</summary><p>${esc(tk(k))}</p></details>` : "") : `<button type="button" class="d2-oh" data-d2-other="${k}"><span class="k">${L[k]}</span><span class="t">▶ Hear Jordan’s reaction</span></button>`}</div>`).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>
+        <div class="d2-others"><b>Hear how the others land</b>${[0, 1, 2].filter(k => k !== pk).map(k => `<div class="d2-other">${oth[k] ? d2Aud(`You · ${L[k]}`, m.opts[k], "t", `m${i + 1}-${"abc"[k]}`) + d2Aud(`Jordan, after ${L[k]}`, m.reacts[k], "j", `m${i + 1}-r${"abc"[k]}`) + (tk(k) ? `<details class="d2-note sm d2-drop" data-d2-tk="${k}"${((st.tko || {})[i] || {})[k] ? " open" : ""}><summary>Tiffany’s take on ${L[k]}</summary><p>${esc(tk(k))}</p></details>` : "") : `<button type="button" class="d2-oh" data-d2-other="${k}"><span class="k">${L[k]}</span><span class="t">▶ Hear ${L[k]}, then Jordan’s reaction</span></button>`}</div>`).join("")}${m.takes && m.takeAll && [0, 1, 2].every(k => k === pk || oth[k]) ? `<details class="d2-note sm d2-drop" data-d2-tk="all"${((st.tko || {})[i] || {}).all ? " open" : ""}><summary>All three</summary><p>${esc(m.takeAll)}</p></details>` : ""}</div>
         <div class="dw-nav"><button type="button" class="v6-btn primary" data-d2-next>${i === n - 1 ? "Finish the session →" : "Next moment →"}</button></div>`;
     }
     return `<div class="act-card look-demo d2">${intro}${h}</div></div>`;
@@ -1107,6 +1107,18 @@
   /* play clips in order; a clip that isn't recorded yet waits a reading-pace pause instead */
   /* after a pick the page gets shorter: bring the student's answer and Jordan's reaction into view */
   function d2ToRun() { requestAnimationFrame(() => { const r = document.querySelector("[data-d2-run]"); if (r) r.scrollIntoView({ behavior: "smooth", block: "start" }); }); }
+  let d2Cur = null;
+  /* Pause: stop whatever the Demo is playing (and any sequence it was in the middle of) */
+  function d2Stop() { d2Run++; if (d2Cur) { const a = d2Cur; d2Cur = null; a.pause(); a.dispatchEvent(new Event("ended")); } }
+  /* A play button that turns into a pause button while it plays. onDone(true) only if it played all the way through. */
+  async function d2Btn(b, items, onDone, playing = "❚❚ Pause") {
+    if (b.dataset.playing) { d2Stop(); return; }
+    const label = b.innerHTML; b.dataset.playing = "1"; b.classList.add("on");
+    const t = b.querySelector(".t") || b; const tl = t.innerHTML; t.textContent = playing;
+    const ok = await d2Play(items);
+    delete b.dataset.playing; b.classList.remove("on"); if (t === b) b.innerHTML = label; else t.innerHTML = tl;
+    if (onDone) onDone(ok);
+  }
   async function d2Play(items) {
     const run = ++d2Run, X = D2();
     for (const [code, text] of items) {
@@ -1114,7 +1126,7 @@
       await new Promise(done => {
         const wait = () => setTimeout(done, Math.min(6000, 700 + text.length * 40));
         if (!X.ready.includes(code)) return wait();
-        const au = new Audio(X.audioBase + code + ".mp3?v=" + (X.v || 1)); au.onended = () => done(); au.onerror = wait; au.play().catch(wait);
+        const au = new Audio(X.audioBase + code + ".mp3?v=" + (X.v || 1)); d2Cur = au; au.onended = () => { if (d2Cur === au) d2Cur = null; done(); }; au.onerror = wait; au.play().catch(wait);
       });
       await new Promise(r => setTimeout(r, 300));
     }
@@ -1631,12 +1643,13 @@
       $$("[data-play]", app).forEach(b => b.onclick = () => playConvo(+b.dataset.play));
       if (D2()) {
         const st = d2State(), m = D2().moments[st.i], N = st.i + 1, ab = "abc";
-        const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } b.disabled = true; b.textContent = "Playing…"; if (m.pause) await new Promise(r => setTimeout(r, 2500)); if (await d2Play([[`m${N}-jordan`, m.line]])) { st.heard[st.i] = true; save(); render(); } });
-        $$("[data-d2-opt]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Opt; b.disabled = true; b.textContent = "Playing…"; await d2Play([[`m${N}-${ab[k]}`, m.opts[k]]]); st.ho = st.ho || {}; (st.ho[st.i] = st.ho[st.i] || {})[k] = true; save(); render(); });
+        const hb = $$("[data-d2-hear]", app); hb.forEach(b => b.onclick = async () => { if (b.dataset.d2Hear === "text") { st.heard[st.i] = true; save(); return render(); } if (m.pause && !b.dataset.playing) { b.disabled = true; b.textContent = "…"; await new Promise(r => setTimeout(r, 2500)); b.disabled = false; } d2Btn(b, [[`m${N}-jordan`, m.line]], ok => { if (ok) { st.heard[st.i] = true; save(); render(); } }); });
+        $$("[data-d2-opt]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Opt; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]]], ok => { if (ok) { st.ho = st.ho || {}; (st.ho[st.i] = st.ho[st.i] || {})[k] = true; save(); render(); } }); });
         $$("[data-d2-tk]", app).forEach(d => d.ontoggle = () => { st.tko = st.tko || {}; (st.tko[st.i] = st.tko[st.i] || {})[d.dataset.d2Tk] = d.open; save(); });
-        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); d2ToRun(); if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { const y = scrollY; st.played[st.i] = true; save(); render(); scrollTo(0, y); } });
-        $$("[data-d2-other]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Other; b.disabled = true; b.querySelector(".t").textContent = "Playing…"; if (await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]])) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } });
-        $$("[data-d2-replay]", app).forEach(b => b.onclick = async () => { b.classList.add("on"); await d2Play([[b.dataset.d2Replay, ""]]); b.classList.remove("on"); });
+        $$("[data-d2-pick]", app).forEach(b => b.onclick = async () => { const k = +b.dataset.d2Pick; st.pick[st.i] = k; save(); render(); d2ToRun(); await d2Play([[`m${N}-r${ab[k]}`, m.reacts[k]]]); if (st.pick[st.i] === k && !st.played[st.i]) { const y = scrollY; st.played[st.i] = true; save(); render(); scrollTo(0, y); } });
+        $$("[data-d2-stop]", app).forEach(b => b.onclick = () => d2Stop());
+        $$("[data-d2-other]", app).forEach(b => b.onclick = () => { const k = +b.dataset.d2Other; d2Btn(b, [[`m${N}-${ab[k]}`, m.opts[k]], [`m${N}-r${ab[k]}`, m.reacts[k]]], ok => { if (ok) { (st.others[st.i] = st.others[st.i] || {})[k] = true; save(); render(); } }); });
+        $$("[data-d2-replay]", app).forEach(b => b.onclick = () => d2Btn(b, [[b.dataset.d2Replay, ""]], null, "❚❚"));
         const wt = $("[data-d2-words]", app); if (wt) wt.onclick = () => { st.words = !st.words; save(); render(); };
         const nx = $("[data-d2-next]", app); if (nx) nx.onclick = () => { d2Run++; st.i++; if (st.i >= D2().moments.length) S.demo.watched = true; save(); render(); };
         const rs = $("[data-d2-restart]", app); if (rs) rs.onclick = () => { d2Run++; S.demo.d2 = { i: 0, heard: {}, pick: {}, played: {}, others: {}, ho: {}, words: !!(S.demo.d2 || {}).words }; save(); render(); };
@@ -1821,7 +1834,9 @@
       const B = BONUS().find(b => b.id === arg) || BONUS()[0], x = S.bonus[B.id], AU = window.TCC6_BONUS_AUDIO || { ready: [], base: "" };
       $$("[data-bx]", app).forEach(t => { t.oninput = () => { x[t.dataset.bx] = t.value; save(); const sv = $("[data-bx-save]", app); if (sv) sv.disabled = !(x.line || "").trim(); }; if (t.dataset.bx !== "line" && t.dataset.bx !== "first") t.onchange = () => render(); });
       $$("[data-bx-pick]", app).forEach(b => b.onclick = () => { x[b.dataset.bxPick] = b.dataset.v; save(); render(); });
-      $$("[data-bx-play]", app).forEach(b => b.onclick = () => { const c = b.dataset.bxPlay; x.heard = x.heard || {}; if (AU.ready.includes(c)) { try { const a = new Audio(AU.base + c + ".mp3"); a.onended = () => { x.heard[c] = true; save(); render(); }; a.play(); b.disabled = true; b.textContent = "Playing…"; return; } catch (e) {} } x.heard[c] = true; save(); render(); });
+      $$("[data-bx-play]", app).forEach(b => b.onclick = () => { const c = b.dataset.bxPlay; x.heard = x.heard || {}; if (AU.ready.includes(c)) { try {
+          if (b.dataset.playing && b._au) { b._au.pause(); delete b.dataset.playing; b.textContent = "▶ Play"; return; } /* pause */
+          const a = new Audio(AU.base + c + ".mp3"); b._au = a; a.onended = () => { x.heard[c] = true; save(); render(); }; a.play(); b.dataset.playing = "1"; b.textContent = "❚❚ Pause"; return; } catch (e) {} } x.heard[c] = true; save(); render(); });
       $$("[data-bx-mv]", app).forEach(b => b.onclick = () => { const [i, d] = b.dataset.bxMv.split(":").map(Number), o = x.order, j = i + d; [o[i], o[j]] = [o[j], o[i]]; save(); render(); });
       $$("[data-bx-spot]", app).forEach(b => b.onclick = () => { x.spot = x.spot || {}; x.spot[b.dataset.bxSpot] = b.dataset.v; save(); render(); });
       const st = $("[data-bx-start]", app); if (st) st.onclick = () => { x.started = Date.now(); save(); render(); const t = $("[data-bx=first]", app); if (t) t.focus(); };
