@@ -1592,3 +1592,10 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 
 .d2-col{min-width:0;overflow:hidden}
 .d2-rec audio{width:100%;max-width:100%;display:block}
+
+.d2-compare{margin-top:18px;padding:16px;border-radius:16px;background:#f4efe8;display:grid;gap:10px}
+.d2-cmp-row{background:#fff;border-radius:12px;padding:10px 14px}
+.d2-cmp-row small{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#7a857d;margin-bottom:4px}
+.d2-cmp-row.now{border:2px solid #2e4a3e}
+.d2-cmp-row p{margin:0}
+.d2-rec{display:grid;gap:8px;justify-items:start}

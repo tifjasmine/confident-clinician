@@ -643,13 +643,19 @@
       const DM = S.demo = S.demo || {}, AD = ACTS.demo;
       const fin = !!DM.watched;
       body = demo2HTML();
-      if (fin) { const M1 = D2().moments[0];
+      if (fin) { const M1 = D2().moments[0], st0 = d2State();
         body += `<div class="act-card look-demo demo-turn"><span class="v6-label">Your turn</span><span class="ac-name">Jordan asks you</span>
           <span class="ac-t">No options this time. Just you.</span>
           ${d2Aud("Jordan", M1.line, "j", "m1-jordan")}
-          <div class="d2-rec">${D2REC.url ? `<audio controls src="${D2REC.url}"></audio><button type="button" class="v6-link" data-d2-rec>↺ Record again</button>` : `<button type="button" class="v6-btn ${D2REC.on ? "secondary" : "primary"}" data-d2-rec>${D2REC.on ? "■ Stop" : "🎙 Answer out loud"}</button>`}<small>${D2REC.busy ? "Typing out what you said…" : "Say it like you would in session. Your words show up below as text so they can be saved to your profile. The Lab saves only the words, never the recording."}</small></div>
-          <label class="field">${D2REC.url ? "Here’s what you said. Fix any words, or tighten it up" : "What you said (or type it here)"}<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan">${esc(DM.line)}</textarea></label>
-          <div class="field"><b>Which Pull did you feel while choosing today?</b><div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-demo-pull="${p}" aria-pressed="${DM.pull === p}">${p}</button>`).join("")}<button type="button" class="chip" data-demo-pull="None" aria-pressed="${DM.pull === "None"}">None I noticed</button></div></div></div>`; }
+          <div class="d2-rec">${D2REC.on ? `<button type="button" class="v6-btn secondary" data-d2-rec>■ Stop</button><small>Listening… tap Stop when you’re done.</small>`
+            : D2REC.busy ? `<button type="button" class="v6-btn secondary" disabled>Typing out what you said…</button>`
+            : `<button type="button" class="v6-btn ${(DM.line || "").trim() ? "secondary" : "primary"}" data-d2-rec>🎙 ${(DM.line || "").trim() ? "Say it again" : "Answer out loud"}</button><small>Say it like you would in session. Your words appear below so they can be saved to your profile. The Lab never saves the recording.</small>`}</div>
+          <label class="field">${(DM.line || "").trim() ? "What you said (fix any words)" : "Or type it here"}<textarea class="v6-ta" rows="2" data-demo="line" placeholder="What you’d say to Jordan">${esc(DM.line)}</textarea></label>
+          <div class="field"><b>Which Pull did you feel when Jordan asked?</b><div class="chips-row">${D.PULLS.map(([p]) => `<button type="button" class="chip" data-demo-pull="${p}" aria-pressed="${DM.pull === p}">${p}</button>`).join("")}<button type="button" class="chip" data-demo-pull="None" aria-pressed="${DM.pull === "None"}">None I noticed</button></div></div>
+          ${done && st0.pick[0] != null ? `<div class="d2-compare"><b>Then and now</b>
+            <div class="d2-cmp-row"><small>Moment 1 · you chose ${"ABC"[st0.pick[0]]}</small><p>${q(M1.opts[st0.pick[0]])}</p></div>
+            <div class="d2-cmp-row now"><small>Just now · in your own words</small><p>${q(DM.line)}</p></div>
+            <label class="field">What’s different? <span class="rf-hint">Optional</span><textarea class="v6-ta" rows="2" data-demo="diff" placeholder="One thing you notice">${esc(DM.diff || "")}</textarea></label></div>` : ""}</div>`; }
       const dOk = !!DM.pull && (DM.line || "").trim().length >= 3;
       cta = !fin ? "" : (done ? `<button type="button" class="v6-btn secondary" disabled>Saved ✓</button>` : `<button type="button" class="v6-btn ${DM.watched ? "primary" : "secondary"}" data-act="demosave"${dOk && DM.watched ? "" : " disabled"}>Save my turn ✓</button>`);
     }
