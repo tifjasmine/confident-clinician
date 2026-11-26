@@ -1491,3 +1491,9 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:left}
 .d2-rec{display:grid;gap:6px;justify-items:start}.d2-rec small{color:var(--muted)}
 .rf-q .rf-hint{display:block;margin-top:2px;font-size:13px;font-weight:400;color:var(--muted,#6b6b66)}
+
+/* Last word on phones: every text box stays 16px so iPhone never zooms in (and the page never slides sideways). */
+@media (max-width: 1024px) {
+  input:not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select { font-size: 16px !important; }
+}
+@supports not (overflow: clip) { html, body { overflow-x: hidden; } } /* older iPhones */
