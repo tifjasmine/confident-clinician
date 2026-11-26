@@ -852,7 +852,8 @@
         h += step(3, "Your next move", "Pick up something from her answer: a word, a feeling, or what changed.")
           + `<textarea class="v6-ta" rows="3" data-at="t4" aria-label="Your next move" placeholder="Respond to what she just said">${esc(v.t4)}</textarea>`
           + step(4, "Check it", "Optional. See how she takes it, with a training note.")
-          + aiBox(`act-${X.key}-${i}-b`, "How does she take it?", "react", () => ({ ...ctx, line: v.her || sc.fallback, response: (v.t4 || "").trim() }), res => { v[`ai${i}b_client`] = res.client; v[`ai${i}b_note`] = res.note; }, { req: ["response"], who: "Client", wait: "Processing…", akeys: [`ai${i}b_client`, `ai${i}b_note`], ...meta });
+          + aiBox(`act-${X.key}-${i}-b`, "How does she take it?", "react", () => ({ ...ctx, line: v.her || sc.fallback, response: (v.t4 || "").trim() }), res => { v[`ai${i}b_client`] = res.client; v[`ai${i}b_note`] = res.note; }, { req: ["response"], who: "Client", wait: "Processing…", akeys: [`ai${i}b_client`, `ai${i}b_note`], ...meta })
+          + exHTML(sc);
       }
       ok = filled(v.t4);
     }
@@ -949,6 +950,7 @@
     }
     return { h, ok };
   }
+  const exHTML = sc => sc.examples ? `<div class="act-ex"><p class="act-ex-h">${esc(sc.examples.title)}</p>${sc.examples.note ? `<p class="act-ex-n">${esc(sc.examples.note)}</p>` : ""}<ul>${sc.examples.items.map(([l, t]) => `<li><small>${esc(l)}</small><span>“${esc(t)}”</span></li>`).join("")}</ul></div>` : "";
   function actView(key) {
     const X = ACTS[key];
     if (!X) return weekView();
