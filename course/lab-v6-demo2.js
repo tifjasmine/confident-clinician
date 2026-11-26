@@ -2,7 +2,7 @@
    Audio: /course/audio/demo2/m<N>-jordan|a|b|c|ra|rb|rc.mp3. List a code in `ready` once its file is added. */
 window.TCC6_DEMO2 = {
  "audioBase": "/course/audio/demo2/",
- "v": 2,
+ "v": 3,
  "ready": [
   "m1-jordan",
   "m1-a",
