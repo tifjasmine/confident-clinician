@@ -162,6 +162,17 @@
         ] },
       { kind: "compare", stage: "Try it", title: "Side by side.",
         text: "Look at both takes and answer from your gut. Different answers are information, not grades.",
+        examples: { /* DRAFT clinical content: for Tiffany's review. Shown only after the student has written both takes. */
+          title: "Other strong Take 2s",
+          note: "There’s no one right line. These are slower, and each one uses her words.",
+          items: [
+            ["Reflects “anymore”", "Anymore. So there was a time you did know."],
+            ["Gently curious", "When did it start feeling like you didn’t know anymore?"],
+            ["Names what you noticed", "You said that pretty flatly. What’s it like to not know what you feel?"],
+            ["Stays with her", "It sounds like it’s been a while since things really landed for you."],
+            ["Simple check-in", "What’s it like right now, saying that out loud?"],
+            ["One question, no fixing", "What do you notice when you try to check in with yourself?"]
+          ] },
         qs: [
           ["P · Pause", "Which take was led by the urge to fix, reassure, or sound helpful?", ["Take 1", "Take 2", "Both", "Neither"],
             { "Take 1": "That’s the urge P.A.U.S.E. asks you to notice. Spotting it is the skill.", "Take 2": "Worth noticing. Even with the steps, the urge can sneak in. That’s normal.", "Both": "Honest. The urge is strong with a line like this one.", "Neither": "Nice. You stayed out of performance mode both times." }],

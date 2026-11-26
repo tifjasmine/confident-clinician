@@ -1497,3 +1497,10 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
   input:not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select { font-size: 16px !important; }
 }
 @supports not (overflow: clip) { html, body { overflow-x: hidden; } } /* older iPhones */
+.act-ex { margin: 18px 0 4px; padding: 18px 18px 8px; border-radius: 16px; background: var(--sage, #eef2ee); }
+.act-ex-h { margin: 0 0 4px; font: 700 12px/1.4 var(--sans, inherit); letter-spacing: .1em; text-transform: uppercase; color: var(--forest); }
+.act-ex-n { margin: 0 0 12px; font-size: 15px; color: var(--ink-2); }
+.act-ex ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.act-ex li { padding: 12px 14px; border-radius: 12px; background: #fff; }
+.act-ex li small { display: block; font: 700 11.5px/1.4 var(--sans, inherit); letter-spacing: .08em; text-transform: uppercase; color: var(--terra); margin-bottom: 3px; }
+.act-ex li span { font: italic 500 17px/1.45 var(--serif); color: var(--ink); }
