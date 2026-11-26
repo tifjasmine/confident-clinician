@@ -1572,3 +1572,5 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 .d2-oth-take{justify-self:stretch;padding:12px 14px;border-radius:12px;background:#f5efe7}
 .d2-oth-take b{color:#b5694f;font-size:14px}.d2-oth-take p{margin:4px 0 0;line-height:1.5}
 @media (max-width:760px){.d2-oth-b{padding-left:14px}}
+.d2-about summary{cursor:pointer;font-size:14px;color:var(--muted);font-weight:600;padding:2px 0}
+.d2-about p{margin:6px 0 0;color:var(--ink-2);line-height:1.5}
