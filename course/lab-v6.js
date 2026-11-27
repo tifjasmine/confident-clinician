@@ -534,13 +534,17 @@
     let body = "", ok = false;
     if (st === 0) {
       body = `<p class="flow-q">${esc(D.REFLECT[0][1])}</p>
-        <div class="pull-grid">${D.PULLS.map(([t, d]) => `<button type="button" class="aim" data-rf-pull="${t}" aria-pressed="${F.pullPick === t}"><span>${esc(t)}</span><small>${esc(d)}</small></button>`).join("")}</div>
-        ${F.pullPick ? `<label class="field">Where did ${esc(F.pullPick)} show up, and what did you notice first? <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="A Rep, the Lab, the Simulation…">${esc(F.pull)}</textarea></label>` : ""}`;
+        <div class="pull-grid">${D.PULLS.map(([t, d]) => `<button type="button" class="aim" data-rf-pull="${t}" aria-pressed="${F.pullPick === t}"><span>${esc(t)}</span><small>${esc(d)}</small></button>`).join("")}<button type="button" class="aim" data-rf-pull="none" aria-pressed="${F.pullPick === "none"}"><span>None I noticed</span><small>Pulls can be quiet. That’s okay.</small></button></div>
+        ${F.pullPick === "none" ? `<label class="field">Look back at one moment this week. Which Pull could have shown up there, even a little? <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="In the Lab with Gene, I could have felt Fix when…">${esc(F.pull)}</textarea></label>`
+          : F.pullPick ? `<label class="field">Where did ${esc(F.pullPick)} show up, and what did you notice first? It could be a lesson, a Rep, the Demo, or your session with Dana. <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="A Rep, the Lab, the Simulation…">${esc(F.pull)}</textarea></label>` : ""}`;
       ok = !!F.pullPick;
     }
     if (st === 1) {
       body = `<p class="flow-q">Pick your weakest answer.</p><p class="flow-sub">The one you’d most like a do-over on, from this week’s activities.</p>
-        ${reps.length ? `<div class="choices">${reps.map(z => `<button type="button" class="choice rf-rep" data-rf-rep="${z.id}" aria-pressed="${F.rep === z.id}"><small>${esc(z.tag)}</small><span class="cl">${z.line}</span><span class="mine">You: ${q(z.first)}</span></button>`).join("")}</div>`
+        ${reps.length ? (() => { const grp = z => /^Lesson/.test(z.tag) ? "Lessons" : /^Demo/.test(z.tag) ? "The Demo with Jordan" : /^Session with Dana/.test(z.tag) ? "Your session with Dana" : "Your Reps";
+            const order = ["Lessons", "The Demo with Jordan", "Your session with Dana", "Your Reps"], card = z => `<button type="button" class="choice rf-rep" data-rf-rep="${z.id}" aria-pressed="${F.rep === z.id}"><small>${esc(z.tag)}</small><span class="cl">${z.line}</span><span class="mine">You: ${q(z.first)}</span></button>`;
+            return `<p class="flow-sub" style="margin-top:-4px">Open a group and go with the first answer that makes you think “I’d say that differently now.”</p>` + order.map(g => { const list = reps.filter(z => grp(z) === g); if (!list.length) return ""; const open = r && grp(r) === g;
+              return `<details class="rf-grp"${open ? " open" : ""}><summary><b>${g}</b><span>${list.length} ${list.length === 1 ? "answer" : "answers"}${open ? " · picked" : ""}</span></summary><div class="choices">${list.map(card).join("")}</div></details>`; }).join(""); })()
           : `<div class="empty">Finish a lesson activity first. <button type="button" class="v6-link" data-go="act/l2">Go to Catch the Reaction →</button></div>`}`;
       ok = !!r;
     }
@@ -680,7 +684,7 @@
       const path = SC && Object.keys(SC.picks).length === 8 ? SJ.moments.map((m, k) => `Moment ${k + 1}: ${(m.choices[SC.picks[k]] || [])[1] || ""}`).join("\n") : "";
       const auto = {
         gap: gaps.length ? `${gaps.join(" + ")}. ${v1.action ? "This week: " + v1.action : ""}`.trim() : "",
-        pull: [S.reflect.pullPick, v2.thought && `First cue: “${v2.thought}”${v2.body && v2.body !== "Not sure" ? `, ${v2.body.toLowerCase()}` : ""}`, v2.reset && `Reset: ${v2.reset.toLowerCase()}`, SC && SC.ref[0]].filter(Boolean).join(". "),
+        pull: [S.reflect.pullPick === "none" ? "No clear Pull this week" : S.reflect.pullPick, v2.thought && `First cue: “${v2.thought}”${v2.body && v2.body !== "Not sure" ? `, ${v2.body.toLowerCase()}` : ""}`, v2.reset && `Reset: ${v2.reset.toLowerCase()}`, SC && SC.ref[0]].filter(Boolean).join(". "),
         move: L.move || "",
         shift: (SC && SC.ref[1]) || "",
         adjust: (SC && SC.ref[2]) || ""
