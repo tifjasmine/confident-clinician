@@ -1508,7 +1508,7 @@
     const rec = new MediaRecorder(VS.stream, mime ? { mimeType: mime } : {}), chunks = [];
     VS.rec = rec; rec.ondataavailable = e => e.data.size && chunks.push(e.data);
     rec.onstop = () => { const bl = new Blob(chunks, { type: rec.mimeType || mime || "audio/webm" }); VS.mode === "guided" ? vgSend(bl) : vsSend(bl); };
-    rec.start(250);
+    rec.start(/mp4/.test(rec.mimeType || mime) ? undefined : 250); /* Safari makes a broken file from timed mp4 chunks */
     const ctx = new (window.AudioContext || window.webkitAudioContext)(), src = ctx.createMediaStreamSource(VS.stream), an = ctx.createAnalyser();
     an.fftSize = 1024; src.connect(an); const buf = new Uint8Array(an.fftSize);
     let spoke = false, quietSince = 0; const t0 = Date.now();

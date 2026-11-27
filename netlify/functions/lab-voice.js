@@ -40,9 +40,14 @@ const json = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "ap
 const clip = (v, n) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
 
 async function stt(b64, mime) {
-  const res = await fetch("https://api.deepgram.com/v1/listen?model=nova-3&language=en&smart_format=true&punctuate=true&" + KEYTERMS, {
-    method: "POST", headers: { Authorization: `Token ${DG()}`, "Content-Type": mime || "audio/webm" }, body: Buffer.from(b64, "base64"),
+  const buf = Buffer.from(b64, "base64");
+  if (buf.length < 1200) return ""; /* nothing was recorded */
+  const go = type => fetch("https://api.deepgram.com/v1/listen?model=nova-3&language=en&smart_format=true&punctuate=true&" + KEYTERMS, {
+    method: "POST", headers: { Authorization: `Token ${DG()}`, "Content-Type": type }, body: buf,
   });
+  let res = await go(mime || "audio/webm");
+  /* iPhone recordings are sometimes labeled oddly: let Deepgram work out the format itself */
+  if (res.status === 400) res = await go("audio/*");
   if (!res.ok) { const e = new Error(`STT ${res.status}`); e.detail = (await res.text()).slice(0, 300); throw e; }
   const out = await res.json();
   return clip((((out.results || {}).channels || [])[0] || {}).alternatives?.[0]?.transcript, 1200);
@@ -252,6 +257,7 @@ Return ONLY a JSON object:
     return json(200, { ok: true, heard, text, audio, ms: t3 - t0, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 } });
   } catch (error) {
     console.error("Voice session failed", error.message, error.detail || "");
-    return json(502, { error: `Dana didn’t come through that time. Try again. (Testing detail: ${error.message}${error.detail ? " " + String(error.detail).slice(0, 160) : ""})` });
+    if (/^STT 4/.test(error.message)) return json(200, { ok: false, error: "I didn’t catch that. Try saying it again." });
+    return json(502, { error: "Dana didn’t come through that time. Try again." });
   }
 };
