@@ -57,8 +57,9 @@ async function tts(text, voice) {
   const go = model => fetch(`https://api.deepgram.com/v1/speak?model=${encodeURIComponent(model)}&encoding=mp3`, {
     method: "POST", headers: { Authorization: `Token ${DG()}`, "Content-Type": "application/json" }, body: JSON.stringify({ text }),
   });
+  /* keep Dana's voice the same all session: retry the same voice instead of switching to a different one */
   let res = await go(voice);
-  if (!res.ok) res = await go("aura-asteria-en");
+  for (let n = 0; n < 2 && !res.ok; n++) { await new Promise(r => setTimeout(r, 400 * (n + 1))); res = await go(voice); }
   if (!res.ok) { const e = new Error(`TTS ${res.status}`); e.detail = (await res.text()).slice(0, 300); throw e; }
   return Buffer.from(await res.arrayBuffer()).toString("base64");
 }

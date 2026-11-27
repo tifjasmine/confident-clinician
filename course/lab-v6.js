@@ -1336,7 +1336,7 @@
       ${st === "idle" ? `<p class="flow-q">A spoken mock session with Dana.</p>
         <p class="flow-sub">Dana, 34, is an ER nurse in session 6. She didn’t do last week’s homework, and she’s guarded. She’ll speak first. Answer out loud, like you would in session. When you stop talking, she replies. Up to ${VS_MAX} back-and-forths. End anytime you think you’ve reached the goal.</p>
         <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
-        <ul class="vs-tips"><li>Dana responds in real time, so her replies can take a few seconds (up to about 5). That’s normal. Just wait for her.</li><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
+        <ul class="vs-tips"><li>Dana responds in real time, so each reply takes a moment, usually 5 to 10 seconds. That’s normal. Just wait for her.</li><li>Headphones work best, but you don’t need them.</li><li>Your browser will ask to use your microphone.</li></ul>
         <div class="field"><b>Dana’s thinking</b><small>Testing only: Fast replies quicker, Smart follows you more closely.</small><div class="chips-row"><button type="button" class="chip" data-vs-speed="fast" aria-pressed="${VS.speed === "fast"}">Fast</button><button type="button" class="chip" data-vs-speed="smart" aria-pressed="${VS.speed === "smart"}">Smart</button></div></div>
         <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button><button type="button" class="v6-link" data-vs-mode="guided">Back to the guided session</button></div>` : ""}
       ${st !== "idle" ? `<div class="vs-goal sm"><b>Goal</b> Find out what really got in the way of the homework, without assigning anything new.</div>` : ""}
@@ -1357,7 +1357,7 @@
       <p class="flow-q">A spoken session with Dana, in five moments.</p>
       <p class="flow-sub">Dana, 34, is an ER nurse in session 6. Last week you suggested a thought record. She didn’t do it, and she walks in guarded. Each moment practices one skill from the course. Answer out loud; Dana responds to how it lands.</p>
       <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
-      <ul class="vs-tips"><li>Dana responds in real time, so her replies can take a few seconds (up to about 5). That’s normal. Just wait for her.</li><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
+      <ul class="vs-tips"><li>Dana responds in real time, so each reply takes a moment, usually 5 to 10 seconds. That’s normal. Just wait for her.</li><li>Headphones work best, but you don’t need them.</li><li>Your browser will ask to use your microphone.</li></ul>
       ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
       <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn primary" data-vg-start>Start the session</button><span style="display:flex;gap:14px;flex-wrap:wrap"><button type="button" class="v6-link" data-vg-type>No mic? Type your answers instead</button>${isTestAccount() ? `<button type="button" class="v6-link" data-vs-mode="open">Open conversation (testing)</button>` : ""}</span></div>
     </div>`, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
@@ -1391,6 +1391,7 @@
     try { const { out } = await api("/.netlify/functions/lab-voice", { action: "gprep", scenario: "dana", voice: VS.voice, i }); if (out.ok && VS.g === G) { G.audio[i] = out.audio; G.ready[i] = true; if (VS.status === "between" && vsOnPage()) render(); } } catch (e) {}
   }
   async function vgStart(typed) {
+    vsUnlock();
     VS.hist = []; VS.ms = []; VS.parts = []; VS.msg = ""; VS.sum = null; VS.sumErr = ""; VS.typed = !!typed;
     if (!typed) {
       try { VS.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
@@ -1491,7 +1492,9 @@
     } catch (e) { VS.sumErr = "The breakdown didn’t come through."; }
     if (vsOnPage()) render();
   }
-  const vsPlay = b64 => new Promise(res => { if (!b64) return res(); try { const a = new Audio("data:audio/mpeg;base64," + b64); VS.audio = a; a.onended = res; a.onerror = res; a.play().catch(res); } catch (e) { res(); } });
+  /* iPhones only let a page play sound from an audio player the student has tapped once, so Dana uses one player for the whole session */
+  const vsUnlock = () => { try { if (!VS.player) { VS.player = new Audio(); VS.player.setAttribute("playsinline", ""); } const p = VS.player; p.src = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAABgAAAykAWlpaWlpaWlpaWlpaWlpaWnt7e3t7e3t7e3t7e3t7e3t7nJycnJycnJycnJycnJycnL29vb29vb29vb29vb29vb293t7e3t7e3t7e3t7e3t7e3t7/////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQCowAAAAAAAAMpso+sIAAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="; p.play().catch(() => {}); } catch (e) {} };
+  const vsPlay = b64 => new Promise(res => { if (!b64) return res(); try { const a = VS.player || new Audio(); a.onended = a.onerror = null; a.src = "data:audio/mpeg;base64," + b64; VS.audio = a; a.onended = res; a.onerror = res; a.play().catch(res); } catch (e) { res(); } });
   const vsSet = (st, msg) => { VS.status = st; if (msg !== undefined) VS.msg = msg; if (vsOnPage()) render(); };
   function vsStopAll() {
     cancelAnimationFrame(VS.raf); VS.raf = 0;
