@@ -122,13 +122,14 @@
   /* Drip: a week opens only when the week before is finished AND its date has arrived (7 days apart, counted from the day the student starts). */
   const DRIP_DAYS = 7;
   const weekDone = n => n === 1 ? curIdx() >= D.WEEK1.length : false; /* Weeks 2-4 not built yet */
-  const opensAt = n => S.start ? S.start + (n - 1) * DRIP_DAYS * 864e5 : null;
+  const REST_OPENS = Date.parse("2027-01-01T05:00:00Z"); /* Weeks 2-4 open to everyone on January 1 */
+  const opensAt = n => S.start ? Math.max(S.start + (n - 1) * DRIP_DAYS * 864e5, n > 1 ? REST_OPENS : 0) : null;
   const timeReached = n => n === 1 || (S.start && Date.now() >= opensAt(n));
   const weekOpen = n => n === 1 || S.reviewer || isTestAccount() || (weekDone(n - 1) && timeReached(n));
   const fmtDay = (t, long) => new Date(t).toLocaleDateString("en-US", long ? { weekday: "short", month: "short", day: "numeric" } : { month: "short", day: "numeric" });
   const weekStatus = n => {
     if (weekOpen(n)) return S.reviewer && !(weekDone(n - 1) && timeReached(n)) ? "Preview open" : "Open now";
-    if (!S.start) return `Opens ${(n - 1) * DRIP_DAYS} days after you start`;
+    if (!S.start) return Date.now() < REST_OPENS ? "Opens January 1" : `Opens ${(n - 1) * DRIP_DAYS} days after you start`;
     const when = timeReached(n) ? "" : `Opens ${fmtDay(opensAt(n), true)}`;
     if (weekDone(n - 1)) return when;
     return when ? `${when} · finish Week ${n - 1} first` : `Finish Week ${n - 1} to open`;
