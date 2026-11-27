@@ -157,12 +157,19 @@
       .btn{width:100%}
       .card{padding:24px}
     }
+    /* Black Friday hype banner: shows Nov 27 through the end of Dec 1 (when founding spots close), then hides itself */
+    .bf-banner{display:block;text-decoration:none;color:#fff;text-align:center;padding:12px 16px;background:linear-gradient(90deg,#863824,#B4532F,#863824);background-size:200% 100%;animation:bfshine 6s linear infinite;font-size:15px;line-height:1.4}
+    .bf-banner b{letter-spacing:.12em;text-transform:uppercase;font-size:13px;display:inline-block;background:#fff;color:#863824;border-radius:999px;padding:3px 10px;margin-right:8px;vertical-align:1px}
+    .bf-banner u{text-underline-offset:3px;font-weight:700;white-space:nowrap}
+    @keyframes bfshine{to{background-position:-200% 0}}
+    @media (prefers-reduced-motion:reduce){.bf-banner{animation:none}}
   </style>
   <meta property="og:image:width" content="1254">
   <meta property="og:image:height" content="1254">
   <meta property="og:image:alt" content="The Confident Clinician logo">
 </head>
 <body>
+  <a class="bf-banner" href="#join" data-bf hidden><b>Black Friday</b>🔥 Only <strong>10 founding spots</strong> · Week 1 for just <strong>$37</strong> · <u>Claim yours →</u></a>
   <div class="wrap">
     <nav class="nav">
       <a class="brand" href="/">The Confident Clinician</a>
@@ -408,8 +415,12 @@
       sv.hidden = false; sv.className = "status ok"; sv.style.display = "block"; document.querySelector("[data-claim]").hidden = true;
       setTimeout(function () { var j = document.getElementById("join"); if (j) j.scrollIntoView(); }, 50);
     }
+    /* Black Friday banner + tags: on until founding spots close (end of Dec 1 ET), and off once all 10 are taken */
+    var BF_END = Date.parse("2026-12-02T05:00:00Z");
+    function bfOff() { var b = document.querySelector("[data-bf]"); if (b) b.hidden = true; document.querySelectorAll(".bf-tag").forEach(function (t) { t.hidden = true; }); }
+    if (Date.now() < BF_END) { var bfb = document.querySelector("[data-bf]"); if (bfb) bfb.hidden = false; } else bfOff();
     /* Founding spots left */
-    function soldOut() { document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
+    function soldOut() { bfOff(); document.querySelector("[data-claim]").hidden = true; document.querySelector("[data-sold]").hidden = false; document.querySelector("[data-spots]").textContent = "All 10 spots taken"; }
     fetch(FOUND).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.ok) return;
       if (j.left <= 0) soldOut(); /* never show how many are left */
