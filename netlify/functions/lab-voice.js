@@ -184,32 +184,33 @@ The therapist answers. Write Jordan's next line only.
       return json(200, { ok: true, i, audio: await prepMoment(G, i, voice) });
     }
     if (G && body.action === "gturn") {
-      const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m = G.moments[i];
+      const i = Math.max(0, Math.min(G.moments.length - 1, +body.i || 0)), m0 = G.moments[i], m = { ...m0, line: clip(body.line, 600) || m0.line };
       const t0 = Date.now(), typed = clip(body.text, 1200), heard = typed || (body.audio ? await stt(body.audio, body.mime) : "");
       if (!heard) return json(200, { ok: true, heard: "", retry: true });
       const t1 = Date.now();
       const next = G.moments[i + 1];
       const sys = `You play ${G.client} in a GUIDED spoken practice session for therapists-in-training. Everyone is fictional. The therapist's words were transcribed from speech, so ignore small slips.
 CLIENT BACKGROUND (fictional)\n${sc.background}\n\n${MAPS[key] || ""}\n\n${COURSE}${typed ? "\nThis time the therapist typed their response instead of speaking it." : ""}
-Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "...", "note": "..."}
+Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "...", "note": "..."${next ? ', "next": "..."' : ""}}
 1. "land": how the therapist's response lands, using the GUIDE for this moment. Reasonable, caring attempts that partly do an "open" move count as open.
 2. "reply": ${G.client}'s spoken reply. FIRST respond directly to what the therapist actually said or asked (if they asked a question, answer it, even briefly or reluctantly). Then let it carry the feeling and gist of the GUIDE example for that landing. Use the GUIDE examples as direction, not a script.
 3. "note": a training note for the trainee, ONE sentence, max 25 words, about THIS moment's skill (${m.skill}). If it landed open, name specifically what they did that worked, quoting a few of their words. If guarded or pull, name what happened (a Pull, skipping her words, a question stack, reassurance, advice) and point to one direction to try. Warm and plain. Never give them a line to say, never quote suggested wording, no "try saying".
-MAKE SENSE, ALWAYS: the reply must be a natural, logical answer to the therapist's exact words. Read the therapist's words carefully: if they said they will NOT do something (no worksheet, no homework), Dana reacts to that (relief, surprise, doubt), never as if they did it. Before answering, check: would a real person say this right after hearing exactly that? If not, rewrite it.
+${next ? `4. "next": after a short pause, ${G.client} goes on to her next line: "${next.line}". Rewrite it lightly so the conversation flows from your reply and from what the therapist said: it must sound like the natural next thing she'd say. Keep its meaning and every distinctive phrase word for word (the next exercise depends on her exact words); only change or add a few words, usually at the start, to connect it. One to three sentences.\n` : ""}MAKE SENSE, ALWAYS: the reply must be a natural, logical answer to the therapist's exact words. Read the therapist's words carefully: if they said they will NOT do something (no worksheet, no homework), Dana reacts to that (relief, surprise, doubt), never as if they did it. Before answering, check: would a real person say this right after hearing exactly that? If not, rewrite it.
 The note must accurately describe what the therapist actually said, in plain words a new therapist uses every day. No grammar or technical terms (never "conditional", "clause", "modal"). If the response was reasonable, say so plainly; don't invent a problem.
 Rules for the reply: one or two short sentences, everyday spoken words, no stage directions, no quotes, no therapy-speak. Never mention the course or skills. Don't jump ahead to what she'll say next${next ? ` (her next line will be: "${next.line}")` : ""}, and don't reveal more than this landing allows.`;
       const guide = m.replies.map(r => `- ${r.land.toUpperCase()} when the therapist ${r.when}. Example gist: "${r.text}"`).join("\n");
       const hist = (Array.isArray(body.history) ? body.history : []).slice(-12).map(h => `${h.who === "client" ? G.client : "Therapist"}: ${clip(h.text, 400)}`).join("\n");
-      const raw = await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nJSON:`, MODEL, 500); /* the stronger model: replies must always make sense */
-      const parse = t => { try { const j = JSON.parse((String(t).match(/\{[\s\S]*\}/) || ["{}"])[0]); return { land: ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded", reply: spoken(j.reply || ""), note: clip(j.note, 300) }; } catch { return { land: "guarded", reply: "", note: "" }; } };
-      let { land, reply, note } = parse(raw);
+      const raw = await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nJSON:`, MODEL, 700); /* the stronger model: replies must always make sense */
+      const parse = t => { try { const j = JSON.parse((String(t).match(/\{[\s\S]*\}/) || ["{}"])[0]); return { land: ["open", "guarded", "pull"].includes(j.land) ? j.land : "guarded", reply: spoken(j.reply || ""), note: clip(j.note, 300), nextLine: spoken(j.next || "") }; } catch { return { land: "guarded", reply: "", note: "" }; } };
+      let { land, reply, note, nextLine } = parse(raw);
       if (!reply) {
         console.error("Guided voice: unparsed reply, retrying with the main model", JSON.stringify(raw).slice(0, 300));
-        ({ land, reply, note } = parse(await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nReturn the JSON object now.`, MODEL, 1500)));
+        ({ land, reply, note, nextLine } = parse(await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nReturn the JSON object now.`, MODEL, 1500)));
       }
       if (!reply) { console.error("Guided voice: no reply after retry"); return json(502, { error: "Dana didn’t come through that time. Say it again." }); }
-      const t2 = Date.now(), audio = await tts(reply, voice), t3 = Date.now();
-      return json(200, { ok: true, heard, land, reply, note, audio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
+      if (!next || nextLine.length < 8) nextLine = "";
+      const t2 = Date.now(), [audio, nextAudio] = await Promise.all([tts(reply, voice), nextLine ? tts(nextLine, voice).catch(() => "") : ""]), t3 = Date.now();
+      return json(200, { ok: true, heard, land, reply, note, audio, nextLine: nextAudio ? nextLine : "", nextAudio, parts: { listen: t1 - t0, think: t2 - t1, voice: t3 - t2 }, ms: t3 - t0 });
     }
     if (body.action === "clip") {
       if (!body.sessionId || !body.audio) return json(400, { error: "Missing clip" });

@@ -1407,8 +1407,8 @@
     } catch (e) { vsStopAll(); vsSet("idle", "Voice isn’t available right now."); }
   }
   async function vgMoment() {
-    const G = VS.g, m = G.script.moments[G.i];
-    VS.hist.push({ who: "client", text: m.line }); vsSet("speaking"); await vsPlay(G.audio[G.i].line);
+    const G = VS.g, m = G.script.moments[G.i], nx = G.nx && G.nx[G.i]; /* her next line, reworded to follow what was just said */
+    VS.hist.push({ who: "client", text: nx ? nx.line : m.line }); vsSet("speaking"); await vsPlay(nx ? nx.audio : G.audio[G.i].line);
     if (VS.status === "speaking") vsListen();
   }
   async function vgSend(blob, typedText) {
@@ -1417,7 +1417,7 @@
     const b64 = blob ? await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); }) : "";
     const t0 = Date.now();
     try {
-      const { out } = await api("/.netlify/functions/lab-voice", { action: "gturn", text: typedText || "", sessionId: G.id, scenario: "dana", voice: VS.voice, i: G.i, history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })), audio: b64, mime: blob ? blob.type.split(";")[0] : "" });
+      const { out } = await api("/.netlify/functions/lab-voice", { action: "gturn", text: typedText || "", sessionId: G.id, scenario: "dana", voice: VS.voice, i: G.i, line: (G.nx && G.nx[G.i] && G.nx[G.i].line) || "", history: VS.hist.map(h => ({ who: h.who === "me" ? "therapist" : "client", text: h.text })), audio: b64, mime: blob ? blob.type.split(";")[0] : "" });
       if (VS.status !== "thinking") return;
       if (!out.ok) { VS.msg = out.error || "Something went wrong. Try again."; return vsListen(); }
       if (out.retry) { VS.msg = "Dana didn’t catch that. Try saying it again."; return vsListen(); }
@@ -1428,6 +1428,7 @@
       G.attempts.push({ moment: G.i + 1, skill: m.skill, said: out.heard, land, reply: out.reply, note: out.note || "" });
       VS.hist.push({ who: "me", text: out.heard, clip: blob ? URL.createObjectURL(blob) : "", pick: land, skill: m.skill, note: out.note || "" });
       VS.hist.push({ who: "client", text: out.reply });
+      if (out.nextLine && out.nextAudio) { G.nx = G.nx || {}; G.nx[G.i + 1] = { line: out.nextLine, audio: out.nextAudio }; }
       const tryNo = G.attempts.filter(a => a.moment === G.i + 1).length, ext = blob ? (blob.type.split("/")[1] || "webm").split(";")[0] : "";
       const logged = vgLog("In progress");
       if (logged && blob) logged.then(() => api("/.netlify/functions/lab-voice", { action: "clip", scenario: "dana", sessionId: G.id, name: `m${G.i + 1}-try${tryNo}.${ext}`, mime: blob.type.split(";")[0], audio: b64 })).catch(() => {});
@@ -1463,7 +1464,7 @@
         vsStopAll(); vsSet("done", ""); return vsWrap();
       }
       vgPrep(G.i + 1);
-      if (G.ready[G.i]) vgMoment(); else vsSet("between");
+      if (G.ready[G.i] || (G.nx && G.nx[G.i])) vgMoment(); else vsSet("between");
     } catch (e) { vsSet("between"); }
   }
   function vsSummaryHTML() {
