@@ -1363,7 +1363,7 @@
     </div>`, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
     const lines = VS.hist.map(h => h.who === "client"
       ? `<div class="vs-line c"><span class="av" aria-hidden="true">D</span><div><small>Dana</small>${q(h.text)}</div></div>`
-      : `<div class="vs-line me"><div><small>You${h.skill ? ` · ${esc(h.skill)}` : ""}</small>${esc(h.text)}${h.clip ? `<audio controls preload="none" src="${h.clip}"></audio>` : ""}${h.pick ? `<span class="vg-tag ${VG_TAG[h.pick][1]}">${VG_TAG[h.pick][0]}</span>` : ""}</div></div>`).join("");
+      : `<div class="vs-line me"><div><small>You${h.skill ? ` · ${esc(h.skill)}` : ""}</small>${esc(h.text)}${h.pick ? `<span class="vg-tag ${VG_TAG[h.pick][1]}">${VG_TAG[h.pick][0]}</span>` : ""}</div></div>`).join("");
     const statusLine = { opening: "Getting Dana ready…", speaking: "Dana is talking…", listening: "Your turn. Answer out loud.", thinking: "Dana is thinking…", between: "Getting the next moment ready…", review: "", done: "" }[st] || "";
     const last = VS.hist.length >= 2 ? VS.hist[VS.hist.length - 2] : null;
     const review = st === "review" && last && last.who === "me" ? `<div class="vg-review ${VG_TAG[last.pick][1]}"><span class="vg-tag ${VG_TAG[last.pick][1]}">${VG_TAG[last.pick][0]}</span>${last.note ? `<p>${esc(last.note)}</p>` : ""}
