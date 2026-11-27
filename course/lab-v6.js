@@ -1706,7 +1706,7 @@
         if (act === "demonext") { const W = ACTS.demo.walk; S.demo.step = (S.demo.step || 0) + 1; if (S.demo.step >= W.length) { S.demo.watched = true; S.demo.step = W.length - 1; } }
         if (act === "demoreset") { S.demo.step = 0; S.demo.watched = false; S.demo.heard = {}; }
         if (act === "demosave") { S.steps.demo = true; save(); holdScroll = true; render(); flash("Saved"); return; }
-        if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); render(); flash("Saved"); return; }
+        if (act === "saveprofile") { $$("[data-p]", app).forEach(t => S.profile[t.dataset.p] = t.value); S.steps.save = true; save(); holdScroll = true; render(); flash("Saved"); return; }
         if (act === "copyprofile" || act === "printprofile") {
           const txt = $$(".profile .field, .profile .pf-h, .profile .pf-path", app).map(el => el.matches(".pf-h") ? "\n" + el.textContent.toUpperCase() : el.matches(".pf-path") ? el.innerText : (el.querySelector("textarea, input") ? `${el.firstChild.textContent.trim()}: ${(el.querySelector("[aria-pressed=true]") || {}).textContent || el.querySelector("textarea, input").value || "—"}` : "")).join("\n");
           if (act === "copyprofile") { (navigator.clipboard ? navigator.clipboard.writeText("My Clinical Confidence Profile\n" + txt) : Promise.reject()).then(() => flash("Copied"), () => flash("Couldn’t copy")); }
@@ -1714,7 +1714,7 @@
           return;
         }
         if (act === "step") {
-          if (k === "reflect" || k === "save") { S.steps[k] = true; save(); render(); flash("Saved"); return; }
+          if (k === "reflect" || k === "save") { S.steps[k] = true; save(); holdScroll = true; render(); flash("Saved"); return; }
           S.steps[k] = !S.steps[k];
         }
         save(); render();
@@ -1746,7 +1746,7 @@
       const lm = $("[data-lab-move]", app); if (lm) lm.oninput = () => { L.move = lm.value; save(); const c = $("[data-lab-compare]", app); if (c) c.disabled = lm.value.trim().length < 8; };
       $$("[data-lab-nav]", app).forEach(b => b.onclick = () => { L.step = Math.max(0, Math.min(3, (L.step || 0) + +b.dataset.labNav)); save(); render(); top(); });
       const lc = $("[data-lab-compare]", app); if (lc) lc.onclick = () => { L.compared = true; save(); render(); };
-      const lf = $("[data-lab-finish]", app); if (lf) lf.onclick = () => { S.steps.lab = true; save(); render(); };
+      const lf = $("[data-lab-finish]", app); if (lf) lf.onclick = () => { S.steps.lab = true; save(); holdScroll = true; render(); };
       /* Reflect & Redo */
       const F = S.reflect;
       $$("[data-rf-pull]", app).forEach(b => b.onclick = () => { F.pullPick = b.dataset.rfPull; save(); render(); });
@@ -1757,7 +1757,7 @@
       $$("[data-rf3]", app).forEach(nd => { nd.oninput = () => { C3()[nd.dataset.rf3] = nd.value; save(); const nx = $("[data-rf-nav='1']", app); if (nx) nx.disabled = !rfOk3(); }; nd.onchange = () => render(); });
       $$("[data-rf]", app).forEach(t => t.oninput = () => { F[t.dataset.rf] = t.value; save(); const sv = $("[data-rf-save]", app); if (sv) sv.disabled = !((F.redoLine || "").trim() && (F.redo || "").trim()); });
       $$("[data-rf-nav]", app).forEach(b => b.onclick = () => { F.step = Math.max(0, Math.min(3, (F.step || 0) + +b.dataset.rfNav)); save(); render(); top(); });
-      const rfs = $("[data-rf-save]", app); if (rfs) rfs.onclick = () => { S.steps.reflect = true; save(); render(); flash("Saved"); };
+      const rfs = $("[data-rf-save]", app); if (rfs) rfs.onclick = () => { S.steps.reflect = true; save(); holdScroll = true; render(); flash("Saved"); };
       const rfu = $("[data-rf-useline]", app); if (rfu) rfu.onclick = () => { const x = S.reps[String(F.rep).replace("rep:", "")]; if (x) { x.line = F.redoLine; x.saved = true; } save(); render(); flash("Playbook updated"); };
       /* Simulation */
       const M = S.sim, X = SIMS.jordan, C = M.cur;
@@ -1769,7 +1769,7 @@
       $$("[data-sim-rewind]", app).forEach(b => b.onclick = () => { const k = +b.dataset.simRewind; delete C.picks[k]; C.i = k; save(); render(); });
       $$("[data-sim-intent]", app).forEach(t => t.oninput = () => { C.intent[t.dataset.simIntent] = t.value; save(); });
       $$("[data-sim-ref]", app).forEach(t => t.oninput = () => { C.ref[t.dataset.simRef] = t.value; save(); const sv = $("[data-sim-save]", app); if (sv) sv.disabled = !X.debrief.every((_, k) => (C.ref[k] || "").trim()); });
-      const ssv = $("[data-sim-save]", app); if (ssv) ssv.onclick = () => { C.saved = true; C.done = Date.now(); S.steps.sim = true; delete S.profile.shift; delete S.profile.adjust; save(); render(); flash("Saved"); };
+      const ssv = $("[data-sim-save]", app); if (ssv) ssv.onclick = () => { C.saved = true; C.done = Date.now(); S.steps.sim = true; delete S.profile.shift; delete S.profile.adjust; save(); holdScroll = true; render(); flash("Saved"); };
       const sag = $("[data-sim-again]", app); if (sag) sag.onclick = () => { M.history = M.history || []; M.history.push(C); M.cur = newAttempt(X); save(); render(); top(); };
       /* Profile */
       $$("[data-plan]", app).forEach(b => b.onclick = () => { const P = S.profile.plan = S.profile.plan || {}; P[b.dataset.plan] = b.dataset.v; save(); render(); });
