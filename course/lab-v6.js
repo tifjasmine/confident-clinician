@@ -684,7 +684,7 @@
       const path = SC && Object.keys(SC.picks).length === 8 ? SJ.moments.map((m, k) => `Moment ${k + 1}: ${(m.choices[SC.picks[k]] || [])[1] || ""}`).join("\n") : "";
       const auto = {
         gap: gaps.length ? `${gaps.join(" + ")}. ${v1.action ? "This week: " + v1.action : ""}`.trim() : "",
-        pull: [S.reflect.pullPick === "none" ? "No clear Pull this week" : S.reflect.pullPick, v2.thought && `First cue: “${v2.thought}”${v2.body && v2.body !== "Not sure" ? `, ${v2.body.toLowerCase()}` : ""}`, v2.reset && `Reset: ${v2.reset.toLowerCase()}`, SC && SC.ref[0]].filter(Boolean).join(". "),
+        pull: [S.reflect.pullPick === "none" ? "No clear Pull this week" : S.reflect.pullPick, v2.thought && `First cue: “${v2.thought}”${v2.body && v2.body !== "Not sure" ? `, ${v2.body.toLowerCase()}` : ""}`, v2.reset && `Reset: ${v2.reset.toLowerCase()}`, SC && SC.ref[0]].filter(Boolean).join("\n"),
         move: L.move || "",
         shift: (SC && SC.ref[1]) || "",
         adjust: (SC && SC.ref[2]) || ""
@@ -692,24 +692,41 @@
       const sec = (k, label, hint, ph) => { const v = pf[k] != null ? pf[k] : auto[k]; return `<label class="field">${esc(label)}${hint ? ` <small>${esc(hint)}</small>` : ""}<textarea class="v6-ta" rows="2" data-p="${k}" placeholder="${esc(ph)}">${esc(v)}</textarea></label>`; };
       const lines = [[ "When a client says I don’t understand them…", v2.r2 || v2.r1 ], ["When a client doesn’t know what they feel…", v3.t2], ["When a client starts to open up…", v3.t4], ["When a client asks me to decide for them…", S.demo && S.demo.line]].filter(x => (x[1] || "").trim())
         .concat(D.REPS.filter(r => r.week === 1 && repSaved(r.id) && S.reps[r.id].line.trim()).map(r => [r.bank + "…", S.reps[r.id].line]));
+      /* Each piece reads like a profile, not a form: their words shown plainly, with a small Edit to change them */
+      const card = (k, label, sub, ph) => { const v = String((pf[k] != null ? pf[k] : auto[k]) || ""); return `<div class="pf-card"><div class="pf-k">${esc(label)}${sub ? `<small>${esc(sub)}</small>` : ""}</div>
+        ${v.trim() ? `<p class="pf-v">${esc(v).replace(/\n/g, "<br>")}</p><details class="pf-edit"><summary>Edit</summary><textarea class="v6-ta" rows="3" data-p="${k}">${esc(v)}</textarea></details>`
+          : `<textarea class="v6-ta" rows="2" data-p="${k}" placeholder="${esc(ph)}"></textarea>`}</div>`; };
+      const RF = S.reflect || {}, rr = rfPool().find(z => z.id === RF.rep);
+      /* their redo is their best version: it replaces the first try in "What I say when…" */
+      if (rr && (RF.redoLine || "").trim() && !rr.rep) { const slot = { l2: "When a client says I don’t understand them…", l3: "When a client doesn’t know what they feel…", demo: "When a client asks me to decide for them…" }[rr.id];
+        const hit = slot && lines.find(x => x[0] === slot); if (hit) hit[1] = RF.redoLine; else lines.push([slot || `When a client says “${rr.raw.replace(/^[“"]|[”"]$/g, "")}”…`, RF.redoLine]); }
       body = `<div class="profile">
-        <div class="banner-soft">Filled in from your Week 1 choices. Edit anything.</div>
-        <h3 class="pf-h">What I noticed</h3>
-        ${sec("gap", "The gap I want to investigate", "A hypothesis, not a diagnosis", "Add the gap you want to look into")}
-        ${sec("pull", "My Pull, and the cue I notice first", "", "Add the Pull that grabs you, and what you notice first")}
-        ${sec("move", "My grounded first move", "From the Lab", "Add one line you’d actually say")}
-        <h3 class="pf-h">My Imani practice</h3>
-        ${path ? `<div class="pf-path">${esc(path).replace(/\n/g, "<br>")}</div>` : `<div class="empty">Your path shows up here after the simulation.</div>`}
-        ${sec("shift", "When the priority changed", "", "Add what changed when Imani shared new information")}
-        ${sec("adjust", "My closing for Imani", "Includes a collaborative safety step and is honest about what stays private", "Add your closing")}
-        <h3 class="pf-h">“What I Say When…”</h3>
+        <div class="banner-soft">Your Week 1, in your own words. It’s built from what you did this week. Tap <b>Edit</b> on anything to change it.</div>
+        <h3 class="pf-h">At a glance</h3>
+        <div class="pf-grid">
+          ${card("gap", "The gap I’m working on", "A hunch to test, not a diagnosis", "What do you want to get better at?")}
+          ${card("pull", "My Pull, and what I notice first", "", "Which Pull grabs you, and what tips you off?")}
+          ${card("move", "My go-to first move", "From the Lab with Gene", "One line you’d actually say")}
+        </div>
+        ${rr && (RF.redoLine || "").trim() ? `<h3 class="pf-h">My redo</h3>
+          <div class="bd-paths"><div class="bd-p"><small>Before</small>${q(rr.first)}</div><div class="bd-p t"><small>After</small>${q(RF.redoLine)}</div></div>
+          ${(RF.redo || "").trim() ? `<p class="pf-note"><b>What I changed:</b> ${esc(RF.redo)}</p>` : ""}` : ""}
+        <h3 class="pf-h">What I say when…</h3>
+        <p class="flow-sub" style="margin:0">Your best lines from this week, ready for real sessions.</p>
         ${lines.length ? `<div class="bank">${lines.map(([w, l]) => `<div class="bank-item"><span class="w">${esc(w)}</span><span class="l">${q(l)}</span></div>`).join("")}</div>` : `<div class="empty">Your lines land here as you finish the lesson activities.</div>`}
-        <h3 class="pf-h">My seven-day practice target</h3>
+        <h3 class="pf-h">My session with Imani</h3>
+        <div class="pf-grid">
+          ${card("shift", "When the priority changed", "", "What changed when Imani shared new information?")}
+          ${card("adjust", "How I closed the session", "A shared safety step, honest about what stays private", "Your closing")}
+        </div>
+        ${path ? `<details class="pf-more"><summary>See every choice I made</summary><div class="pf-path">${esc(path).replace(/\n/g, "<br>")}</div></details>` : ""}
+        <h3 class="pf-h">My next 7 days</h3>
         <p class="flow-sub" style="margin:0">${esc(D.PLAN.intro)}</p>
         ${D.PLAN.fields.map(([k, label, opts]) => `<div class="field">${esc(label)}${opts ? `<div class="chips-row">${opts.map(o => `<button type="button" class="chip" data-plan="${k}" data-v="${esc(o)}" aria-pressed="${P[k] === o}">${esc(o)}</button>`).join("")}</div>` : ""}
           <input class="v6-in" type="text" data-plan-own="${k}" placeholder="${opts ? "Or write your own" : "Your adjustment"}" value="${esc(opts && opts.includes(P[k]) ? "" : P[k] || "")}"></div>`).join("")}
       </div>`;
       const planOk = !!(P.skill && P.rehearse && P.evidence);
+      if (!planOk) body += `<p class="hint">To save, pick one skill, how you’ll rehearse it, and how you’ll know it’s working.</p>`;
       cta = `<button type="button" class="v6-btn primary" data-act="saveprofile"${planOk ? "" : " disabled"}>${done ? "Profile saved ✓" : "Save my profile"}</button><button type="button" class="v6-btn secondary" data-act="copyprofile">Copy</button><button type="button" class="v6-btn secondary" data-act="printprofile">Print</button><span class="saved-flag" data-flag></span>`;
     }
 

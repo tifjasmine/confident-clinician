@@ -1611,3 +1611,19 @@ button.d2-oh{width:100%;font:inherit;cursor:pointer;color:inherit;text-align:lef
 .rf-grp summary::after{content:"▾";color:#7a857d}
 .rf-grp[open] summary::after{transform:rotate(180deg)}
 .rf-grp .choices{padding:0 12px 12px}
+
+.pf-grid{display:grid;gap:10px}
+.pf-card{background:#fff;border:1px solid var(--line,#e7e4de);border-radius:14px;padding:14px 16px;display:grid;gap:6px}
+.pf-k{font-size:13px;font-weight:600;color:var(--terra-t,#98452F);display:grid;gap:2px}
+.pf-k small{font-weight:400;color:var(--muted,#7a857d);font-size:12px}
+.pf-v{margin:0;font-size:16px;line-height:1.5}
+.pf-edit summary,.pf-more summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--forest,#2e4a3e);list-style:none}
+.pf-edit summary::-webkit-details-marker,.pf-more summary::-webkit-details-marker{display:none}
+.pf-edit[open] summary{margin-bottom:6px}
+.pf-more{margin-top:4px}.pf-more summary::after{content:" ▾"}
+.pf-more .pf-path{margin-top:8px}
+.pf-note{margin:8px 0 0;font-size:15px}
+
+/* profile plan: long choices read as a simple list */
+.profile .chips-row{display:grid;grid-template-columns:1fr;width:100%}
+.profile .chips-row .chip{text-align:left;justify-content:flex-start;padding:10px 14px}
