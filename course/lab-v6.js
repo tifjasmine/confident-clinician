@@ -1521,7 +1521,7 @@
       const rms = Math.sqrt(sum / buf.length), now = Date.now(), m = document.querySelector("[data-vs-meter]");
       if (m) m.style.width = Math.min(100, rms * 4) + "%";
       if (rms > 6) { spoke = true; quietSince = 0; } else if (spoke && !quietSince) quietSince = now;
-      if ((spoke && quietSince && now - quietSince > 1600) || now - t0 > 90000) { rec.stop(); ctx.close(); return; }
+      if ((spoke && quietSince && now - quietSince > 3000) || now - t0 > 90000) { rec.stop(); ctx.close(); return; }
       VS.raf = requestAnimationFrame(tick);
     };
     VS.raf = requestAnimationFrame(tick);
