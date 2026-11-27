@@ -365,11 +365,11 @@
       const status = done ? "Done" : isCur ? "Up next" : locked ? "Locked" : "Open";
       return `<button type="button" class="rail-row${i === sel ? " sel" : ""}${locked ? " future" : ""}" data-go="week/${st.key}"${i === sel ? ' aria-current="step"' : ""}><span class="ico lg${done ? " done" : isCur ? " cur" : ""}" aria-hidden="true">${done ? "✓" : i + 1}</span><span class="tt"><b>${esc(st.short)}</b><small>${esc(st.label)} · ${status}</small></span></button>`;
     };
-    return `<div class="card rail"><div class="h">Week 1 steps</div><div class="s">${doneCount()} of ${D.WEEK1.length} done · about 2.5 hours</div>${STAGES.map(([name, keys]) =>
+    return `<div class="card rail"><div class="h">Week 1 steps</div><div class="s">${doneCount()} of ${D.WEEK1.length} done</div>${STAGES.map(([name, keys]) =>
       `<div class="stage">${esc(name)}</div>${keys.map(k => row(D.WEEK1.findIndex(x => x.key === k))).join("")}`).join("")}</div>`;
   }
   function repRailHTML(stage, saved) {
-    return `<div class="card rail"><div class="h">The Rep</div><div class="s">3–5 minutes, one client moment</div>${D.REP_STEPS.map((t, i) => {
+    return `<div class="card rail"><div class="h">The Rep</div><div class="s">One client moment</div>${D.REP_STEPS.map((t, i) => {
       const n = i + 1, done = n < stage || (saved && n === 6), cur = n === stage && !saved;
       return `<div class="rail-row${cur ? " cur" : ""}${n > stage ? " future" : ""}"><span class="ico${done ? " done" : cur ? " cur" : ""}" aria-hidden="true">${done ? "✓" : n}</span><span class="tt"><b style="font-weight:${cur ? 600 : 500}">${esc(t)}</b></span></div>`;
     }).join("")}</div>
@@ -1218,7 +1218,7 @@
         <h2>Ten moments with Dana.</h2>
         <p>Dana is a fictional client, six sessions in and a little guarded today. Answer the way you would in the room.</p>
         <ol class="live-how"><li><span><b>Dana talks</b>You answer in your own words.</span></li><li><span><b>You get a training note</b>A question to help you look again.</span></li><li><span><b>You decide</b>Try again (3 per session) or hear Dana’s reaction.</span></li><li><span><b>You get a summary</b>Where the session opened up, and where it closed.</span></li></ol>
-        <div class="live-meta"><span>About 15 minutes</span><span>Fictional practice only</span></div>
+        <div class="live-meta"><span>Fictional practice only</span></div>
         ${(() => { const used = liveUses().length, left = Math.max(0, LIVE.perDay - used), test = isTestAccount(), blocked = !left && !test;
           return `<div class="live-allow"><b>${left} of ${LIVE.perDay} sessions left today</b>${used ? `<span>${left ? "One more opens" : "Your next session opens"} in ${liveResetIn()}</span>` : `<span>Resets every 24 hours</span>`}${test && !left ? `<span>Test account: keep going</span>` : ""}</div>
             <button type="button" class="v6-btn primary live-go" data-live="start"${blocked ? " disabled" : ""}>${blocked ? `Next session opens in ${liveResetIn()}` : "Start the session"}</button>`; })()}
@@ -1351,7 +1351,7 @@
     const G = VS.g || {}, sc = G.script, st = VS.status, n = sc ? sc.moments.length : 5, i = G.i || 0, m = sc && sc.moments[Math.min(i, n - 1)];
     const voicePick = `<div class="field"><b>Dana’s voice</b><small>Testing only.</small><div class="chips-row">${VS_VOICES.map(([v, nm]) => `<button type="button" class="chip" data-vs-voice="${v}" aria-pressed="${VS.voice === v}">${nm}</button>`).join("")}</div></div>`;
     if (st === "idle") return { html: `<div class="card stack">
-      <div class="rep-top"><span class="v6-pill blush">🎙 Voice session</span><span class="lesson">About 12–15 minutes</span></div>
+      <div class="rep-top"><span class="v6-pill blush">🎙 Voice session</span></div>
       <p class="flow-q">A spoken session with Dana, in five moments.</p>
       <p class="flow-sub">Dana, 34, is an ER nurse in session 6. Last week you suggested a thought record. She didn’t do it, and she walks in guarded. Each moment practices one skill from the course. Answer out loud; Dana responds to how it lands.</p>
       <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
