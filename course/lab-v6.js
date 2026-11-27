@@ -534,8 +534,8 @@
     let body = "", ok = false;
     if (st === 0) {
       body = `<p class="flow-q">${esc(D.REFLECT[0][1])}</p>
-        <div class="pull-grid">${D.PULLS.map(([t, d]) => `<button type="button" class="aim" data-rf-pull="${t}" aria-pressed="${F.pullPick === t}"><span>${esc(t)}</span><small>${esc(d)}</small></button>`).join("")}<button type="button" class="aim" data-rf-pull="none" aria-pressed="${F.pullPick === "none"}"><span>None I noticed</span><small>Pulls can be quiet. That’s okay.</small></button></div>
-        ${F.pullPick === "none" ? `<label class="field">Look back at one moment this week. Which Pull could have shown up there, even a little? <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="In the Lab with Gene, I could have felt Fix when…">${esc(F.pull)}</textarea></label>`
+        <div class="pull-grid">${D.PULLS.map(([t, d]) => `<button type="button" class="aim" data-rf-pull="${t}" aria-pressed="${F.pullPick === t}"><span>${esc(t)}</span><small>${esc(d)}</small></button>`).join("")}<button type="button" class="aim" data-rf-pull="none" aria-pressed="${F.pullPick === "none"}"><span>None I noticed</span><small>None took over this week</small></button></div>
+        ${F.pullPick === "none" ? `<label class="field">Nice. If one did show up for you, which would it most likely be, and in what kind of moment? <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="Probably Fix, when a client asks me what to do…">${esc(F.pull)}</textarea></label>`
           : F.pullPick ? `<label class="field">Where did ${esc(F.pullPick)} show up, and what did you notice first? It could be a lesson, a Rep, the Demo, or your session with Dana. <small>Optional</small><textarea class="v6-ta" rows="2" data-rf="pull" placeholder="A Rep, the Lab, the Simulation…">${esc(F.pull)}</textarea></label>` : ""}`;
       ok = !!F.pullPick;
     }
