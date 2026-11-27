@@ -307,8 +307,8 @@
       holdScroll = false;
       requestAnimationFrame(() => { const nx = col.querySelector(".v6-btn.next"); if (nx) { const r = nx.getBoundingClientRect(); if (r.bottom > innerHeight - 90 || r.top < 80) scrollBy({ top: r.bottom - innerHeight + 140, behavior: "smooth" }); } });
     }
-    else if (col.querySelector(".vs-log") && VS.status !== "done") { /* voice session: follow the conversation, never jump back up */
-      requestAnimationFrame(() => { const f = col.querySelector(".vg-review, .vg-next, .vs-status, .vs-summary, .vg-sum"); if (!f) return; const r = f.getBoundingClientRect(); if (r.bottom > innerHeight - 90 || r.top < 90) scrollBy({ top: r.bottom - innerHeight + 160, behavior: "smooth" }); });
+    else if (col.querySelector(".vs-log")) { /* voice session: follow the conversation, never jump back up (and stay put on the summary) */
+      if (VS.status !== "done") requestAnimationFrame(() => { const f = col.querySelector(".vg-review, .vg-next, .vs-status, .vs-summary, .vg-sum"); if (!f) return; const r = f.getBoundingClientRect(); if (r.bottom > innerHeight - 90 || r.top < 90) scrollBy({ top: r.bottom - innerHeight + 160, behavior: "smooth" }); });
     }
     else if (sig !== lastSig) {
       const top = col.getBoundingClientRect().top + scrollY - 80;
@@ -1481,7 +1481,7 @@
       ${S2.build.length ? `<div class="blk build"><b>What to build next</b>${li(S2.build)}</div>` : ""}
       ${S2.noticed.length ? `<div class="blk"><b>What I noticed</b>${li(S2.noticed)}</div>` : ""}
       ${S2.next ? `<div class="blk next"><b>Practice next</b><p>${esc(S2.next)}</p></div>` : ""}
-      <small class="vs-wait">In the full version, this recording and transcript also go to Tiffany for feedback.</small>${wait}</div>`;
+</div>`;
   }
   async function vsWrap() {
     VS.sum = null; VS.sumErr = "";
