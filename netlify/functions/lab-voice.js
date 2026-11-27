@@ -53,7 +53,15 @@ async function stt(b64, mime) {
   return clip((((out.results || {}).channels || [])[0] || {}).alternatives?.[0]?.transcript, 1200);
 }
 
+/* Deepgram shifts pitch and pace most on fillers, trailing dots, dashes and quotes, so Dana's lines are evened out before they're spoken */
+function steady(t) {
+  let x = String(t || "").replace(/[“”"]/g, "").replace(/[‘’]/g, "'").replace(/\s*[—–]\s*/g, ", ").replace(/\.{2,}|…/g, ".").replace(/!+/g, ".").replace(/\?{2,}/g, "?");
+  x = x.replace(/^(?:(?:mm+|hmm+|um+|uh+|ah+|oh)[,.]?\s+)+/i, "").replace(/\s{2,}/g, " ").trim();
+  if (x && !/[.?]$/.test(x)) x += ".";
+  return x ? x[0].toUpperCase() + x.slice(1) : x;
+}
 async function tts(text, voice) {
+  text = steady(text) || String(text || "");
   const go = model => fetch(`https://api.deepgram.com/v1/speak?model=${encodeURIComponent(model)}&encoding=mp3`, {
     method: "POST", headers: { Authorization: `Token ${DG()}`, "Content-Type": "application/json" }, body: JSON.stringify({ text }),
   });
@@ -197,7 +205,7 @@ Return ONLY a JSON object: {"land": "open" | "guarded" | "pull", "reply": "...",
 3. "note": a training note for the trainee, ONE sentence, max 25 words, about THIS moment's skill (${m.skill}). If it landed open, name specifically what they did that worked, quoting a few of their words. If guarded or pull, name what happened (a Pull, skipping her words, a question stack, reassurance, advice) and point to one direction to try. Warm and plain. Never give them a line to say, never quote suggested wording, no "try saying".
 ${next ? `4. "next": after a short pause, ${G.client} goes on to her next line: "${next.line}". Rewrite it lightly so the conversation flows from your reply and from what the therapist said: it must sound like the natural next thing she'd say. Keep its meaning and every distinctive phrase word for word (the next exercise depends on her exact words); only change or add a few words, usually at the start, to connect it. One to three sentences.\n` : ""}MAKE SENSE, ALWAYS: the reply must be a natural, logical answer to the therapist's exact words. Read the therapist's words carefully: if they said they will NOT do something (no worksheet, no homework), Dana reacts to that (relief, surprise, doubt), never as if they did it. Before answering, check: would a real person say this right after hearing exactly that? If not, rewrite it.
 The note must accurately describe what the therapist actually said, in plain words a new therapist uses every day. No grammar or technical terms (never "conditional", "clause", "modal"). If the response was reasonable, say so plainly; don't invent a problem.
-Rules for the reply: one or two short sentences, everyday spoken words, no stage directions, no quotes, no therapy-speak. Never mention the course or skills. Don't jump ahead to what she'll say next${next ? ` (her next line will be: "${next.line}")` : ""}, and don't reveal more than this landing allows.`;
+Rules for the reply: one or two short sentences, everyday spoken words, no stage directions, no quotes, no therapy-speak. Don't start with filler sounds (Mm, Hmm, Um, Oh) and don't use dashes or trailing dots. Never mention the course or skills. Don't jump ahead to what she'll say next${next ? ` (her next line will be: "${next.line}")` : ""}, and don't reveal more than this landing allows.`;
       const guide = m.replies.map(r => `- ${r.land.toUpperCase()} when the therapist ${r.when}. Example gist: "${r.text}"`).join("\n");
       const hist = (Array.isArray(body.history) ? body.history : []).slice(-12).map(h => `${h.who === "client" ? G.client : "Therapist"}: ${clip(h.text, 400)}`).join("\n");
       const raw = await claude(sys, `SESSION SO FAR\n${hist}\n\nTHIS MOMENT: ${G.client} just said: "${m.line}"\nGUIDE for this moment:\n${guide}\n\nTherapist said: "${heard}"\n\nJSON:`, MODEL, 700); /* the stronger model: replies must always make sense */
