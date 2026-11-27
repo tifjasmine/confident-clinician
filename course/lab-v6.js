@@ -307,6 +307,9 @@
       holdScroll = false;
       requestAnimationFrame(() => { const nx = col.querySelector(".v6-btn.next"); if (nx) { const r = nx.getBoundingClientRect(); if (r.bottom > innerHeight - 90 || r.top < 80) scrollBy({ top: r.bottom - innerHeight + 140, behavior: "smooth" }); } });
     }
+    else if (col.querySelector(".vs-log") && VS.status !== "done") { /* voice session: follow the conversation, never jump back up */
+      requestAnimationFrame(() => { const f = col.querySelector(".vg-review, .vg-next, .vs-status, .vs-summary, .vg-sum"); if (!f) return; const r = f.getBoundingClientRect(); if (r.bottom > innerHeight - 90 || r.top < 90) scrollBy({ top: r.bottom - innerHeight + 160, behavior: "smooth" }); });
+    }
     else if (sig !== lastSig) {
       const top = col.getBoundingClientRect().top + scrollY - 80;
       if (scrollY > top + 40) scrollTo({ top: Math.max(0, top), behavior: "smooth" });
@@ -1315,7 +1318,7 @@
   }
 
   /* ---------- Voice session (TESTING: preview account only) ---------- */
-  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-thalia-en", sum: null, sumErr: "", speed: "fast", fillers: [], parts: [], mode: "guided", g: null };
+  const VS = { hist: [], clips: [], status: "idle", msg: "", stream: null, rec: null, raf: 0, audio: null, ms: [], voice: "aura-2-delia-en", sum: null, sumErr: "", speed: "fast", fillers: [], parts: [], mode: "guided", g: null };
   const VG_TAG = { open: ["Dana opened up", "ok"], guarded: ["Dana stayed guarded", "mid"], pull: ["Dana pulled back", "back"] };
   const VS_VOICES = [["aura-2-thalia-en", "Thalia"], ["aura-2-andromeda-en", "Andromeda"], ["aura-2-helena-en", "Helena"], ["aura-2-luna-en", "Luna"], ["aura-2-cora-en", "Cora"], ["aura-2-delia-en", "Delia"], ["aura-2-asteria-en", "Asteria"], ["aura-2-athena-en", "Athena"]];
   const VS_MAX = 8;
@@ -1333,8 +1336,7 @@
       ${st === "idle" ? `<p class="flow-q">A spoken mock session with Dana.</p>
         <p class="flow-sub">Dana, 34, is an ER nurse in session 6. She didn’t do last week’s homework, and she’s guarded. She’ll speak first. Answer out loud, like you would in session. When you stop talking, she replies. Up to ${VS_MAX} back-and-forths. End anytime you think you’ve reached the goal.</p>
         <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
-        <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
-        <div class="field"><b>Dana’s voice</b><small>Testing only: try a few and see which sounds most like Dana.</small><div class="chips-row">${VS_VOICES.map(([v, n]) => `<button type="button" class="chip" data-vs-voice="${v}" aria-pressed="${VS.voice === v}">${n}</button>`).join("")}</div></div>
+        <ul class="vs-tips"><li>Dana responds in real time, so her replies can take a few seconds (up to about 5). That’s normal. Just wait for her.</li><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
         <div class="field"><b>Dana’s thinking</b><small>Testing only: Fast replies quicker, Smart follows you more closely.</small><div class="chips-row"><button type="button" class="chip" data-vs-speed="fast" aria-pressed="${VS.speed === "fast"}">Fast</button><button type="button" class="chip" data-vs-speed="smart" aria-pressed="${VS.speed === "smart"}">Smart</button></div></div>
         <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn primary" data-vs-start>Start the session</button><button type="button" class="v6-link" data-vs-mode="guided">Back to the guided session</button></div>` : ""}
       ${st !== "idle" ? `<div class="vs-goal sm"><b>Goal</b> Find out what really got in the way of the homework, without assigning anything new.</div>` : ""}
@@ -1355,9 +1357,8 @@
       <p class="flow-q">A spoken session with Dana, in five moments.</p>
       <p class="flow-sub">Dana, 34, is an ER nurse in session 6. Last week you suggested a thought record. She didn’t do it, and she walks in guarded. Each moment practices one skill from the course. Answer out loud; Dana responds to how it lands.</p>
       <div class="vs-goal"><b>Your goal</b> Find out what really got in the way of the homework, without assigning anything new.<small><b>Stretch:</b> Dana shares what she’s afraid would happen if she slipped at work.</small></div>
-      <ul class="vs-tips"><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
+      <ul class="vs-tips"><li>Dana responds in real time, so her replies can take a few seconds (up to about 5). That’s normal. Just wait for her.</li><li>Use headphones so Dana’s voice doesn’t get picked up by your mic.</li><li>Your browser will ask to use your microphone.</li></ul>
       ${VS.msg ? `<div class="banner-soft">${esc(VS.msg)}</div>` : ""}
-      ${isTestAccount() ? voicePick : ""}
       <div class="actions" style="justify-content:space-between"><button type="button" class="v6-btn primary" data-vg-start>Start the session</button><span style="display:flex;gap:14px;flex-wrap:wrap"><button type="button" class="v6-link" data-vg-type>No mic? Type your answers instead</button>${isTestAccount() ? `<button type="button" class="v6-link" data-vs-mode="open">Open conversation (testing)</button>` : ""}</span></div>
     </div>`, title: "Voice session", sub: "Testing: a spoken mock session with Dana.", solo: true };
     const lines = VS.hist.map(h => h.who === "client"

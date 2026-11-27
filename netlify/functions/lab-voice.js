@@ -10,7 +10,7 @@ const GUIDED = require("../lib/voice-guided");
 const DG = () => process.env.TESTING_DEEPGRAM || "";
 const MODEL = process.env.LAB_AI_MODEL || "claude-sonnet-5-5";
 const FAST = process.env.LAB_VOICE_MODEL || "claude-haiku-5-5";
-const VOICES = { dana: process.env.LAB_VOICE_DANA || "aura-2-thalia-en" };
+const VOICES = { dana: process.env.LAB_VOICE_DANA || "aura-2-delia-en" };
 /* Voices the preview account can audition (Deepgram Aura-2, English) */
 const PICK = ["aura-2-thalia-en", "aura-2-andromeda-en", "aura-2-helena-en", "aura-2-luna-en", "aura-2-cora-en", "aura-2-delia-en", "aura-2-asteria-en", "aura-2-athena-en"];
 /* Dana's hidden map (DRAFT for Tiffany's clinical review). She only goes deeper when the therapist earns it. */
