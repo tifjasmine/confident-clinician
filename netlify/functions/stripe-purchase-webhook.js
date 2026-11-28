@@ -124,6 +124,7 @@ const escapeHtml = (value) => String(value || '')
   .replace(/'/g, '&#039;');
 
 const sendOwnerPurchaseNotification = async ({ session, resourceAccess, lineItems }) => {
+  if (session?.metadata?.product === 'lab-founding-week1') return false; /* founding spots email Tiffany from lib/founding.js */
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn('Purchase notification skipped because RESEND_API_KEY is missing.');
@@ -230,9 +231,10 @@ const getLineItemPriceIds = (lineItems) => {
 };
 
 const syncClinicalConfidenceLabEnrollment = async (session, lineItems) => {
-  const labPriceId = process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID;
-  if (!labPriceId) return null;
-  if (!getLineItemPriceIds(lineItems).includes(labPriceId)) return null;
+  /* Regular price, plus the early-bird price (before Jan 1) when it's set up. */
+  const labPriceIds = [process.env.CLINICAL_CONFIDENCE_LAB_STRIPE_PRICE_ID, process.env.CLINICAL_CONFIDENCE_LAB_EARLY_PRICE_ID || 'price_1Uf4lQASlf43jszVbdkoC9c2'].filter(Boolean);
+  if (!labPriceIds.length) return null;
+  if (!getLineItemPriceIds(lineItems).some(id => labPriceIds.includes(id))) return null;
 
   const token = process.env.AIRTABLE_ACCESS_TOKEN;
   const baseId = process.env.AIRTABLE_COURSE_BASE_ID || 'app9RCJ6ivTCgwDsl';
@@ -578,6 +580,8 @@ exports.handler = async (event) => {
       }
     }
     await syncClinicalConfidenceLabEnrollment(session, lineItems);
+    /* Founding spots ($37 Week 1): mark the spot Paid and add them to the roster. The video page also does this on return. */
+    try { await require('../lib/founding').markPaid(session); } catch (error) { console.error('Founding spot sync failed', error.message); }
     const fieldMap = parseJsonEnv('AIRTABLE_PURCHASE_FIELD_MAP', defaultFieldMap);
     const resourceAccess = getPurchasedResource(lineItems) || getResourceAccessFromMetadata(session);
     const existingRecord = await findExistingAirtableRecord(session.id, fieldMap);

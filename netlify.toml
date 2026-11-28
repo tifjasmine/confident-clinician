@@ -18,7 +18,7 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(), microphone=(self), geolocation=()"
 
 [[redirects]]
   from = "/imposterguidebook"
@@ -102,7 +102,7 @@
 
 [[redirects]]
   from = "/course/lab/"
-  to = "/course/lab-2026-preview.html"
+  to = "/course/lab-v6.html"
   status = 200
 
 [[redirects]]
@@ -113,6 +113,16 @@
 [[redirects]]
   from = "/clinical-confidence-lab/"
   to = "/clinical-confidence-lab.html"
+  status = 200
+
+[[redirects]]
+  from = "/lab-video"
+  to = "/lab-video.html"
+  status = 200
+
+[[redirects]]
+  from = "/lab-video/"
+  to = "/lab-video.html"
   status = 200
 
 [[redirects]]
